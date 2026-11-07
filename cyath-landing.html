@@ -78,8 +78,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* Authentic coarse tactile texture (Film grain / matte cast stone) */
 .canvas-texture {
   position: fixed; inset: 0; pointer-events: none; z-index: 999;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* ============================================================
@@ -103,8 +103,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: relative;
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-wordmark { font-weight: 700; letter-spacing: 0.12em; font-size: 15px; color: #FAFAFA; text-transform: uppercase; }
-.nav-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--text-muted); text-transform: uppercase; }
+.nav-wordmark { font-weight: 600; letter-spacing: -0.025em; font-size: 16px; color: #FAFAFA; }
 .nav-links {
   display: flex; align-items: center; gap: 32px;
   position: absolute; left: 50%; transform: translateX(-50%);
@@ -194,16 +193,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .hero-left { text-align: left; }
 .hero-headline {
-  font-size: clamp(38px, 4.4vw, 58px);
-  font-weight: 700; letter-spacing: -0.04em; line-height: 1.08;
+  font-size: clamp(34px, 3.4vw, 48px);
+  font-weight: 700; letter-spacing: -0.035em; line-height: 1.15;
   max-width: 580px;
 }
 .hero-headline .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.12em; margin-bottom: -0.12em; }
 .hero-headline .word-inner { display: inline-block; will-change: transform; }
 .hero-sub {
-  margin-top: 22px;
-  font-size: 19px; font-weight: 400; color: var(--text-secondary); line-height: 1.6;
-  max-width: 480px;
+  margin-top: 20px;
+  font-size: 17.5px; font-weight: 400; color: var(--text-secondary); line-height: 1.6;
+  max-width: 520px;
 }
 .hero-cta-row { margin-top: 32px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .hero-btn-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -756,20 +755,11 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="#top" aria-label="Cyath home">
-      <!-- Direction 01: The Calibrated Datum -->
-      <svg width="30" height="30" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
-        <line x1="18" y1="2" x2="18" y2="7" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="18" y1="29" x2="18" y2="34" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="2" y1="18" x2="7" y2="18" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="29" y1="18" x2="34" y2="18" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M25 11H14C11.7909 11 10 12.7909 10 15V21C10 23.2091 11.7909 25 14 25H25" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="21" cy="18" r="3.2" fill="#F59E0B"/>
-        <circle cx="21" cy="18" r="1.1" fill="#09090B"/>
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+        <path d="M21 7.5C18.8 5.3 15.6 4 12 4C5.92487 4 1 8.92487 1 15C1 21.0751 5.92487 26 12 26C15.6 26 18.8 24.7 21 22.5" stroke="#FAFAFA" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="15.5" cy="15" r="3" fill="#F59E0B"/>
       </svg>
-      <div style="display: flex; align-items: baseline; gap: 8px;">
-        <span class="nav-wordmark">CYATH</span>
-        <span class="nav-tag">CANVAS</span>
-      </div>
+      <span class="nav-wordmark">Cyath</span>
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
@@ -813,10 +803,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
         <div class="trust-item">
           <span class="trust-dot"></span>
           <span>Cryptographic milestone sign-off</span>
-        </div>
-      </div>
-    </div>
-          <span>1-click milestone sign-off</span>
         </div>
       </div>
     </div>
