@@ -136,8 +136,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero {
   position: relative;
   min-height: 100vh; min-height: 100svh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 140px 24px 96px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 120px 32px 80px;
   overflow: hidden;
 }
 .hero-bg-gradient {
@@ -158,44 +158,87 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   opacity: 0.03; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-.hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 900px; }
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
-  color: #FBBF24;
-  background: rgba(245, 158, 11, 0.10);
-  border: 1px solid rgba(245, 158, 11, 0.20);
-  padding: 5px 12px; border-radius: 999px;
-  margin-bottom: 28px;
+.hero-split {
+  max-width: 1360px; width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 56px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
 }
-.hero-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+@media (max-width: 1080px) {
+  .hero { padding: 100px 24px 64px; min-height: auto; }
+  .hero-split {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .hero-left {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .hero-headline { max-width: 100%; }
+  .hero-cta-row { align-items: center; }
+  .hero-trust-list { justify-content: center; }
+}
+.hero-left { text-align: left; }
 .hero-headline {
-  font-size: clamp(38px, 7.5vw, 72px);
+  font-size: clamp(38px, 4.4vw, 58px);
   font-weight: 700; letter-spacing: -0.04em; line-height: 1.08;
-  max-width: 1040px;
+  max-width: 580px;
 }
 .hero-headline .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.12em; margin-bottom: -0.12em; }
 .hero-headline .word-inner { display: inline-block; will-change: transform; }
 .hero-sub {
-  margin-top: 24px;
-  font-size: 20px; font-weight: 400; color: var(--text-secondary); line-height: 1.6;
+  margin-top: 22px;
+  font-size: 19px; font-weight: 400; color: var(--text-secondary); line-height: 1.6;
   max-width: 480px;
 }
-.hero-cta-row { margin-top: 36px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.hero-microcopy { font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); }
-.hero-microcopy .hook { color: var(--text-secondary); margin-right: 6px; }
+.hero-cta-row { margin-top: 32px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.hero-btn-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.btn-secondary {
+  padding: 13px 22px;
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-active);
+  color: var(--text-primary);
+  font-size: 14px; font-weight: 500; border-radius: 8px;
+  transition: all 200ms ease;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-secondary:hover { background: #27272A; border-color: #52525B; }
+.hero-microcopy { font-size: 12.5px; color: var(--text-muted); font-family: var(--font-mono); }
+.hero-trust-list {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(39, 39, 42, 0.55);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.trust-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--text-secondary);
+}
+.trust-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #10B981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
 
-/* Hero product visual */
+/* Hero product visual (Right column) */
+.hero-right { position: relative; width: 100%; }
 .hero-visual-wrap {
   position: relative; z-index: 2;
-  width: 100%; max-width: 1024px;
-  margin-top: 72px;
+  width: 100%; max-width: 100%;
+  margin-top: 0;
 }
 .hero-visual {
   border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border-subtle);
   background: var(--surface-panel);
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.7), 0 0 40px rgba(245, 158, 11, 0.08);
 }
 .hv-chrome {
   display: flex; align-items: center; gap: 12px;
@@ -209,7 +252,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hv-dots span:nth-child(2) { background: #FEBC2E; }
 .hv-dots span:nth-child(3) { background: #28C840; }
 .hv-url {
-  flex: 1; max-width: 340px; margin: 0 auto;
+  flex: 1; max-width: 320px; margin: 0 auto;
   font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
   background: var(--surface-canvas); border: 1px solid var(--border-subtle);
   border-radius: 6px; padding: 4px 12px; text-align: center;
@@ -225,28 +268,63 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 5px; height: 5px; border-radius: 50%;
   background: #10B981; box-shadow: 0 0 6px #10B981;
 }
-.hv-body { display: flex; min-height: 420px; }
+.hv-body { display: flex; min-height: 440px; }
 .hv-canvas {
   position: relative; flex: 1;
   background:
     radial-gradient(ellipse 100% 70% at 50% 0%, rgba(245, 158, 11, 0.05), transparent),
     repeating-conic-gradient(var(--surface-canvas) 0% 25%, #0D0D10 0% 50%) 0 0 / 28px 28px;
   overflow: hidden;
+  cursor: crosshair;
 }
 .hv-site {
-  position: absolute; inset: 7% 6% 0 6%;
-  background: #FAF7F2; border-radius: 8px 8px 0 0;
-  overflow: hidden; color: #292018;
+  position: absolute; inset: 5% 5% 0 5%;
+  background: #F4F1EA; border-radius: 8px 8px 0 0;
+  overflow: hidden; color: #171614;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
 }
-.hvs-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; }
-.hvs-logo { font-weight: 700; font-size: 12px; letter-spacing: -0.01em; }
-.hvs-links { display: flex; gap: 12px; font-size: 9px; color: #8A7A66; }
-.hvs-cta { background: #6F4E37; color: #FAF7F2; font-size: 9px; font-weight: 600; padding: 5px 10px; border-radius: 5px; }
-.hvs-hero { padding: 26px 18px 0; display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; align-items: center; }
-.hvs-h1 { font-size: clamp(16px, 2.6vw, 24px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; }
-.hvs-h1 em { font-style: normal; color: #A9713B; }
-.hvs-img { height: 110px; border-radius: 8px; background: linear-gradient(135deg, #C08552, #8B5A2B 60%, #6F4E37); }
-.hvs-strip { margin-top: 18px; border-top: 1px solid #E8E0D4; padding: 10px 18px; display: flex; gap: 18px; font-size: 8px; color: #8A7A66; letter-spacing: 0.06em; text-transform: uppercase; }
+.hvs-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid rgba(23, 22, 20, 0.08);
+}
+.hvs-logo { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+.hvs-links { display: flex; gap: 10px; font-size: 8.5px; color: #78756F; font-weight: 500; }
+.hvs-cta {
+  background: #171614; color: #F4F1EA;
+  font-size: 8.5px; font-weight: 600; padding: 4px 9px; border-radius: 4px;
+}
+.hvs-hero {
+  padding: 16px 16px 0;
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 14px; align-items: center;
+}
+.hvs-tag {
+  display: block; font-family: var(--font-mono); font-size: 7.5px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: #9E7D53; margin-bottom: 6px;
+}
+.hvs-h1 {
+  font-size: 18px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: #171614;
+}
+.hvs-desc {
+  margin-top: 6px; font-size: 9px; line-height: 1.45; color: #69655E;
+}
+.hvs-action-row {
+  margin-top: 10px; display: flex; align-items: center; gap: 8px;
+}
+.hvs-btn-primary {
+  background: #9E7D53; color: #FFF; font-size: 8.5px; font-weight: 600;
+  padding: 5px 10px; border-radius: 4px; display: inline-block;
+}
+.hvs-price { font-family: var(--font-mono); font-size: 8px; color: #78756F; }
+.hvs-img {
+  height: 140px; border-radius: 6px; overflow: hidden;
+  background: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=700&auto=format&fit=crop') center/cover no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.12);
+}
+.hvs-strip {
+  margin-top: 16px; border-top: 1px solid rgba(23, 22, 20, 0.08);
+  padding: 8px 16px; display: flex; gap: 14px; font-size: 7.5px;
+  color: #78756F; letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-mono);
+}
 
 /* Mini pins (shared) */
 .mini-pin {
@@ -669,11 +747,23 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="#top" aria-label="Cyath home">
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
-        <rect x="3" y="3" width="26" height="26" rx="7" fill="#121215" stroke="#27272A" stroke-width="1.5"/>
-        <path d="M21.5 10.5C19.8 8.8 17.2 8 14.5 8C9.8 8 6.5 11.6 6.5 16C6.5 20.4 9.8 24 14.5 24C17.2 24 19.8 23.2 21.5 21.5" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M19 4L22 4" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="15.5" cy="16" r="2.25" fill="#F59E0B"/>
+      <svg width="30" height="30" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+        <defs>
+          <linearGradient id="chiasm-crescent" x1="6" y1="6" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFFFFF" />
+            <stop offset="60%" stop-color="#E4E4E7" />
+            <stop offset="100%" stop-color="#71717A" />
+          </linearGradient>
+          <linearGradient id="chiasm-amber" x1="16" y1="12" x2="28" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FBBF24" />
+            <stop offset="100%" stop-color="#D97706" />
+          </linearGradient>
+        </defs>
+        <circle cx="18" cy="18" r="16.5" stroke="#27272A" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
+        <path d="M26.5 10C24.2 7.2 20.8 5.5 17 5.5C10.1 5.5 4.5 11.1 4.5 18C4.5 24.9 10.1 30.5 17 30.5C21.2 30.5 24.8 28.5 27 25.3" stroke="url(#chiasm-crescent)" stroke-width="2.75" stroke-linecap="round"/>
+        <path d="M27 10.5C23.5 14 19.5 15.5 15 15.5" stroke="url(#chiasm-amber)" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+        <circle cx="20" cy="18" r="3" fill="url(#chiasm-amber)"/>
+        <circle cx="20" cy="18" r="1.25" fill="#FFFFFF"/>
       </svg>
       <span class="nav-wordmark">Cyath</span>
     </a>
@@ -694,61 +784,103 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   <div class="hero-bg-grid"></div>
   <div class="hero-bg-noise"></div>
 
-  <div class="hero-content">
-    <h1 class="hero-headline" id="heroHeadline">Stop chasing client feedback across 15 emails.</h1>
-    <p class="hero-sub" id="heroSub">One link. Clients pin feedback directly on your staging site. No login required.</p>
-    <div class="hero-cta-row" id="heroCta">
-      <a class="btn btn-primary" href="/dashboard">Start for Free <span class="arrow">→</span></a>
-      <span class="hero-microcopy">No credit card required · 1 active project free forever</span>
-    </div>
-  </div>
-
-  <div class="hero-visual-wrap" id="heroVisual">
-    <div class="hero-visual">
-      <div class="hv-chrome">
-        <div class="hv-dots"><span></span><span></span><span></span></div>
-        <div class="hv-url">urban-roast-staging.vercel.app</div>
-        <div class="hv-status-pill"><span class="status-dot"></span>Interactive Staging</div>
-      </div>
-      <div class="hv-body">
-        <div class="hv-canvas">
-          <div class="hv-site">
-            <div class="hvs-nav">
-              <span class="hvs-logo">Urban Roast</span>
-              <div class="hvs-links"><span>Menu</span><span>Our Beans</span><span>Visit</span><span>Journal</span></div>
-              <span class="hvs-cta">Order Online</span>
-            </div>
-            <div class="hvs-hero">
-              <div class="hvs-h1">Small-batch coffee, <em>roasted</em> in the heart of the city.</div>
-              <div class="hvs-img"></div>
-            </div>
-            <div class="hvs-strip"><span>Single Origin</span><span>Roasted Weekly</span><span>Wholesale</span><span>Subscriptions</span></div>
-          </div>
-          <div class="mini-pin" style="left: 18%; top: 24%;" data-hp="1">1</div>
-          <div class="mini-pin" style="left: 63%; top: 40%;" data-hp="2">2</div>
-          <div class="mini-pin" style="left: 41%; top: 66%;" data-hp="3">3</div>
-          <div class="mini-popover" id="heroPopover" style="left: 21%; top: 33%;">
-            <div class="mp-name"><span>Jane Cooper</span><span class="mp-time">2m</span></div>
-            <div class="mp-text" id="heroPopText">Can we try a warmer accent color here?</div>
-          </div>
+  <div class="hero-split">
+    <!-- Left Column: Copy & Actions -->
+    <div class="hero-left">
+      <h1 class="hero-headline" id="heroHeadline">Stop chasing client feedback across 15 emails.</h1>
+      <p class="hero-sub" id="heroSub">One link. Clients pin feedback directly on your staging builds. No accounts, automatic viewport & OS detection, and 1-click milestone sign-off.</p>
+      
+      <div class="hero-cta-row" id="heroCta">
+        <div class="hero-btn-group">
+          <a class="btn btn-primary" href="/dashboard">Start for Free <span class="arrow">→</span></a>
+          <a class="btn btn-secondary" href="/r/demo">View Live Demo</a>
         </div>
-        <div class="hv-sidebar">
-          <div class="msb-head"><span class="msb-title">Feedback</span><span class="msb-count" id="heroCount">0 total</span></div>
-          <div class="msb-list" id="heroList">
-            <div class="msb-card" data-hc="1">
-              <div class="msb-top"><span class="msb-num">1</span><span class="msb-status">OPEN</span><span class="msb-time">2m</span></div>
-              <div class="msb-text">Can we try a warmer accent color here?</div>
-              <div class="msb-meta">1440×900 · Chrome 130</div>
+        <span class="hero-microcopy">No credit card required · 1 active project free forever</span>
+      </div>
+
+      <div class="hero-trust-list">
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>Zero client signup required</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>Auto browser & OS detection</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>1-click milestone sign-off</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Interactive Realistic Staging Canvas -->
+    <div class="hero-right">
+      <div class="hero-visual-wrap" id="heroVisual">
+        <div class="hero-visual">
+          <div class="hv-chrome">
+            <div class="hv-dots"><span></span><span></span><span></span></div>
+            <div class="hv-url">aura-studio.staging.vercel.app</div>
+            <div class="hv-status-pill"><span class="status-dot"></span>Interactive Staging</div>
+          </div>
+          <div class="hv-body">
+            <div class="hv-canvas" id="heroCanvas" title="Click anywhere to drop a pin">
+              <div class="hv-site">
+                <div class="hvs-nav">
+                  <span class="hvs-logo">AURA ATELIER</span>
+                  <div class="hvs-links"><span>Objects</span><span>Spaces</span><span>Archive</span><span>Journal</span></div>
+                  <span class="hvs-cta">Inquire</span>
+                </div>
+                <div class="hvs-hero">
+                  <div>
+                    <span class="hvs-tag">CASE STUDY // EDITION 04</span>
+                    <div class="hvs-h1">Sculptural vessels cast in raw bronze.</div>
+                    <p class="hvs-desc">Direct foundry pour. Hand-patinated in Kyoto with matte beeswax finish.</p>
+                    <div class="hvs-action-row">
+                      <span class="hvs-btn-primary" id="specimenBtn">Reserve Specimen</span>
+                      <span class="hvs-price">€1,850 · In Stock</span>
+                    </div>
+                  </div>
+                  <div class="hvs-img"></div>
+                </div>
+                <div class="hvs-strip">
+                  <span>BRUTALIST ARCHITECTURE</span>
+                  <span>KYOTO FOUNDRY</span>
+                  <span>LIMITED TO 40</span>
+                </div>
+              </div>
+
+              <!-- Animated Pins -->
+              <div class="mini-pin" style="left: 24%; top: 62%;" data-hp="1">1</div>
+              <div class="mini-pin" style="left: 78%; top: 38%;" data-hp="2">2</div>
+              <div class="mini-pin" style="left: 38%; top: 12%;" data-hp="3">3</div>
+
+              <div class="mini-popover" id="heroPopover" style="left: 26%; top: 40%;">
+                <div class="mp-name"><span>Jane Cooper (Client)</span><span class="mp-time">2m ago</span></div>
+                <div class="mp-text" id="heroPopText">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
+              </div>
             </div>
-            <div class="msb-card" data-hc="2">
-              <div class="msb-top"><span class="msb-num">2</span><span class="msb-status">OPEN</span><span class="msb-time">4m</span></div>
-              <div class="msb-text">Hero image feels too dark on mobile.</div>
-              <div class="msb-meta">375×812 · Safari 18</div>
-            </div>
-            <div class="msb-card" data-hc="3">
-              <div class="msb-top"><span class="msb-num">3</span><span class="msb-status">OPEN</span><span class="msb-time">6m</span></div>
-              <div class="msb-text">Add our wholesale email under this section.</div>
-              <div class="msb-meta">1512×982 · Chrome 130</div>
+
+            <!-- Staging Sidebar -->
+            <div class="hv-sidebar">
+              <div class="msb-head"><span class="msb-title">Feedback</span><span class="msb-count" id="heroCount">0 total</span></div>
+              <div class="msb-list" id="heroList">
+                <div class="msb-card" data-hc="1">
+                  <div class="msb-top"><span class="msb-num">1</span><span class="msb-status">OPEN</span><span class="msb-time">2m</span></div>
+                  <div class="msb-text">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
+                  <div class="msb-meta">1440×900 · Chrome 131</div>
+                </div>
+                <div class="msb-card" data-hc="2">
+                  <div class="msb-top"><span class="msb-num">2</span><span class="msb-status">OPEN</span><span class="msb-time">4m</span></div>
+                  <div class="msb-text">Hero image optimized to WebP with responsive srcset. Loads in 85ms.</div>
+                  <div class="msb-meta">1512×982 · macOS Sonoma</div>
+                </div>
+                <div class="msb-card" data-hc="3">
+                  <div class="msb-top"><span class="msb-num">3</span><span class="msb-status">OPEN</span><span class="msb-time">6m</span></div>
+                  <div class="msb-text">Inquiry button should open sliding sheet instead of anchor jump.</div>
+                  <div class="msb-meta">375×812 · Safari iOS</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1156,7 +1288,34 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     .from(heroWords, { yPercent: 110, duration: 0.9, stagger: 0.06, delay: 0.1 })
     .from('#heroSub', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.55')
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
-    .from('#heroVisual', { autoAlpha: 0, y: 60, duration: 1, ease: 'expo.out' }, '-=0.45');
+    .from('#heroVisual', { autoAlpha: 0, x: 40, y: 15, scale: 0.98, duration: 1.1, ease: 'power3.out' }, '-=0.45');
+
+  /* Interactive Click-to-Pin on Hero Staging Canvas */
+  var heroCanvas = $('#heroCanvas');
+  if (heroCanvas) {
+    var userPinCount = 3;
+    heroCanvas.addEventListener('click', function (e) {
+      var rect = heroCanvas.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+      userPinCount++;
+      var newPin = document.createElement('div');
+      newPin.className = 'mini-pin pulsing';
+      newPin.style.left = x.toFixed(1) + '%';
+      newPin.style.top = y.toFixed(1) + '%';
+      newPin.textContent = userPinCount;
+      newPin.style.zIndex = '15';
+      heroCanvas.appendChild(newPin);
+
+      var pop = $('#heroPopover');
+      if (pop) {
+        pop.style.left = Math.min(65, Math.max(10, x + 2)) + '%';
+        pop.style.top = Math.min(70, Math.max(10, y + 2)) + '%';
+        $('#heroPopText').textContent = 'Pin #' + userPinCount + ' placed at (' + Math.round(x) + '%, ' + Math.round(y) + '%). Client telemetry attached.';
+        gsap.fromTo(pop, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.25 });
+      }
+    });
+  }
 
   /* ══════════ HERO visual loop — 8s, pins + sidebar live ══════════ */
   var heroPins = $$('.mini-pin[data-hp]');
