@@ -1,0 +1,40 @@
+import { Project } from "@/types";
+
+export function exportProjectAsMarkdown(project: Project): string {
+  const openPins = project.pins.filter((p) => p.status !== "resolved");
+  const resolvedPins = project.pins.filter((p) => p.status === "resolved");
+
+  let md = `# Staging Review: ${project.title}\n`;
+  md += `**Target URL:** ${project.targetUrl}\n`;
+  md += `**Agency:** ${project.agencyName}\n`;
+  md += `**Status:** ${project.isApproved ? "Approved by " + project.approvedBy : "Review In Progress"}\n`;
+  md += `**Generated:** ${new Date().toLocaleDateString()}\n\n`;
+
+  md += `## Open Feedback (${openPins.length})\n\n`;
+  if (openPins.length === 0) {
+    md += `_No open feedback items._\n\n`;
+  } else {
+    openPins.forEach((pin) => {
+      const firstComment = pin.comments[0]?.content || "No description provided";
+      md += `- [ ] **#${pin.number}** (${pin.deviceMode} · ${pin.telemetry.viewportWidth}x${pin.telemetry.viewportHeight} · ${pin.telemetry.browser} ${pin.telemetry.os})\n`;
+      md += `  > ${firstComment}\n`;
+      if (pin.comments.length > 1) {
+        md += `  _(${pin.comments.length - 1} follow-up replies)_\n`;
+      }
+    });
+    md += `\n`;
+  }
+
+  md += `## Resolved Items (${resolvedPins.length})\n\n`;
+  if (resolvedPins.length === 0) {
+    md += `_No resolved items yet._\n\n`;
+  } else {
+    resolvedPins.forEach((pin) => {
+      const firstComment = pin.comments[0]?.content || "No description provided";
+      md += `- [x] **#${pin.number}** ${firstComment} — _Resolved by ${pin.resolvedBy || "Developer"}_\n`;
+    });
+  }
+
+  return md;
+}
+
