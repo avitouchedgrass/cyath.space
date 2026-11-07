@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyath — Stop chasing client feedback across 15 emails</title>
 <meta name="description" content="One link. Clients pin feedback directly on your staging site. No login required. Approval sign-off with a timestamped receipt.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23F59E0B'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='bold' fill='%2309090B' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    CYATH LANDING — design tokens (spec §3)
@@ -17,31 +17,32 @@
 :root {
   /* Surfaces */
   --surface-canvas: #09090B;
-  --surface-panel: #121215;
-  --surface-overlay: #18181B;
-  --surface-glass: rgba(18, 18, 21, 0.72);
+  --surface-panel: #111114;
+  --surface-overlay: #18181C;
+  --surface-glass: rgba(18, 18, 22, 0.82);
 
   /* Borders */
-  --border-subtle: #27272A;
-  --border-active: #3F3F46;
-  --border-glow: rgba(245, 158, 11, 0.4);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.16);
+  --border-glow: rgba(245, 158, 11, 0.35);
 
-  /* Text */
+  /* Text - High contrast WCAG AA/AAA calibrated */
   --text-primary: #FAFAFA;
-  --text-secondary: #A1A1AA;
-  --text-muted: #52525B;
+  --text-secondary: #D4D4D8;
+  --text-muted: #A1A1AA;
+  --text-dim: #71717A;
 
   /* Accent */
   --accent: #F59E0B;
   --accent-dim: rgba(245, 158, 11, 0.12);
-  --accent-glow: rgba(245, 158, 11, 0.25);
+  --accent-glow: rgba(245, 158, 11, 0.22);
 
   /* Gradients */
-  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.15), transparent);
-  --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(245, 158, 11, 0.12), transparent);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.12), transparent);
+  --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(245, 158, 11, 0.10), transparent);
 
-  --font-sans: 'Geist', 'Geist Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -61,10 +62,25 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  caret-color: var(--accent);
 }
+
+/* Browser Surface Theming (§craft-floor) */
 ::selection { background: rgba(245, 158, 11, 0.28); color: #FAFAFA; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+/* Authentic coarse tactile texture (Film grain / matte cast stone) */
+.canvas-texture {
+  position: fixed; inset: 0; pointer-events: none; z-index: 999;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
 
 /* ============================================================
    NAV (§4.1)
@@ -76,7 +92,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 0 32px;
   background: rgba(9, 9, 11, 0.85);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(39, 39, 42, 0.7);
+  border-bottom: 1px solid var(--border-subtle);
   transition: border-color 200ms ease;
   opacity: 1 !important;
 }
@@ -87,7 +103,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: relative;
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-wordmark { font-weight: 600; letter-spacing: -0.025em; font-size: 16px; color: #FAFAFA; }
+.nav-wordmark { font-weight: 700; letter-spacing: 0.12em; font-size: 15px; color: #FAFAFA; text-transform: uppercase; }
+.nav-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--text-muted); text-transform: uppercase; }
 .nav-links {
   display: flex; align-items: center; gap: 32px;
   position: absolute; left: 50%; transform: translateX(-50%);
@@ -117,13 +134,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--text-primary);
 }
 .btn-nav:hover {
-  box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--accent-glow);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   border-color: var(--accent);
 }
 .btn-primary {
   padding: 14px 28px;
   background: var(--accent); color: #09090B;
   font-size: 15px;
+  font-weight: 600;
 }
 .btn-primary:hover { scale: 1.02; filter: brightness(1.05); }
 .btn-primary:active { scale: 1; }
@@ -144,19 +162,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: var(--gradient-hero);
 }
-.hero-bg-grid {
-  position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 35%, transparent 85%);
-  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 35%, transparent 85%);
-}
-.hero-bg-noise {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  opacity: 0.03; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+.hero-ambient {
+  position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+  width: 1000px; height: 500px; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.08) 0%, rgba(9, 9, 11, 0) 70%);
 }
 .hero-split {
   max-width: 1360px; width: 100%;
@@ -223,8 +232,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 12px; color: var(--text-secondary);
 }
 .trust-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: #10B981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #10B981; border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Hero product visual (Right column) */
@@ -238,7 +247,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border-subtle);
   background: var(--surface-panel);
-  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.7), 0 0 40px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 24px 72px -12px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 .hv-chrome {
   display: flex; align-items: center; gap: 12px;
@@ -265,8 +274,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 3px 9px; border-radius: 999px;
 }
 .hv-status-pill .status-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: #10B981; box-shadow: 0 0 6px #10B981;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #10B981; border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .hv-body { display: flex; min-height: 440px; }
 .hv-canvas {
@@ -360,7 +369,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .mini-popover .mp-name .mp-time { font-weight: 400; color: var(--text-muted); font-family: var(--font-mono); font-size: 9px; }
 .mini-popover .mp-text { margin-top: 4px; font-size: 10.5px; line-height: 1.45; color: var(--text-secondary); min-height: 28px; }
 .mini-cursor { position: absolute; z-index: 7; pointer-events: none; }
-.mini-cursor .mc-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+.mini-cursor .mc-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
 .mini-cursor .mc-ring { position: absolute; top: -5px; left: -5px; width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid rgba(245,158,11,0.5); }
 
 /* Mini sidebar (shared) */
@@ -464,7 +473,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   display: inline-block; color: var(--accent);
   font-size: clamp(40px, 6vw, 64px); font-weight: 700; line-height: 0;
   vertical-align: baseline; margin-left: 6px;
-  text-shadow: 0 0 32px var(--accent-glow);
 }
 
 /* ============================================================
@@ -539,7 +547,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 .demo-step p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
 .demo-step.active .demo-step-num {
   background: var(--accent); color: #09090B;
-  box-shadow: 0 0 18px var(--accent-glow);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 .demo-step.inactive { opacity: 0.35; }
 
@@ -610,7 +618,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 }
 .price-card.pro {
   border-color: rgba(245, 158, 11, 0.55);
-  box-shadow: 0 0 40px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.7);
   background-clip: padding-box;
   animation: rotate-border-slow 6s linear infinite;
   --angle: 0deg;
@@ -627,7 +635,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   background: var(--accent); color: #09090B;
   font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 4px 12px; border-radius: 999px;
-  box-shadow: 0 4px 16px var(--accent-glow);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   white-space: nowrap;
 }
 .price-name { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
@@ -642,7 +650,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   padding: 12px 24px; background: var(--surface-overlay);
   border: 1px solid var(--border-active); color: var(--text-primary);
 }
-.btn-secondary:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+.btn-secondary:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
 
 /* ============================================================
    TESTIMONIALS (§4.9)
@@ -742,30 +750,26 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 </style>
 </head>
 <body>
+<div class="canvas-texture" aria-hidden="true"></div>
 
 <!-- ══════════ NAV (§4.1) ══════════ -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="#top" aria-label="Cyath home">
+      <!-- Direction 01: The Calibrated Datum -->
       <svg width="30" height="30" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
-        <defs>
-          <linearGradient id="chiasm-crescent" x1="6" y1="6" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#FFFFFF" />
-            <stop offset="60%" stop-color="#E4E4E7" />
-            <stop offset="100%" stop-color="#71717A" />
-          </linearGradient>
-          <linearGradient id="chiasm-amber" x1="16" y1="12" x2="28" y2="24" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#FBBF24" />
-            <stop offset="100%" stop-color="#D97706" />
-          </linearGradient>
-        </defs>
-        <circle cx="18" cy="18" r="16.5" stroke="#27272A" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
-        <path d="M26.5 10C24.2 7.2 20.8 5.5 17 5.5C10.1 5.5 4.5 11.1 4.5 18C4.5 24.9 10.1 30.5 17 30.5C21.2 30.5 24.8 28.5 27 25.3" stroke="url(#chiasm-crescent)" stroke-width="2.75" stroke-linecap="round"/>
-        <path d="M27 10.5C23.5 14 19.5 15.5 15 15.5" stroke="url(#chiasm-amber)" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
-        <circle cx="20" cy="18" r="3" fill="url(#chiasm-amber)"/>
-        <circle cx="20" cy="18" r="1.25" fill="#FFFFFF"/>
+        <line x1="18" y1="2" x2="18" y2="7" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="18" y1="29" x2="18" y2="34" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="2" y1="18" x2="7" y2="18" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="29" y1="18" x2="34" y2="18" stroke="#71717A" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M25 11H14C11.7909 11 10 12.7909 10 15V21C10 23.2091 11.7909 25 14 25H25" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="18" r="3.2" fill="#F59E0B"/>
+        <circle cx="21" cy="18" r="1.1" fill="#09090B"/>
       </svg>
-      <span class="nav-wordmark">Cyath</span>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span class="nav-wordmark">CYATH</span>
+        <span class="nav-tag">CANVAS</span>
+      </div>
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
@@ -781,14 +785,13 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <!-- ══════════ HERO (§4.2) ══════════ -->
 <header class="hero" id="top">
   <div class="hero-bg-gradient"></div>
-  <div class="hero-bg-grid"></div>
-  <div class="hero-bg-noise"></div>
+  <div class="hero-ambient"></div>
 
   <div class="hero-split">
     <!-- Left Column: Copy & Actions -->
     <div class="hero-left">
       <h1 class="hero-headline" id="heroHeadline">Stop chasing client feedback across 15 emails.</h1>
-      <p class="hero-sub" id="heroSub">One link. Clients pin feedback directly on your staging builds. No accounts, automatic viewport & OS detection, and 1-click milestone sign-off.</p>
+      <p class="hero-sub" id="heroSub">Send a single review link. Clients pinpoint feedback directly on live staging builds with automated viewport and OS telemetry, then verify completion with 1-click milestone sign-off.</p>
       
       <div class="hero-cta-row" id="heroCta">
         <div class="hero-btn-group">
@@ -805,10 +808,14 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
         </div>
         <div class="trust-item">
           <span class="trust-dot"></span>
-          <span>Auto browser & OS detection</span>
+          <span>Automated browser & OS telemetry</span>
         </div>
         <div class="trust-item">
           <span class="trust-dot"></span>
+          <span>Cryptographic milestone sign-off</span>
+        </div>
+      </div>
+    </div>
           <span>1-click milestone sign-off</span>
         </div>
       </div>
@@ -932,7 +939,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <section class="section" id="features">
   <div class="section-inner">
     <div class="section-head">
-      <span class="section-kicker">The solution</span>
       <h2 class="section-title">Everything email threads were missing.</h2>
     </div>
     <div class="features-grid" id="featuresGrid">
@@ -940,22 +946,22 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
         </div>
-        <h3 class="feature-title">One link. No accounts.</h3>
-        <p class="feature-body">Send a single URL to your client. They open it on their phone or laptop. No download, no sign-up, no password. They start pinning feedback in 5 seconds.</p>
+        <h3 class="feature-title">Frictionless Client Access</h3>
+        <p class="feature-body">Send a private staging link directly to your client. They open it on desktop or mobile and drop pins immediately—no accounts to create, passwords to remember, or extensions to install.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         </div>
-        <h3 class="feature-title">Feedback that actually makes sense.</h3>
-        <p class="feature-body">Every pin automatically records the client's browser, screen size, OS, and scroll position. No more "it looks broken" with zero details.</p>
+        <h3 class="feature-title">Deterministic Telemetry</h3>
+        <p class="feature-body">Every pin captures viewport resolution, device pixel ratio, operating system, browser engine, and scroll offset. Developers receive reproducible tickets rather than vague email screenshots.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
         </div>
-        <h3 class="feature-title">Lock scope. Stop free revisions.</h3>
-        <p class="feature-body">When feedback is resolved, clients sign off with their name. You get a timestamped receipt. Use it when they ask for "just one more change" three weeks later.</p>
+        <h3 class="feature-title">Tamper-Evident Scope Lock</h3>
+        <p class="feature-body">When open feedback items are resolved, clients verify approval with a single click. Cyath produces a cryptographically signed approval receipt to protect your scope and eliminate unpaid revision cycles.</p>
       </div>
     </div>
   </div>
@@ -966,7 +972,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   <div class="demo-grid">
     <div class="demo-sticky demo-left">
       <div class="section-head" style="margin-bottom:40px">
-        <span class="section-kicker">How it works</span>
         <h2 class="section-title">From staging link to sign-off in four steps.</h2>
       </div>
       <div class="demo-steps" id="demoSteps">
@@ -1049,7 +1054,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <section class="section" id="compare">
   <div class="compare-wrap">
     <div class="section-head" style="text-align:center; margin-left:auto; margin-right:auto;">
-      <span class="section-kicker">Why not Pastel or MarkUp.io?</span>
       <h2 class="section-title">Same job. A fraction of the price.</h2>
     </div>
     <div class="compare-scroll">
@@ -1081,7 +1085,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <!-- ══════════ PRICING (§4.8) ══════════ -->
 <section class="section" id="pricing">
   <div class="section-head" style="text-align:center; margin-left:auto; margin-right:auto;">
-    <span class="section-kicker">Pricing</span>
     <h2 class="section-title">Start free. Upgrade when you ship more.</h2>
   </div>
   <div class="pricing-grid" id="pricingGrid">
@@ -1116,7 +1119,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <!-- ══════════ TESTIMONIALS (§4.9) ══════════ -->
 <section class="section" id="testimonials">
   <div class="section-head" style="text-align:center; margin-left:auto; margin-right:auto;">
-    <span class="section-kicker">Early feedback</span>
     <h2 class="section-title">From the open beta.</h2>
   </div>
   <div class="testi-grid" id="testiGrid">
@@ -1153,7 +1155,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   <div class="cta-inner">
     <h2 class="cta-title" id="ctaTitle">Ship websites.<br>Not email threads.</h2>
     <a class="btn btn-primary" href="/dashboard" id="ctaBtn">Get Started Free <span class="arrow">→</span></a>
-    <span class="cta-micro">cyath.com · No credit card required</span>
+    <span class="cta-micro">cyath.space · No credit card required</span>
   </div>
 </section>
 

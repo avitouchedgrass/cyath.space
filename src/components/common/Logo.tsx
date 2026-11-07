@@ -1,25 +1,29 @@
 import React from "react";
 
+export type LogoVariant = "datum" | "monolith" | "seal";
+
 interface LogoProps {
   size?: number;
   showWordmark?: boolean;
+  variant?: LogoVariant;
   className?: string;
 }
 
 /**
- * Cyath Brand Identity — The Harmonic Chiasm
- * A continuous, mathematically balanced geometric mark:
- * An aerodynamic golden-ratio crescent (C) that loops into a precision coordinate node,
- * holding an Electric Amber radiant focal point at its optical center.
+ * Cyath Brand Identity System
+ * Direction 01 (Default): The Calibrated Datum — Surveying optic & coordinate pin.
+ * Direction 02: The Monolith Aperture — Brutalist architectural keystone.
+ * Direction 03: The Scope Seal — Continuous unbroken signature knot.
  */
 export const CyathLogo: React.FC<LogoProps> = ({
-  size = 28,
+  size = 32,
   showWordmark = true,
+  variant = "datum",
   className = "",
 }) => {
   return (
-    <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      {/* The Harmonic Chiasm Mark */}
+    <div className={`inline-flex items-center gap-3 select-none ${className}`}>
+      {/* Mark */}
       <svg
         width={size}
         height={size}
@@ -28,63 +32,64 @@ export const CyathLogo: React.FC<LogoProps> = ({
         xmlns="http://www.w3.org/2000/svg"
         className="flex-shrink-0 transition-transform duration-200 hover:scale-105"
       >
-        <defs>
-          <linearGradient id="cyath-crescent" x1="6" y1="6" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FFFFFF" />
-            <stop offset="60%" stopColor="#E4E4E7" />
-            <stop offset="100%" stopColor="#71717A" />
-          </linearGradient>
-          <linearGradient id="cyath-amber" x1="16" y1="12" x2="28" y2="24" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FBBF24" />
-            <stop offset="100%" stopColor="#D97706" />
-          </linearGradient>
-          <filter id="amber-glow" x="12" y="12" width="16" height="16" filterUnits="userSpaceOnUse">
-            <feGaussianBlur stdDeviation="1.5" result="glow" />
-            <feComposite in="SourceGraphic" in2="glow" operator="over" />
-          </filter>
-        </defs>
+        {variant === "datum" && (
+          <>
+            {/* Calibrated alignment ticks */}
+            <line x1="18" y1="2" x2="18" y2="7" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="18" y1="29" x2="18" y2="34" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="2" y1="18" x2="7" y2="18" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="29" y1="18" x2="34" y2="18" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" />
 
-        {/* Outer Radiant Aura Ring (Subtle) */}
-        <circle cx="18" cy="18" r="16.5" stroke="#27272A" strokeWidth="1" strokeDasharray="2 3" opacity="0.6" />
+            {/* Architectural Caliper 'C' */}
+            <path
+              d="M25 11H14C11.7909 11 10 12.7909 10 15V21C10 23.2091 11.7909 25 14 25H25"
+              stroke="#FAFAFA"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
 
-        {/* The Harmonic Crescent Sweep (Forms the primary 'C' silhouette) */}
-        <path
-          d="M26.5 10C24.2 7.2 20.8 5.5 17 5.5C10.1 5.5 4.5 11.1 4.5 18C4.5 24.9 10.1 30.5 17 30.5C21.2 30.5 24.8 28.5 27 25.3"
-          stroke="url(#cyath-crescent)"
-          strokeWidth="2.75"
-          strokeLinecap="round"
-        />
+            {/* Electric Amber Focal Pin Core */}
+            <circle cx="21" cy="18" r="3.2" fill="#F59E0B" />
+            <circle cx="21" cy="18" r="1.1" fill="#09090B" />
+          </>
+        )}
 
-        {/* The Inward Coordinate Convergence Loop */}
-        <path
-          d="M27 10.5C23.5 14 19.5 15.5 15 15.5"
-          stroke="url(#cyath-amber)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          opacity="0.85"
-        />
+        {variant === "monolith" && (
+          <>
+            <rect x="3" y="3" width="30" height="30" rx="7" fill="#141417" stroke="#27272A" strokeWidth="1.5" />
+            <path
+              d="M24 11.5H13.5C11.567 11.5 10 13.067 10 15V21C10 22.933 11.567 24.5 13.5 24.5H24"
+              stroke="#FAFAFA"
+              strokeWidth="2.75"
+              strokeLinecap="square"
+            />
+            <path d="M19 18L26 13.5V22.5L19 18Z" fill="#F59E0B" />
+          </>
+        )}
 
-        {/* The Optical Coordinate Node (Amber Core) */}
-        <circle
-          cx="20"
-          cy="18"
-          r="3"
-          fill="url(#cyath-amber)"
-          filter="url(#amber-glow)"
-        />
-
-        {/* Core Pin Center */}
-        <circle cx="20" cy="18" r="1.25" fill="#FFFFFF" />
+        {variant === "seal" && (
+          <>
+            <path
+              d="M26 10C21.5 6.5 10.5 8.5 10 18C9.5 26.5 20.5 29.5 25.5 26C28 24 28 20.5 24.5 19C21 17.5 16 19.5 16.5 23C17 25.5 19.5 26.5 22 26"
+              stroke="#FAFAFA"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="22" cy="26" r="2.75" fill="#F59E0B" />
+          </>
+        )}
       </svg>
 
       {/* Wordmark */}
       {showWordmark && (
-        <div className="flex items-baseline gap-1.5">
-          <span className="font-semibold text-base tracking-[-0.035em] text-[#FAFAFA]">
-            Cyath
+        <div className="flex items-baseline gap-2">
+          <span className="font-bold text-[15px] tracking-[0.14em] text-[#FAFAFA] uppercase">
+            CYATH
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-widest text-[#71717A]">
-            Review
+          <span className="font-mono text-[9px] uppercase tracking-wider text-[#A1A1AA]">
+            CANVAS
           </span>
         </div>
       )}

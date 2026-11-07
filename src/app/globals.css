@@ -12,10 +12,11 @@
   --border-active: #3f3f46;
   --border-glow: rgba(245, 158, 11, 0.4);
 
-  /* Text */
+  /* Text - High contrast WCAG AA calibrated */
   --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-muted: #52525b;
+  --text-secondary: #d4d4d8;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
 
   /* Accent */
   --accent: #f59e0b;
