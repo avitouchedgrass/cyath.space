@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<base target="_top">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyath — Stop chasing client feedback across 15 emails</title>
@@ -72,36 +73,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
   height: 56px;
   display: flex; align-items: center;
-  padding: 0 24px;
-  background: var(--surface-glass);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border-bottom: 1px solid transparent;
+  padding: 0 32px;
+  background: rgba(9, 9, 11, 0.85);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(39, 39, 42, 0.7);
   transition: border-color 200ms ease;
-  opacity: 0;
+  opacity: 1 !important;
 }
-html.no-anim .nav, .rm .nav { opacity: 1; }
-.nav.scrolled { border-bottom-color: var(--border-subtle); }
+.nav.scrolled { border-bottom-color: var(--border-active); }
 .nav-inner {
   width: 100%; max-width: 1200px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  position: relative;
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-logo {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: var(--accent); color: #09090B;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 16px;
+.nav-wordmark { font-weight: 600; letter-spacing: -0.025em; font-size: 16px; color: #FAFAFA; }
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  position: absolute; left: 50%; transform: translateX(-50%);
 }
-.nav-wordmark { font-weight: 600; letter-spacing: 0.08em; font-size: 14px; }
-.nav-links { display: flex; align-items: center; gap: 28px; }
 .nav-links a {
-  font-size: 14px; color: var(--text-secondary);
+  font-size: 13.5px; font-weight: 500; color: #D4D4D8;
   transition: color 150ms ease;
 }
-.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover { color: #FFFFFF; }
 .nav-right { display: flex; align-items: center; gap: 20px; }
-.nav-signin { font-size: 14px; color: var(--text-secondary); transition: color 150ms ease; }
-.nav-signin:hover { color: var(--text-primary); }
+.nav-signin { font-size: 13.5px; font-weight: 500; color: #D4D4D8; transition: color 150ms ease; }
+.nav-signin:hover { color: #FFFFFF; }
 
 /* Buttons — hover/press use the standalone `scale`/`translate` properties
    so GSAP's transform animations never fight a CSS transition. */
@@ -145,6 +143,15 @@ html.no-anim .nav, .rm .nav { opacity: 1; }
 .hero-bg-gradient {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: var(--gradient-hero);
+}
+.hero-bg-grid {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 35%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 30%, #000 35%, transparent 85%);
 }
 .hero-bg-noise {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
@@ -206,6 +213,17 @@ html.no-anim .nav, .rm .nav { opacity: 1; }
   font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
   background: var(--surface-canvas); border: 1px solid var(--border-subtle);
   border-radius: 6px; padding: 4px 12px; text-align: center;
+}
+.hv-status-pill {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  color: #10B981; background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 3px 9px; border-radius: 999px;
+}
+.hv-status-pill .status-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #10B981; box-shadow: 0 0 6px #10B981;
 }
 .hv-body { display: flex; min-height: 420px; }
 .hv-canvas {
@@ -651,8 +669,13 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="#top" aria-label="Cyath home">
-      <span class="nav-logo">C</span>
-      <span class="nav-wordmark">CYATH</span>
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+        <rect x="3" y="3" width="26" height="26" rx="7" fill="#121215" stroke="#27272A" stroke-width="1.5"/>
+        <path d="M21.5 10.5C19.8 8.8 17.2 8 14.5 8C9.8 8 6.5 11.6 6.5 16C6.5 20.4 9.8 24 14.5 24C17.2 24 19.8 23.2 21.5 21.5" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M19 4L22 4" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="15.5" cy="16" r="2.25" fill="#F59E0B"/>
+      </svg>
+      <span class="nav-wordmark">Cyath</span>
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
@@ -668,15 +691,15 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <!-- ══════════ HERO (§4.2) ══════════ -->
 <header class="hero" id="top">
   <div class="hero-bg-gradient"></div>
+  <div class="hero-bg-grid"></div>
   <div class="hero-bg-noise"></div>
 
   <div class="hero-content">
-    <span class="hero-badge" id="heroBadge"><span class="dot"></span>Open Beta · Free</span>
     <h1 class="hero-headline" id="heroHeadline">Stop chasing client feedback across 15 emails.</h1>
     <p class="hero-sub" id="heroSub">One link. Clients pin feedback directly on your staging site. No login required.</p>
     <div class="hero-cta-row" id="heroCta">
       <a class="btn btn-primary" href="/dashboard">Start for Free <span class="arrow">→</span></a>
-      <span class="hero-microcopy"><span class="hook">↳</span>No credit card. 1 active project free.</span>
+      <span class="hero-microcopy">No credit card required · 1 active project free forever</span>
     </div>
   </div>
 
@@ -685,7 +708,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
       <div class="hv-chrome">
         <div class="hv-dots"><span></span><span></span><span></span></div>
         <div class="hv-url">urban-roast-staging.vercel.app</div>
-        <div style="width:46px"></div>
+        <div class="hv-status-pill"><span class="status-dot"></span>Interactive Staging</div>
       </div>
       <div class="hv-body">
         <div class="hv-canvas">
@@ -775,31 +798,33 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 
 <!-- ══════════ FEATURES (§4.5) ══════════ -->
 <section class="section" id="features">
-  <div class="section-head">
-    <span class="section-kicker">The solution</span>
-    <h2 class="section-title">Everything email threads were missing.</h2>
-  </div>
-  <div class="features-grid" id="featuresGrid">
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-      </div>
-      <h3 class="feature-title">One link. No accounts.</h3>
-      <p class="feature-body">Send a single URL to your client. They open it on their phone or laptop. No download, no sign-up, no password. They start pinning feedback in 5 seconds.</p>
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-kicker">The solution</span>
+      <h2 class="section-title">Everything email threads were missing.</h2>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    <div class="features-grid" id="featuresGrid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <h3 class="feature-title">One link. No accounts.</h3>
+        <p class="feature-body">Send a single URL to your client. They open it on their phone or laptop. No download, no sign-up, no password. They start pinning feedback in 5 seconds.</p>
       </div>
-      <h3 class="feature-title">Feedback that actually makes sense.</h3>
-      <p class="feature-body">Every pin automatically records the client's browser, screen size, OS, and scroll position. No more "it looks broken" with zero details.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3 class="feature-title">Feedback that actually makes sense.</h3>
+        <p class="feature-body">Every pin automatically records the client's browser, screen size, OS, and scroll position. No more "it looks broken" with zero details.</p>
       </div>
-      <h3 class="feature-title">Lock scope. Stop free revisions.</h3>
-      <p class="feature-body">When feedback is resolved, clients sign off with their name. You get a timestamped receipt. Use it when they ask for "just one more change" three weeks later.</p>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <h3 class="feature-title">Lock scope. Stop free revisions.</h3>
+        <p class="feature-body">When feedback is resolved, clients sign off with their name. You get a timestamped receipt. Use it when they ask for "just one more change" three weeks later.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1128,8 +1153,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
   var heroWords = splitWords($('#heroHeadline'));
   var intro = gsap.timeline({ defaults: { ease: 'power4.out' } });
   intro
-    .from('#heroBadge', { autoAlpha: 0, y: 12, duration: 0.6, delay: 0.15 })
-    .from(heroWords, { yPercent: 110, duration: 0.9, stagger: 0.06 }, '-=0.3')
+    .from(heroWords, { yPercent: 110, duration: 0.9, stagger: 0.06, delay: 0.1 })
     .from('#heroSub', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.55')
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
     .from('#heroVisual', { autoAlpha: 0, y: 60, duration: 1, ease: 'expo.out' }, '-=0.45');

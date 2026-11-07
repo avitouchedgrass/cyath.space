@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, ExternalLink, Share2, CheckCircle2, Globe, Clock } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
+import { CyathLogo } from "@/components/common/Logo";
 
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
@@ -55,13 +56,8 @@ export default function DashboardPage() {
       {/* Topbar */}
       <header className="h-14 border-b border-[#27272A] bg-[#121215] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#F59E0B] text-[#09090B] font-bold text-xs flex items-center justify-center">
-              C
-            </div>
-            <span className="font-semibold text-sm tracking-tight text-[#FAFAFA]">
-              CYATH
-            </span>
+          <Link href="/">
+            <CyathLogo size={24} showWordmark={true} />
           </Link>
           <span className="text-xs text-[#52525B]">/</span>
           <span className="text-xs text-[#A1A1AA]">Agency Staging Hub</span>
