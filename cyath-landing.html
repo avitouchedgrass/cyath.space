@@ -83,39 +83,121 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   NAV (§4.1)
+   ORIGIN DOCK NAVIGATION (§4.1)
    ============================================================ */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  height: 56px;
-  display: flex; align-items: center;
-  padding: 0 32px;
-  background: rgba(9, 9, 11, 0.85);
-  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-subtle);
-  transition: border-color 200ms ease;
-  opacity: 1 !important;
+.dock-wrapper {
+  position: fixed; top: 18px; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: center;
+  padding: 0 20px;
+  pointer-events: none;
 }
-.nav.scrolled { border-bottom-color: var(--border-active); }
-.nav-inner {
-  width: 100%; max-width: 1200px; margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  position: relative;
+.origin-dock {
+  pointer-events: auto;
+  display: flex; align-items: center; gap: 20px;
+  height: 48px;
+  padding: 4px 5px 4px 5px;
+  background: rgba(14, 14, 17, 0.82);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  box-shadow: 
+    0 16px 40px -10px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(255, 255, 255, 0.10) inset;
+  transition: all 200ms ease;
+  max-width: 900px;
 }
-.nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-wordmark { font-weight: 600; letter-spacing: -0.025em; font-size: 16px; color: #FAFAFA; }
-.nav-links {
-  display: flex; align-items: center; gap: 32px;
-  position: absolute; left: 50%; transform: translateX(-50%);
+.origin-dock.scrolled {
+  background: rgba(11, 11, 14, 0.94);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    0 20px 48px -8px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.14) inset;
 }
-.nav-links a {
-  font-size: 13.5px; font-weight: 500; color: #D4D4D8;
+
+/* The Machined Origin Anchor (Brand Root) */
+.origin-anchor {
+  display: flex; align-items: center; gap: 8px;
+  height: 38px;
+  padding: 0 12px 0 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease;
+  flex-shrink: 0;
+}
+.origin-anchor:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.origin-emblem {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #09090B; border: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.origin-title {
+  font-weight: 600; font-size: 14.5px; letter-spacing: -0.025em; color: #FAFAFA;
+}
+.origin-status-pip {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #10B981;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 1px;
+}
+
+/* Navigation Spine */
+.dock-spine {
+  display: flex; align-items: center; gap: 4px;
+}
+.dock-spine a {
+  font-size: 13px; font-weight: 500; color: #D4D4D8;
+  padding: 6px 12px; border-radius: 999px;
+  transition: color 150ms ease, background 150ms ease;
+}
+.dock-spine a:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Action Terminus */
+.dock-actions {
+  display: flex; align-items: center; gap: 10px;
+  margin-left: auto;
+}
+.dock-signin {
+  font-size: 13px; font-weight: 500; color: #D4D4D8;
+  padding: 6px 10px;
   transition: color 150ms ease;
 }
-.nav-links a:hover { color: #FFFFFF; }
-.nav-right { display: flex; align-items: center; gap: 20px; }
-.nav-signin { font-size: 13.5px; font-weight: 500; color: #D4D4D8; transition: color 150ms ease; }
-.nav-signin:hover { color: #FFFFFF; }
+.dock-signin:hover { color: #FFFFFF; }
+.btn-dock-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  background: #F59E0B;
+  color: #09090B;
+  font-size: 13.5px; font-weight: 600;
+  border-radius: 999px;
+  transition: transform 150ms ease, filter 150ms ease;
+  white-space: nowrap;
+}
+.btn-dock-cta:hover {
+  transform: scale(1.02);
+  filter: brightness(1.06);
+}
+.btn-dock-cta:active {
+  transform: scale(0.98);
+}
+.btn-dock-cta .arrow { transition: transform 150ms ease; }
+.btn-dock-cta:hover .arrow { transform: translateX(3px); }
+
+@media (max-width: 767px) {
+  .dock-spine, .dock-signin { display: none; }
+  .origin-dock { gap: 12px; }
+}
 
 /* Buttons — hover/press use the standalone `scale`/`translate` properties
    so GSAP's transform animations never fight a CSS transition. */
@@ -751,26 +833,36 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <body>
 <div class="canvas-texture" aria-hidden="true"></div>
 
-<!-- ══════════ NAV (§4.1) ══════════ -->
-<nav class="nav" id="nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="#top" aria-label="Cyath home">
-      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
-        <path d="M21 7.5C18.8 5.3 15.6 4 12 4C5.92487 4 1 8.92487 1 15C1 21.0751 5.92487 26 12 26C15.6 26 18.8 24.7 21 22.5" stroke="#FAFAFA" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="15.5" cy="15" r="3" fill="#F59E0B"/>
-      </svg>
-      <span class="nav-wordmark">Cyath</span>
+<!-- ══════════ ORIGIN DOCK NAVIGATION (§4.1) ══════════ -->
+<header class="dock-wrapper" id="dockWrapper">
+  <nav class="origin-dock" id="nav">
+    <!-- Integrated Origin Block (The Brand Root) -->
+    <a class="origin-anchor" href="#top" aria-label="Cyath home">
+      <div class="origin-emblem">
+        <svg width="15" height="15" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 7.5C18.8 5.3 15.6 4 12 4C5.92487 4 1 8.92487 1 15C1 21.0751 5.92487 26 12 26C15.6 26 18.8 24.7 21 22.5" stroke="#FAFAFA" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="15.5" cy="15" r="3" fill="#F59E0B"/>
+        </svg>
+      </div>
+      <span class="origin-title">Cyath</span>
+      <span class="origin-status-pip" title="Canvas Engine Active"></span>
     </a>
-    <div class="nav-links">
+
+    <!-- Navigation Spine -->
+    <div class="dock-spine">
       <a href="#features">Features</a>
+      <a href="#demo">Workflow</a>
+      <a href="#compare">Compare</a>
       <a href="#pricing">Pricing</a>
     </div>
-    <div class="nav-right">
-      <a class="nav-signin" href="/dashboard">Sign In</a>
-      <a class="btn btn-nav" href="/dashboard">Start Free <span class="arrow">→</span></a>
+
+    <!-- Action Terminus -->
+    <div class="dock-actions">
+      <a class="dock-signin" href="/dashboard">Sign In</a>
+      <a class="btn-dock-cta" href="/dashboard">Start Free <span class="arrow">→</span></a>
     </div>
-  </div>
-</nav>
+  </nav>
+</header>
 
 <!-- ══════════ HERO (§4.2) ══════════ -->
 <header class="hero" id="top">

@@ -57,7 +57,7 @@ export default function DashboardPage() {
       <header className="h-14 border-b border-[#27272A] bg-[#121215] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/">
-            <CyathLogo size={24} showWordmark={true} />
+            <CyathLogo integrated={true} />
           </Link>
           <span className="text-xs text-[#52525B]">/</span>
           <span className="text-xs text-[#A1A1AA]">Agency Staging Hub</span>
