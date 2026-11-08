@@ -47,7 +47,7 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-2">
-          <CyathLogo locked={project.isApproved} showBadge badgeText="Review" />
+          <CyathLogo locked={project.isApproved} />
           <span className="font-semibold text-sm tracking-tight text-[#FAFAFA] max-w-[200px] sm:max-w-xs truncate">
             {project.title}
           </span>

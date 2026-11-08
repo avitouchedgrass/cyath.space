@@ -20,7 +20,7 @@ export const DualViewportMark: React.FC<{
   size?: number;
   locked?: boolean;
   className?: string;
-}> = ({ size = 22, locked = false, className = "" }) => {
+}> = ({ size = 25, locked = false, className = "" }) => {
   return (
     <svg
       width={size}
@@ -66,7 +66,7 @@ export const DualViewportMark: React.FC<{
 };
 
 export const CyathLogo: React.FC<LogoProps> = ({
-  size = 22,
+  size = 25,
   showWordmark = true,
   showBadge = false,
   badgeText = "Staging",
@@ -75,13 +75,13 @@ export const CyathLogo: React.FC<LogoProps> = ({
 }) => {
   return (
     <div
-      className={`inline-flex items-center gap-2.5 select-none group cursor-pointer ${className}`}
+      className={`inline-flex items-center gap-[7.5px] select-none group cursor-pointer ${className}`}
     >
       <DualViewportMark size={size} locked={locked} />
 
       {showWordmark && (
-        <span className="font-semibold text-[15px] tracking-[-0.025em] text-[#FAFAFA] group-hover:text-white transition-colors">
-          Cyath
+        <span className="font-bold text-[15.5px] tracking-[-0.035em] text-[#FAFAFA] group-hover:text-white transition-colors">
+          cyath
         </span>
       )}
 
