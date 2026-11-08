@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYATH · FIELD UNIT CY-01 · Precision Staging & Milestone Instrument</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   TEENAGE ENGINEERING FIELD EDITION — DESIGN SYSTEM TOKENS
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+  --chassis-bg: #EAE8E1;
+  --chassis-surface: #F2F1EC;
+  --chassis-border: #D1CFCA;
+  --chassis-groove: #C4C2BC;
+  --chassis-shadow: rgba(30, 28, 25, 0.14);
+  
+  --ink-primary: #191816;
+  --ink-secondary: #575550;
+  --ink-muted: #8E8B83;
+  --ink-hairline: #BCB9B1;
+  
+  /* TE Signature Accents */
+  --te-orange: #FF4E00;
+  --te-red: #E6352B;
+  --te-blue: #0066FF;
+  --te-green: #00B359;
+  --te-yellow: #FFCC00;
+  
+  /* Keycaps & Controls */
+  --key-cap: #FAF9F5;
+  --key-shadow: #BEBBB3;
+  --key-edge: #D6D4CC;
+  
+  /* LCD Screen Panel */
+  --lcd-bg: #141517;
+  --lcd-glass: #1A1C1E;
+  --lcd-text: #E8E7E3;
+  --lcd-dim: rgba(232, 231, 227, 0.22);
+  --lcd-amber: #FF9400;
+  --lcd-green: #22C55E;
+  
+  --font-sans: 'Space Grotesk', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #DFDDD6;
+  background-image: 
+    radial-gradient(#C8C6BD 1px, transparent 1px),
+    linear-gradient(to right, rgba(200, 198, 189, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(200, 198, 189, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px, 100px 100px, 100px 100px;
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  padding: 32px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   NAVIGATION & META HEADER
+   ══════════════════════════════════════════════════════════════════ */
+.te-topbar {
+  max-width: 1240px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+
+.te-brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink-primary);
+}
+
+.te-logo-glyph {
+  width: 28px;
+  height: 28px;
+  background: var(--ink-primary);
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: 4px;
+  letter-spacing: -0.05em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.te-logo-type {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
+}
+
+.te-system-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--chassis-border);
+  letter-spacing: 0.04em;
+}
+
+.te-sound-toggle {
+  background: var(--chassis-surface);
+  border: 1px solid var(--chassis-border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: all 120ms ease;
+}
+.te-sound-toggle:hover {
+  background: #FFF;
+}
+.te-sound-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--te-green);
+  box-shadow: 0 0 6px var(--te-green);
+}
+.te-sound-indicator.muted {
+  background: var(--ink-hairline);
+  box-shadow: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO HEADLINE & VALUE PROP (TE DRY/CONFIDENT VOICE)
+   ══════════════════════════════════════════════════════════════════ */
+.te-hero-header {
+  max-width: 1240px;
+  width: 100%;
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: flex-end;
+}
+@media (max-width: 900px) {
+  .te-hero-header { grid-template-columns: 1fr; gap: 16px; }
+}
+
+.te-kicker {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--te-orange);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.te-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--te-orange);
+}
+
+.te-main-h1 {
+  font-size: clamp(32px, 4.4vw, 54px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--ink-primary);
+}
+
+.te-sub-copy {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+  font-weight: 450;
+  max-width: 480px;
+}
+.te-sub-specs {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-muted);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.te-spec-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.te-spec-item::before {
+  content: "—";
+  color: var(--ink-hairline);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   THE CHASSIS: MODEL CY-01 FIELD UNIT (Physical Hardware Bench)
+   ══════════════════════════════════════════════════════════════════ */
+.te-chassis {
+  max-width: 1240px;
+  width: 100%;
+  background: var(--chassis-bg);
+  border: 1px solid var(--chassis-border);
+  border-radius: 20px;
+  box-shadow: 
+    0 24px 60px -8px var(--chassis-shadow),
+    0 2px 6px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  position: relative;
+  user-select: none;
+}
+
+/* CNC Milled Torx Corner Fasteners */
+.torx-screw {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #D8D6CF;
+  border: 1px solid #BFBDB5;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.torx-screw::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: #9D9B93;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.torx-screw.tl { top: 12px; left: 12px; }
+.torx-screw.tr { top: 12px; right: 12px; }
+.torx-screw.bl { bottom: 12px; left: 12px; }
+.torx-screw.br { bottom: 12px; right: 12px; }
+
+/* Mechanical Engraved Header Strip */
+.te-chassis-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--chassis-border);
+  margin-bottom: 20px;
+}
+.te-chassis-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.te-model-no {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--ink-primary);
+}
+.te-model-desc {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* Mechanical LED Dot Array Status */
+.te-status-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+.led-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.led-light {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--te-green);
+  box-shadow: 0 0 5px var(--te-green);
+  animation: pulseLed 3s infinite ease-in-out;
+}
+@keyframes pulseLed {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.92); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   UPPER DECK: CONTROLS, VIEWPORT SCALER & LCD PANEL
+   ══════════════════════════════════════════════════════════════════ */
+.te-upper-deck {
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+@media (max-width: 1024px) {
+  .te-upper-deck { grid-template-columns: 1fr; }
+}
+
+/* Left Pod: Knurled Rotary Encoder (Dial) */
+.te-dial-pod {
+  background: var(--chassis-surface);
+  border: 1px solid var(--chassis-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+}
+.knurled-dial {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: 
+    repeating-conic-gradient(#C6C4BC 0deg 5deg, #DDDCD5 5deg 10deg);
+  border: 2px solid #ABA9A0;
+  box-shadow: 
+    0 4px 10px rgba(0,0,0,0.18),
+    inset 0 1px 1px rgba(255,255,255,0.8),
+    inset 0 -2px 3px rgba(0,0,0,0.25);
+  position: relative;
+  cursor: grab;
+  transition: transform 60ms linear;
+  flex-shrink: 0;
+}
+.knurled-dial:active {
+  cursor: grabbing;
+}
+.knurled-dial::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 12px;
+  background: var(--te-orange);
+  border-radius: 2px;
+}
+.dial-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.dial-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-secondary);
+  text-transform: uppercase;
+}
+.dial-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+/* Center Pod: Calibration Ruler & Snap Presets */
+.te-ruler-pod {
+  background: var(--chassis-surface);
+  border: 1px solid var(--chassis-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+}
+.ruler-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.ruler-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink-secondary);
+  text-transform: uppercase;
+}
+.ruler-presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ruler-btn {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--key-cap);
+  border: 1px solid var(--key-edge);
+  color: var(--ink-primary);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  transition: all 120ms ease;
+}
+.ruler-btn:hover {
+  background: #FFF;
+  border-color: #ABA89F;
+}
+.ruler-btn.active {
+  background: var(--ink-primary);
+  color: #FFF;
+  border-color: var(--ink-primary);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* Mechanical Engraved Ticks */
+.ruler-track-wrap {
+  position: relative;
+  padding: 6px 0 2px;
+}
+.ruler-ticks {
+  width: 100%;
+  height: 12px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--ink-hairline) 0px,
+    var(--ink-hairline) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  position: relative;
+  border-bottom: 1px solid var(--chassis-border);
+  margin-bottom: 6px;
+}
+.ruler-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #D5D3CC;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+.ruler-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--key-cap);
+  border: 2px solid var(--te-orange);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  cursor: ew-resize;
+  transition: transform 100ms ease;
+}
+.ruler-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Right Pod: LCD Segment Telemetry Display */
+.te-lcd-screen {
+  background: var(--lcd-bg);
+  border: 3px solid #323539;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 
+    inset 0 2px 6px rgba(0,0,0,0.7),
+    0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 82px;
+}
+.lcd-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lcd-freq-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--lcd-amber);
+  letter-spacing: 0.08em;
+}
+.lcd-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lcd-green);
+  box-shadow: 0 0 6px var(--lcd-green);
+}
+.lcd-main-readout {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--lcd-text);
+  text-shadow: 0 0 8px rgba(255,255,255,0.25);
+}
+.lcd-sub-meta {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(232, 231, 227, 0.6);
+  letter-spacing: 0.04em;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MAIN STAGE: RECESSED RETINA SCREEN & LIVE STAGED SITE
+   ══════════════════════════════════════════════════════════════════ */
+.te-screen-bezel {
+  background: #1C1D20;
+  border: 1px solid #141517;
+  border-radius: 12px;
+  box-shadow: 
+    inset 0 3px 12px rgba(0,0,0,0.75),
+    0 1px 0 rgba(255,255,255,0.7);
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.te-viewport-container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  transition: max-width 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  background: #FAF9F5;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+/* Screen Chrome Header */
+.screen-chrome {
+  background: #25272B;
+  border-bottom: 1px solid #33363C;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chrome-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.c-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #484B52;
+}
+.c-dot.red { background: #FF5F56; }
+.c-dot.yellow { background: #FFBD2E; }
+.c-dot.green { background: #27C93F; }
+
+.chrome-url-bar {
+  background: #18191B;
+  border: 1px solid #363940;
+  padding: 3px 14px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #DDD;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.url-lock {
+  width: 8px;
+  height: 8px;
+  color: var(--te-green);
+}
+.chrome-inspect-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #FFF;
+  background: var(--te-orange);
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* Staged Site Canvas (Aura Atelier Website Simulation) */
+.staged-site {
+  background: #FAF8F5;
+  color: #171614;
+  min-height: 440px;
+  position: relative;
+  cursor: crosshair;
+}
+
+/* Staged Site Content */
+.ss-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1px solid #EBE7DF;
+}
+.ss-logo {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.ss-links {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #636159;
+}
+.ss-btn {
+  background: #171614;
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 4px;
+}
+
+.ss-hero {
+  padding: 44px 28px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+@media (max-width: 680px) {
+  .ss-hero { grid-template-columns: 1fr; padding: 24px 16px; }
+  .ss-links { display: none; }
+}
+
+.ss-headline {
+  font-size: clamp(24px, 3.2vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+.ss-desc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #68655C;
+  margin-bottom: 22px;
+}
+.ss-cta-row {
+  display: flex;
+  gap: 10px;
+}
+.ss-primary-cta {
+  background: var(--te-orange);
+  color: #FFF;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(255, 78, 0, 0.35);
+  position: relative;
+}
+
+.ss-image-card {
+  height: 220px;
+  background: #E5E1D8;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #D6D1C4;
+}
+.ss-mock-art {
+  width: 90%;
+  height: 80%;
+  border: 1px dashed #AFA99C;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #7D786D;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Precision Crosshair Inspection Pins on Staged Site */
+.review-pin {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--te-red);
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.review-pin:hover {
+  transform: scale(1.22);
+}
+.review-pin::before {
+  content: "";
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px dashed rgba(230, 53, 43, 0.5);
+  animation: radarPing 2.4s infinite ease-out;
+}
+@keyframes radarPing {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* Pin Popover Card (TE Technical Inspection Note) */
+.pin-popover {
+  position: absolute;
+  background: #FFF;
+  border: 2px solid var(--ink-primary);
+  border-radius: 6px;
+  padding: 12px 14px;
+  width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  z-index: 20;
+  pointer-events: none;
+  display: none;
+}
+.pin-popover.visible {
+  display: block;
+}
+.pp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E5E3DC;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+.pp-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+.pp-status {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  background: #FFE5E5;
+  color: var(--te-red);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.pp-text {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-secondary);
+  margin-bottom: 8px;
+}
+.pp-telemetry {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-muted);
+  background: #F4F2EC;
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LOWER DECK: MECHANICAL SWITCHES & THERMAL RECEIPT PRINTER
+   ══════════════════════════════════════════════════════════════════ */
+.te-lower-deck {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .te-lower-deck { grid-template-columns: 1fr; }
+}
+
+/* Keypad & Mode Switches */
+.te-controls-bank {
+  background: var(--chassis-surface);
+  border: 1px solid var(--chassis-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.cb-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cb-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: 0.04em;
+}
+.cb-desc {
+  font-size: 12px;
+  color: var(--ink-secondary);
+}
+
+.te-key-group {
+  display: flex;
+  gap: 8px;
+}
+.te-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--key-cap);
+  border: 1px solid var(--key-edge);
+  border-bottom: 3px solid var(--key-shadow);
+  border-radius: 6px;
+  padding: 8px 14px;
+  color: var(--ink-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  transition: all 80ms ease;
+}
+.te-key:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  box-shadow: none;
+}
+.te-key.active {
+  background: #E4E2D8;
+  border-color: #B5B2A6;
+  border-bottom-width: 1px;
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* Red Mechanical Rocker Switch (Milestone Sign-Off) */
+.te-rocker-module {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #E3E1DA;
+  border: 1px solid #CECBC2;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.te-rocker-switch {
+  width: 68px;
+  height: 38px;
+  background: #252628;
+  border-radius: 6px;
+  padding: 3px;
+  cursor: pointer;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+  display: flex;
+}
+.te-rocker-handle {
+  width: 50%;
+  height: 100%;
+  background: var(--te-red);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background 160ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  color: #FFF;
+}
+.te-rocker-switch.locked .te-rocker-handle {
+  transform: translateX(100%);
+  background: var(--te-green);
+}
+.rocker-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+.rocker-sub {
+  font-size: 11px;
+  color: var(--ink-secondary);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SHOWSTOPPER: THE PHYSICAL THERMAL RECEIPT PRINTER
+   ══════════════════════════════════════════════════════════════════ */
+.te-printer-module {
+  background: var(--chassis-surface);
+  border: 1px solid var(--chassis-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.printer-slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.printer-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ink-secondary);
+  text-transform: uppercase;
+}
+.printer-status {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--te-green);
+}
+
+/* Laser-Cut Chassis Exit Slot */
+.printer-slot {
+  width: 100%;
+  height: 8px;
+  background: #191816;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 3px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.7);
+  margin-bottom: 12px;
+  position: relative;
+}
+
+/* Perforated Thermal Receipt Paper */
+.receipt-paper {
+  background: #FFFEFA;
+  border: 1px solid #D6D2C4;
+  border-top: none;
+  padding: 16px 14px;
+  font-family: var(--font-mono);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  position: relative;
+  transform: translateY(-20px);
+  opacity: 0.3;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+  clip-path: polygon(
+    0% 0%, 
+    100% 0%, 
+    100% calc(100% - 6px),
+    95% 100%, 90% calc(100% - 6px), 85% 100%, 80% calc(100% - 6px), 75% 100%, 70% calc(100% - 6px), 65% 100%, 60% calc(100% - 6px), 55% 100%, 50% calc(100% - 6px), 45% 100%, 40% calc(100% - 6px), 35% 100%, 30% calc(100% - 6px), 25% 100%, 20% calc(100% - 6px), 15% 100%, 10% calc(100% - 6px), 5% 100%, 0% calc(100% - 6px)
+  );
+}
+.receipt-paper.printed {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.receipt-header {
+  text-align: center;
+  border-bottom: 1px dashed #A8A497;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.receipt-brand {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.receipt-stamp-tag {
+  font-size: 8.5px;
+  font-weight: 700;
+  background: #E8F5E9;
+  color: #1B5E20;
+  border: 1px solid #81C784;
+  padding: 1px 6px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.receipt-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #383632;
+  margin-bottom: 10px;
+}
+.r-row {
+  display: flex;
+  justify-content: space-between;
+}
+.r-label { color: #757268; }
+.r-val { font-weight: 700; }
+
+.receipt-hash-block {
+  border-top: 1px dashed #A8A497;
+  padding-top: 8px;
+  font-size: 8.5px;
+  color: #615E56;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FOOTER SPECS & CALL TO ACTION
+   ══════════════════════════════════════════════════════════════════ */
+.te-footer-specs {
+  max-width: 1240px;
+  width: 100%;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--chassis-border);
+  padding-top: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.te-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.te-primary-btn {
+  background: var(--ink-primary);
+  color: #FFF;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 120ms ease, background 120ms ease;
+}
+.te-primary-btn:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+.te-secondary-btn {
+  background: transparent;
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: 1px solid var(--chassis-border);
+  cursor: pointer;
+  text-decoration: none;
+}
+.te-secondary-btn:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.te-copyright {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ TOPBAR ══════════ -->
+<header class="te-topbar">
+  <a href="/" class="te-brand-mark">
+    <div class="te-logo-glyph">CY</div>
+    <span class="te-logo-type">cyath</span>
+  </a>
+
+  <div class="te-system-badge">FIELD RECORDER · UNIT CY-01</div>
+
+  <button class="te-sound-toggle" id="soundToggle" title="Toggle Mechanical Audio Feedback">
+    <span class="te-sound-indicator" id="soundIndicator"></span>
+    <span id="soundLabel">AUDIO: ON</span>
+  </button>
+</header>
+
+<!-- ══════════ VALUE PROP / HEADLINE ══════════ -->
+<section class="te-hero-header">
+  <div>
+    <div class="te-kicker">Precision Staging & Milestone Instrument</div>
+    <h1 class="te-main-h1">A physical-grade tool for client reviews.</h1>
+  </div>
+  <div>
+    <p class="te-sub-copy">
+      Send one calibrated staging link. Clients click anywhere to log notes with automatic screen and browser telemetry. When you fix the work, one mechanical switch prints a tamper-proof sign-off receipt.
+    </p>
+    <div class="te-sub-specs">
+      <span class="te-spec-item">No accounts required</span>
+      <span class="te-spec-item">Hardware telemetry</span>
+      <span class="te-spec-item">SHA-256 Milestone Lock</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ THE CHASSIS: MODEL CY-01 FIELD BENCH ══════════ -->
+<main class="te-chassis" id="teBench">
+  <!-- Torx Corner Fasteners -->
+  <div class="torx-screw tl" aria-hidden="true"></div>
+  <div class="torx-screw tr" aria-hidden="true"></div>
+  <div class="torx-screw bl" aria-hidden="true"></div>
+  <div class="torx-screw br" aria-hidden="true"></div>
+
+  <!-- Chassis Header Strip -->
+  <div class="te-chassis-top">
+    <div class="te-chassis-title">
+      <span class="te-model-no">MODEL CY-01</span>
+      <span class="te-model-desc">PRECISION STAGING BENCH · SWEDISH SPEC</span>
+    </div>
+    <div class="te-status-strip">
+      <span class="led-indicator">
+        <span class="led-light"></span>
+        <span>LINK: CALIBRATED</span>
+      </span>
+      <span>FREQ: 60Hz</span>
+      <span>MEM: 12 PINS LOGGED</span>
+    </div>
+  </div>
+
+  <!-- Upper Deck: Knurled Dial + Viewport Scrubber + LCD Readout -->
+  <div class="te-upper-deck">
+    <!-- Rotary Encoder (Knurled Dial) -->
+    <div class="te-dial-pod">
+      <div class="knurled-dial" id="knurledDial" title="Drag to adjust zoom scale"></div>
+      <div class="dial-info">
+        <span class="dial-label">ZOOM SCALE</span>
+        <span class="dial-val" id="dialVal">100%</span>
+      </div>
+    </div>
+
+    <!-- Center: Calibration Ruler & Snap Buttons -->
+    <div class="te-ruler-pod">
+      <div class="ruler-top">
+        <span class="ruler-title">VIEWPORT FREQUENCY TUNER</span>
+        <div class="ruler-presets">
+          <button class="ruler-btn" data-width="390">390 MOBILE</button>
+          <button class="ruler-btn" data-width="768">768 TABLET</button>
+          <button class="ruler-btn active" data-width="1200">1440 STUDIO</button>
+        </div>
+      </div>
+      <div class="ruler-track-wrap">
+        <div class="ruler-ticks"></div>
+        <input type="range" class="ruler-slider" id="viewportSlider" min="360" max="1200" value="1200" step="10">
+      </div>
+    </div>
+
+    <!-- Right: LCD Segment Telemetry Screen -->
+    <div class="te-lcd-screen">
+      <div class="lcd-row-top">
+        <span class="lcd-freq-tag">CLIENT TELEMETRY</span>
+        <span class="lcd-status-dot"></span>
+      </div>
+      <div class="lcd-main-readout" id="lcdDimensions">1440 × 900</div>
+      <div class="lcd-sub-meta">
+        <span>CHROME 131.0</span>
+        <span>macOS 15.1</span>
+        <span>DPR: 2.0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Stage: Recessed Screen with Staged Site Simulation -->
+  <div class="te-screen-bezel">
+    <div class="te-viewport-container" id="viewportContainer" style="max-width: 100%;">
+      <!-- Screen Chrome -->
+      <div class="screen-chrome">
+        <div class="chrome-dots">
+          <div class="c-dot red"></div>
+          <div class="c-dot yellow"></div>
+          <div class="c-dot green"></div>
+        </div>
+        <div class="chrome-url-bar">
+          <svg class="url-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>aura-atelier.staging.cyath.space</span>
+        </div>
+        <div class="chrome-inspect-badge">● STAGING ACTIVE</div>
+      </div>
+
+      <!-- Live Staged Site (Aura Atelier) -->
+      <div class="staged-site" id="stagedSite" title="Click anywhere to drop an inspection pin">
+        <!-- Site Navigation -->
+        <div class="ss-nav">
+          <div class="ss-logo">AURA ATELIER</div>
+          <div class="ss-links">
+            <span>Spaces</span>
+            <span>Objects</span>
+            <span>Materials</span>
+            <span>Monographs</span>
+          </div>
+          <div class="ss-btn">Inquire</div>
+        </div>
+
+        <!-- Site Hero -->
+        <div class="ss-hero">
+          <div>
+            <h2 class="ss-headline">Monolithic forms cast in raw concrete & bronze.</h2>
+            <p class="ss-desc">
+              Spatial architecture and bespoke interior monoliths designed for permanence and acoustic stillness.
+            </p>
+            <div class="ss-cta-row">
+              <button class="ss-primary-cta" id="ctaInquire">
+                Request Private Catalog
+              </button>
+            </div>
+          </div>
+          <div class="ss-image-card">
+            <div class="ss-mock-art">
+              <span>[ MONOLITH 04 ]</span>
+              <span>CAST BRONZE TABLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pre-existing Pin #1 -->
+        <div class="review-pin" id="pin1" style="top: 140px; left: 195px;" data-title="CTA Button Contrast" data-text="'Request Private Catalog' button needs 16px vertical padding. Contrast 3.8:1 fails AAA." data-telemetry="1440×900 · Chrome 131">1</div>
+
+        <!-- Pre-existing Pin #2 -->
+        <div class="review-pin" id="pin2" style="top: 240px; right: 180px;" data-title="Image Aspect Ratio" data-text="Hero monolith photograph crops awkwardly on tablet portrait widths." data-telemetry="768×1024 · iPad Safari">2</div>
+
+        <!-- Technical Inspection Note Popover -->
+        <div class="pin-popover" id="pinPopover">
+          <div class="pp-header">
+            <span class="pp-title" id="popTitle">INSPECTION PIN</span>
+            <span class="pp-status">ACTION REQUIRED</span>
+          </div>
+          <p class="pp-text" id="popText">Note details</p>
+          <div class="pp-telemetry" id="popTelemetry">1440×900 · Chrome</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lower Deck: Mechanical Controls & Perforated Receipt Printer -->
+  <div class="te-lower-deck">
+    <!-- Controls Bank -->
+    <div class="te-controls-bank">
+      <div class="cb-row">
+        <div class="cb-label-group">
+          <span class="cb-title">MODE SELECTION</span>
+          <span class="cb-desc">Switch instrument behavior on click</span>
+        </div>
+        <div class="te-key-group">
+          <button class="te-key active" id="modePin">✦ PIN NOTE</button>
+          <button class="te-key" id="modeMeasure">⌖ CROSSHAIR</button>
+          <button class="te-key" id="modeBrowse">↗ BROWSE</button>
+        </div>
+      </div>
+
+      <!-- Rocker Switch Module -->
+      <div class="te-rocker-module">
+        <div class="te-rocker-switch" id="rockerSwitch" title="Click to Approve and Print Milestone Receipt">
+          <div class="te-rocker-handle" id="rockerHandle">SIGN</div>
+        </div>
+        <div>
+          <div class="rocker-label">MILESTONE SIGN-OFF ROCKER</div>
+          <div class="rocker-sub">Click rocker to seal project and print verified physical receipt</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thermal Receipt Printer Module -->
+    <div class="te-printer-module">
+      <div class="printer-slot-header">
+        <span class="printer-label">THERMAL RECEIPT SLOT</span>
+        <span class="printer-status" id="printerStatus">READY</span>
+      </div>
+      <div class="printer-slot"></div>
+
+      <!-- Physical Paper Receipt -->
+      <div class="receipt-paper" id="receiptPaper">
+        <div class="receipt-header">
+          <div class="receipt-brand">CYATH · FIELD VERIFICATION</div>
+          <span class="receipt-stamp-tag" id="receiptStampTag">APPROVED FOR PRODUCTION</span>
+        </div>
+        <div class="receipt-lines">
+          <div class="r-row"><span class="r-label">PROJECT:</span><span class="r-val">AURA ATELIER v2.4</span></div>
+          <div class="r-row"><span class="r-label">CLIENT:</span><span class="r-val">JANE COOPER (SIGNED)</span></div>
+          <div class="r-row"><span class="r-label">STATUS:</span><span class="r-val" style="color:var(--te-green);">ALL 12 PINS RESOLVED</span></div>
+          <div class="r-row"><span class="r-label">STAMPED:</span><span class="r-val">2026.11.09 · 00:35 UTC</span></div>
+        </div>
+        <div class="receipt-hash-block">
+          SHA-256: 844d88e92a4f6103b417c
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ══════════ BOTTOM CALL TO ACTION ══════════ -->
+<footer class="te-footer-specs">
+  <div class="te-copyright">
+    CYATH INSTRUMENTS · SWEDISH CRAFT · NO SPREADSHEETS · NO 15-EMAIL THREADS
+  </div>
+  <div class="te-cta-row">
+    <a href="/dashboard" class="te-primary-btn">
+      <span>Get Field Unit Free</span>
+      <span>→</span>
+    </a>
+    <a href="/landing.html" class="te-secondary-btn">View Full Spec Sheet</a>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════════
+   INTERACTIVITY ENGINE: AUDIO SYNTHESIZER, SCALING & RECEIPT ENGINE
+   ══════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+  /* Web Audio Synthesizer for Physical TE Mechanical Clicks */
+  var audioCtx = null;
+  var soundEnabled = true;
+
+  function initAudio() {
+    if (!audioCtx) {
+      try {
+        var AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      } catch(e) {}
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playClick(freq, duration, type) {
+    if (!soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+    try {
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq || 1200, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (duration || 0.04));
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + (duration || 0.04));
+    } catch(e) {}
+  }
+
+  function playThud() {
+    playClick(140, 0.08, 'triangle');
+  }
+
+  function playTick() {
+    playClick(1800, 0.015, 'square');
+  }
+
+  /* Sound Toggle */
+  var soundBtn = document.getElementById('soundToggle');
+  var soundIndicator = document.getElementById('soundIndicator');
+  var soundLabel = document.getElementById('soundLabel');
+  soundBtn.addEventListener('click', function() {
+    soundEnabled = !soundEnabled;
+    if (soundEnabled) {
+      soundIndicator.classList.remove('muted');
+      soundLabel.textContent = 'AUDIO: ON';
+      playTick();
+    } else {
+      soundIndicator.classList.add('muted');
+      soundLabel.textContent = 'AUDIO: OFF';
+    }
+  });
+
+  /* Viewport Tuner Slider & Buttons */
+  var slider = document.getElementById('viewportSlider');
+  var viewportContainer = document.getElementById('viewportContainer');
+  var lcdDimensions = document.getElementById('lcdDimensions');
+  var presetBtns = document.querySelectorAll('.ruler-btn');
+
+  function setViewportWidth(val) {
+    if (val >= 1200) {
+      viewportContainer.style.maxWidth = '100%';
+      lcdDimensions.textContent = '1440 × 900';
+    } else if (val >= 768) {
+      viewportContainer.style.maxWidth = '768px';
+      lcdDimensions.textContent = '768 × 1024';
+    } else {
+      viewportContainer.style.maxWidth = '390px';
+      lcdDimensions.textContent = '390 × 844';
+    }
+    slider.value = val;
+    presetBtns.forEach(function(b) {
+      var target = parseInt(b.getAttribute('data-width'), 10);
+      b.classList.toggle('active', Math.abs(target - val) < 80);
+    });
+    playTick();
+  }
+
+  slider.addEventListener('input', function(e) {
+    setViewportWidth(parseInt(e.target.value, 10));
+  });
+
+  presetBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var w = parseInt(btn.getAttribute('data-width'), 10);
+      setViewportWidth(w);
+    });
+  });
+
+  /* Knurled Rotary Dial Drag Interaction */
+  var dial = document.getElementById('knurledDial');
+  var dialVal = document.getElementById('dialVal');
+  var dialAngle = 0;
+  var isDraggingDial = false;
+  var startY = 0;
+
+  dial.addEventListener('mousedown', function(e) {
+    isDraggingDial = true;
+    startY = e.clientY;
+    initAudio();
+    playClick(800, 0.03);
+    document.body.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', function(e) {
+    if (!isDraggingDial) return;
+    var delta = startY - e.clientY;
+    startY = e.clientY;
+    dialAngle += delta * 2;
+    dial.style.transform = 'rotate(' + dialAngle + 'deg)';
+    
+    // Scale factor from 80% to 120%
+    var scalePct = Math.round(100 + (dialAngle / 5));
+    if (scalePct < 80) scalePct = 80;
+    if (scalePct > 125) scalePct = 125;
+    dialVal.textContent = scalePct + '%';
+    if (Math.abs(delta) > 2) {
+      playClick(1400 + scalePct * 4, 0.015, 'square');
+    }
+  });
+
+  window.addEventListener('mouseup', function() {
+    if (isDraggingDial) {
+      isDraggingDial = false;
+      document.body.style.cursor = 'default';
+      playThud();
+    }
+  });
+
+  /* Interactive Pin Hover & Inspect */
+  var popover = document.getElementById('pinPopover');
+  var popTitle = document.getElementById('popTitle');
+  var popText = document.getElementById('popText');
+  var popTelemetry = document.getElementById('popTelemetry');
+  var pins = document.querySelectorAll('.review-pin');
+
+  pins.forEach(function(pin) {
+    pin.addEventListener('mouseenter', function() {
+      var rect = pin.getBoundingClientRect();
+      var parentRect = document.getElementById('stagedSite').getBoundingClientRect();
+      popTitle.textContent = 'PIN #' + pin.textContent + ' · ' + (pin.getAttribute('data-title') || 'REVIEW');
+      popText.textContent = pin.getAttribute('data-text') || '';
+      popTelemetry.textContent = pin.getAttribute('data-telemetry') || '1440×900 · Chrome 131';
+      
+      var leftPos = rect.left - parentRect.left + 32;
+      var topPos = rect.top - parentRect.top - 10;
+      if (leftPos + 290 > parentRect.width) {
+        leftPos = leftPos - 320;
+      }
+      popover.style.left = leftPos + 'px';
+      popover.style.top = topPos + 'px';
+      popover.classList.add('visible');
+      playClick(900, 0.02);
+    });
+
+    pin.addEventListener('mouseleave', function() {
+      popover.classList.remove('visible');
+    });
+  });
+
+  /* Dropping New Pins on Click */
+  var stagedSite = document.getElementById('stagedSite');
+  var pinCount = 2;
+  stagedSite.addEventListener('click', function(e) {
+    // If clicking an existing pin, ignore
+    if (e.target.classList.contains('review-pin')) return;
+    
+    var rect = stagedSite.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+
+    pinCount++;
+    var newPin = document.createElement('div');
+    newPin.className = 'review-pin';
+    newPin.style.left = (x - 13) + 'px';
+    newPin.style.top = (y - 13) + 'px';
+    newPin.textContent = pinCount;
+    newPin.setAttribute('data-title', 'Client Coordinate Tag');
+    newPin.setAttribute('data-text', 'Viewport note placed at (' + Math.round(x) + 'px, ' + Math.round(y) + 'px).');
+    newPin.setAttribute('data-telemetry', lcdDimensions.textContent + ' · Chrome 131 · Jane Cooper');
+    
+    stagedSite.appendChild(newPin);
+    playClick(1100, 0.05, 'square');
+
+    // Attach hover to new pin
+    newPin.addEventListener('mouseenter', function() {
+      var r = newPin.getBoundingClientRect();
+      var pr = stagedSite.getBoundingClientRect();
+      popTitle.textContent = 'PIN #' + newPin.textContent + ' · CLIENT NOTE';
+      popText.textContent = newPin.getAttribute('data-text');
+      popTelemetry.textContent = newPin.getAttribute('data-telemetry');
+      var lp = r.left - pr.left + 32;
+      var tp = r.top - pr.top - 10;
+      if (lp + 290 > pr.width) lp = lp - 320;
+      popover.style.left = lp + 'px';
+      popover.style.top = tp + 'px';
+      popover.classList.add('visible');
+      playClick(900, 0.02);
+    });
+    newPin.addEventListener('mouseleave', function() {
+      popover.classList.remove('visible');
+    });
+  });
+
+  /* Mode Keys */
+  var modeKeys = document.querySelectorAll('.te-key');
+  modeKeys.forEach(function(k) {
+    k.addEventListener('click', function() {
+      modeKeys.forEach(function(o) { o.classList.remove('active'); });
+      k.classList.add('active');
+      playClick(600, 0.03);
+    });
+  });
+
+  /* Rocker Switch & Thermal Receipt Printer Engine */
+  var rocker = document.getElementById('rockerSwitch');
+  var rockerHandle = document.getElementById('rockerHandle');
+  var receiptPaper = document.getElementById('receiptPaper');
+  var printerStatus = document.getElementById('printerStatus');
+  var isLocked = false;
+
+  rocker.addEventListener('click', function() {
+    isLocked = !isLocked;
+    rocker.classList.toggle('locked', isLocked);
+    rockerHandle.textContent = isLocked ? 'SEALED' : 'SIGN';
+    playThud();
+
+    if (isLocked) {
+      printerStatus.textContent = 'PRINTING...';
+      printerStatus.style.color = 'var(--te-orange)';
+      
+      // Simulate stepper motor feeding receipt
+      var step = 0;
+      var printInterval = setInterval(function() {
+        step++;
+        playClick(1600 + (step * 80), 0.015, 'square');
+        if (step >= 5) {
+          clearInterval(printInterval);
+          receiptPaper.classList.add('printed');
+          printerStatus.textContent = 'SEALED · VERIFIED';
+          printerStatus.style.color = 'var(--te-green)';
+          playClick(880, 0.12, 'sine');
+        }
+      }, 100);
+    } else {
+      receiptPaper.classList.remove('printed');
+      printerStatus.textContent = 'READY';
+      printerStatus.style.color = 'var(--te-green)';
+    }
+  });
+
+  // Auto trigger initial sample print after 1.5s for instant delight
+  setTimeout(function() {
+    if (!isLocked) {
+      rocker.click();
+    }
+  }, 1200);
+
+})();
+</script>
+</body>
+</html>
