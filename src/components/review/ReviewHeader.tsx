@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Monitor, Tablet, Smartphone, MessageSquare, MousePointer, CheckCircle, Share2, ArrowLeft } from "lucide-react";
 import { DeviceMode, InteractionMode, Project } from "@/types";
 import { MilestoneDial } from "@/components/common/Logo";
-
 interface ReviewHeaderProps {
   project: Project;
   deviceMode: DeviceMode;
@@ -48,11 +47,7 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-2">
-          <MilestoneDial
-            state={project.isApproved ? "locked" : openCount > 0 ? "active" : "brand"}
-            pinCount={openCount}
-            badgeText="Review"
-          />
+          <MilestoneDial locked={project.isApproved} />
           <span className="font-semibold text-sm tracking-tight text-[#FAFAFA] max-w-[200px] sm:max-w-xs truncate">
             {project.title}
           </span>

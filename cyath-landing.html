@@ -116,165 +116,90 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   KINETIC MILESTONE DIAL (§Identity Architecture)
+   BRAND NAMEPLATE (§Identity Architecture)
+   Engraved wordmark + flush-mounted LED indicator.
+   Pure surface design — no SVG, no icon graphic.
    ============================================================ */
-.milestone-dial {
+.brand-nameplate {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   text-decoration: none;
-  cursor: pointer;
-  user-select: none;
   flex-shrink: 0;
-}
-.dial-chassis {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  height: 38px;
-  padding: 0 12px 0 8px;
-  background: #111114;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  box-shadow: 
-    inset 0 1px 2px rgba(0, 0, 0, 0.6),
-    0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
-  overflow: hidden;
-}
-.milestone-dial:hover .dial-chassis {
-  background: #141418;
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 
-    inset 0 1px 2px rgba(0, 0, 0, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(255, 255, 255, 0.12);
+  padding: 0 2px;
 }
 
-/* Mechanical Caliper Iris (CSS aperture, NOT an external SVG sticker) */
-.dial-iris {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #09090B;
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
-  border-right-color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease;
-}
-.milestone-dial:hover .dial-iris {
-  transform: rotate(45deg);
-  border-color: #FAFAFA;
-  border-right-color: transparent;
-}
-.iris-jewel {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #F59E0B;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.8);
-  transition: background 300ms ease, box-shadow 300ms ease, transform 300ms ease;
-}
-.milestone-dial.state-locked .iris-jewel {
-  background: #10B981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
-}
-.milestone-dial.state-locked .dial-iris {
-  border-color: #10B981;
-  border-right-color: #10B981;
-}
-
-/* The Rotary Readout Drum */
-.dial-drum {
-  position: relative;
-  height: 20px;
-  min-width: 104px;
-  overflow: hidden;
-}
-.dial-face {
-  position: absolute;
-  inset: 0;
+/* The engraved surface pill */
+.nameplate-chassis {
   display: flex;
   align-items: center;
   gap: 7px;
-  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
-  white-space: nowrap;
+  height: 34px;
+  padding: 0 13px 0 10px;
+  background: linear-gradient(180deg, #131317 0%, #0f0f12 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  /* The deboss illusion: top inset highlight makes it read as pressed-in */
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.055),
+    0 1px 0 rgba(255, 255, 255, 0.07),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 220ms ease, border-color 220ms ease;
 }
-.face-brand {
-  transform: translateY(0);
-  opacity: 1;
-}
-.face-active {
-  transform: translateY(100%);
-  opacity: 0;
-}
-.face-locked {
-  transform: translateY(200%);
-  opacity: 0;
-}
-
-.milestone-dial.state-active .face-brand {
-  transform: translateY(-100%);
-  opacity: 0;
-}
-.milestone-dial.state-active .face-active {
-  transform: translateY(0);
-  opacity: 1;
-}
-.milestone-dial.state-locked .face-brand,
-.milestone-dial.state-locked .face-active {
-  transform: translateY(-100%);
-  opacity: 0;
-}
-.milestone-dial.state-locked .face-locked {
-  transform: translateY(0);
-  opacity: 1;
+.brand-nameplate:hover .nameplate-chassis {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.07),
+    0 1px 0 rgba(255, 255, 255, 0.09),
+    0 4px 14px rgba(0, 0, 0, 0.6);
 }
 
-.dial-title {
+/* Flush-mounted indicator LED */
+.nameplate-led {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #FCD34D, #F59E0B 60%, #B45309);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 0 5px 1px rgba(245, 158, 11, 0.55),
+    0 0 10px 2px rgba(245, 158, 11, 0.2);
+  flex-shrink: 0;
+  transition: box-shadow 300ms ease;
+}
+.brand-nameplate:hover .nameplate-led {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 0 7px 2px rgba(245, 158, 11, 0.7),
+    0 0 14px 4px rgba(245, 158, 11, 0.3);
+}
+.nameplate-led.led-locked {
+  background: radial-gradient(circle at 40% 35%, #6EE7B7, #10B981 60%, #065F46);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 0 5px 1px rgba(16, 185, 129, 0.55),
+    0 0 10px 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Engraved wordmark — debossed text effect */
+.nameplate-word {
   font-weight: 600;
-  font-size: 14.5px;
-  letter-spacing: -0.025em;
-  color: #FAFAFA;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  /* Letterpress deboss: dark shadow above, faint highlight below */
+  color: transparent;
+  background: linear-gradient(180deg, #C4C4C8 0%, #FAFAFA 45%, #E8E8EC 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.12)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.6));
+  transition: filter 220ms ease;
 }
-.dial-badge {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #A1A1AA;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 1.5px 6px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-.dial-count {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: #F59E0B;
-}
-.dial-label {
-  font-size: 11px;
-  color: #A1A1AA;
-}
-.dial-lock-icon {
-  font-size: 11px;
-  font-weight: 700;
-  color: #10B981;
-}
-.dial-lock-text {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #10B981;
+.brand-nameplate:hover .nameplate-word {
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.18)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.5));
 }
 
 .dock-sep {
@@ -969,26 +894,11 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <!-- ══════════ ORIGIN DOCK NAVIGATION (§4.1) ══════════ -->
 <header class="dock-wrapper" id="dockWrapper">
   <nav class="origin-dock" id="nav">
-    <!-- Kinetic Milestone Dial (Physical Engine Identity) -->
-    <a class="milestone-dial" href="#top" id="milestoneDial" aria-label="Cyath Milestone Engine">
-      <div class="dial-chassis">
-        <div class="dial-iris">
-          <span class="iris-jewel"></span>
-        </div>
-        <div class="dial-drum" id="dialDrum">
-          <div class="dial-face face-brand">
-            <span class="dial-title">Cyath</span>
-            <span class="dial-badge">Engine</span>
-          </div>
-          <div class="dial-face face-active">
-            <span class="dial-count" id="dialCount">3 Pins</span>
-            <span class="dial-label">Active</span>
-          </div>
-          <div class="dial-face face-locked">
-            <span class="dial-lock-icon">✓</span>
-            <span class="dial-lock-text">Scope Locked</span>
-          </div>
-        </div>
+    <!-- Engraved Brand Nameplate -->
+    <a class="brand-nameplate" href="#top" id="brandNameplate" aria-label="Cyath home">
+      <div class="nameplate-chassis">
+        <span class="nameplate-led" id="nameplateIndicator"></span>
+        <span class="nameplate-word">Cyath</span>
       </div>
     </a>
     <div class="dock-sep"></div>
@@ -1499,26 +1409,14 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     return $$('.w', line);
   }
 
-  /* ══════════ KINETIC MILESTONE DIAL (§Identity Architecture) ══════════ */
-  var dial = $('#milestoneDial');
-  var dialCount = $('#dialCount');
-  var dialStateIndex = 0; // 0: Brand / Engine, 1: Active Review, 2: Scope Locked
-  var dialStates = ['', 'state-active', 'state-locked'];
+  /* ══════════ BRAND NAMEPLATE LED (§Identity) ══════════ */
+  var indicator = $('#nameplateIndicator');
+  var ledLocked = false;
 
-  function setDialState(idx) {
-    if (!dial) return;
-    dialStateIndex = idx % 3;
-    dial.classList.remove('state-active', 'state-locked');
-    if (dialStates[dialStateIndex]) {
-      dial.classList.add(dialStates[dialStateIndex]);
-    }
-  }
-
-  if (dial) {
-    dial.addEventListener('click', function (e) {
-      e.preventDefault();
-      setDialState(dialStateIndex + 1);
-    });
+  function setIndicatorLocked(on) {
+    if (!indicator) return;
+    ledLocked = on;
+    indicator.classList.toggle('led-locked', on);
   }
 
   /* ══════════ NAV (§4.1) ══════════ */
@@ -1563,11 +1461,8 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         gsap.fromTo(pop, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.25 });
       }
 
-      // Synchronize Kinetic Dial with live pin placement
-      if (dialCount) {
-        dialCount.textContent = userPinCount + ' Pins';
-      }
-      setDialState(1);
+      // Flash the nameplate LED brighter on new pin drop (ambient pulse via CSS)
+      setIndicatorLocked(false);
     });
   }
 
@@ -1729,9 +1624,9 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
             s.classList.toggle('inactive', k !== i);
           });
           if (self.progress > 0.82) {
-            setDialState(2);
-          } else if (self.progress > 0.15) {
-            setDialState(1);
+            setIndicatorLocked(true);
+          } else if (self.progress <= 0.82 && ledLocked) {
+            setIndicatorLocked(false);
           }
         }
       }
@@ -1814,7 +1709,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         status1.textContent = 'OPEN'; status1.classList.remove('resolved');
         count.textContent = '0 total';
         gsap.set(popText.parentElement.parentElement, { x: 0, y: 0, autoAlpha: 0 });
-        setDialState(0);
+        setIndicatorLocked(false);
       }
     });
   });
