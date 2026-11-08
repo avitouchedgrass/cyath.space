@@ -9,7 +9,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    CYATH LANDING — design tokens (spec §3)
@@ -41,8 +41,7 @@
   --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(239, 68, 68, 0.14), transparent);
   --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(239, 68, 68, 0.12), transparent);
 
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-pixel: 'Silkscreen', monospace;
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -341,382 +340,865 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: #10B981; border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-
 /* ============================================================
-   16-BIT COFOUNDER-STYLE MEADOW HERO (§Pixel Craft & Micro-Animations)
+   VIEWPORT SWITCHER REVIEW STAGE (FLAT 0° ORTHOGONAL — §Direction 1)
    ============================================================ */
-.meadow-hero-wrap {
+.hero-right {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  min-height: 100svh;
-  background-color: #55BBEA;
-  background-image: url('/images/meadow-hero.jpg');
-  background-size: cover;
-  background-position: center bottom;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+  min-height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 130px 40px 100px;
-  overflow: hidden;
 }
-
-/* Drifting Pixel Clouds Layer */
-.pixel-clouds-layer {
+.hero-browser-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 260px;
+  width: 580px;
+  height: 460px;
+  background: radial-gradient(circle 260px at 50% 50%, rgba(239, 68, 68, 0.16), transparent 70%);
+  filter: blur(40px);
   pointer-events: none;
+  z-index: 0;
+}
+.browser-stage-card {
+  position: relative;
   z-index: 1;
-  overflow: hidden;
-}
-.pixel-cloud {
-  position: absolute;
-  background-repeat: repeat-x;
-  pointer-events: none;
-}
-.pixel-cloud.cloud-1 {
-  top: 35px;
-  left: 0;
-  width: 300%;
-  height: 60px;
-  background: radial-gradient(ellipse 70px 25px at 100px 30px, rgba(255, 255, 255, 0.45), transparent 70%),
-              radial-gradient(ellipse 90px 30px at 320px 25px, rgba(255, 255, 255, 0.4), transparent 70%),
-              radial-gradient(ellipse 65px 20px at 600px 35px, rgba(255, 255, 255, 0.35), transparent 70%);
-  background-size: 800px 60px;
-  animation: cloudDrift 55s linear infinite;
-}
-.pixel-cloud.cloud-2 {
-  top: 85px;
-  left: 0;
-  width: 300%;
-  height: 45px;
-  background: radial-gradient(ellipse 55px 18px at 200px 20px, rgba(255, 255, 255, 0.3), transparent 70%),
-              radial-gradient(ellipse 75px 22px at 520px 22px, rgba(255, 255, 255, 0.25), transparent 70%);
-  background-size: 700px 45px;
-  animation: cloudDriftSlow 90s linear infinite;
-}
-@keyframes cloudDrift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-800px); }
-}
-@keyframes cloudDriftSlow {
-  from { transform: translateX(0); }
-  to { transform: translateX(-700px); }
-}
-
-/* Meadow Content Split */
-.meadow-hero-inner {
-  position: relative;
-  z-index: 2;
-  max-width: 1360px;
   width: 100%;
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 40px;
-  align-items: center;
-}
-
-/* Left: Typography & Hero Copy */
-.meadow-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.meadow-kicker-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(10, 24, 18, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  padding: 5px 13px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #FFFFFF;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-.kicker-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #34D399;
-  box-shadow: 0 0 8px #34D399;
-  animation: pulseBeacon 2s infinite ease-in-out;
-}
-.meadow-headline {
-  font-family: var(--font-sans);
-  font-size: clamp(36px, 4.2vw, 56px);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.12;
-  color: #FFFFFF;
-  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.65), 0 1px 3px rgba(0, 0, 0, 0.85);
-  max-width: 620px;
-}
-.meadow-sub {
-  margin-top: 20px;
-  font-size: 17.5px;
-  font-weight: 450;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-  max-width: 530px;
-}
-.meadow-cta-row {
-  margin-top: 32px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-.meadow-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  background: #FFFFFF;
-  color: #0D1612;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 13px 28px;
-  border-radius: 999px;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease, background 200ms ease;
-  text-decoration: none;
-}
-.meadow-btn-primary:hover {
-  transform: translateY(-2px);
-  background: #FAF8F4;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
-}
-.meadow-btn-primary:active {
-  transform: translateY(0);
-}
-.meadow-btn-primary svg {
-  transition: transform 200ms ease;
-}
-.meadow-btn-primary:hover svg {
-  transform: translateX(3px);
-}
-.meadow-btn-glass {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(14, 28, 20, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  color: #FFFFFF;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 13px 24px;
-  border-radius: 999px;
-  transition: all 200ms ease;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-}
-.meadow-btn-glass:hover {
-  background: rgba(14, 28, 20, 0.85);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-}
-.meadow-btn-glass:active {
-  transform: translateY(0);
-}
-.meadow-microcopy {
-  margin-top: 18px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
-}
-.micro-check {
-  color: #34D399;
-  font-weight: 700;
-}
-.micro-sep {
-  opacity: 0.5;
-}
-
-/* Right: Floating Pixel Review Pills hovering over Meadow */
-.meadow-pills-stage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: flex-end;
-  padding-right: 20px;
-}
-.meadow-pill {
-  width: 100%;
-  max-width: 440px;
-  background: rgba(12, 24, 18, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  max-width: 680px;
+  background: var(--surface-panel);
+  border: 1px solid rgba(239, 68, 68, 0.22);
   border-radius: 12px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
   box-shadow:
-    0 12px 32px -4px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
-  user-select: none;
+    0 24px 60px -12px rgba(0, 0, 0, 0.9),
+    0 0 45px -10px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transform: none; /* 100% Flat orthogonal — zero cheap 3D tilt */
+  transition: border-color 220ms ease, box-shadow 220ms ease;
 }
-.meadow-pill:hover {
-  border-color: rgba(52, 211, 153, 0.6);
+.browser-stage-card:hover {
+  border-color: rgba(239, 68, 68, 0.35);
   box-shadow:
-    0 16px 40px -4px rgba(0, 0, 0, 0.75),
-    0 0 20px rgba(52, 211, 153, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 28px 75px -12px rgba(0, 0, 0, 0.95),
+    0 0 55px -8px rgba(239, 68, 68, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* Stepped Retro Floating Animations */
-@keyframes pillFloat1 {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-7px); }
-}
-@keyframes pillFloat2 {
-  0% { transform: translateY(-4px); }
-  100% { transform: translateY(4px); }
-}
-@keyframes pillFloat3 {
-  0% { transform: translateY(2px); }
-  100% { transform: translateY(-6px); }
-}
-.meadow-pill.pill-1 { animation: pillFloat1 4.5s steps(8) infinite alternate ease-in-out; }
-.meadow-pill.pill-2 { animation: pillFloat2 5.2s steps(8) infinite alternate ease-in-out; }
-.meadow-pill.pill-3 { animation: pillFloat3 4.8s steps(8) infinite alternate ease-in-out; }
-
-.meadow-pill:hover {
-  animation-play-state: paused;
-  transform: scale(1.02) !important;
-}
-
-/* Pill Inner Layout */
-.pill-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.pill-dot.dot-red {
-  background: #EF4444;
-  color: #FFF;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
-}
-.pill-dot.dot-amber {
-  background: #F59E0B;
-  color: #000;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
-}
-.pill-dot.dot-green {
-  background: #10B981;
-  color: #000;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-}
-.pill-info {
-  flex: 1;
-}
-.pill-header {
+/* Chrome Header */
+.browser-chrome {
+  background: #140A0A;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 10px;
 }
-.pill-title {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #FFFFFF;
+.browser-traffic-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
-.pill-badge {
+.browser-traffic-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-red { background: #EF4444; }
+.dot-amber { background: #F59E0B; }
+.dot-green { background: #10B981; }
+
+/* Interactive Segmented Viewport Switcher Tabs */
+.browser-viewport-tabs {
+  display: flex;
+  align-items: center;
+  background: #090505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  padding: 3px;
+  gap: 2px;
+}
+.vp-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
   font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 4px;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9E7B7B;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
 }
-.pill-badge.status-open {
-  background: rgba(239, 68, 68, 0.2);
-  color: #FCA5A5;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+.vp-tab:hover {
+  color: #FFF5F5;
+  background: rgba(255, 255, 255, 0.04);
 }
-.pill-badge.status-resolved {
-  background: rgba(245, 158, 11, 0.2);
-  color: #FCD34D;
-  border: 1px solid rgba(245, 158, 11, 0.35);
+.vp-tab.active {
+  color: #FFF5F5;
+  background: #1C0E0E;
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
-.pill-badge.status-locked {
-  background: rgba(16, 185, 129, 0.2);
-  color: #6EE7B7;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+.vp-tab svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: stroke 180ms ease, opacity 180ms ease;
 }
-.pill-text {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.88);
-  line-height: 1.45;
-  margin-bottom: 6px;
-}
-.pill-meta {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.6);
+.vp-tab.active svg {
+  opacity: 1;
+  stroke: #EF4444;
 }
 
-/* Torn Deckled Paper Bottom Edge Transition */
-.meadow-torn-edge {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 52px;
-  pointer-events: none;
-  z-index: 3;
+/* Dynamic Live Telemetry Badge */
+.browser-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 999px;
+  padding: 3px 9px;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+  transition: all 250ms ease;
 }
-.meadow-torn-edge svg {
-  display: block;
+.browser-telemetry-badge.badge-amber {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.browser-telemetry-badge.badge-green {
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.badge-live-pulse {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 6px #EF4444;
+  animation: pulseBeacon 2s infinite ease-in-out;
+}
+.browser-telemetry-badge.badge-amber .badge-live-pulse {
+  background: #F59E0B;
+  box-shadow: 0 0 6px #F59E0B;
+}
+.browser-telemetry-badge.badge-green .badge-live-pulse {
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+}
+@keyframes pulseBeacon {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Browser Body: Container for Viewports */
+.browser-body {
+  position: relative;
+  height: 385px;
+  background: #0D0707;
+  overflow: hidden;
+}
+.browser-view {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  display: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.browser-view.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Staged Review Canvas (Left) */
+.staging-viewport-stage {
+  flex: 1;
+  position: relative;
+  background: #FAF8F4;
+  color: #171614;
+  overflow: hidden;
+  user-select: none;
+}
+.staging-site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(23, 22, 20, 0.07);
+}
+.staging-site-logo {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #171614;
+}
+.staging-site-links {
+  display: flex;
+  gap: 14px;
+  font-size: 10.5px;
+  color: #78756F;
+}
+.staging-site-btn {
+  font-size: 10.5px;
+  font-weight: 600;
+  background: #171614;
+  color: #FAF8F4;
+  padding: 4px 10px;
+  border-radius: 5px;
+  position: relative;
+}
+.staging-content-area {
+  padding: 20px 20px 0;
+}
+.staging-kicker {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9E7D53;
+  margin-bottom: 6px;
+}
+.staging-headline {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #171614;
+  margin-bottom: 8px;
+}
+.staging-subtext {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #69655E;
+  max-width: 250px;
+}
+.staging-specimen-box {
+  margin: 16px 20px 0;
+  height: 140px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #DDD4C4, #C6B79E);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.specimen-tag {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  color: rgba(23, 22, 20, 0.6);
+  letter-spacing: 0.05em;
+}
+
+/* Dynamic Pins */
+.stage-pin {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5), 0 0 0 2px #FAF8F4;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
+}
+.stage-pin:hover {
+  transform: scale(1.15);
+}
+.stage-pin::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid #EF4444;
+  animation: pinRing 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes pinRing {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Floating Staging Comment Popover attached to Pin 1 */
+.stage-popover {
+  position: absolute;
+  top: 155px;
+  left: 20px;
+  width: 250px;
+  background: #140A0A;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 9px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(239, 68, 68, 0.15);
+  z-index: 15;
+  color: #FFF5F5;
+  pointer-events: auto;
+  animation: popoverFadeIn 500ms ease both 0.3s;
+}
+@keyframes popoverFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.popover-author {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #FFF5F5;
+}
+.popover-time {
+  font-size: 9.5px;
+  color: #9E7B7B;
+  font-family: var(--font-mono);
+}
+.popover-text {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #E2D1D1;
+  margin-bottom: 8px;
+}
+.popover-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #F87171;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+/* Interactive Cursor */
+.stage-cursor {
+  position: absolute;
+  top: 180px;
+  left: 170px;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 20;
+  animation: cursorGlide 8s infinite ease-in-out;
+}
+@keyframes cursorGlide {
+  0% { transform: translate(140px, 90px); }
+  25% { transform: translate(0, 0); }
+  30% { transform: translate(0, 0) scale(0.9); }
+  35% { transform: translate(0, 0) scale(1); }
+  60% { transform: translate(90px, -70px); }
+  65% { transform: translate(90px, -70px) scale(0.9); }
+  70% { transform: translate(90px, -70px) scale(1); }
+  100% { transform: translate(140px, 90px); }
+}
+.stage-cursor svg {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.6));
+}
+
+/* Feedback Sidebar (Right) */
+.feedback-sidebar {
+  width: 250px;
+  background: #110808;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sidebar-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFF5F5;
+  letter-spacing: -0.01em;
+}
+.sidebar-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.sidebar-badge.badge-amber {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.sidebar-list {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+.sidebar-item {
+  background: #160B0B;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+.sidebar-item:hover, .sidebar-item.active {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: #1C0E0E;
+}
+.item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.item-pin-num {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #FFF;
+  font-size: 9.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.item-status {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+  letter-spacing: 0.05em;
+}
+.item-status.resolved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+}
+.item-time {
+  font-size: 9.5px;
+  color: #9E7B7B;
+  font-family: var(--font-mono);
+}
+.item-body {
+  font-size: 11px;
+  color: #E2D1D1;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+.item-meta {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #9E7B7B;
+}
+
+/* Sidebar Footer: Milestone Sign-off Pill */
+.sidebar-footer {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0E0707;
+}
+.signoff-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #FFF5F5;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 180ms ease;
+  width: 100%;
+}
+.signoff-pill:hover {
+  background: #EF4444;
+  color: #FFF;
+  border-color: #EF4444;
+}
+
+/* ============================================================
+   VIEW 2: MOBILE VIEWPORT PREVIEW STYLES
+   ============================================================ */
+.mobile-stage-wrapper {
+  flex: 1;
+  position: relative;
+  background: #0A0505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+.mobile-phone-device {
+  width: 200px;
+  height: 350px;
+  background: #FAF8F4;
+  border-radius: 26px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.9),
+    0 0 25px rgba(239, 68, 68, 0.2),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mobile-phone-notch {
+  width: 50px;
+  height: 10px;
+  background: #0D0707;
+  border-radius: 999px;
+  margin: 5px auto 4px;
+  flex-shrink: 0;
+}
+.mobile-site-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(23, 22, 20, 0.08);
+  font-size: 10px;
+  font-weight: 700;
+  color: #171614;
+}
+.mobile-nav-hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+  width: 14px;
+  cursor: pointer;
+}
+.mobile-nav-hamburger span {
+  display: block;
+  height: 1.5px;
+  background: #171614;
+  border-radius: 1px;
+}
+.mobile-site-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.mobile-kicker {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9E7D53;
+  margin-bottom: 3px;
+}
+.mobile-headline {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #171614;
+  margin-bottom: 6px;
+}
+.mobile-specimen-card {
+  height: 85px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #DDD4C4, #C6B79E);
+  position: relative;
+  margin-bottom: 10px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.mobile-specimen-tag {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  color: rgba(23, 22, 20, 0.55);
+}
+.mobile-site-btn {
+  font-size: 9.5px;
+  font-weight: 600;
+  background: #171614;
+  color: #FAF8F4;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-align: center;
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 8px;
+}
+.mobile-phone-chin {
+  width: 60px;
+  height: 3px;
+  background: #171614;
+  border-radius: 2px;
+  margin: 0 auto 5px;
+  opacity: 0.25;
+}
+
+/* Floating Mobile Comment Popover */
+.mobile-stage-popover {
+  position: absolute;
+  bottom: 24px;
+  left: 18px;
+  width: 220px;
+  background: #140A0A;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 9px;
+  padding: 10px 12px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.85), 0 0 20px rgba(245, 158, 11, 0.15);
+  z-index: 15;
+  color: #FFF5F5;
+  animation: popoverFadeIn 400ms ease both;
+}
+.mobile-stage-popover .popover-telemetry {
+  color: #FBBF24;
+}
+
+/* ============================================================
+   VIEW 3: CRYPTOGRAPHIC SIGN-OFF RECEIPT STYLES
+   ============================================================ */
+.receipt-certificate-stage {
+  width: 100%;
+  height: 100%;
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle 350px at 50% 15%, rgba(16, 185, 129, 0.1), transparent 80%),
+    #0E0707;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+.rc-watermark-bg {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 220px;
+  height: 220px;
+  opacity: 0.04;
+  pointer-events: none;
+  stroke: #10B981;
+}
+.rc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.rc-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rc-shield-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10B981;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.2);
+}
+.rc-title-block h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #FFF5F5;
+  margin-bottom: 2px;
+}
+.rc-title-block p {
+  font-size: 10.5px;
+  color: #9E7B7B;
+  font-family: var(--font-mono);
+}
+.rc-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+}
+.rc-status-pill .rc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+  animation: pulseBeacon 2s infinite ease-in-out;
+}
+
+/* Audit Grid Parameters */
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 14px;
+  margin: 14px 0;
+}
+.rc-cell {
+  background: #140A0A;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 9px 12px;
+}
+.rc-cell-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8C6A6A;
+  margin-bottom: 3px;
+}
+.rc-cell-val {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #FAF8F4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rc-cell-val.highlight {
+  color: #10B981;
+}
+
+/* Audit Footer & SHA Hash */
+.rc-footer {
+  background: #120909;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rc-hash-block {
+  flex: 1;
+  overflow: hidden;
+}
+.rc-hash-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #8C6A6A;
+  margin-bottom: 2px;
+}
+.rc-hash-code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #D4A5A5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: all;
+}
+.rc-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 5px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 180ms ease;
+  flex-shrink: 0;
+}
+.rc-copy-btn:hover {
+  background: #10B981;
+  color: #050A08;
+  border-color: #10B981;
 }
 
 @media (max-width: 1080px) {
-  .meadow-hero-wrap {
-    padding: 110px 24px 80px;
-    min-height: auto;
+  .hero-right {
+    min-height: 480px;
   }
-  .meadow-hero-inner {
+}
+@media (max-width: 680px) {
+  .browser-viewport-tabs {
+    overflow-x: auto;
+  }
+  .vp-tab {
+    padding: 3px 7px;
+    font-size: 10px;
+  }
+  .browser-telemetry-badge {
+    display: none;
+  }
+  .browser-body {
+    height: auto;
+    min-height: 420px;
+  }
+  .browser-view {
+    position: relative;
+    flex-direction: column;
+    height: auto;
+  }
+  .feedback-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .staging-viewport-stage {
+    min-height: 320px;
+  }
+  .rc-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  .meadow-left {
-    align-items: center;
-    text-align: center;
-  }
-  .meadow-pills-stage {
-    align-items: center;
-    padding-right: 0;
   }
 }
 
@@ -1242,97 +1724,333 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   </div>
 </header>
 
-<!-- ══════════ 16-BIT COFOUNDER-STYLE MEADOW HERO ══════════ -->
-<header class="meadow-hero-wrap" id="top">
-  <!-- Drifting Pixel Clouds Layer -->
-  <div class="pixel-clouds-layer" aria-hidden="true">
-    <div class="pixel-cloud cloud-1"></div>
-    <div class="pixel-cloud cloud-2"></div>
-  </div>
+<!-- ══════════ HERO (§4.2) ══════════ -->
+<header class="hero" id="top">
+  <div class="hero-bg-gradient"></div>
+  <div class="hero-ambient"></div>
 
-  <div class="meadow-hero-inner">
+  <div class="hero-split">
     <!-- Left Column: Copy & Actions -->
-    <div class="meadow-left">
-      <div class="meadow-kicker-pill">
-        <span class="kicker-dot"></span>
-        <span>Visual Staging Review & Milestone Sign-Off</span>
-      </div>
-
-      <h1 class="meadow-headline" id="heroHeadline">
-        Stop chasing client feedback across 15 emails.
-      </h1>
-
-      <p class="meadow-sub" id="heroSub">
-        Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
-      </p>
-
-      <div class="meadow-cta-row" id="heroCta">
-        <a class="meadow-btn-primary" href="/dashboard">
-          <span>Start for Free</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a class="meadow-btn-glass" href="/r/demo">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>View Live Demo</span>
-        </a>
-      </div>
-
-      <div class="meadow-microcopy">
-        <span class="micro-check">✓</span>
-        <span>No credit card required</span>
-        <span class="micro-sep">·</span>
-        <span>1 active project free forever</span>
-      </div>
-    </div>
-
-    <!-- Right Column: Floating Pixel Review Pills hovering over Meadow Laptop -->
-    <div class="meadow-pills-stage">
-      <!-- Pill 1 -->
-      <div class="meadow-pill pill-1" id="pill1" title="Click to inspect pin">
-        <div class="pill-dot dot-red">1</div>
-        <div class="pill-info">
-          <div class="pill-header">
-            <span class="pill-title">Inquire CTA Button</span>
-            <span class="pill-badge status-open">OPEN</span>
-          </div>
-          <p class="pill-text">"Can we change this to 'Reserve via Concierge'? Also bump padding."</p>
-          <div class="pill-meta">1440×900 · Chrome 131 · Jane Cooper</div>
+    <div class="hero-left">
+      <h1 class="hero-headline" id="heroHeadline">Stop chasing client feedback across 15 emails.</h1>
+      <p class="hero-sub" id="heroSub">Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.</p>
+      
+      <div class="hero-cta-row" id="heroCta">
+        <div class="hero-btn-group">
+          <a class="btn btn-primary" href="/dashboard">Start for Free <span class="arrow">→</span></a>
+          <a class="btn btn-secondary" href="/r/demo">View Live Demo</a>
         </div>
+        <span class="hero-microcopy">No credit card required · 1 active project free forever</span>
       </div>
 
-      <!-- Pill 2 -->
-      <div class="meadow-pill pill-2" id="pill2" title="Click to inspect pin">
-        <div class="pill-dot dot-amber">2</div>
-        <div class="pill-info">
-          <div class="pill-header">
-            <span class="pill-title">Mobile Viewport Layout</span>
-            <span class="pill-badge status-resolved">RESOLVED</span>
-          </div>
-          <p class="pill-text">Mobile hamburger menu tap target expanded to 44px</p>
-          <div class="pill-meta">390×844 · iPhone 15 · Safari</div>
+      <div class="hero-trust-list">
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>No login needed for clients</span>
         </div>
-      </div>
-
-      <!-- Pill 3 -->
-      <div class="meadow-pill pill-3" id="pill3" title="Click to inspect receipt">
-        <div class="pill-dot dot-green">✓</div>
-        <div class="pill-info">
-          <div class="pill-header">
-            <span class="pill-title">Client Sign-Off Receipt</span>
-            <span class="pill-badge status-locked">APPROVED</span>
-          </div>
-          <p class="pill-text">All 12 feedback notes completed and signed by Jane Cooper</p>
-          <div class="pill-meta">Receipt #844d88 · Nov 8, 2026 · 14:32 UTC</div>
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>Captures browser & screen size automatically</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>Timestamped sign-off receipt when done</span>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Torn Deckled Paper Bottom Edge Transition -->
-  <div class="meadow-torn-edge" aria-hidden="true">
-    <svg viewBox="0 0 1440 52" fill="none" preserveAspectRatio="none">
-      <path d="M0,26 Q120,52 240,20 T480,36 T720,14 T960,44 T1200,18 T1440,32 L1440,52 L0,52 Z" fill="#090505"/>
-    </svg>
+    <!-- Right Column: Interactive Viewport Switcher Review Stage (§Direction 1) -->
+    <div class="hero-right" id="heroVisual">
+      <div class="hero-browser-glow" aria-hidden="true"></div>
+
+      <div class="browser-stage-card" id="browserStageCard">
+        <!-- Browser Chrome Header: Traffic Dots + Viewport Switcher Tabs + Live Telemetry -->
+        <div class="browser-chrome">
+          <div class="browser-traffic-dots">
+            <span class="dot-red"></span>
+            <span class="dot-amber"></span>
+            <span class="dot-green"></span>
+          </div>
+
+          <!-- Segmented Viewport Switcher -->
+          <div class="browser-viewport-tabs" role="tablist" aria-label="Review Viewport Mode">
+            <button class="vp-tab active" data-view="desktop" role="tab" aria-selected="true" title="Desktop 1440px viewport">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              <span>Desktop 1440</span>
+            </button>
+            <button class="vp-tab" data-view="mobile" role="tab" aria-selected="false" title="Mobile 390px viewport">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <line x1="11" y1="18" x2="13" y2="18"/>
+              </svg>
+              <span>Mobile 390</span>
+            </button>
+            <button class="vp-tab" data-view="receipt" role="tab" aria-selected="false" title="Client Sign-off Receipt">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <span>Sign-Off Receipt</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Live Telemetry Badge -->
+          <div class="browser-telemetry-badge" id="heroTelemetryBadge">
+            <span class="badge-live-pulse"></span>
+            <span id="heroTelemetryText">1440×900 · Chrome 131</span>
+          </div>
+        </div>
+
+        <!-- Browser Body: Multi-Viewport Panels -->
+        <div class="browser-body">
+
+          <!-- ══════ PANEL 1: DESKTOP 1440 VIEWPORT ══════ -->
+          <div class="browser-view active" id="viewDesktop">
+            <!-- Left: Staging Viewport Preview -->
+            <div class="staging-viewport-stage" id="stagingStage">
+              <div class="staging-site-nav">
+                <span class="staging-site-logo">AURA ATELIER</span>
+                <div class="staging-site-links">
+                  <span>Spaces</span>
+                  <span>Archive</span>
+                  <span>Journal</span>
+                </div>
+                <span class="staging-site-btn">Inquire</span>
+              </div>
+
+              <div class="staging-content-area">
+                <div class="staging-kicker">Case Study // Edition 04</div>
+                <h2 class="staging-headline">Sculptural vessels cast in raw bronze.</h2>
+                <p class="staging-subtext">Direct foundry pour. Hand-patinated in Kyoto with organic beeswax finish.</p>
+              </div>
+
+              <div class="staging-specimen-box">
+                <span class="specimen-tag">Kyoto Foundry Specimen No. 04</span>
+              </div>
+
+              <!-- Dynamic Feedback Pins -->
+              <div class="stage-pin" id="stagePin1" style="top: 76px; right: 28px;" title="Pin 1: Inquire button">1</div>
+              <div class="stage-pin" id="stagePin2" style="top: 148px; left: 168px;" title="Pin 2: Specimen padding">2</div>
+              <div class="stage-pin" id="stagePin3" style="bottom: 24px; left: 80px;" title="Pin 3: Footer signature">3</div>
+
+              <!-- Active Comment Popover (attached to Pin 1) -->
+              <div class="stage-popover" id="stagePopover">
+                <div class="popover-header">
+                  <span class="popover-author">Jane Cooper (Client)</span>
+                  <span class="popover-time">just now</span>
+                </div>
+                <p class="popover-text" id="popoverText">"Can we change this to 'Reserve via Concierge'? Also bump button padding."</p>
+                <div class="popover-telemetry">
+                  <span>1440×900</span>
+                  <span>·</span>
+                  <span>Chrome 131</span>
+                  <span>·</span>
+                  <span>macOS 15.1</span>
+                </div>
+              </div>
+
+              <!-- Animated Cursor -->
+              <div class="stage-cursor" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 3L11.5 21L14.5 13.5L22 10.5L4 3Z" fill="#FFF5F5" stroke="#140A0A" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Right: Feedback Telemetry Sidebar -->
+            <div class="feedback-sidebar">
+              <div class="sidebar-header">
+                <span class="sidebar-title">Feedback</span>
+                <span class="sidebar-badge" id="sidebarCount">3 total</span>
+              </div>
+
+              <div class="sidebar-list">
+                <div class="sidebar-item active" data-pin="1">
+                  <div class="item-top">
+                    <span class="item-pin-num">1</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">now</span>
+                  </div>
+                  <p class="item-body">Can we change to 'Reserve via Concierge'?</p>
+                  <span class="item-meta">1440×900 · Chrome 131</span>
+                </div>
+
+                <div class="sidebar-item" data-pin="2">
+                  <div class="item-top">
+                    <span class="item-pin-num">2</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">4m</span>
+                  </div>
+                  <p class="item-body">Hero image optimized to WebP with responsive srcset.</p>
+                  <span class="item-meta">1512×982 · macOS</span>
+                </div>
+
+                <div class="sidebar-item" data-pin="3">
+                  <div class="item-top">
+                    <span class="item-pin-num">3</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">6m</span>
+                  </div>
+                  <p class="item-body">Button should open sliding sheet instead of anchor jump.</p>
+                  <span class="item-meta">390×844 · Safari iOS</span>
+                </div>
+              </div>
+
+              <div class="sidebar-footer">
+                <button class="signoff-pill jump-to-receipt" title="View Milestone Sign-Off Receipt">
+                  <span>✓ View Sign-Off Receipt →</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════ PANEL 2: MOBILE 390 VIEWPORT ══════ -->
+          <div class="browser-view" id="viewMobile" style="display: none;">
+            <!-- Left: Centered Mobile Device Frame -->
+            <div class="mobile-stage-wrapper">
+              <div class="mobile-phone-device">
+                <div class="mobile-phone-notch"></div>
+                <div class="mobile-site-nav">
+                  <span>AURA ATELIER</span>
+                  <div class="mobile-nav-hamburger" title="Mobile Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+
+                <div class="mobile-site-body">
+                  <div class="mobile-kicker">Edition 04</div>
+                  <div class="mobile-headline">Sculptural vessels cast in raw bronze.</div>
+                  <div class="mobile-specimen-card">
+                    <span class="mobile-specimen-tag">Kyoto Specimen 04</span>
+                  </div>
+                  <div class="mobile-site-btn">
+                    Reserve via Concierge
+                    <div class="stage-pin" style="top: -10px; right: -8px; width: 22px; height: 22px; font-size: 10px;">1</div>
+                  </div>
+                </div>
+                <div class="mobile-phone-chin"></div>
+              </div>
+
+              <!-- Floating Mobile Comment Popover -->
+              <div class="mobile-stage-popover" id="mobilePopover">
+                <div class="popover-header">
+                  <span class="popover-author">Jane Cooper (Mobile Safari)</span>
+                  <span class="popover-time">now</span>
+                </div>
+                <p class="popover-text">"CTA button touches viewport edge on 390px width. Add 16px horizontal margin."</p>
+                <div class="popover-telemetry">
+                  <span>390×844</span>
+                  <span>·</span>
+                  <span>Safari 18 (iOS)</span>
+                  <span>·</span>
+                  <span>DPR 3.0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Mobile Feedback Sidebar -->
+            <div class="feedback-sidebar">
+              <div class="sidebar-header">
+                <span class="sidebar-title">Mobile Notes</span>
+                <span class="sidebar-badge badge-amber">2 issues</span>
+              </div>
+
+              <div class="sidebar-list">
+                <div class="sidebar-item active" data-pin="1">
+                  <div class="item-top">
+                    <span class="item-pin-num">1</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">now</span>
+                  </div>
+                  <p class="item-body">Button touches screen edge on 390px viewport width.</p>
+                  <span class="item-meta">390×844 · Safari iOS · DPR 3.0</span>
+                </div>
+
+                <div class="sidebar-item" data-pin="2">
+                  <div class="item-top">
+                    <span class="item-pin-num">2</span>
+                    <span class="item-status resolved">RESOLVED</span>
+                    <span class="item-time">14m</span>
+                  </div>
+                  <p class="item-body">Mobile menu button made easier to tap.</p>
+                  <span class="item-meta">390×844 · iPhone 15 · Safari</span>
+                </div>
+              </div>
+
+              <div class="sidebar-footer">
+                <button class="signoff-pill jump-to-receipt" title="View Milestone Sign-Off Receipt">
+                  <span>✓ View Sign-Off Receipt →</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════ PANEL 3: CRYPTOGRAPHIC SIGN-OFF RECEIPT ══════ -->
+          <div class="browser-view" id="viewReceipt" style="display: none;">
+            <div class="receipt-certificate-stage">
+              <!-- Background Seal SVG Watermark -->
+              <svg class="rc-watermark-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+
+              <!-- Certificate Header -->
+              <div class="rc-header">
+                <div class="rc-header-brand">
+                  <div class="rc-shield-badge">✓</div>
+                  <div class="rc-title-block">
+                    <h3>CLIENT SIGN-OFF RECEIPT</h3>
+                    <p>Official client approval · Milestone 04: Ready for Launch</p>
+                  </div>
+                </div>
+
+                <div class="rc-status-pill">
+                  <span class="rc-dot"></span>
+                  <span>SIGNED & APPROVED</span>
+                </div>
+              </div>
+
+              <!-- Certificate Audit Grid -->
+              <div class="rc-grid">
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Staging URL</div>
+                  <div class="rc-cell-val">aura-atelier.staging.vercel.app</div>
+                </div>
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Approved By</div>
+                  <div class="rc-cell-val">Jane Cooper (Creative Director)</div>
+                </div>
+                <div class="rc-cell">
+                  <div class="rc-cell-label">All Notes Completed</div>
+                  <div class="rc-cell-val highlight">12 of 12 Pins Resolved (100%)</div>
+                </div>
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Date & Time</div>
+                  <div class="rc-cell-val">November 8, 2026 · 14:32:08 UTC</div>
+                </div>
+              </div>
+
+              <!-- Cryptographic Hash & Actions -->
+              <div class="rc-footer">
+                <div class="rc-hash-block">
+                  <div class="rc-hash-label">Receipt Verification Code</div>
+                  <div class="rc-hash-code">844d8c91f0c2a7e93a65b4c10488ea9b3921f7d88aa20188ef7b620b704d9c</div>
+                </div>
+                <button class="rc-copy-btn" id="rcCopyBtn" title="Copy Receipt Code to Clipboard">
+                  <span>Copy Receipt</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -1402,6 +2120,89 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
         </div>
         <h3 class="feature-title">Clear sign-off when the work is done</h3>
         <p class="feature-body">Once you fix the feedback, your client approves the site with a single click. Cyath generates a timestamped sign-off receipt so both sides agree the milestone is complete—putting an end to endless "just one more quick change" emails.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PRODUCT DEMO (§4.6) — scrubbed two-column ══════════ -->
+<section class="section demo demo-section-tall" id="demo">
+  <div class="demo-grid">
+    <div class="demo-sticky demo-left">
+      <div class="section-head" style="margin-bottom:40px">
+        <h2 class="section-title">From staging link to sign-off in four steps.</h2>
+      </div>
+      <div class="demo-steps" id="demoSteps">
+        <div class="demo-step" data-step="1">
+          <span class="demo-step-num">1</span>
+          <div><h3>Paste your staging URL</h3><p>Drop in any staging link and get a shareable review URL back — instantly.</p></div>
+        </div>
+        <div class="demo-step" data-step="2">
+          <span class="demo-step-num">2</span>
+          <div><h3>Send it to your client</h3><p>They click to pin feedback right on the page. Context is captured automatically.</p></div>
+        </div>
+        <div class="demo-step" data-step="3">
+          <span class="demo-step-num">3</span>
+          <div><h3>Resolve pins and ship</h3><p>Work through the list, mark pins resolved, and update the site.</p></div>
+        </div>
+        <div class="demo-step" data-step="4">
+          <span class="demo-step-num">4</span>
+          <div><h3>Client hits Approve</h3><p>A signed, timestamped receipt confirms the project is approved. You're done.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-sticky">
+      <div class="demo-visual">
+        <div class="demo-chrome">
+          <div class="hv-dots"><span></span><span></span><span></span></div>
+          <div class="hv-url">urban-roast-staging.vercel.app</div>
+          <span class="msb-count">Desktop · 1440×900</span>
+        </div>
+        <div class="demo-body">
+          <div class="demo-stage" id="demoStage">
+            <div class="demo-site" id="demoSite">
+              <div class="hvs-nav">
+                <span class="hvs-logo">Urban Roast</span>
+                <div class="hvs-links"><span>Menu</span><span>Our Beans</span><span>Visit</span><span>Journal</span></div>
+                <span class="hvs-cta">Order Online</span>
+              </div>
+              <div class="hvs-hero">
+                <div class="hvs-h1">Small-batch coffee, <em>roasted</em> in the heart of the city.</div>
+                <div class="hvs-img"></div>
+              </div>
+              <div class="hvs-strip"><span>Single Origin</span><span>Roasted Weekly</span><span>Wholesale</span></div>
+            </div>
+            <div class="mini-cursor" id="demoCursor"><div class="mc-ring"></div><div class="mc-dot"></div></div>
+            <div class="mini-pin" id="demoPin1" style="left: 62%; top: 18%;">1</div>
+            <div class="mini-pin" id="demoPin2" style="left: 30%; top: 58%;">2</div>
+            <div class="mini-popover" id="demoPop" style="left: 66%; top: 28%;">
+              <div class="mp-name"><span>Jane Cooper</span><span class="mp-time">now</span></div>
+              <div class="mp-text"><span id="demoPopText"></span><span style="color:var(--accent)">▌</span></div>
+            </div>
+            <div class="mini-popover" id="demoApprove" style="left: 50%; top: 50%; transform: translate(-50%,-50%); width: 230px; text-align:center;">
+              <div style="width:34px;height:34px;border-radius:50%;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);color:#34D399;display:flex;align-items:center;justify-content:center;margin:2px auto 8px;font-size:15px;font-weight:700;">✓</div>
+              <div style="font-size:12px;font-weight:600;">Approved by Jane Cooper</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-family:var(--font-mono);">Nov 7, 2026 · Receipt #844d88</div>
+              <div style="margin-top:8px;font-size:10px;color:#34D399;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:4px 8px;">Approved · Feedback closed</div>
+            </div>
+          </div>
+          <div class="demo-sidebar">
+            <div class="msb-head"><span class="msb-title">Feedback</span><span class="msb-count" id="demoCount">0 total</span></div>
+            <div class="msb-list" id="demoList">
+              <div class="msb-card" id="demoCard1">
+                <div class="msb-top"><span class="msb-num">1</span><span class="msb-status" id="demoStatus1">OPEN</span><span class="msb-time">now</span></div>
+                <div class="msb-text" id="demoCardText1">CTA button blends into the hero image.</div>
+                <div class="msb-meta">1440×900 · Chrome 130</div>
+              </div>
+              <div class="msb-card" id="demoCard2">
+                <div class="msb-top"><span class="msb-num">2</span><span class="msb-status" id="demoStatus2">OPEN</span><span class="msb-time">now</span></div>
+                <div class="msb-text" id="demoCardText2">Logo overlaps the menu on small screens.</div>
+                <div class="msb-meta">1440×900 · Chrome 130</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1659,17 +2460,181 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
     .from('#heroVisual', { autoAlpha: 0, x: 40, y: 15, scale: 0.98, duration: 1.1, ease: 'power3.out' }, '-=0.45');
 
-  /* ══════════ 16-BIT MEADOW HERO MICRO-INTERACTIONS ══════════ */
-  (function initMeadowHero() {
-    var pills = $$('.meadow-pill');
-    pills.forEach(function (pill) {
-      pill.addEventListener('click', function () {
-        gsap.fromTo(pill, 
-          { scale: 0.96 }, 
-          { scale: 1.03, duration: 0.25, ease: 'back.out(2)' }
-        );
+  /* ══════════ INTERACTIVE VIEWPORT SWITCHER (§Hero Option 1) ══════════ */
+  (function initViewportSwitcher() {
+    var card = $('#browserStageCard');
+    if (!card) return;
+
+    var tabs = $$('.vp-tab');
+    var views = $$('.browser-view');
+    var badge = $('#heroTelemetryBadge');
+    var badgeText = $('#heroTelemetryText');
+    var signoffJumps = $$('.jump-to-receipt');
+
+    var viewMeta = {
+      desktop: {
+        telemetry: '1440×900 · Chrome 131',
+        badgeClass: ''
+      },
+      mobile: {
+        telemetry: '390×844 · Safari 18 · iOS',
+        badgeClass: 'badge-amber'
+      },
+      receipt: {
+        telemetry: 'Receipt #844d88 · Approved & Signed',
+        badgeClass: 'badge-green'
+      }
+    };
+
+    function switchView(viewKey) {
+      tabs.forEach(function (t) {
+        var isThis = t.getAttribute('data-view') === viewKey;
+        t.classList.toggle('active', isThis);
+        t.setAttribute('aria-selected', isThis ? 'true' : 'false');
+      });
+
+      views.forEach(function (v) {
+        var isThis = v.id === ('view' + viewKey.charAt(0).toUpperCase() + viewKey.slice(1));
+        if (isThis) {
+          v.style.display = 'flex';
+          gsap.fromTo(v, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' });
+        } else {
+          v.style.display = 'none';
+          v.style.opacity = '0';
+        }
+      });
+
+      if (badge && badgeText && viewMeta[viewKey]) {
+        badgeText.textContent = viewMeta[viewKey].telemetry;
+        badge.className = 'browser-telemetry-badge ' + viewMeta[viewKey].badgeClass;
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var v = tab.getAttribute('data-view');
+        switchView(v);
       });
     });
+
+    signoffJumps.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        switchView('receipt');
+      });
+    });
+
+    // Desktop Pins interaction
+    var popover = $('#stagePopover');
+    var popoverText = $('#popoverText');
+    var pins = $$('#viewDesktop .stage-pin');
+    var sidebarItems = $$('#viewDesktop .sidebar-item');
+
+    var desktopPinData = {
+      1: {
+        author: 'Jane Cooper (Client)',
+        time: 'just now',
+        text: '"Can we change this to \'Reserve via Concierge\'? Also bump button padding."',
+        telemetry: '1440×900 · Chrome 131 · macOS 15.1'
+      },
+      2: {
+        author: 'Jane Cooper (Client)',
+        time: '4m ago',
+        text: '"Hero image optimized to WebP with responsive srcset. Loads in 85ms."',
+        telemetry: '1512×982 · Chrome 131 · macOS 15.1'
+      },
+      3: {
+        author: 'Jane Cooper (Client)',
+        time: '6m ago',
+        text: '"Button should open sliding sheet instead of anchor jump on mobile viewports."',
+        telemetry: '390×844 · Safari 18 · iOS 18'
+      }
+    };
+
+    function selectDesktopPin(num) {
+      var d = desktopPinData[num];
+      if (!d || !popover) return;
+
+      sidebarItems.forEach(function (item) {
+        item.classList.toggle('active', item.getAttribute('data-pin') === String(num));
+      });
+
+      pins.forEach(function (pin) {
+        var isThis = pin.textContent.trim() === String(num);
+        pin.style.transform = isThis ? 'scale(1.2)' : 'scale(1)';
+        pin.style.boxShadow = isThis
+          ? '0 6px 20px rgba(239, 68, 68, 0.7), 0 0 0 2.5px #FAF8F4'
+          : '0 4px 14px rgba(239, 68, 68, 0.5), 0 0 0 2px #FAF8F4';
+      });
+
+      if (popoverText) {
+        popover.querySelector('.popover-author').textContent = d.author;
+        popover.querySelector('.popover-time').textContent = d.time;
+        popoverText.textContent = d.text;
+        var telEl = popover.querySelector('.popover-telemetry');
+        if (telEl) telEl.innerHTML = '<span>' + d.telemetry.replace(/ · /g, '</span><span>·</span><span>') + '</span>';
+      }
+
+      gsap.fromTo(popover,
+        { scale: 0.94, opacity: 0.8 },
+        { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.8)' }
+      );
+    }
+
+    pins.forEach(function (pin) {
+      pin.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var n = parseInt(pin.textContent.trim(), 10);
+        selectDesktopPin(n);
+      });
+    });
+
+    sidebarItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        var n = parseInt(item.getAttribute('data-pin'), 10);
+        selectDesktopPin(n);
+      });
+    });
+
+    // Mobile Pins interaction
+    var mobilePins = $$('#viewMobile .stage-pin');
+    var mobileSidebarItems = $$('#viewMobile .sidebar-item');
+    var mobilePopover = $('#mobilePopover');
+
+    mobilePins.forEach(function (pin) {
+      pin.addEventListener('click', function (e) {
+        e.stopPropagation();
+        gsap.fromTo(mobilePopover, { scale: 0.95 }, { scale: 1, duration: 0.25, ease: 'back.out(1.8)' });
+      });
+    });
+
+    mobileSidebarItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        mobileSidebarItems.forEach(function (it) { it.classList.remove('active'); });
+        item.classList.add('active');
+        gsap.fromTo(mobilePopover, { scale: 0.95 }, { scale: 1, duration: 0.25, ease: 'back.out(1.8)' });
+      });
+    });
+
+    // Copy Audit Receipt SHA
+    var copyBtn = $('#rcCopyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var hash = '844d8c91f0c2a7e93a65b4c10488ea9b3921f7d88aa20188ef7b620b704d9c';
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(hash).catch(function () {});
+        }
+        var origText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<span>Copied! ✓</span>';
+        copyBtn.style.background = '#10B981';
+        copyBtn.style.color = '#050A08';
+        setTimeout(function () {
+          copyBtn.innerHTML = origText;
+          copyBtn.style.background = '';
+          copyBtn.style.color = '';
+        }, 2000);
+      });
+    }
   })();
 
   /* ══════════ SCROLL ENTRANCES (master map §5) ══════════ */
