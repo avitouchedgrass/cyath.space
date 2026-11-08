@@ -341,13 +341,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   3D CRT MONITOR ASSEMBLY (§Hero Physical Stage)
+   VOLUMETRIC 3D CRT MONITOR ASSEMBLY (§Hero Physical Stage)
    ============================================================ */
 .hero-right {
   position: relative;
   width: 100%;
-  perspective: 1400px;
-  perspective-origin: 35% 50%;
+  perspective: 1600px;
+  perspective-origin: 40% 50%;
+  padding-bottom: 28px;
 }
 .hero-visual-wrap {
   position: relative;
@@ -357,37 +358,37 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transform-style: preserve-3d;
 }
 
-/* 3D CRT Monitor Shell */
+/* 3D Root Entity that rotates */
 .crt-assembly {
   position: relative;
   width: 100%;
   transform-style: preserve-3d;
-  transform: rotateY(-20deg) rotateX(3deg);
-  transition: box-shadow 300ms ease;
+  transform: rotateY(-20deg) rotateX(4deg);
+  transform-origin: 50% 50% -35px;
+  cursor: pointer;
   will-change: transform;
 }
-.crt-assembly[data-state="angled"]:hover {
+.crt-assembly:hover {
   filter: brightness(1.03);
 }
 
-/* Molded industrial CRT chassis */
-.crt-chassis {
+/* 1. FRONT FACE (TranslateZ 35px forward) */
+.crt-face-front {
   position: relative;
+  transform: translateZ(35px);
+  transform-style: preserve-3d;
   background: linear-gradient(175deg, #22222A 0%, #17171E 45%, #101014 100%);
-  border-radius: 22px;
-  padding: 14px 18px 14px 18px;
+  border-radius: 20px;
+  padding: 14px 16px 16px 16px;
   border: 2px solid rgba(255, 255, 255, 0.12);
   border-top-color: rgba(255, 255, 255, 0.22);
   border-bottom-color: rgba(0, 0, 0, 0.9);
   box-shadow:
     inset 0 1.5px 1px rgba(255, 255, 255, 0.18),
-    inset 0 -2px 8px rgba(0, 0, 0, 0.8),
-    -24px 34px 72px -10px rgba(0, 0, 0, 0.9),
-    -8px 14px 28px rgba(0, 0, 0, 0.65);
-  user-select: none;
+    inset 0 -2px 6px rgba(0, 0, 0, 0.8);
 }
 
-/* Top cooling vent slats */
+/* Top cooling vent slats on front bezel */
 .crt-top-vents {
   display: flex;
   justify-content: center;
@@ -402,7 +403,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: inset 0 1px 1px #000, 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-/* Recessed CRT Bezel */
+/* Recessed Screen Bezel */
 .crt-bezel {
   position: relative;
   border-radius: 12px;
@@ -410,12 +411,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: #000;
   border: 2.5px solid #09090C;
   box-shadow:
-    inset 0 0 20px rgba(0, 0, 0, 0.95),
+    inset 0 0 24px rgba(0, 0, 0, 0.95),
     inset 0 2px 8px rgba(0, 0, 0, 0.9),
     0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* CRT Glass Glare / Curvature Reflection */
+/* CRT Glass Glare / Specular Reflection */
 .crt-glare {
   position: absolute;
   inset: 0;
@@ -444,92 +445,165 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: var(--surface-panel);
 }
 
-/* Bottom Chin Control Deck */
-.crt-chin {
-  margin-top: 12px;
-  padding: 4px 6px 2px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.crt-model-badge {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.crt-logo-symbol {
-  font-size: 10px;
-  color: #F59E0B;
-}
-.crt-model-name {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: #71717A;
-  text-transform: uppercase;
-}
-.crt-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.crt-spin-btn {
-  height: 24px;
-  padding: 0 10px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #E4E4E7;
-  background: #1E1E26;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
-}
-.crt-spin-btn:hover {
-  background: #272732;
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #FFF;
-}
-.crt-spin-btn:active {
-  transform: translateY(1px);
-}
-.crt-spin-btn .spin-icon {
-  font-size: 11px;
-  color: #F59E0B;
-}
-.crt-knob {
-  width: 14px;
+/* Clean molded bottom chin (NO text, NO buttons, NO green light) */
+.crt-chin-clean {
   height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #4B4B55, #18181D);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  margin-top: 10px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
 }
-.crt-power-group {
+
+/* 2. EXTRUDED 3D SIDE WALLS */
+/* Right Wall (Directly in view when turned -20deg!) */
+.crt-side-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 70px;
+  height: 100%;
+  transform-origin: right center;
+  transform: rotateY(90deg);
+  background: linear-gradient(to right, #24242E 0%, #171720 30%, #0E0E12 100%);
+  border-radius: 0 10px 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+/* Side ventilation ribs on right extruded wall */
+.crt-side-right::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  left: 10px;
+  right: 12px;
+  background-image: repeating-linear-gradient(to bottom,
+    transparent 0px, transparent 8px,
+    #08080A 8px, #08080A 12px,
+    rgba(255, 255, 255, 0.04) 12px, rgba(255, 255, 255, 0.04) 13px);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px #000;
+}
+
+/* Left Wall */
+.crt-side-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70px;
+  height: 100%;
+  transform-origin: left center;
+  transform: rotateY(-90deg);
+  background: linear-gradient(to left, #24242E 0%, #171720 30%, #0E0E12 100%);
+  border-radius: 10px 0 0 10px;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}
+
+/* Top Wall */
+.crt-side-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  transform-origin: top center;
+  transform: rotateX(90deg);
+  background: linear-gradient(to bottom, #2C2C38 0%, #1C1C24 50%, #111116 100%);
+  border-radius: 10px 10px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.15), 0 -4px 20px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* Bottom Wall */
+.crt-side-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  transform-origin: bottom center;
+  transform: rotateX(-90deg);
+  background: #09090C;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}
+
+/* 3. REAR CATHODE TUBE BELL HOUSING */
+.crt-back-housing {
+  position: absolute;
+  top: 10%;
+  left: 14%;
+  width: 72%;
+  height: 80%;
+  transform: translateZ(-45px);
+  border-radius: 32px;
+  background: radial-gradient(ellipse at 50% 50%, #22222B 0%, #121217 60%, #060608 100%);
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.95),
+    -30px 40px 90px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+/* 4. PEDESTAL DESK SWIVEL STAND */
+.crt-stand-assembly {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  margin-top: -6px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 5px;
+  pointer-events: none;
 }
-.crt-power-led {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #10B981;
-  box-shadow: 0 0 7px #10B981;
+.crt-stand-neck {
+  width: 90px;
+  height: 28px;
+  background: linear-gradient(180deg, #181820 0%, #0F0F14 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 4px #000, 0 4px 12px rgba(0, 0, 0, 0.6);
+  transform: translateZ(10px);
+}
+.crt-stand-base {
+  width: 270px;
+  height: 15px;
+  margin-top: -4px;
+  background: linear-gradient(180deg, #252530 0%, #131318 100%);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transform: translateZ(20px);
+}
+.crt-desk-shadow {
+  position: absolute;
+  bottom: -22px;
+  width: 380px;
+  height: 35px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.92) 0%, transparent 72%);
+  filter: blur(10px);
 }
 
 @media (max-width: 1080px) {
   .hero-right {
     perspective: none;
+    padding-bottom: 0;
   }
   .crt-assembly {
+    transform: none !important;
+  }
+  .crt-side-right, .crt-side-left, .crt-side-top, .crt-side-bottom, .crt-back-housing, .crt-stand-assembly {
+    display: none !important;
+  }
+  .crt-face-front {
     transform: none !important;
   }
 }
@@ -1110,12 +1184,20 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
       </div>
     </div>
 
-    <!-- Right Column: Interactive Realistic Staging Canvas in 3D CRT Monitor -->
+    <!-- Right Column: Interactive 3D CRT Monitor Staging Canvas -->
     <div class="hero-right">
       <div class="hero-visual-wrap" id="heroVisual">
-        <!-- 3D CRT Monitor Assembly -->
-        <div class="crt-assembly" id="crtAssembly" data-state="angled" title="Click monitor to spin forward">
-          <div class="crt-chassis">
+        <!-- 3D Volumetric CRT Monitor Assembly -->
+        <div class="crt-assembly" id="crtAssembly" data-state="angled" title="Click anywhere to spin monitor">
+          <!-- 3D Extruded Surfaces -->
+          <div class="crt-side-right" aria-hidden="true"></div>
+          <div class="crt-side-left" aria-hidden="true"></div>
+          <div class="crt-side-top" aria-hidden="true"></div>
+          <div class="crt-side-bottom" aria-hidden="true"></div>
+          <div class="crt-back-housing" aria-hidden="true"></div>
+
+          <!-- Front Face (Screen & Bezel, translateZ 35px) -->
+          <div class="crt-face-front">
             <!-- Top cooling vents -->
             <div class="crt-top-vents">
               <span></span><span></span><span></span><span></span><span></span>
@@ -1196,23 +1278,15 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
               </div>
             </div>
 
-            <!-- Bottom Chin Control Deck -->
-            <div class="crt-chin">
-              <div class="crt-model-badge">
-                <span class="crt-logo-symbol">❖</span>
-                <span class="crt-model-name">CYATH · TRINITRON // CRT-20</span>
-              </div>
-              <div class="crt-controls">
-                <button class="crt-spin-btn" id="crtSpinTrigger" type="button" aria-label="Toggle monitor angle" title="Click to spin monitor forward">
-                  <span class="spin-icon">↺</span>
-                  <span class="spin-label" id="crtBtnLabel">Snap 0°</span>
-                </button>
-                <div class="crt-knob" title="Degauss coil"></div>
-                <div class="crt-power-group" title="Phosphor ready">
-                  <span class="crt-power-led"></span>
-                </div>
-              </div>
-            </div>
+            <!-- Clean Molded Bottom Chin (No text, no buttons, no green light) -->
+            <div class="crt-chin-clean"></div>
+          </div>
+
+          <!-- Swivel Neck and Stand Assembly -->
+          <div class="crt-stand-assembly" aria-hidden="true">
+            <div class="crt-stand-neck"></div>
+            <div class="crt-stand-base"></div>
+            <div class="crt-desk-shadow"></div>
           </div>
         </div>
       </div>
@@ -1628,8 +1702,6 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
 
   /* ══════════ 3D CRT MONITOR: COMEDIC SPIN & SNAP ══════════ */
   var crtAssembly = $('#crtAssembly');
-  var crtSpinBtn = $('#crtSpinTrigger');
-  var crtBtnLabel = $('#crtBtnLabel');
   var isCrtSpinning = false;
   var isCrtFlat = false;
 
@@ -1644,14 +1716,13 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
           isCrtFlat = true;
           isCrtSpinning = false;
           crtAssembly.setAttribute('data-state', 'flat');
-          if (crtBtnLabel) crtBtnLabel.textContent = 'Tilt 20°';
         }
       });
 
       spinTl
         .to(crtAssembly, {
           rotateY: -30,
-          rotateX: 6,
+          rotateX: 7,
           scale: 0.95,
           duration: 0.14,
           ease: 'power2.in'
@@ -1680,13 +1751,12 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
           isCrtFlat = false;
           isCrtSpinning = false;
           crtAssembly.setAttribute('data-state', 'angled');
-          if (crtBtnLabel) crtBtnLabel.textContent = 'Snap 0°';
         }
       });
 
       tiltTl
         .to(crtAssembly, {
-          rotateY: 10,
+          rotateY: 12,
           rotateX: -2,
           scale: 0.97,
           duration: 0.16,
@@ -1694,7 +1764,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         })
         .to(crtAssembly, {
           rotateY: -20,
-          rotateX: 3,
+          rotateX: 4,
           scale: 1,
           duration: 0.55,
           ease: 'back.out(2.4)'
@@ -1703,28 +1773,13 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
   }
 
   if (crtAssembly) {
-    if (crtSpinBtn) {
-      crtSpinBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        spinCrtMonitor();
-      });
-    }
-
     crtAssembly.addEventListener('click', function (e) {
-      // If currently angled, any click on the monitor triggers the comedic spin!
-      if (!isCrtFlat) {
-        spinCrtMonitor();
+      // If currently flat and clicking inside the interactive website canvas to drop a pin, allow pin placement
+      if (isCrtFlat && e.target.closest('#heroCanvas')) {
         return;
       }
-      // If already flat, only clicking the outer chassis, vents, or chin tilts it back
-      if (
-        e.target.closest('.crt-chin') ||
-        e.target.closest('.crt-top-vents') ||
-        e.target.classList.contains('crt-chassis') ||
-        e.target === crtAssembly
-      ) {
-        spinCrtMonitor();
-      }
+      // Clicking anywhere on the monitor triggers the comedic spin!
+      spinCrtMonitor();
     });
   }
 
