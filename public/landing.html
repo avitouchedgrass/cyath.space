@@ -341,427 +341,82 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   VOLUMETRIC 3D CRT MONITOR ASSEMBLY (§Hero Physical Stage)
+   3D WEBGL CRT MONITOR STAGE (§Hero 3D Physical Display)
    ============================================================ */
 .hero-right {
   position: relative;
   width: 100%;
-  perspective: 1600px;
-  perspective-origin: 40% 50%;
-  padding-bottom: 28px;
-}
-.hero-visual-wrap {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 100%;
-  transform-style: preserve-3d;
-}
-
-/* 3D Root Entity that rotates */
-.crt-assembly {
-  position: relative;
-  width: 100%;
-  transform-style: preserve-3d;
-  transform: rotateY(-20deg) rotateX(4deg);
-  transform-origin: 50% 50% -35px;
-  cursor: pointer;
-  will-change: transform;
-}
-.crt-assembly:hover {
-  filter: brightness(1.03);
-}
-
-/* 1. FRONT FACE (TranslateZ 35px forward) */
-.crt-face-front {
-  position: relative;
-  transform: translateZ(35px);
-  transform-style: preserve-3d;
-  background: linear-gradient(175deg, #22222A 0%, #17171E 45%, #101014 100%);
-  border-radius: 20px;
-  padding: 14px 16px 16px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(255, 255, 255, 0.22);
-  border-bottom-color: rgba(0, 0, 0, 0.9);
-  box-shadow:
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.18),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.8);
-}
-
-/* Top cooling vent slats on front bezel */
-.crt-top-vents {
+  min-height: 540px;
   display: flex;
-  justify-content: center;
-  gap: 7px;
-  margin-bottom: 12px;
-}
-.crt-top-vents span {
-  width: 22px;
-  height: 3px;
-  background: #09090C;
-  border-radius: 2px;
-  box-shadow: inset 0 1px 1px #000, 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Recessed Screen Bezel */
-.crt-bezel {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #000;
-  border: 2.5px solid #09090C;
-  box-shadow:
-    inset 0 0 24px rgba(0, 0, 0, 0.95),
-    inset 0 2px 8px rgba(0, 0, 0, 0.9),
-    0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* CRT Glass Glare / Specular Reflection */
-.crt-glare {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-  background: radial-gradient(ellipse 65% 35% at 20% 12%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 65%);
-  border-radius: 10px;
-}
-
-/* Authentic CRT Scanlines Overlay */
-.crt-scanlines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 11;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.24) 50%);
-  background-size: 100% 4px;
-  opacity: 0.32;
-  transition: opacity 300ms ease;
-}
-
-/* Display frame */
-.hero-visual {
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--surface-panel);
-}
-
-/* Clean molded bottom chin (NO text, NO buttons, NO green light) */
-.crt-chin-clean {
-  height: 14px;
-  margin-top: 10px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  border-bottom-color: rgba(255, 255, 255, 0.05);
-}
-
-/* 2. EXTRUDED 3D SIDE WALLS */
-/* Right Wall (Directly in view when turned -20deg!) */
-.crt-side-right {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 70px;
-  height: 100%;
-  transform-origin: right center;
-  transform: rotateY(90deg);
-  background: linear-gradient(to right, #24242E 0%, #171720 30%, #0E0E12 100%);
-  border-radius: 0 10px 10px 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
-  pointer-events: none;
-}
-/* Side ventilation ribs on right extruded wall */
-.crt-side-right::before {
-  content: '';
-  position: absolute;
-  top: 15%;
-  bottom: 15%;
-  left: 10px;
-  right: 12px;
-  background-image: repeating-linear-gradient(to bottom,
-    transparent 0px, transparent 8px,
-    #08080A 8px, #08080A 12px,
-    rgba(255, 255, 255, 0.04) 12px, rgba(255, 255, 255, 0.04) 13px);
-  border-radius: 4px;
-  box-shadow: inset 0 1px 2px #000;
-}
-
-/* Left Wall */
-.crt-side-left {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 70px;
-  height: 100%;
-  transform-origin: left center;
-  transform: rotateY(-90deg);
-  background: linear-gradient(to left, #24242E 0%, #171720 30%, #0E0E12 100%);
-  border-radius: 10px 0 0 10px;
-  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
-  pointer-events: none;
-}
-
-/* Top Wall */
-.crt-side-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  transform-origin: top center;
-  transform: rotateX(90deg);
-  background: linear-gradient(to bottom, #2C2C38 0%, #1C1C24 50%, #111116 100%);
-  border-radius: 10px 10px 0 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.15), 0 -4px 20px rgba(0, 0, 0, 0.6);
-  pointer-events: none;
-}
-
-/* Bottom Wall */
-.crt-side-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  transform-origin: bottom center;
-  transform: rotateX(-90deg);
-  background: #09090C;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.95);
-  pointer-events: none;
-}
-
-/* 3. REAR CATHODE TUBE BELL HOUSING */
-.crt-back-housing {
-  position: absolute;
-  top: 10%;
-  left: 14%;
-  width: 72%;
-  height: 80%;
-  transform: translateZ(-45px);
-  border-radius: 32px;
-  background: radial-gradient(ellipse at 50% 50%, #22222B 0%, #121217 60%, #060608 100%);
-  border: 2px solid rgba(255, 255, 255, 0.06);
-  box-shadow:
-    inset 0 0 30px rgba(0, 0, 0, 0.95),
-    -30px 40px 90px rgba(0, 0, 0, 0.9);
-  pointer-events: none;
-}
-
-/* 4. PEDESTAL DESK SWIVEL STAND */
-.crt-stand-assembly {
-  position: relative;
-  width: 100%;
-  transform-style: preserve-3d;
-  margin-top: -6px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  pointer-events: none;
+  justify-content: center;
 }
-.crt-stand-neck {
-  width: 90px;
-  height: 28px;
-  background: linear-gradient(180deg, #181820 0%, #0F0F14 100%);
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 2px 4px #000, 0 4px 12px rgba(0, 0, 0, 0.6);
-  transform: translateZ(10px);
+.crt-stage-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 660px;
+  height: 540px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.crt-stand-base {
-  width: 270px;
-  height: 15px;
-  margin-top: -4px;
-  background: linear-gradient(180deg, #252530 0%, #131318 100%);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(255, 255, 255, 0.22);
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.95),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transform: translateZ(20px);
-}
-.crt-desk-shadow {
+.crt-canvas-container {
   position: absolute;
-  bottom: -22px;
-  width: 380px;
-  height: 35px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.92) 0%, transparent 72%);
-  filter: blur(10px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
-
+.crt-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+}
+.crt-spin-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0.65;
+  transition: opacity 250ms ease, transform 250ms ease;
+  z-index: 5;
+}
+.crt-stage-wrapper:hover .crt-spin-hint {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+.crt-hint-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(18, 18, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
 @media (max-width: 1080px) {
   .hero-right {
-    perspective: none;
-    padding-bottom: 0;
+    min-height: 440px;
   }
-  .crt-assembly {
-    transform: none !important;
-  }
-  .crt-side-right, .crt-side-left, .crt-side-top, .crt-side-bottom, .crt-back-housing, .crt-stand-assembly {
-    display: none !important;
-  }
-  .crt-face-front {
-    transform: none !important;
+  .crt-stage-wrapper {
+    height: 440px;
+    max-width: 540px;
   }
 }
-.hv-chrome {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-overlay);
+@media (max-width: 640px) {
+  .hero-right {
+    min-height: 360px;
+  }
+  .crt-stage-wrapper {
+    height: 360px;
+  }
 }
-.hv-dots { display: flex; gap: 6px; }
-.hv-dots span { width: 10px; height: 10px; border-radius: 50%; }
-.hv-dots span:nth-child(1) { background: #FF5F57; }
-.hv-dots span:nth-child(2) { background: #FEBC2E; }
-.hv-dots span:nth-child(3) { background: #28C840; }
-.hv-url {
-  flex: 1; max-width: 320px; margin: 0 auto;
-  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
-  background: var(--surface-canvas); border: 1px solid var(--border-subtle);
-  border-radius: 6px; padding: 4px 12px; text-align: center;
-}
-.hv-status-pill {
-  display: flex; align-items: center; gap: 5px;
-  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
-  color: #10B981; background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  padding: 3px 9px; border-radius: 999px;
-}
-.hv-status-pill .status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #10B981; border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.hv-body { display: flex; min-height: 440px; }
-.hv-canvas {
-  position: relative; flex: 1;
-  background:
-    radial-gradient(ellipse 100% 70% at 50% 0%, rgba(245, 158, 11, 0.05), transparent),
-    repeating-conic-gradient(var(--surface-canvas) 0% 25%, #0D0D10 0% 50%) 0 0 / 28px 28px;
-  overflow: hidden;
-  cursor: crosshair;
-}
-.hv-site {
-  position: absolute; inset: 5% 5% 0 5%;
-  background: #F4F1EA; border-radius: 8px 8px 0 0;
-  overflow: hidden; color: #171614;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
-}
-.hvs-nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px; border-bottom: 1px solid rgba(23, 22, 20, 0.08);
-}
-.hvs-logo { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
-.hvs-links { display: flex; gap: 10px; font-size: 8.5px; color: #78756F; font-weight: 500; }
-.hvs-cta {
-  background: #171614; color: #F4F1EA;
-  font-size: 8.5px; font-weight: 600; padding: 4px 9px; border-radius: 4px;
-}
-.hvs-hero {
-  padding: 16px 16px 0;
-  display: grid; grid-template-columns: 1.1fr 1fr; gap: 14px; align-items: center;
-}
-.hvs-tag {
-  display: block; font-family: var(--font-mono); font-size: 7.5px;
-  letter-spacing: 0.16em; text-transform: uppercase; color: #9E7D53; margin-bottom: 6px;
-}
-.hvs-h1 {
-  font-size: 18px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: #171614;
-}
-.hvs-desc {
-  margin-top: 6px; font-size: 9px; line-height: 1.45; color: #69655E;
-}
-.hvs-action-row {
-  margin-top: 10px; display: flex; align-items: center; gap: 8px;
-}
-.hvs-btn-primary {
-  background: #9E7D53; color: #FFF; font-size: 8.5px; font-weight: 600;
-  padding: 5px 10px; border-radius: 4px; display: inline-block;
-}
-.hvs-price { font-family: var(--font-mono); font-size: 8px; color: #78756F; }
-.hvs-img {
-  height: 140px; border-radius: 6px; overflow: hidden;
-  background: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=700&auto=format&fit=crop') center/cover no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.12);
-}
-.hvs-strip {
-  margin-top: 16px; border-top: 1px solid rgba(23, 22, 20, 0.08);
-  padding: 8px 16px; display: flex; gap: 14px; font-size: 7.5px;
-  color: #78756F; letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-mono);
-}
-
-/* Mini pins (shared) */
-.mini-pin {
-  position: absolute; z-index: 5;
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--accent); color: #09090B;
-  font-size: 10px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25), 0 4px 12px rgba(0,0,0,0.5);
-  cursor: default;
-}
-.mini-pin::after {
-  content: ''; position: absolute; inset: -3px; border-radius: 50%;
-  border: 1.5px solid var(--accent); opacity: 0;
-}
-.mini-pin.resolved {
-  background: #10B981; color: #ECFDF5;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22), 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-.mini-pin.pulsing::after { animation: pinring 1.6s ease-out infinite; }
-@keyframes pinring {
-  0% { transform: scale(1); opacity: 0.7; }
-  100% { transform: scale(2.1); opacity: 0; }
-}
-.mini-popover {
-  position: absolute; z-index: 6;
-  width: 190px;
-  background: var(--surface-overlay); border: 1px solid var(--border-active);
-  border-radius: 10px; padding: 10px 12px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.55);
-}
-.mini-popover .mp-name { font-size: 10px; font-weight: 600; color: var(--text-primary); display: flex; justify-content: space-between; }
-.mini-popover .mp-name .mp-time { font-weight: 400; color: var(--text-muted); font-family: var(--font-mono); font-size: 9px; }
-.mini-popover .mp-text { margin-top: 4px; font-size: 10.5px; line-height: 1.45; color: var(--text-secondary); min-height: 28px; }
-.mini-cursor { position: absolute; z-index: 7; pointer-events: none; }
-.mini-cursor .mc-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
-.mini-cursor .mc-ring { position: absolute; top: -5px; left: -5px; width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid rgba(245,158,11,0.5); }
-
-/* Mini sidebar (shared) */
-.hv-sidebar {
-  width: 264px; flex-shrink: 0;
-  border-left: 1px solid var(--border-subtle);
-  background: var(--surface-panel);
-  display: flex; flex-direction: column;
-}
-.msb-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); }
-.msb-title { font-size: 12px; font-weight: 600; }
-.msb-count { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
-.msb-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
-.msb-card {
-  background: var(--surface-overlay); border: 1px solid var(--border-subtle);
-  border-radius: 8px; padding: 9px 11px;
-}
-.msb-top { display: flex; align-items: center; gap: 7px; }
-.msb-num {
-  width: 15px; height: 15px; border-radius: 50%; flex-shrink: 0;
-  background: var(--accent); color: #09090B; font-size: 8.5px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-}
-.msb-status {
-  font-size: 8px; font-weight: 600; letter-spacing: 0.08em;
-  color: var(--accent); background: var(--accent-dim);
-  border: 1px solid rgba(245,158,11,0.25); border-radius: 4px; padding: 1.5px 6px;
-}
-.msb-status.resolved {
-  color: #34D399; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.35);
-}
-.msb-time { margin-left: auto; font-family: var(--font-mono); font-size: 8.5px; color: var(--text-muted); }
-.msb-text { margin-top: 5px; font-size: 10.5px; line-height: 1.45; color: var(--text-secondary); }
-.msb-meta { margin-top: 6px; font-family: var(--font-mono); font-size: 8.5px; color: var(--text-muted); }
 
 /* ============================================================
    SOCIAL PROOF BAR (§4.3)
@@ -1106,6 +761,8 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   * { scroll-behavior: auto !important; }
 }
 </style>
+<script src="/vendor/three.min.js"></script>
+<script src="/vendor/GLTFLoader.js"></script>
 </head>
 <body>
 <div class="canvas-texture" aria-hidden="true"></div>
@@ -1186,108 +843,10 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 
     <!-- Right Column: Interactive 3D CRT Monitor Staging Canvas -->
     <div class="hero-right">
-      <div class="hero-visual-wrap" id="heroVisual">
-        <!-- 3D Volumetric CRT Monitor Assembly -->
-        <div class="crt-assembly" id="crtAssembly" data-state="angled" title="Click anywhere to spin monitor">
-          <!-- 3D Extruded Surfaces -->
-          <div class="crt-side-right" aria-hidden="true"></div>
-          <div class="crt-side-left" aria-hidden="true"></div>
-          <div class="crt-side-top" aria-hidden="true"></div>
-          <div class="crt-side-bottom" aria-hidden="true"></div>
-          <div class="crt-back-housing" aria-hidden="true"></div>
-
-          <!-- Front Face (Screen & Bezel, translateZ 35px) -->
-          <div class="crt-face-front">
-            <!-- Top cooling vents -->
-            <div class="crt-top-vents">
-              <span></span><span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span><span></span>
-            </div>
-
-            <!-- Recessed Screen Bezel -->
-            <div class="crt-bezel">
-              <div class="crt-glare" aria-hidden="true"></div>
-              <div class="crt-scanlines" aria-hidden="true"></div>
-
-              <div class="hero-visual">
-                <div class="hv-chrome">
-                  <div class="hv-dots"><span></span><span></span><span></span></div>
-                  <div class="hv-url">aura-studio.staging.vercel.app</div>
-                  <div class="hv-status-pill"><span class="status-dot"></span>Interactive Staging</div>
-                </div>
-                <div class="hv-body">
-                  <div class="hv-canvas" id="heroCanvas" title="Click anywhere to drop a pin">
-                    <div class="hv-site">
-                      <div class="hvs-nav">
-                        <span class="hvs-logo">AURA ATELIER</span>
-                        <div class="hvs-links"><span>Objects</span><span>Spaces</span><span>Archive</span><span>Journal</span></div>
-                        <span class="hvs-cta">Inquire</span>
-                      </div>
-                      <div class="hvs-hero">
-                        <div>
-                          <span class="hvs-tag">CASE STUDY // EDITION 04</span>
-                          <div class="hvs-h1">Sculptural vessels cast in raw bronze.</div>
-                          <p class="hvs-desc">Direct foundry pour. Hand-patinated in Kyoto with matte beeswax finish.</p>
-                          <div class="hvs-action-row">
-                            <span class="hvs-btn-primary" id="specimenBtn">Reserve Specimen</span>
-                            <span class="hvs-price">€1,850 · In Stock</span>
-                          </div>
-                        </div>
-                        <div class="hvs-img"></div>
-                      </div>
-                      <div class="hvs-strip">
-                        <span>BRUTALIST ARCHITECTURE</span>
-                        <span>KYOTO FOUNDRY</span>
-                        <span>LIMITED TO 40</span>
-                      </div>
-                    </div>
-
-                    <!-- Animated Pins -->
-                    <div class="mini-pin" style="left: 24%; top: 62%;" data-hp="1">1</div>
-                    <div class="mini-pin" style="left: 78%; top: 38%;" data-hp="2">2</div>
-                    <div class="mini-pin" style="left: 38%; top: 12%;" data-hp="3">3</div>
-
-                    <div class="mini-popover" id="heroPopover" style="left: 26%; top: 40%;">
-                      <div class="mp-name"><span>Jane Cooper (Client)</span><span class="mp-time">2m ago</span></div>
-                      <div class="mp-text" id="heroPopText">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
-                    </div>
-                  </div>
-
-                  <!-- Staging Sidebar -->
-                  <div class="hv-sidebar">
-                    <div class="msb-head"><span class="msb-title">Feedback</span><span class="msb-count" id="heroCount">0 total</span></div>
-                    <div class="msb-list" id="heroList">
-                      <div class="msb-card" data-hc="1">
-                        <div class="msb-top"><span class="msb-num">1</span><span class="msb-status">OPEN</span><span class="msb-time">2m</span></div>
-                        <div class="msb-text">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
-                        <div class="msb-meta">1440×900 · Chrome 131</div>
-                      </div>
-                      <div class="msb-card" data-hc="2">
-                        <div class="msb-top"><span class="msb-num">2</span><span class="msb-status">OPEN</span><span class="msb-time">4m</span></div>
-                        <div class="msb-text">Hero image optimized to WebP with responsive srcset. Loads in 85ms.</div>
-                        <div class="msb-meta">1512×982 · macOS Sonoma</div>
-                      </div>
-                      <div class="msb-card" data-hc="3">
-                        <div class="msb-top"><span class="msb-num">3</span><span class="msb-status">OPEN</span><span class="msb-time">6m</span></div>
-                        <div class="msb-text">Inquiry button should open sliding sheet instead of anchor jump.</div>
-                        <div class="msb-meta">375×812 · Safari iOS</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Clean Molded Bottom Chin (No text, no buttons, no green light) -->
-            <div class="crt-chin-clean"></div>
-          </div>
-
-          <!-- Swivel Neck and Stand Assembly -->
-          <div class="crt-stand-assembly" aria-hidden="true">
-            <div class="crt-stand-neck"></div>
-            <div class="crt-stand-base"></div>
-            <div class="crt-desk-shadow"></div>
-          </div>
+      <div class="crt-stage-wrapper" id="crtStageWrapper" title="Click monitor to spin">
+        <div id="crtCanvasContainer" class="crt-canvas-container"></div>
+        <div class="crt-spin-hint">
+          <span class="crt-hint-badge">Click monitor to spin</span>
         </div>
       </div>
     </div>
@@ -1700,144 +1259,732 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
     .from('#heroVisual', { autoAlpha: 0, x: 40, y: 15, scale: 0.98, duration: 1.1, ease: 'power3.out' }, '-=0.45');
 
-  /* ══════════ 3D CRT MONITOR: COMEDIC SPIN & SNAP ══════════ */
-  var crtAssembly = $('#crtAssembly');
-  var isCrtSpinning = false;
-  var isCrtFlat = false;
+  /* ══════════ REALISTIC 3D WEBGL CRT MONITOR (Three.js PBR) ══════════ */
+  (function initCrtWebGL() {
+    var container = $('#crtCanvasContainer');
+    var wrapper = $('#crtStageWrapper');
+    if (!container || !wrapper || typeof THREE === 'undefined') return;
 
-  function spinCrtMonitor() {
-    if (isCrtSpinning || !crtAssembly) return;
-    isCrtSpinning = true;
+    // 1. Scene & Camera Setup
+    var width = container.clientWidth || 660;
+    var height = container.clientHeight || 540;
 
-    if (!isCrtFlat) {
-      // COMEDIC 360° OVER-THE-TOP WHIP SPIN TO 0°
-      var spinTl = gsap.timeline({
-        onComplete: function () {
-          isCrtFlat = true;
-          isCrtSpinning = false;
-          crtAssembly.setAttribute('data-state', 'flat');
-        }
-      });
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+    camera.position.set(0, 0.35, 17.5);
+    camera.lookAt(0, 0.1, 0);
 
-      spinTl
-        .to(crtAssembly, {
-          rotateY: -30,
-          rotateX: 7,
-          scale: 0.95,
-          duration: 0.14,
-          ease: 'power2.in'
-        })
-        .to(crtAssembly, {
-          rotateY: 360,
-          rotateX: 0,
-          scale: 1.04,
-          duration: 0.62,
-          ease: 'power3.inOut'
-        })
-        .to(crtAssembly, {
-          rotateY: 0,
-          rotateX: 0,
-          scale: 1,
-          duration: 0.5,
-          ease: 'elastic.out(1.2, 0.4)'
-        });
+    // 2. WebGL Renderer with High-Performance Tone Mapping & PCF Soft Shadows
+    var renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.18;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
 
-      // Phosphor scanline flash
-      gsap.fromTo('.crt-scanlines', { opacity: 0.9 }, { opacity: 0.32, duration: 0.5, delay: 0.55 });
-    } else {
-      // PLAYFUL WOBBLE-TILT BACK TO -20°
-      var tiltTl = gsap.timeline({
-        onComplete: function () {
-          isCrtFlat = false;
-          isCrtSpinning = false;
-          crtAssembly.setAttribute('data-state', 'angled');
-        }
-      });
+    // 3. Realistic Studio Lighting Setup
+    // Key Studio Light (Warm directional, casts soft contact shadows)
+    var keyLight = new THREE.DirectionalLight(0xFFF7ED, 2.7);
+    keyLight.position.set(7, 9, 8);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 2048;
+    keyLight.shadow.mapSize.height = 2048;
+    keyLight.shadow.camera.near = 1;
+    keyLight.shadow.camera.far = 30;
+    keyLight.shadow.camera.left = -9;
+    keyLight.shadow.camera.right = 9;
+    keyLight.shadow.camera.top = 9;
+    keyLight.shadow.camera.bottom = -9;
+    keyLight.shadow.bias = -0.0006;
+    scene.add(keyLight);
 
-      tiltTl
-        .to(crtAssembly, {
-          rotateY: 12,
-          rotateX: -2,
-          scale: 0.97,
-          duration: 0.16,
-          ease: 'power1.in'
-        })
-        .to(crtAssembly, {
-          rotateY: -20,
-          rotateX: 4,
-          scale: 1,
-          duration: 0.55,
-          ease: 'back.out(2.4)'
-        });
+    // Brand Amber Rim Spotlight (F59E0B) grazing the CRT left casing and top ridge
+    var amberRim = new THREE.SpotLight(0xF59E0B, 4.2, 40, Math.PI / 4, 0.5, 1);
+    amberRim.position.set(-8.5, 5, -2);
+    amberRim.target.position.set(0, 0, 0);
+    scene.add(amberRim);
+    scene.add(amberRim.target);
+
+    // Cool Studio Front/Bottom Fill
+    var fillLight = new THREE.DirectionalLight(0x8898AA, 0.75);
+    fillLight.position.set(4, -3, 6);
+    scene.add(fillLight);
+
+    // Hemisphere Ambient for deep shadow bounce
+    var hemiLight = new THREE.HemisphereLight(0x282936, 0x09090D, 1.1);
+    scene.add(hemiLight);
+
+    // 4. Procedural Studio PMREM Environment Map for authentic PBR reflections
+    var pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
+    var envScene = new THREE.Scene();
+    var envSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(80, 24, 16),
+      new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: 0x0A0A0E })
+    );
+    envScene.add(envSphere);
+
+    // Key warm reflector panel
+    var keyReflector = new THREE.Mesh(
+      new THREE.PlaneGeometry(50, 35),
+      new THREE.MeshBasicMaterial({ color: 0xFFF3E0 })
+    );
+    keyReflector.position.set(35, 40, 35);
+    keyReflector.lookAt(0, 0, 0);
+    envScene.add(keyReflector);
+
+    // Cyath amber rim reflector panel
+    var amberReflector = new THREE.Mesh(
+      new THREE.PlaneGeometry(45, 50),
+      new THREE.MeshBasicMaterial({ color: 0xF59E0B })
+    );
+    amberReflector.position.set(-45, 25, -25);
+    amberReflector.lookAt(0, 0, 0);
+    envScene.add(amberReflector);
+
+    // Overhead skylight soft diffuser
+    var topReflector = new THREE.Mesh(
+      new THREE.PlaneGeometry(70, 70),
+      new THREE.MeshBasicMaterial({ color: 0x242838 })
+    );
+    topReflector.position.set(0, 60, 0);
+    topReflector.lookAt(0, 0, 0);
+    envScene.add(topReflector);
+
+    var envTexture = pmremGenerator.fromScene(envScene).texture;
+    scene.environment = envTexture;
+
+    // 5. Contact Shadow Plane on the floor under the monitor stand
+    var shadowCanvas = document.createElement('canvas');
+    shadowCanvas.width = 256;
+    shadowCanvas.height = 256;
+    var sCtx = shadowCanvas.getContext('2d');
+    var sGrad = sCtx.createRadialGradient(128, 128, 0, 128, 128, 120);
+    sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.88)');
+    sGrad.addColorStop(0.35, 'rgba(0, 0, 0, 0.55)');
+    sGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.18)');
+    sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    sCtx.fillStyle = sGrad;
+    sCtx.fillRect(0, 0, 256, 256);
+
+    var shadowTex = new THREE.CanvasTexture(shadowCanvas);
+    var shadowPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(16, 14),
+      new THREE.MeshBasicMaterial({
+        map: shadowTex,
+        transparent: true,
+        opacity: 0.92,
+        depthWrite: false
+      })
+    );
+    shadowPlane.rotation.x = -Math.PI / 2;
+    shadowPlane.position.set(0, -4.85, 0);
+    scene.add(shadowPlane);
+
+    // 6. Dynamic Offscreen Canvas for CRT Display
+    var screenCanvas = document.createElement('canvas');
+    screenCanvas.width = 1024;
+    screenCanvas.height = 1000;
+    var ctx = screenCanvas.getContext('2d');
+
+    function drawCrtContent(pulseTime) {
+      ctx.clearRect(0, 0, 1024, 1000);
+
+      // Top Browser Bar (Dark Chrome)
+      ctx.fillStyle = '#141418';
+      ctx.fillRect(0, 0, 1024, 52);
+      ctx.fillStyle = '#22222A';
+      ctx.fillRect(0, 51, 1024, 1);
+
+      // Window Control Dots
+      ctx.beginPath(); ctx.arc(26, 26, 5.5, 0, Math.PI * 2); ctx.fillStyle = '#FF5F57'; ctx.fill();
+      ctx.beginPath(); ctx.arc(44, 26, 5.5, 0, Math.PI * 2); ctx.fillStyle = '#FEBC2E'; ctx.fill();
+      ctx.beginPath(); ctx.arc(62, 26, 5.5, 0, Math.PI * 2); ctx.fillStyle = '#28C840'; ctx.fill();
+
+      // Centered URL Bar
+      ctx.fillStyle = '#0B0B0E';
+      ctx.strokeStyle = '#27272E';
+      ctx.lineWidth = 1;
+      roundRect(ctx, 310, 13, 360, 26, 6);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#A1A1AA';
+      ctx.font = '500 11.5px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('aura-studio.staging.vercel.app', 490, 30);
+
+      // Interactive Staging Badge
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+      roundRect(ctx, 840, 13, 160, 26, 13);
+      ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(855, 26, 4, 0, Math.PI * 2); ctx.fillStyle = '#10B981'; ctx.fill();
+      ctx.fillStyle = '#10B981';
+      ctx.font = '600 10.5px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('Interactive Staging', 866, 30);
+
+      // Body Layout: Left Website (680px) | Right Feedback Sidebar (344px)
+      // Left: Aura Atelier Staging Site
+      ctx.fillStyle = '#F4F1EA';
+      ctx.fillRect(0, 52, 680, 948);
+
+      // Site Nav
+      ctx.fillStyle = '#171614';
+      ctx.font = '700 13px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.letterSpacing = '0.12em';
+      ctx.fillText('AURA ATELIER', 32, 90);
+
+      ctx.fillStyle = '#78756F';
+      ctx.font = '500 11px "Instrument Sans", sans-serif';
+      ctx.fillText('Objects', 210, 90);
+      ctx.fillText('Spaces', 275, 90);
+      ctx.fillText('Archive', 340, 90);
+      ctx.fillText('Journal', 408, 90);
+
+      ctx.fillStyle = '#171614';
+      roundRect(ctx, 580, 72, 70, 26, 4);
+      ctx.fill();
+      ctx.fillStyle = '#F4F1EA';
+      ctx.font = '600 10.5px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Inquire', 615, 89);
+
+      ctx.fillStyle = 'rgba(23, 22, 20, 0.08)';
+      ctx.fillRect(32, 112, 616, 1);
+
+      // Site Hero Headline & Content
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#9E7D53';
+      ctx.font = '600 9.5px monospace';
+      ctx.fillText('CASE STUDY // EDITION 04', 32, 150);
+
+      ctx.fillStyle = '#171614';
+      ctx.font = '700 28px "Instrument Sans", serif';
+      ctx.fillText('Sculptural vessels cast', 32, 190);
+      ctx.fillText('in raw bronze.', 32, 225);
+
+      ctx.fillStyle = '#69655E';
+      ctx.font = '400 12.5px "Instrument Sans", sans-serif';
+      ctx.fillText('Direct foundry pour. Hand-patinated in Kyoto', 32, 260);
+      ctx.fillText('with matte organic beeswax finish.', 32, 280);
+
+      // Specimen Button & Price
+      ctx.fillStyle = '#171614';
+      roundRect(ctx, 32, 310, 155, 36, 6);
+      ctx.fill();
+      ctx.fillStyle = '#F4F1EA';
+      ctx.font = '600 12px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Reserve Specimen', 110, 333);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#78756F';
+      ctx.font = '500 11.5px monospace';
+      ctx.fillText('€1,850 · In Stock', 205, 333);
+
+      // Bronze Specimen Graphic Box
+      var gGrad = ctx.createLinearGradient(380, 140, 640, 360);
+      gGrad.addColorStop(0, '#382F26');
+      gGrad.addColorStop(0.5, '#1E1B17');
+      gGrad.addColorStop(1, '#0F0E0C');
+      ctx.fillStyle = gGrad;
+      roundRect(ctx, 380, 140, 268, 205, 8);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(23, 22, 20, 0.2)';
+      ctx.stroke();
+
+      // Warm bronze vessel silhouette glow inside image
+      var vesselGlow = ctx.createRadialGradient(514, 230, 10, 514, 230, 90);
+      vesselGlow.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
+      vesselGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = vesselGlow;
+      ctx.fillRect(380, 140, 268, 205);
+
+      // Stylized minimal bronze vase in raw bronze tone
+      ctx.fillStyle = '#B48858';
+      ctx.beginPath();
+      ctx.ellipse(514, 265, 34, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(480, 265);
+      ctx.quadraticCurveTo(465, 210, 495, 185);
+      ctx.lineTo(533, 185);
+      ctx.quadraticCurveTo(563, 210, 548, 265);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#D6A875';
+      ctx.beginPath();
+      ctx.ellipse(514, 185, 19, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Lower Editorial Strip
+      ctx.fillStyle = 'rgba(23, 22, 20, 0.08)';
+      ctx.fillRect(32, 385, 616, 1);
+      ctx.fillStyle = '#9E7D53';
+      ctx.font = '600 8.5px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('BRUTALIST ARCHITECTURE', 32, 404);
+      ctx.textAlign = 'center';
+      ctx.fillText('KYOTO FOUNDRY ARCHIVE', 340, 404);
+      ctx.textAlign = 'right';
+      ctx.fillText('LIMITED SPECIMEN 04/40', 648, 404);
+
+      // Additional Architectural Case Study Section below
+      ctx.fillStyle = '#EAE6DC';
+      roundRect(ctx, 32, 428, 616, 420, 8);
+      ctx.fill();
+
+      ctx.fillStyle = '#171614';
+      ctx.font = '700 18px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Monolithic spatial proportion & poured form.', 52, 465);
+
+      ctx.fillStyle = '#69655E';
+      ctx.font = '400 12px "Instrument Sans", sans-serif';
+      ctx.fillText('A curated study of raw textures, exposed aggregate, and deep acoustic mass.', 52, 492);
+
+      // Architectural blocks
+      ctx.fillStyle = '#DCD6C8';
+      roundRect(ctx, 52, 520, 180, 180, 6); ctx.fill();
+      roundRect(ctx, 250, 520, 180, 180, 6); ctx.fill();
+      roundRect(ctx, 448, 520, 180, 180, 6); ctx.fill();
+
+      // Review Pins on Website
+      // Pin 1 (Amber with pulse ring)
+      var p1x = 180, p1y = 330;
+      var pulseProgress = (pulseTime % 1.5) / 1.5;
+      var pulseRadius = 14 + pulseProgress * 18;
+      var pulseAlpha = 0.8 * (1 - pulseProgress);
+      ctx.beginPath();
+      ctx.arc(p1x, p1y, pulseRadius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(245, 158, 11, ' + pulseAlpha + ')';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(p1x, p1y, 13, 0, Math.PI * 2);
+      ctx.fillStyle = '#F59E0B';
+      ctx.fill();
+      ctx.strokeStyle = '#09090B';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#09090B';
+      ctx.font = '700 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('1', p1x, p1y + 4);
+
+      // Pin 2
+      var p2x = 514, p2y = 230;
+      ctx.beginPath(); ctx.arc(p2x, p2y, 13, 0, Math.PI * 2);
+      ctx.fillStyle = '#F59E0B'; ctx.fill();
+      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#09090B'; ctx.font = '700 11px sans-serif';
+      ctx.fillText('2', p2x, p2y + 4);
+
+      // Pin 3
+      var p3x = 240, p3y = 460;
+      ctx.beginPath(); ctx.arc(p3x, p3y, 13, 0, Math.PI * 2);
+      ctx.fillStyle = '#F59E0B'; ctx.fill();
+      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#09090B'; ctx.font = '700 11px sans-serif';
+      ctx.fillText('3', p3x, p3y + 4);
+
+      // Floating Feedback Popover attached to Pin 1
+      var popX = 205, popY = 245, popW = 340, popH = 88;
+      ctx.fillStyle = '#18181E';
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, popX, popY, popW, popH, 8);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#FAFAFA';
+      ctx.font = '600 11px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Jane Cooper (Client)', popX + 14, popY + 22);
+
+      ctx.fillStyle = '#71717A';
+      ctx.font = '400 10px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('2m ago', popX + popW - 14, popY + 22);
+
+      ctx.fillStyle = '#E4E4E7';
+      ctx.font = '400 11.5px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText("Can we change this to 'Reserve via Concierge'?", popX + 14, popY + 44);
+      ctx.fillText('Also bump button horizontal padding.', popX + 14, popY + 60);
+
+      ctx.fillStyle = '#F59E0B';
+      ctx.font = '500 9.5px monospace';
+      ctx.fillText('1440×900 · Chrome 131 · macOS 15.1', popX + 14, popY + 76);
+
+      // Right: Cyath Staging Review Telemetry Sidebar
+      ctx.fillStyle = '#101014';
+      ctx.fillRect(680, 52, 344, 948);
+      ctx.fillStyle = '#22222A';
+      ctx.fillRect(680, 52, 1, 948);
+
+      // Sidebar Header
+      ctx.fillStyle = '#FAFAFA';
+      ctx.font = '600 13px "Instrument Sans", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Feedback', 700, 85);
+
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+      roundRect(ctx, 940, 70, 68, 22, 11);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#F59E0B';
+      ctx.font = '600 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('3 total', 974, 85);
+
+      ctx.fillStyle = '#22222A';
+      ctx.fillRect(680, 104, 344, 1);
+
+      // Card 1
+      drawSidebarCard(ctx, 700, 118, 308, 1, 'OPEN', '2m',
+        "Can we change this to 'Reserve via Concierge'? Also bump button padding.",
+        '1440×900 · Chrome 131', true);
+
+      // Card 2
+      drawSidebarCard(ctx, 700, 240, 308, 2, 'OPEN', '4m',
+        'Hero image optimized to WebP with responsive srcset. Loads in 85ms.',
+        '1512×982 · macOS Sonoma', false);
+
+      // Card 3
+      drawSidebarCard(ctx, 700, 362, 308, 3, 'OPEN', '6m',
+        'Inquiry button should open sliding sheet instead of anchor jump.',
+        '375×812 · Safari iOS', false);
+
+      // Authentic CRT Scanlines Overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+      for (var y = 0; y < 1000; y += 4) {
+        ctx.fillRect(0, y, 1024, 1.8);
+      }
+
+      // CRT Subtle Phosphor Tube Vignette
+      var tubeVignette = ctx.createRadialGradient(512, 500, 380, 512, 500, 650);
+      tubeVignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      tubeVignette.addColorStop(0.7, 'rgba(0, 0, 0, 0.12)');
+      tubeVignette.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
+      ctx.fillStyle = tubeVignette;
+      ctx.fillRect(0, 0, 1024, 1000);
     }
-  }
 
-  if (crtAssembly) {
-    crtAssembly.addEventListener('click', function (e) {
-      // If currently flat and clicking inside the interactive website canvas to drop a pin, allow pin placement
-      if (isCrtFlat && e.target.closest('#heroCanvas')) {
-        return;
+    function drawSidebarCard(ctx, x, y, w, num, status, time, text, meta, isFocused) {
+      ctx.fillStyle = isFocused ? '#181820' : '#141418';
+      ctx.strokeStyle = isFocused ? 'rgba(245, 158, 11, 0.4)' : '#23232C';
+      ctx.lineWidth = 1;
+      roundRect(ctx, x, y, w, 108, 8);
+      ctx.fill(); ctx.stroke();
+
+      // Number badge
+      ctx.beginPath(); ctx.arc(x + 16, y + 20, 9, 0, Math.PI * 2);
+      ctx.fillStyle = '#F59E0B'; ctx.fill();
+      ctx.fillStyle = '#09090B'; ctx.font = '700 9px sans-serif';
+      ctx.textAlign = 'center'; ctx.fillText(num, x + 16, y + 23);
+
+      // Status pill
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+      roundRect(ctx, x + 32, y + 11, 46, 18, 4);
+      ctx.fill();
+      ctx.fillStyle = '#F59E0B'; ctx.font = '600 8.5px monospace';
+      ctx.fillText(status, x + 55, y + 23);
+
+      // Time
+      ctx.fillStyle = '#71717A'; ctx.font = '400 9px monospace';
+      ctx.textAlign = 'right'; ctx.fillText(time, x + w - 12, y + 23);
+
+      // Text
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#D4D4D8'; ctx.font = '400 11px "Instrument Sans", sans-serif';
+      wrapText(ctx, text, x + 12, y + 46, w - 24, 16);
+
+      // Meta
+      ctx.fillStyle = '#A1A1AA'; ctx.font = '500 9px monospace';
+      ctx.fillText(meta, x + 12, y + 96);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      var words = text.split(' ');
+      var line = '';
+      for (var n = 0; n < words.length; n++) {
+        var testLine = line + words[n] + ' ';
+        var metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
       }
-      // Clicking anywhere on the monitor triggers the comedic spin!
-      spinCrtMonitor();
+      ctx.fillText(line, x, y);
+    }
+
+    // Initial Screen Draw
+    drawCrtContent(0);
+    var screenTexture = new THREE.CanvasTexture(screenCanvas);
+    screenTexture.encoding = THREE.sRGBEncoding;
+
+    // 7. Curved CRT Screen Geometry & PBR Materials
+    var screenGeo = new THREE.PlaneGeometry(6.45, 6.34, 20, 20);
+    var posAttr = screenGeo.attributes.position;
+    for (var i = 0; i < posAttr.count; i++) {
+      var px = posAttr.getX(i);
+      var py = posAttr.getY(i);
+      var nx = px / 3.225;
+      var ny = py / 3.17;
+      var curve = (1 - nx * nx) * (1 - ny * ny) * 0.16;
+      posAttr.setZ(i, Math.max(0, curve));
+    }
+    screenGeo.computeVertexNormals();
+
+    var screenMat = new THREE.MeshStandardMaterial({
+      map: screenTexture,
+      emissiveMap: screenTexture,
+      emissive: 0xFFFFFF,
+      emissiveIntensity: 0.72,
+      roughness: 0.15,
+      metalness: 0.05
     });
-  }
+    var screenMesh = new THREE.Mesh(screenGeo, screenMat);
+    screenMesh.position.set(-1.155, 5.31, 3.66);
 
-  /* Interactive Click-to-Pin on Hero Staging Canvas */
-  var heroCanvas = $('#heroCanvas');
-  if (heroCanvas) {
-    var userPinCount = 3;
-    heroCanvas.addEventListener('click', function (e) {
-      var rect = heroCanvas.getBoundingClientRect();
-      var x = ((e.clientX - rect.left) / rect.width) * 100;
-      var y = ((e.clientY - rect.top) / rect.height) * 100;
-      userPinCount++;
-      var newPin = document.createElement('div');
-      newPin.className = 'mini-pin pulsing';
-      newPin.style.left = x.toFixed(1) + '%';
-      newPin.style.top = y.toFixed(1) + '%';
-      newPin.textContent = userPinCount;
-      newPin.style.zIndex = '15';
-      heroCanvas.appendChild(newPin);
+    // Curved Specular Glass Face Overlay (catches key light and amber rim)
+    var glassGeo = screenGeo.clone();
+    var glassMat = new THREE.MeshPhysicalMaterial({
+      color: 0xFFFFFF,
+      roughness: 0.06,
+      metalness: 0.08,
+      transmission: 0.90,
+      transparent: true,
+      opacity: 0.35,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+      reflectivity: 0.9
+    });
+    var glassMesh = new THREE.Mesh(glassGeo, glassMat);
+    glassMesh.position.set(-1.155, 5.31, 3.68);
 
-      var pop = $('#heroPopover');
-      if (pop) {
-        pop.style.left = Math.min(65, Math.max(10, x + 2)) + '%';
-        pop.style.top = Math.min(70, Math.max(10, y + 2)) + '%';
-        $('#heroPopText').textContent = 'Pin #' + userPinCount + ' placed at (' + Math.round(x) + '%, ' + Math.round(y) + '%). Client telemetry attached.';
-        gsap.fromTo(pop, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.25 });
+    // 8. 3D Model Group & Orientation
+    var tvRoot = new THREE.Group();
+    // Default angle: 20 degrees away from user towards the text on the left!
+    tvRoot.rotation.y = -0.35;
+    tvRoot.rotation.x = 0.05;
+    tvRoot.scale.set(0.92, 0.92, 0.92);
+    scene.add(tvRoot);
+
+    // Load User Supplied Model: /small_crt_tv.glb
+    var loader = new THREE.GLTFLoader();
+    loader.load('/small_crt_tv.glb', function (gltf) {
+      var tvModel = gltf.scene;
+
+      // Center geometry at origin (0, 0, 0)
+      tvModel.position.set(0, -4.808, 0.9325);
+
+      // Attach curved screen and specular glass mesh to the TV
+      tvModel.add(screenMesh);
+      tvModel.add(glassMesh);
+
+      // Enhance PBR specular reflections and shadows on all meshes
+      tvModel.traverse(function (child) {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          if (child.material) {
+            child.material.envMap = envTexture;
+            child.material.envMapIntensity = 1.0;
+            child.material.needsUpdate = true;
+          }
+        }
+      });
+
+      tvRoot.add(tvModel);
+
+      // Gentle initial reveal entrance
+      gsap.from(tvRoot.scale, {
+        x: 0.75, y: 0.75, z: 0.75,
+        duration: 1.2,
+        ease: 'power3.out'
+      });
+    }, undefined, function (err) {
+      console.warn('Could not load /small_crt_tv.glb:', err);
+    });
+
+    // 9. Comedic 360° Whip-Spin & Elastic Slap Physics
+    var isCrtSpinning = false;
+    var isCrtFlat = false;
+
+    function spinCrtMonitor() {
+      if (isCrtSpinning || !tvRoot) return;
+      isCrtSpinning = true;
+
+      if (!isCrtFlat) {
+        // COMEDIC 360° WHIP SPIN TO 0°
+        var spinTl = gsap.timeline({
+          onComplete: function () {
+            isCrtFlat = true;
+            isCrtSpinning = false;
+            tvRoot.rotation.y = 0;
+            tvRoot.rotation.x = 0;
+          }
+        });
+
+        spinTl
+          .to(tvRoot.rotation, {
+            y: -0.48, // Anticipation wind-up
+            x: 0.08,
+            duration: 0.14,
+            ease: 'power2.in'
+          })
+          .to(tvRoot.scale, {
+            x: 0.88, y: 0.88, z: 0.88,
+            duration: 0.14,
+            ease: 'power2.in'
+          }, '<')
+          .to(tvRoot.rotation, {
+            y: Math.PI * 2, // Full 360° whip spin!
+            x: 0,
+            duration: 0.58,
+            ease: 'power3.inOut'
+          })
+          .to(tvRoot.scale, {
+            x: 1.04, y: 1.04, z: 1.04,
+            duration: 0.29,
+            yoyo: true,
+            repeat: 1,
+            ease: 'sine.inOut'
+          }, '<')
+          .to(tvRoot.rotation, {
+            y: 0, // Slap flat to 0° facing user!
+            x: 0,
+            duration: 0.52,
+            ease: 'elastic.out(1.2, 0.45)'
+          })
+          .to(tvRoot.scale, {
+            x: 0.92, y: 0.92, z: 0.92,
+            duration: 0.52,
+            ease: 'elastic.out(1.2, 0.45)'
+          }, '<');
+      } else {
+        // PLAYFUL WOBBLE-TILT BACK TO -20°
+        var tiltTl = gsap.timeline({
+          onComplete: function () {
+            isCrtFlat = false;
+            isCrtSpinning = false;
+            tvRoot.rotation.y = -0.35;
+            tvRoot.rotation.x = 0.05;
+          }
+        });
+
+        tiltTl
+          .to(tvRoot.rotation, {
+            y: 0.18, // Anticipation jolt
+            x: -0.02,
+            duration: 0.14,
+            ease: 'power1.in'
+          })
+          .to(tvRoot.scale, {
+            x: 0.89, y: 0.89, z: 0.89,
+            duration: 0.14,
+            ease: 'power1.in'
+          }, '<')
+          .to(tvRoot.rotation, {
+            y: -0.35, // Snap back to -20°
+            x: 0.05,
+            duration: 0.55,
+            ease: 'back.out(2.4)'
+          })
+          .to(tvRoot.scale, {
+            x: 0.92, y: 0.92, z: 0.92,
+            duration: 0.55,
+            ease: 'back.out(2.4)'
+          }, '<');
+      }
+    }
+
+    // Click anywhere on the monitor wrapper to trigger the comedic spin
+    wrapper.addEventListener('click', spinCrtMonitor);
+
+    // 10. Mouse Hover Parallax
+    var mouseX = 0, mouseY = 0;
+    var targetMouseX = 0, targetMouseY = 0;
+
+    wrapper.addEventListener('mousemove', function (e) {
+      var rect = wrapper.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      var y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      targetMouseX = x * 0.08;
+      targetMouseY = y * 0.05;
+    });
+
+    wrapper.addEventListener('mouseleave', function () {
+      targetMouseX = 0;
+      targetMouseY = 0;
+    });
+
+    // 11. Render Loop
+    var lastCanvasUpdate = 0;
+    function animate(time) {
+      var t = time * 0.001;
+
+      // Update pulse animation on screen canvas at ~30fps
+      if (time - lastCanvasUpdate > 33) {
+        drawCrtContent(t);
+        screenTexture.needsUpdate = true;
+        lastCanvasUpdate = time;
       }
 
-      // Reset datum to amber if pin dropped
-      setDatumLocked(false);
-    });
-  }
+      // Smooth mouse parallax when not in high-speed spin
+      if (!isCrtSpinning && tvRoot) {
+        mouseX += (targetMouseX - mouseX) * 0.08;
+        mouseY += (targetMouseY - mouseY) * 0.08;
 
-  /* ══════════ HERO visual loop — 8s, pins + sidebar live ══════════ */
-  var heroPins = $$('.mini-pin[data-hp]');
-  var heroCards = $$('[data-hc]');
-  var heroCount = $('#heroCount');
-  var hloop = gsap.timeline({ repeat: -1, repeatDelay: 1.4, defaults: { ease: 'expo.out' } });
-  hloop
-    .set(heroPins, { autoAlpha: 0, y: -16, scale: 1.25 })
-    .set(heroCards, { autoAlpha: 0, y: 10 })
-    .set('#heroPopover', { autoAlpha: 0, y: 8 })
-    .call(function () { heroCount.textContent = '0 total'; heroPins.forEach(function (p) { p.classList.remove('pulsing'); }); })
-    .to(heroPins[0], { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, 0.4)
-    .call(function () { heroPins[0].classList.add('pulsing'); })
-    .to(heroCards[0], { autoAlpha: 1, y: 0, duration: 0.5 }, 0.85)
-    .to('#heroPopover', { autoAlpha: 1, y: 0, duration: 0.45 }, 1.0)
-    .call(function () { heroCount.textContent = '1 total'; }, null, 1.1)
-    .to('#heroPopover', { autoAlpha: 0, y: -6, duration: 0.35 }, 2.6)
-    .to(heroPins[1], { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, 3.0)
-    .call(function () { heroPins[1].classList.add('pulsing'); })
-    .to(heroCards[1], { autoAlpha: 1, y: 0, duration: 0.5 }, 3.45)
-    .call(function () { heroCount.textContent = '2 total'; }, null, 3.55)
-    .to(heroPins[2], { autoAlpha: 1, y: 0, scale: 1, duration: 0.55 }, 4.8)
-    .call(function () { heroPins[2].classList.add('pulsing'); })
-    .to(heroCards[2], { autoAlpha: 1, y: 0, duration: 0.5 }, 5.25)
-    .call(function () { heroCount.textContent = '3 total'; }, null, 5.35)
-    .to(heroPins.concat(heroCards, ['#heroPopover']), { autoAlpha: 0, duration: 0.01 }, 8.0);
+        var baseAngleY = isCrtFlat ? 0 : -0.35;
+        var baseAngleX = isCrtFlat ? 0 : 0.05;
+        tvRoot.rotation.y = baseAngleY + mouseX;
+        tvRoot.rotation.x = baseAngleX - mouseY;
+      }
+
+      renderer.render(scene, camera);
+    }
+    renderer.setAnimationLoop(animate);
+
+    // 12. Responsive Resize Handling
+    window.addEventListener('resize', function () {
+      if (!container) return;
+      var newW = container.clientWidth;
+      var newH = container.clientHeight;
+      if (newW > 0 && newH > 0) {
+        camera.aspect = newW / newH;
+        camera.updateProjectionMatrix();
+        renderer.setSize(newW, newH);
+      }
+    });
+  })();
 
   /* ══════════ SCROLL ENTRANCES (master map §5) ══════════ */
   $$('.section-head').forEach(function (h) {
