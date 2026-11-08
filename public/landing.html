@@ -1254,13 +1254,13 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     var wrapper = $('#crtStageWrapper');
     if (!container || !wrapper || typeof THREE === 'undefined') return;
 
-    // 1. Scene & Camera Setup
+    // 1. Scene & Camera Setup (Clean framing, proper FOV, no zoom clipping)
     var width = container.clientWidth || 700;
     var height = container.clientHeight || 540;
 
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
-    camera.position.set(0, 0.25, 17.5);
+    var camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100);
+    camera.position.set(0, 0.1, 16.0);
     camera.lookAt(0, 0, 0);
 
     // 2. High-Performance WebGL Renderer
@@ -1278,24 +1278,24 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // 3. Balanced Studio Lighting (Clean, no glitter artifacts)
+    // 3. Studio Lighting
     var keyLight = new THREE.DirectionalLight(0xFFF7ED, 2.2);
-    keyLight.position.set(7, 9, 8);
+    keyLight.position.set(6, 8, 8);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 2048;
     keyLight.shadow.mapSize.height = 2048;
     keyLight.shadow.camera.near = 1;
     keyLight.shadow.camera.far = 30;
-    keyLight.shadow.camera.left = -9;
-    keyLight.shadow.camera.right = 9;
-    keyLight.shadow.camera.top = 9;
-    keyLight.shadow.camera.bottom = -9;
+    keyLight.shadow.camera.left = -8;
+    keyLight.shadow.camera.right = 8;
+    keyLight.shadow.camera.top = 8;
+    keyLight.shadow.camera.bottom = -8;
     keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    // Subtle Amber Rim Accent Light (reflects brand glow on left chassis)
+    // Brand Amber Rim Spotlight
     var amberRim = new THREE.SpotLight(0xF59E0B, 3.2, 35, Math.PI / 4, 0.6, 1);
-    amberRim.position.set(-8, 6, -2);
+    amberRim.position.set(-8, 5, -2);
     amberRim.target.position.set(0, 0, 0);
     scene.add(amberRim);
     scene.add(amberRim.target);
@@ -1309,7 +1309,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     var hemiLight = new THREE.HemisphereLight(0x282936, 0x09090D, 1.0);
     scene.add(hemiLight);
 
-    // 4. Subtle Studio PMREM Environment Map
+    // 4. Studio Environment Reflection Map
     var pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
     var envScene = new THREE.Scene();
@@ -1338,34 +1338,34 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     var envTexture = pmremGenerator.fromScene(envScene).texture;
     scene.environment = envTexture;
 
-    // 5. Contact Shadow Under Monitor Stand
+    // 5. Contact Shadow Under Monitor Pedestal Stand
     var shadowCanvas = document.createElement('canvas');
     shadowCanvas.width = 256;
     shadowCanvas.height = 256;
     var sCtx = shadowCanvas.getContext('2d');
     var sGrad = sCtx.createRadialGradient(128, 128, 0, 128, 128, 120);
-    sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.90)');
-    sGrad.addColorStop(0.35, 'rgba(0, 0, 0, 0.60)');
-    sGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.18)');
+    sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.88)');
+    sGrad.addColorStop(0.35, 'rgba(0, 0, 0, 0.55)');
+    sGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.16)');
     sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     sCtx.fillStyle = sGrad;
     sCtx.fillRect(0, 0, 256, 256);
 
     var shadowTex = new THREE.CanvasTexture(shadowCanvas);
     var shadowPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(14, 14),
+      new THREE.PlaneGeometry(11, 11),
       new THREE.MeshBasicMaterial({
         map: shadowTex,
         transparent: true,
-        opacity: 0.92,
+        opacity: 0.88,
         depthWrite: false
       })
     );
     shadowPlane.rotation.x = -Math.PI / 2;
-    shadowPlane.position.set(0, -5.29, 0);
+    shadowPlane.position.set(0, -3.46, 0);
     scene.add(shadowPlane);
 
-    // 6. High-Definition 4:3 Offscreen Canvas (1600 × 1200, matching monitor aperture)
+    // 6. High-Definition 4:3 Offscreen Canvas (1600 × 1200)
     var screenCanvas = document.createElement('canvas');
     screenCanvas.width = 1600;
     screenCanvas.height = 1200;
@@ -1638,7 +1638,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         'Inquiry button should open sliding sheet instead of anchor jump.',
         '375×812 · Safari iOS', false);
 
-      // Ultra-Fine CRT Scanlines (Non-intrusive)
+      // Ultra-Fine CRT Scanlines
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       for (var y = 0; y < 1200; y += 4) {
         ctx.fillRect(0, y, 1600, 1.5);
@@ -1734,56 +1734,52 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     loader.load('/crt-monitor.glb', function (gltf) {
       var monitorModel = gltf.scene;
 
-      // Scale and center monitor geometry in tvRoot
-      var scale = 24.5;
+      // Perfectly scaled to fill 75% of the frame with generous negative space
+      var scale = 16.0;
       monitorModel.scale.set(scale, scale, scale);
-      monitorModel.position.set(0, -0.2155 * scale, 0.0175 * scale);
+      monitorModel.position.set(0, -0.2155 * scale, 0.0175 * scale); // Center at (0, 0, 0)
 
       monitorModel.traverse(function (child) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
 
-          // Remap UV coordinates of Screen quad so dynamic canvas maps full-bleed without letterboxing
-          if (child.geometry && child.geometry.attributes.uv) {
-            var uvs = child.geometry.attributes.uv;
-            // The screen quad vertices:
-            // Vertex 0: pos = [ 0.173, 0.116, 0.178 ] (bottom-right) -> UV = (1, 0)
-            // Vertex 1: pos = [-0.173, 0.116, 0.178 ] (bottom-left)  -> UV = (0, 0)
-            // Vertex 2: pos = [ 0.173, 0.375, 0.178 ] (top-right)    -> UV = (1, 1)
-            // Vertex 3: pos = [-0.173, 0.375, 0.178 ] (top-left)     -> UV = (0, 1)
-            uvs.setXY(0, 1, 0);
-            uvs.setXY(1, 0, 0);
-            uvs.setXY(2, 1, 1);
-            uvs.setXY(3, 0, 1);
-            uvs.needsUpdate = true;
-          }
+          var mat = child.material;
+          var isScreen = (child.name && child.name.toLowerCase().includes('screen')) ||
+                         (mat && mat.name === 'Screen') ||
+                         (child.geometry && child.geometry.attributes.position && child.geometry.attributes.position.count === 4);
 
-          // Handle multi-material on monitor mesh:
-          // material[0] is Screen, material[1] is Monitor chassis
-          if (Array.isArray(child.material)) {
-            // Screen Material (material 0): Self-illuminating, crystal-clear
-            child.material[0] = new THREE.MeshStandardMaterial({
-              map: screenTexture,
-              emissive: new THREE.Color(0xffffff),
-              emissiveMap: screenTexture,
-              emissiveIntensity: 0.95,
-              roughness: 0.12,
-              metalness: 0.04
-            });
-
-            // Monitor Chassis Material (material 1): Solid retro beige/grey CRT plastic
-            var chassis = child.material[1];
-            chassis.transparent = false;
-            chassis.depthWrite = true;
-            chassis.roughness = 0.65;
-            chassis.metalness = 0.05;
-            if (chassis.normalMap) {
-              chassis.normalScale.set(0.35, 0.35);
+          if (isScreen) {
+            // Remap UV coordinates of Screen quad so dynamic canvas maps full-bleed without letterboxing
+            if (child.geometry && child.geometry.attributes.uv) {
+              var uvs = child.geometry.attributes.uv;
+              // Vertex 0: pos = [ 0.173, 0.116, 0.178 ] (bottom-right) -> UV = (1, 0)
+              // Vertex 1: pos = [-0.173, 0.116, 0.178 ] (bottom-left)  -> UV = (0, 0)
+              // Vertex 2: pos = [ 0.173, 0.375, 0.178 ] (top-right)    -> UV = (1, 1)
+              // Vertex 3: pos = [-0.173, 0.375, 0.178 ] (top-left)     -> UV = (0, 1)
+              uvs.setXY(0, 1, 0);
+              uvs.setXY(1, 0, 0);
+              uvs.setXY(2, 1, 1);
+              uvs.setXY(3, 0, 1);
+              uvs.needsUpdate = true;
             }
-            chassis.envMap = envTexture;
-            chassis.envMapIntensity = 0.55;
-            chassis.needsUpdate = true;
+
+            // Screen Material: Self-illuminating, crystal-clear, glowing phosphor
+            child.material = new THREE.MeshBasicMaterial({
+              map: screenTexture
+            });
+          } else if (mat) {
+            // Monitor Chassis Material: Solid retro beige/grey CRT plastic
+            mat.transparent = false;
+            mat.depthWrite = true;
+            mat.roughness = 0.65;
+            mat.metalness = 0.05;
+            if (mat.normalMap) {
+              mat.normalScale.set(0.35, 0.35);
+            }
+            mat.envMap = envTexture;
+            mat.envMapIntensity = 0.55;
+            mat.needsUpdate = true;
           }
         }
       });
