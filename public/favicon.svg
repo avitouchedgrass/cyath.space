@@ -1,5 +1,9 @@
 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="24" height="24" rx="6" fill="#09090B"/>
-  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C15.2547 21 18.1027 19.2751 19.6822 16.6962L16.4599 14.9565C15.4714 16.5709 13.8608 17.6522 12 17.6522C8.87834 17.6522 6.34783 15.1217 6.34783 12C6.34783 8.87834 8.87834 6.34783 12 6.34783C13.8608 6.34783 15.4714 7.4291 16.4599 9.04352L19.6822 7.30384C18.1027 4.72488 15.2547 3 12 3Z" fill="#FAFAFA"/>
-  <circle cx="16" cy="12" r="3.2" fill="#F59E0B"/>
+  <rect width="24" height="24" rx="5" fill="#09090B"/>
+  <!-- Base Viewport Frame -->
+  <rect x="2.5" y="3.5" width="13" height="12" rx="2.5" stroke="#FAFAFA" stroke-width="1.5" stroke-opacity="0.8"/>
+  <!-- Inspection Layer Frame (with occlusion) -->
+  <rect x="8.5" y="8.5" width="13" height="12" rx="2.5" fill="#09090B" stroke="#F59E0B" stroke-width="1.5"/>
+  <!-- Pinned Coordinate Datum Point -->
+  <circle cx="15.5" cy="8.5" r="2" fill="#F59E0B"/>
 </svg>

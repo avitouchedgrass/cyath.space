@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Monitor, Tablet, Smartphone, MessageSquare, MousePointer, CheckCircle, Share2, ArrowLeft } from "lucide-react";
 import { DeviceMode, InteractionMode, Project } from "@/types";
-import { MilestoneDial } from "@/components/common/Logo";
+import { CyathLogo } from "@/components/common/Logo";
 interface ReviewHeaderProps {
   project: Project;
   deviceMode: DeviceMode;
@@ -47,7 +47,7 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-2">
-          <MilestoneDial locked={project.isApproved} />
+          <CyathLogo locked={project.isApproved} showBadge badgeText="Review" />
           <span className="font-semibold text-sm tracking-tight text-[#FAFAFA] max-w-[200px] sm:max-w-xs truncate">
             {project.title}
           </span>
@@ -60,11 +60,10 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
         <div className="flex items-center bg-[#18181B] p-0.5 rounded-lg border border-[#27272A]">
           <button
             onClick={() => onDeviceChange("desktop")}
-            className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              deviceMode === "desktop"
+            className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${deviceMode === "desktop"
                 ? "bg-[#27272A] text-[#FAFAFA] shadow-sm"
                 : "text-[#A1A1AA] hover:text-[#FAFAFA]"
-            }`}
+              }`}
             title="Desktop (1440px)"
           >
             <Monitor className="w-3.5 h-3.5" />
@@ -73,11 +72,10 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
 
           <button
             onClick={() => onDeviceChange("tablet")}
-            className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              deviceMode === "tablet"
+            className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${deviceMode === "tablet"
                 ? "bg-[#27272A] text-[#FAFAFA] shadow-sm"
                 : "text-[#A1A1AA] hover:text-[#FAFAFA]"
-            }`}
+              }`}
             title="Tablet (768px)"
           >
             <Tablet className="w-3.5 h-3.5" />
@@ -86,11 +84,10 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
 
           <button
             onClick={() => onDeviceChange("mobile")}
-            className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              deviceMode === "mobile"
+            className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${deviceMode === "mobile"
                 ? "bg-[#27272A] text-[#FAFAFA] shadow-sm"
                 : "text-[#A1A1AA] hover:text-[#FAFAFA]"
-            }`}
+              }`}
             title="Mobile (375px)"
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -102,11 +99,10 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
         <div className="flex items-center bg-[#18181B] p-0.5 rounded-lg border border-[#27272A]">
           <button
             onClick={() => onInteractionModeChange("comment")}
-            className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              interactionMode === "comment"
+            className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${interactionMode === "comment"
                 ? "bg-[#F59E0B] text-[#09090B] font-semibold"
                 : "text-[#A1A1AA] hover:text-[#FAFAFA]"
-            }`}
+              }`}
             title="Click anywhere to drop pins (Hotkey: C)"
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -115,11 +111,10 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
 
           <button
             onClick={() => onInteractionModeChange("browse")}
-            className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              interactionMode === "browse"
+            className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${interactionMode === "browse"
                 ? "bg-[#27272A] text-[#FAFAFA]"
                 : "text-[#A1A1AA] hover:text-[#FAFAFA]"
-            }`}
+              }`}
             title="Navigate links inside the frame"
           >
             <MousePointer className="w-3.5 h-3.5" />

@@ -83,178 +83,156 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   ORIGIN DOCK NAVIGATION (§4.1)
+   ARCHITECTURAL FLUSH NAV BAR (§Linear / Vercel style)
    ============================================================ */
-.dock-wrapper {
-  position: fixed; top: 18px; left: 0; right: 0; z-index: 100;
-  display: flex; justify-content: center;
-  padding: 0 20px;
-  pointer-events: none;
+.site-nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 60px;
+  z-index: 100;
+  background: rgba(9, 9, 11, 0.75);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.02);
+  transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
 }
-.origin-dock {
-  pointer-events: auto;
-  display: flex; align-items: center; gap: 20px;
-  height: 48px;
-  padding: 4px 5px 4px 5px;
-  background: rgba(14, 14, 17, 0.82);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 999px;
-  box-shadow: 
-    0 16px 40px -10px rgba(0, 0, 0, 0.8),
-    0 1px 0 rgba(255, 255, 255, 0.10) inset;
-  transition: all 200ms ease;
-  max-width: 900px;
+.site-nav-bar.scrolled {
+  background: rgba(9, 9, 11, 0.94);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
 }
-.origin-dock.scrolled {
-  background: rgba(11, 11, 14, 0.94);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 
-    0 20px 48px -8px rgba(0, 0, 0, 0.9),
-    0 1px 0 rgba(255, 255, 255, 0.14) inset;
-}
-
-/* ============================================================
-   BRAND NAMEPLATE (§Identity Architecture)
-   Engraved wordmark + flush-mounted LED indicator.
-   Pure surface design — no SVG, no icon graphic.
-   ============================================================ */
-.brand-nameplate {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  flex-shrink: 0;
-  padding: 0 2px;
-}
-
-/* The engraved surface pill */
-.nameplate-chassis {
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 32px;
   display: flex;
   align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 13px 0 10px;
-  background: linear-gradient(180deg, #131317 0%, #0f0f12 100%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-bottom-color: rgba(255, 255, 255, 0.04);
-  border-radius: 999px;
-  /* The deboss illusion: top inset highlight makes it read as pressed-in */
-  box-shadow:
-    inset 0 1px 0 rgba(0, 0, 0, 0.8),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.055),
-    0 1px 0 rgba(255, 255, 255, 0.07),
-    0 2px 8px rgba(0, 0, 0, 0.5);
-  transition: box-shadow 220ms ease, border-color 220ms ease;
-}
-.brand-nameplate:hover .nameplate-chassis {
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow:
-    inset 0 1px 0 rgba(0, 0, 0, 0.9),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.07),
-    0 1px 0 rgba(255, 255, 255, 0.09),
-    0 4px 14px rgba(0, 0, 0, 0.6);
+  justify-content: space-between;
 }
 
-/* Flush-mounted indicator LED */
-.nameplate-led {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #FCD34D, #F59E0B 60%, #B45309);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5),
-    0 0 5px 1px rgba(245, 158, 11, 0.55),
-    0 0 10px 2px rgba(245, 158, 11, 0.2);
-  flex-shrink: 0;
-  transition: box-shadow 300ms ease;
+/* Brand Identity: Dual Viewport Frame (No 'C' glyph, Swiss-architectural mark) */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
 }
-.brand-nameplate:hover .nameplate-led {
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5),
-    0 0 7px 2px rgba(245, 158, 11, 0.7),
-    0 0 14px 4px rgba(245, 158, 11, 0.3);
+.brand-mark-wrap {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.nameplate-led.led-locked {
-  background: radial-gradient(circle at 40% 35%, #6EE7B7, #10B981 60%, #065F46);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5),
-    0 0 5px 1px rgba(16, 185, 129, 0.55),
-    0 0 10px 2px rgba(16, 185, 129, 0.2);
+.nav-brand:hover .brand-mark-wrap {
+  transform: scale(1.08);
 }
-
-/* Engraved wordmark — debossed text effect */
-.nameplate-word {
+.brand-mark-wrap svg {
+  display: block;
+}
+.brand-name {
+  font-size: 15px;
   font-weight: 600;
-  font-size: 14px;
-  letter-spacing: -0.02em;
-  /* Letterpress deboss: dark shadow above, faint highlight below */
-  color: transparent;
-  background: linear-gradient(180deg, #C4C4C8 0%, #FAFAFA 45%, #E8E8EC 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.12)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.6));
-  transition: filter 220ms ease;
+  letter-spacing: -0.025em;
+  color: #FAFAFA;
+  transition: color 150ms ease;
 }
-.brand-nameplate:hover .nameplate-word {
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.18)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.5));
+.nav-brand:hover .brand-name {
+  color: #FFFFFF;
+}
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #71717A;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  line-height: 1.2;
 }
 
-.dock-sep {
-  width: 1px; height: 18px; background: rgba(255, 255, 255, 0.12); flex-shrink: 0;
+/* Nav Spine */
+.nav-spine {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-
-/* Navigation Spine */
-.dock-spine {
-  display: flex; align-items: center; gap: 4px;
-}
-.dock-spine a {
-  font-size: 13px; font-weight: 500; color: #D4D4D8;
-  padding: 6px 12px; border-radius: 999px;
+.nav-spine a {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #A1A1AA;
+  padding: 6px 14px;
+  border-radius: 6px;
   transition: color 150ms ease, background 150ms ease;
 }
-.dock-spine a:hover {
-  color: #FFFFFF;
+.nav-spine a:hover {
+  color: #FAFAFA;
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Action Terminus */
-.dock-actions {
-  display: flex; align-items: center; gap: 10px;
-  margin-left: auto;
+/* Actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
-.dock-signin {
-  font-size: 13px; font-weight: 500; color: #D4D4D8;
-  padding: 6px 10px;
+.nav-signin {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #A1A1AA;
   transition: color 150ms ease;
 }
-.dock-signin:hover { color: #FFFFFF; }
-.btn-dock-cta {
-  display: inline-flex; align-items: center; gap: 6px;
-  height: 38px;
-  padding: 0 16px;
-  background: #F59E0B;
+.nav-signin:hover {
+  color: #FAFAFA;
+}
+.nav-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  background: #FAFAFA;
   color: #09090B;
-  font-size: 13.5px; font-weight: 600;
-  border-radius: 999px;
-  transition: transform 150ms ease, filter 150ms ease;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
   white-space: nowrap;
 }
-.btn-dock-cta:hover {
-  transform: scale(1.02);
-  filter: brightness(1.06);
+.nav-cta-btn:hover {
+  background: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.2);
 }
-.btn-dock-cta:active {
-  transform: scale(0.98);
+.nav-cta-btn:active {
+  transform: translateY(0);
 }
-.btn-dock-cta .arrow { transition: transform 150ms ease; }
-.btn-dock-cta:hover .arrow { transform: translateX(3px); }
+.nav-cta-btn .nav-arrow {
+  transition: transform 150ms ease;
+}
+.nav-cta-btn:hover .nav-arrow {
+  transform: translateX(2.5px);
+}
 
-@media (max-width: 767px) {
-  .dock-spine, .dock-signin { display: none; }
-  .origin-dock { gap: 12px; }
+@media (max-width: 820px) {
+  .nav-spine, .nav-signin, .brand-badge {
+    display: none;
+  }
+  .nav-inner {
+    padding: 0 20px;
+  }
 }
 
 /* Buttons — hover/press use the standalone `scale`/`translate` properties
@@ -891,33 +869,44 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <body>
 <div class="canvas-texture" aria-hidden="true"></div>
 
-<!-- ══════════ ORIGIN DOCK NAVIGATION (§4.1) ══════════ -->
-<header class="dock-wrapper" id="dockWrapper">
-  <nav class="origin-dock" id="nav">
-    <!-- Engraved Brand Nameplate -->
-    <a class="brand-nameplate" href="#top" id="brandNameplate" aria-label="Cyath home">
-      <div class="nameplate-chassis">
-        <span class="nameplate-led" id="nameplateIndicator"></span>
-        <span class="nameplate-word">Cyath</span>
+<!-- ══════════ ARCHITECTURAL FLUSH NAV BAR (§4.1) ══════════ -->
+<header class="site-nav-bar" id="nav">
+  <div class="nav-inner">
+    <!-- Brand Identity: Dual Viewport Frame -->
+    <a class="nav-brand" href="#top" id="navBrand" aria-label="Cyath home">
+      <div class="brand-mark-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-svg">
+          <!-- Viewport Staging Base Frame -->
+          <rect x="2.5" y="3.5" width="13" height="12" rx="2.5" stroke="#FAFAFA" stroke-width="1.5" stroke-opacity="0.75"/>
+          <!-- Client Review Inspection Frame (Occluded) -->
+          <rect x="8.5" y="8.5" width="13" height="12" rx="2.5" fill="#09090B" stroke="#F59E0B" stroke-width="1.5"/>
+          <!-- Pinned Inspection Datum Point -->
+          <circle cx="15.5" cy="8.5" r="2" fill="#F59E0B" id="brandDatum"/>
+        </svg>
       </div>
+      <span class="brand-name">Cyath</span>
+      <span class="brand-badge">Staging</span>
     </a>
-    <div class="dock-sep"></div>
 
     <!-- Navigation Spine -->
-    <div class="dock-spine">
+    <nav class="nav-spine" aria-label="Main Navigation">
       <a href="#features">Features</a>
       <a href="#demo">Workflow</a>
       <a href="#compare">Compare</a>
       <a href="#pricing">Pricing</a>
-    </div>
-    <div class="dock-sep"></div>
+    </nav>
 
     <!-- Action Terminus -->
-    <div class="dock-actions">
-      <a class="dock-signin" href="/dashboard">Sign In</a>
-      <a class="btn-dock-cta" href="/dashboard">Start Free <span class="arrow">→</span></a>
+    <div class="nav-actions">
+      <a class="nav-signin" href="/dashboard">Sign In</a>
+      <a class="nav-cta-btn" href="/dashboard">
+        <span>Start Free</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-arrow">
+          <path d="M2.5 6H9.5M9.5 6L6.5 3M9.5 6L6.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </div>
-  </nav>
+  </div>
 </header>
 
 <!-- ══════════ HERO (§4.2) ══════════ -->
@@ -1409,22 +1398,22 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     return $$('.w', line);
   }
 
-  /* ══════════ BRAND NAMEPLATE LED (§Identity) ══════════ */
-  var indicator = $('#nameplateIndicator');
-  var ledLocked = false;
+  /* ══════════ BRAND DATUM LOCK STATE (§Identity) ══════════ */
+  var brandDatum = $('#brandDatum');
+  var isScopeLocked = false;
 
-  function setIndicatorLocked(on) {
-    if (!indicator) return;
-    ledLocked = on;
-    indicator.classList.toggle('led-locked', on);
+  function setDatumLocked(on) {
+    if (!brandDatum) return;
+    isScopeLocked = on;
+    brandDatum.setAttribute('fill', on ? '#10B981' : '#F59E0B');
   }
 
   /* ══════════ NAV (§4.1) ══════════ */
   var nav = $('#nav');
-  gsap.to(nav, { autoAlpha: 1, y: 0, duration: 0.5, delay: 0.4, ease: 'power3.out',
-    startAt: { y: -8 } });
+  gsap.to(nav, { autoAlpha: 1, y: 0, duration: 0.5, delay: 0.2, ease: 'power3.out',
+    startAt: { y: -10 } });
   window.addEventListener('scroll', function () {
-    nav.classList.toggle('scrolled', window.scrollY > 80);
+    nav.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 
   /* ══════════ HERO intro (§4.2) ══════════ */
@@ -1461,8 +1450,8 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         gsap.fromTo(pop, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.25 });
       }
 
-      // Flash the nameplate LED brighter on new pin drop (ambient pulse via CSS)
-      setIndicatorLocked(false);
+      // Reset datum to amber if pin dropped
+      setDatumLocked(false);
     });
   }
 
@@ -1624,9 +1613,9 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
             s.classList.toggle('inactive', k !== i);
           });
           if (self.progress > 0.82) {
-            setIndicatorLocked(true);
-          } else if (self.progress <= 0.82 && ledLocked) {
-            setIndicatorLocked(false);
+            setDatumLocked(true);
+          } else if (self.progress <= 0.82 && isScopeLocked) {
+            setDatumLocked(false);
           }
         }
       }
@@ -1709,7 +1698,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         status1.textContent = 'OPEN'; status1.classList.remove('resolved');
         count.textContent = '0 total';
         gsap.set(popText.parentElement.parentElement, { x: 0, y: 0, autoAlpha: 0 });
-        setIndicatorLocked(false);
+        setDatumLocked(false);
       }
     });
   });
