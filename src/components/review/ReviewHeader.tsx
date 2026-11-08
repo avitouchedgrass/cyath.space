@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Monitor, Tablet, Smartphone, MessageSquare, MousePointer, CheckCircle, Share2, ArrowLeft } from "lucide-react";
 import { DeviceMode, InteractionMode, Project } from "@/types";
-import { CyathLogo } from "@/components/common/Logo";
+import { MilestoneDial } from "@/components/common/Logo";
 
 interface ReviewHeaderProps {
   project: Project;
@@ -48,7 +48,11 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-2">
-          <CyathLogo size={24} showWordmark={false} />
+          <MilestoneDial
+            state={project.isApproved ? "locked" : openCount > 0 ? "active" : "brand"}
+            pinCount={openCount}
+            badgeText="Review"
+          />
           <span className="font-semibold text-sm tracking-tight text-[#FAFAFA] max-w-[200px] sm:max-w-xs truncate">
             {project.title}
           </span>

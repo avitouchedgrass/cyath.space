@@ -1,45 +1,131 @@
-import React from "react";
+"use client";
 
-interface LogoProps {
-  size?: number;
-  showWordmark?: boolean;
+import React, { useState } from "react";
+
+export type DialState = "brand" | "active" | "locked";
+
+export interface MilestoneDialProps {
+  initialState?: DialState;
+  state?: DialState;
+  pinCount?: number;
+  badgeText?: string;
+  interactive?: boolean;
   className?: string;
+  showWordmark?: boolean;
+  size?: number;
 }
 
-/**
- * Cyath Brand Identity
- * Solid geometric compound monogram 'C' with Electric Amber focal coordinate.
- * Highly legible, bold, and architectural at 16px to 256px.
- */
-export const CyathLogo: React.FC<LogoProps> = ({
-  size = 24,
-  showWordmark = true,
+export const MilestoneDial: React.FC<MilestoneDialProps> = ({
+  initialState = "brand",
+  state: controlledState,
+  pinCount = 3,
+  badgeText = "Engine",
+  interactive = true,
   className = "",
 }) => {
-  return (
-    <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="flex-shrink-0 transition-transform duration-200 hover:scale-105"
-      >
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5C15.426 21.5 18.4239 19.6896 20.0865 16.9749L16.6946 15.1437C15.6542 16.8427 13.9592 18 12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C13.9592 6 15.6542 7.15732 16.6946 8.85626L20.0865 7.02507C18.4239 4.31039 15.426 2.5 12 2.5Z"
-          fill="#FAFAFA"
-        />
-        <circle cx="16" cy="12" r="3.25" fill="#F59E0B" />
-      </svg>
+  const [internalState, setInternalState] = useState<DialState>(initialState);
+  const currentState = controlledState ?? internalState;
 
-      {showWordmark && (
-        <span className="font-semibold text-[15px] tracking-[-0.025em] text-[#FAFAFA]">
-          Cyath
-        </span>
-      )}
+  const cycleState = () => {
+    if (!interactive) return;
+    if (currentState === "brand") setInternalState("active");
+    else if (currentState === "active") setInternalState("locked");
+    else setInternalState("brand");
+  };
+
+  const isLocked = currentState === "locked";
+  const isActive = currentState === "active";
+
+  return (
+    <div
+      onClick={cycleState}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (interactive && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          cycleState();
+        }
+      }}
+      title={interactive ? "Click to toggle milestone dial state" : undefined}
+      className={`inline-flex items-center cursor-pointer select-none group focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-500/50 rounded-full ${className}`}
+    >
+      <div className="flex items-center gap-2.5 h-[34px] px-2.5 bg-[#111114] border border-white/10 rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.08)] group-hover:bg-[#141418] group-hover:border-white/20 transition-all duration-200">
+        {/* Mechanical Caliper Iris (CSS aperture ring) */}
+        <div
+          className={`relative w-4.5 h-4.5 rounded-full bg-[#09090B] border-[1.5px] flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+            isLocked
+              ? "border-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+              : "border-white/30 border-r-transparent group-hover:rotate-45 group-hover:border-white/60"
+          }`}
+        >
+          <span
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+              isLocked
+                ? "bg-[#10B981] shadow-[0_0_6px_rgba(16,185,129,0.9)]"
+                : "bg-[#F59E0B] shadow-[0_0_5px_rgba(245,158,11,0.8)]"
+            }`}
+          />
+        </div>
+
+        {/* Rotary Drum Display */}
+        <div className="relative h-5 min-w-[90px] overflow-hidden flex items-center">
+          {/* Brand State */}
+          <div
+            className={`absolute inset-0 flex items-center gap-1.5 transition-all duration-300 whitespace-nowrap ${
+              currentState === "brand"
+                ? "translate-y-0 opacity-100"
+                : "-translate-y-full opacity-0 pointer-events-none"
+            }`}
+          >
+            <span className="font-semibold text-xs tracking-[-0.02em] text-[#FAFAFA]">
+              Cyath
+            </span>
+            <span className="font-mono text-[9px] font-semibold tracking-wider uppercase text-[#A1A1AA] bg-white/[0.06] px-1.5 py-0.5 rounded border border-white/[0.08]">
+              {badgeText}
+            </span>
+          </div>
+
+          {/* Active Review State */}
+          <div
+            className={`absolute inset-0 flex items-center gap-1.5 transition-all duration-300 whitespace-nowrap ${
+              isActive
+                ? "translate-y-0 opacity-100"
+                : currentState === "brand"
+                ? "translate-y-full opacity-0 pointer-events-none"
+                : "-translate-y-full opacity-0 pointer-events-none"
+            }`}
+          >
+            <span className="font-mono text-xs font-semibold text-[#F59E0B]">
+              {pinCount} Pins
+            </span>
+            <span className="text-[11px] text-[#A1A1AA]">Active</span>
+          </div>
+
+          {/* Scope Locked State */}
+          <div
+            className={`absolute inset-0 flex items-center gap-1.5 transition-all duration-300 whitespace-nowrap ${
+              isLocked
+                ? "translate-y-0 opacity-100"
+                : "translate-y-full opacity-0 pointer-events-none"
+            }`}
+          >
+            <span className="text-xs font-bold text-[#10B981]">✓</span>
+            <span className="font-mono text-[10px] font-semibold tracking-wider uppercase text-[#10B981]">
+              Scope Locked
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
+};
+
+export interface LogoProps extends MilestoneDialProps {
+  size?: number;
+  showWordmark?: boolean;
+}
+
+export const CyathLogo: React.FC<LogoProps> = (props) => {
+  return <MilestoneDial {...props} />;
 };
