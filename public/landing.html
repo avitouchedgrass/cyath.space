@@ -340,18 +340,198 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: #10B981; border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Hero product visual (Right column) */
-.hero-right { position: relative; width: 100%; }
-.hero-visual-wrap {
-  position: relative; z-index: 2;
-  width: 100%; max-width: 100%;
-  margin-top: 0;
+/* ============================================================
+   3D CRT MONITOR ASSEMBLY (§Hero Physical Stage)
+   ============================================================ */
+.hero-right {
+  position: relative;
+  width: 100%;
+  perspective: 1400px;
+  perspective-origin: 35% 50%;
 }
+.hero-visual-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 100%;
+  transform-style: preserve-3d;
+}
+
+/* 3D CRT Monitor Shell */
+.crt-assembly {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transform: rotateY(-20deg) rotateX(3deg);
+  transition: box-shadow 300ms ease;
+  will-change: transform;
+}
+.crt-assembly[data-state="angled"]:hover {
+  filter: brightness(1.03);
+}
+
+/* Molded industrial CRT chassis */
+.crt-chassis {
+  position: relative;
+  background: linear-gradient(175deg, #22222A 0%, #17171E 45%, #101014 100%);
+  border-radius: 22px;
+  padding: 14px 18px 14px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.18),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.8),
+    -24px 34px 72px -10px rgba(0, 0, 0, 0.9),
+    -8px 14px 28px rgba(0, 0, 0, 0.65);
+  user-select: none;
+}
+
+/* Top cooling vent slats */
+.crt-top-vents {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.crt-top-vents span {
+  width: 22px;
+  height: 3px;
+  background: #09090C;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 1px #000, 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Recessed CRT Bezel */
+.crt-bezel {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: 2.5px solid #09090C;
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.95),
+    inset 0 2px 8px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* CRT Glass Glare / Curvature Reflection */
+.crt-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: radial-gradient(ellipse 65% 35% at 20% 12%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 65%);
+  border-radius: 10px;
+}
+
+/* Authentic CRT Scanlines Overlay */
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 11;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.24) 50%);
+  background-size: 100% 4px;
+  opacity: 0.32;
+  transition: opacity 300ms ease;
+}
+
+/* Display frame */
 .hero-visual {
-  border-radius: 12px; overflow: hidden;
-  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
   background: var(--surface-panel);
-  box-shadow: 0 24px 72px -12px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+/* Bottom Chin Control Deck */
+.crt-chin {
+  margin-top: 12px;
+  padding: 4px 6px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.crt-model-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.crt-logo-symbol {
+  font-size: 10px;
+  color: #F59E0B;
+}
+.crt-model-name {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #71717A;
+  text-transform: uppercase;
+}
+.crt-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.crt-spin-btn {
+  height: 24px;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #E4E4E7;
+  background: #1E1E26;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+}
+.crt-spin-btn:hover {
+  background: #272732;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #FFF;
+}
+.crt-spin-btn:active {
+  transform: translateY(1px);
+}
+.crt-spin-btn .spin-icon {
+  font-size: 11px;
+  color: #F59E0B;
+}
+.crt-knob {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #4B4B55, #18181D);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.crt-power-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.crt-power-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 7px #10B981;
+}
+
+@media (max-width: 1080px) {
+  .hero-right {
+    perspective: none;
+  }
+  .crt-assembly {
+    transform: none !important;
+  }
 }
 .hv-chrome {
   display: flex; align-items: center; gap: 12px;
@@ -930,71 +1110,106 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
       </div>
     </div>
 
-    <!-- Right Column: Interactive Realistic Staging Canvas -->
+    <!-- Right Column: Interactive Realistic Staging Canvas in 3D CRT Monitor -->
     <div class="hero-right">
       <div class="hero-visual-wrap" id="heroVisual">
-        <div class="hero-visual">
-          <div class="hv-chrome">
-            <div class="hv-dots"><span></span><span></span><span></span></div>
-            <div class="hv-url">aura-studio.staging.vercel.app</div>
-            <div class="hv-status-pill"><span class="status-dot"></span>Interactive Staging</div>
-          </div>
-          <div class="hv-body">
-            <div class="hv-canvas" id="heroCanvas" title="Click anywhere to drop a pin">
-              <div class="hv-site">
-                <div class="hvs-nav">
-                  <span class="hvs-logo">AURA ATELIER</span>
-                  <div class="hvs-links"><span>Objects</span><span>Spaces</span><span>Archive</span><span>Journal</span></div>
-                  <span class="hvs-cta">Inquire</span>
+        <!-- 3D CRT Monitor Assembly -->
+        <div class="crt-assembly" id="crtAssembly" data-state="angled" title="Click monitor to spin forward">
+          <div class="crt-chassis">
+            <!-- Top cooling vents -->
+            <div class="crt-top-vents">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <!-- Recessed Screen Bezel -->
+            <div class="crt-bezel">
+              <div class="crt-glare" aria-hidden="true"></div>
+              <div class="crt-scanlines" aria-hidden="true"></div>
+
+              <div class="hero-visual">
+                <div class="hv-chrome">
+                  <div class="hv-dots"><span></span><span></span><span></span></div>
+                  <div class="hv-url">aura-studio.staging.vercel.app</div>
+                  <div class="hv-status-pill"><span class="status-dot"></span>Interactive Staging</div>
                 </div>
-                <div class="hvs-hero">
-                  <div>
-                    <span class="hvs-tag">CASE STUDY // EDITION 04</span>
-                    <div class="hvs-h1">Sculptural vessels cast in raw bronze.</div>
-                    <p class="hvs-desc">Direct foundry pour. Hand-patinated in Kyoto with matte beeswax finish.</p>
-                    <div class="hvs-action-row">
-                      <span class="hvs-btn-primary" id="specimenBtn">Reserve Specimen</span>
-                      <span class="hvs-price">€1,850 · In Stock</span>
+                <div class="hv-body">
+                  <div class="hv-canvas" id="heroCanvas" title="Click anywhere to drop a pin">
+                    <div class="hv-site">
+                      <div class="hvs-nav">
+                        <span class="hvs-logo">AURA ATELIER</span>
+                        <div class="hvs-links"><span>Objects</span><span>Spaces</span><span>Archive</span><span>Journal</span></div>
+                        <span class="hvs-cta">Inquire</span>
+                      </div>
+                      <div class="hvs-hero">
+                        <div>
+                          <span class="hvs-tag">CASE STUDY // EDITION 04</span>
+                          <div class="hvs-h1">Sculptural vessels cast in raw bronze.</div>
+                          <p class="hvs-desc">Direct foundry pour. Hand-patinated in Kyoto with matte beeswax finish.</p>
+                          <div class="hvs-action-row">
+                            <span class="hvs-btn-primary" id="specimenBtn">Reserve Specimen</span>
+                            <span class="hvs-price">€1,850 · In Stock</span>
+                          </div>
+                        </div>
+                        <div class="hvs-img"></div>
+                      </div>
+                      <div class="hvs-strip">
+                        <span>BRUTALIST ARCHITECTURE</span>
+                        <span>KYOTO FOUNDRY</span>
+                        <span>LIMITED TO 40</span>
+                      </div>
+                    </div>
+
+                    <!-- Animated Pins -->
+                    <div class="mini-pin" style="left: 24%; top: 62%;" data-hp="1">1</div>
+                    <div class="mini-pin" style="left: 78%; top: 38%;" data-hp="2">2</div>
+                    <div class="mini-pin" style="left: 38%; top: 12%;" data-hp="3">3</div>
+
+                    <div class="mini-popover" id="heroPopover" style="left: 26%; top: 40%;">
+                      <div class="mp-name"><span>Jane Cooper (Client)</span><span class="mp-time">2m ago</span></div>
+                      <div class="mp-text" id="heroPopText">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
                     </div>
                   </div>
-                  <div class="hvs-img"></div>
-                </div>
-                <div class="hvs-strip">
-                  <span>BRUTALIST ARCHITECTURE</span>
-                  <span>KYOTO FOUNDRY</span>
-                  <span>LIMITED TO 40</span>
-                </div>
-              </div>
 
-              <!-- Animated Pins -->
-              <div class="mini-pin" style="left: 24%; top: 62%;" data-hp="1">1</div>
-              <div class="mini-pin" style="left: 78%; top: 38%;" data-hp="2">2</div>
-              <div class="mini-pin" style="left: 38%; top: 12%;" data-hp="3">3</div>
-
-              <div class="mini-popover" id="heroPopover" style="left: 26%; top: 40%;">
-                <div class="mp-name"><span>Jane Cooper (Client)</span><span class="mp-time">2m ago</span></div>
-                <div class="mp-text" id="heroPopText">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
+                  <!-- Staging Sidebar -->
+                  <div class="hv-sidebar">
+                    <div class="msb-head"><span class="msb-title">Feedback</span><span class="msb-count" id="heroCount">0 total</span></div>
+                    <div class="msb-list" id="heroList">
+                      <div class="msb-card" data-hc="1">
+                        <div class="msb-top"><span class="msb-num">1</span><span class="msb-status">OPEN</span><span class="msb-time">2m</span></div>
+                        <div class="msb-text">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
+                        <div class="msb-meta">1440×900 · Chrome 131</div>
+                      </div>
+                      <div class="msb-card" data-hc="2">
+                        <div class="msb-top"><span class="msb-num">2</span><span class="msb-status">OPEN</span><span class="msb-time">4m</span></div>
+                        <div class="msb-text">Hero image optimized to WebP with responsive srcset. Loads in 85ms.</div>
+                        <div class="msb-meta">1512×982 · macOS Sonoma</div>
+                      </div>
+                      <div class="msb-card" data-hc="3">
+                        <div class="msb-top"><span class="msb-num">3</span><span class="msb-status">OPEN</span><span class="msb-time">6m</span></div>
+                        <div class="msb-text">Inquiry button should open sliding sheet instead of anchor jump.</div>
+                        <div class="msb-meta">375×812 · Safari iOS</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Staging Sidebar -->
-            <div class="hv-sidebar">
-              <div class="msb-head"><span class="msb-title">Feedback</span><span class="msb-count" id="heroCount">0 total</span></div>
-              <div class="msb-list" id="heroList">
-                <div class="msb-card" data-hc="1">
-                  <div class="msb-top"><span class="msb-num">1</span><span class="msb-status">OPEN</span><span class="msb-time">2m</span></div>
-                  <div class="msb-text">Can we change this to 'Reserve via Concierge'? Also bump button padding.</div>
-                  <div class="msb-meta">1440×900 · Chrome 131</div>
-                </div>
-                <div class="msb-card" data-hc="2">
-                  <div class="msb-top"><span class="msb-num">2</span><span class="msb-status">OPEN</span><span class="msb-time">4m</span></div>
-                  <div class="msb-text">Hero image optimized to WebP with responsive srcset. Loads in 85ms.</div>
-                  <div class="msb-meta">1512×982 · macOS Sonoma</div>
-                </div>
-                <div class="msb-card" data-hc="3">
-                  <div class="msb-top"><span class="msb-num">3</span><span class="msb-status">OPEN</span><span class="msb-time">6m</span></div>
-                  <div class="msb-text">Inquiry button should open sliding sheet instead of anchor jump.</div>
-                  <div class="msb-meta">375×812 · Safari iOS</div>
+            <!-- Bottom Chin Control Deck -->
+            <div class="crt-chin">
+              <div class="crt-model-badge">
+                <span class="crt-logo-symbol">❖</span>
+                <span class="crt-model-name">CYATH · TRINITRON // CRT-20</span>
+              </div>
+              <div class="crt-controls">
+                <button class="crt-spin-btn" id="crtSpinTrigger" type="button" aria-label="Toggle monitor angle" title="Click to spin monitor forward">
+                  <span class="spin-icon">↺</span>
+                  <span class="spin-label" id="crtBtnLabel">Snap 0°</span>
+                </button>
+                <div class="crt-knob" title="Degauss coil"></div>
+                <div class="crt-power-group" title="Phosphor ready">
+                  <span class="crt-power-led"></span>
                 </div>
               </div>
             </div>
@@ -1410,6 +1625,108 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     .from('#heroSub', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.55')
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
     .from('#heroVisual', { autoAlpha: 0, x: 40, y: 15, scale: 0.98, duration: 1.1, ease: 'power3.out' }, '-=0.45');
+
+  /* ══════════ 3D CRT MONITOR: COMEDIC SPIN & SNAP ══════════ */
+  var crtAssembly = $('#crtAssembly');
+  var crtSpinBtn = $('#crtSpinTrigger');
+  var crtBtnLabel = $('#crtBtnLabel');
+  var isCrtSpinning = false;
+  var isCrtFlat = false;
+
+  function spinCrtMonitor() {
+    if (isCrtSpinning || !crtAssembly) return;
+    isCrtSpinning = true;
+
+    if (!isCrtFlat) {
+      // COMEDIC 360° OVER-THE-TOP WHIP SPIN TO 0°
+      var spinTl = gsap.timeline({
+        onComplete: function () {
+          isCrtFlat = true;
+          isCrtSpinning = false;
+          crtAssembly.setAttribute('data-state', 'flat');
+          if (crtBtnLabel) crtBtnLabel.textContent = 'Tilt 20°';
+        }
+      });
+
+      spinTl
+        .to(crtAssembly, {
+          rotateY: -30,
+          rotateX: 6,
+          scale: 0.95,
+          duration: 0.14,
+          ease: 'power2.in'
+        })
+        .to(crtAssembly, {
+          rotateY: 360,
+          rotateX: 0,
+          scale: 1.04,
+          duration: 0.62,
+          ease: 'power3.inOut'
+        })
+        .to(crtAssembly, {
+          rotateY: 0,
+          rotateX: 0,
+          scale: 1,
+          duration: 0.5,
+          ease: 'elastic.out(1.2, 0.4)'
+        });
+
+      // Phosphor scanline flash
+      gsap.fromTo('.crt-scanlines', { opacity: 0.9 }, { opacity: 0.32, duration: 0.5, delay: 0.55 });
+    } else {
+      // PLAYFUL WOBBLE-TILT BACK TO -20°
+      var tiltTl = gsap.timeline({
+        onComplete: function () {
+          isCrtFlat = false;
+          isCrtSpinning = false;
+          crtAssembly.setAttribute('data-state', 'angled');
+          if (crtBtnLabel) crtBtnLabel.textContent = 'Snap 0°';
+        }
+      });
+
+      tiltTl
+        .to(crtAssembly, {
+          rotateY: 10,
+          rotateX: -2,
+          scale: 0.97,
+          duration: 0.16,
+          ease: 'power1.in'
+        })
+        .to(crtAssembly, {
+          rotateY: -20,
+          rotateX: 3,
+          scale: 1,
+          duration: 0.55,
+          ease: 'back.out(2.4)'
+        });
+    }
+  }
+
+  if (crtAssembly) {
+    if (crtSpinBtn) {
+      crtSpinBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        spinCrtMonitor();
+      });
+    }
+
+    crtAssembly.addEventListener('click', function (e) {
+      // If currently angled, any click on the monitor triggers the comedic spin!
+      if (!isCrtFlat) {
+        spinCrtMonitor();
+        return;
+      }
+      // If already flat, only clicking the outer chassis, vents, or chin tilts it back
+      if (
+        e.target.closest('.crt-chin') ||
+        e.target.closest('.crt-top-vents') ||
+        e.target.classList.contains('crt-chassis') ||
+        e.target === crtAssembly
+      ) {
+        spinCrtMonitor();
+      }
+    });
+  }
 
   /* Interactive Click-to-Pin on Hero Staging Canvas */
   var heroCanvas = $('#heroCanvas');
