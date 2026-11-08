@@ -346,15 +346,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero-right {
   position: relative;
   width: 100%;
-  min-height: 540px;
+  min-height: 560px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 .crt-stage-wrapper {
   position: relative;
   width: 100%;
-  max-width: 660px;
+  max-width: 720px;
   height: 540px;
   cursor: pointer;
   user-select: none;
@@ -373,45 +374,35 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: block;
   outline: none;
 }
-.crt-spin-hint {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none;
-  opacity: 0.65;
-  transition: opacity 250ms ease, transform 250ms ease;
-  z-index: 5;
-}
-.crt-stage-wrapper:hover .crt-spin-hint {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-2px);
-}
-.crt-hint-badge {
+.crt-action-hint {
+  margin-top: 10px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 5px 14px;
-  border-radius: 999px;
-  background: rgba(18, 18, 22, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-align: center;
+  user-select: none;
+  pointer-events: none;
+  transition: color 200ms ease;
+}
+.crt-stage-wrapper:hover + .crt-action-hint {
   color: var(--text-secondary);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+.crt-action-hint span {
+  color: var(--accent);
 }
 @media (max-width: 1080px) {
   .hero-right {
-    min-height: 440px;
+    min-height: 460px;
   }
   .crt-stage-wrapper {
     height: 440px;
-    max-width: 540px;
+    max-width: 580px;
   }
 }
 @media (max-width: 640px) {
   .hero-right {
-    min-height: 360px;
+    min-height: 380px;
   }
   .crt-stage-wrapper {
     height: 360px;
@@ -845,10 +836,8 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
     <div class="hero-right">
       <div class="crt-stage-wrapper" id="crtStageWrapper" title="Click monitor to spin">
         <div id="crtCanvasContainer" class="crt-canvas-container"></div>
-        <div class="crt-spin-hint">
-          <span class="crt-hint-badge">Click monitor to spin</span>
-        </div>
       </div>
+      <p class="crt-action-hint">Click monitor to <span>spin 360°</span></p>
     </div>
   </div>
 </header>
@@ -1266,15 +1255,15 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     if (!container || !wrapper || typeof THREE === 'undefined') return;
 
     // 1. Scene & Camera Setup
-    var width = container.clientWidth || 660;
+    var width = container.clientWidth || 700;
     var height = container.clientHeight || 540;
 
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+    var camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
     camera.position.set(0, 0.35, 17.5);
     camera.lookAt(0, 0.1, 0);
 
-    // 2. WebGL Renderer with High-Performance Tone Mapping & PCF Soft Shadows
+    // 2. High-Performance WebGL Renderer
     var renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -1284,15 +1273,14 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.15;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // 3. Realistic Studio Lighting Setup
-    // Key Studio Light (Warm directional, casts soft contact shadows)
-    var keyLight = new THREE.DirectionalLight(0xFFF7ED, 2.7);
-    keyLight.position.set(7, 9, 8);
+    // 3. Balanced Studio Lighting (Clean, no glitter artifacts)
+    var keyLight = new THREE.DirectionalLight(0xFFF7ED, 1.8);
+    keyLight.position.set(6, 8, 8);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 2048;
     keyLight.shadow.mapSize.height = 2048;
@@ -1302,26 +1290,26 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     keyLight.shadow.camera.right = 9;
     keyLight.shadow.camera.top = 9;
     keyLight.shadow.camera.bottom = -9;
-    keyLight.shadow.bias = -0.0006;
+    keyLight.shadow.bias = -0.0005;
     scene.add(keyLight);
 
-    // Brand Amber Rim Spotlight (F59E0B) grazing the CRT left casing and top ridge
-    var amberRim = new THREE.SpotLight(0xF59E0B, 4.2, 40, Math.PI / 4, 0.5, 1);
-    amberRim.position.set(-8.5, 5, -2);
+    // Subtle Amber Rim Accent Light
+    var amberRim = new THREE.SpotLight(0xF59E0B, 2.4, 35, Math.PI / 4, 0.6, 1);
+    amberRim.position.set(-8, 5, -2);
     amberRim.target.position.set(0, 0, 0);
     scene.add(amberRim);
     scene.add(amberRim.target);
 
-    // Cool Studio Front/Bottom Fill
-    var fillLight = new THREE.DirectionalLight(0x8898AA, 0.75);
+    // Soft Studio Front Fill
+    var fillLight = new THREE.DirectionalLight(0x94A3B8, 0.6);
     fillLight.position.set(4, -3, 6);
     scene.add(fillLight);
 
-    // Hemisphere Ambient for deep shadow bounce
-    var hemiLight = new THREE.HemisphereLight(0x282936, 0x09090D, 1.1);
+    // Hemisphere Ambient
+    var hemiLight = new THREE.HemisphereLight(0x282936, 0x09090D, 0.9);
     scene.add(hemiLight);
 
-    // 4. Procedural Studio PMREM Environment Map for authentic PBR reflections
+    // 4. Subtle Studio PMREM Environment Map
     var pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
     var envScene = new THREE.Scene();
@@ -1331,16 +1319,14 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     );
     envScene.add(envSphere);
 
-    // Key warm reflector panel
     var keyReflector = new THREE.Mesh(
       new THREE.PlaneGeometry(50, 35),
-      new THREE.MeshBasicMaterial({ color: 0xFFF3E0 })
+      new THREE.MeshBasicMaterial({ color: 0xFFF5E8 })
     );
     keyReflector.position.set(35, 40, 35);
     keyReflector.lookAt(0, 0, 0);
     envScene.add(keyReflector);
 
-    // Cyath amber rim reflector panel
     var amberReflector = new THREE.Mesh(
       new THREE.PlaneGeometry(45, 50),
       new THREE.MeshBasicMaterial({ color: 0xF59E0B })
@@ -1349,19 +1335,10 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     amberReflector.lookAt(0, 0, 0);
     envScene.add(amberReflector);
 
-    // Overhead skylight soft diffuser
-    var topReflector = new THREE.Mesh(
-      new THREE.PlaneGeometry(70, 70),
-      new THREE.MeshBasicMaterial({ color: 0x242838 })
-    );
-    topReflector.position.set(0, 60, 0);
-    topReflector.lookAt(0, 0, 0);
-    envScene.add(topReflector);
-
     var envTexture = pmremGenerator.fromScene(envScene).texture;
     scene.environment = envTexture;
 
-    // 5. Contact Shadow Plane on the floor under the monitor stand
+    // 5. Contact Shadow Under Monitor Stand
     var shadowCanvas = document.createElement('canvas');
     shadowCanvas.width = 256;
     shadowCanvas.height = 256;
@@ -1380,7 +1357,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
       new THREE.MeshBasicMaterial({
         map: shadowTex,
         transparent: true,
-        opacity: 0.92,
+        opacity: 0.9,
         depthWrite: false
       })
     );
@@ -1388,329 +1365,326 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     shadowPlane.position.set(0, -4.85, 0);
     scene.add(shadowPlane);
 
-    // 6. Dynamic Offscreen Canvas for CRT Display
+    // 6. High-Definition Canvas (1920 × 1280, 1.50 Widescreen matching monitor aperture)
     var screenCanvas = document.createElement('canvas');
-    screenCanvas.width = 1024;
-    screenCanvas.height = 1000;
+    screenCanvas.width = 1920;
+    screenCanvas.height = 1280;
     var ctx = screenCanvas.getContext('2d');
 
     function drawCrtContent(pulseTime) {
-      ctx.clearRect(0, 0, 1024, 1000);
+      ctx.clearRect(0, 0, 1920, 1280);
 
       // Top Browser Bar (Dark Chrome)
       ctx.fillStyle = '#141418';
-      ctx.fillRect(0, 0, 1024, 52);
+      ctx.fillRect(0, 0, 1920, 72);
       ctx.fillStyle = '#22222A';
-      ctx.fillRect(0, 51, 1024, 1);
+      ctx.fillRect(0, 71, 1920, 1);
 
       // Window Control Dots
-      ctx.beginPath(); ctx.arc(26, 26, 5.5, 0, Math.PI * 2); ctx.fillStyle = '#FF5F57'; ctx.fill();
-      ctx.beginPath(); ctx.arc(44, 26, 5.5, 0, Math.PI * 2); ctx.fillStyle = '#FEBC2E'; ctx.fill();
-      ctx.beginPath(); ctx.arc(62, 26, 5.5, 0, Math.PI * 2); ctx.fillStyle = '#28C840'; ctx.fill();
+      ctx.beginPath(); ctx.arc(38, 36, 7.5, 0, Math.PI * 2); ctx.fillStyle = '#FF5F57'; ctx.fill();
+      ctx.beginPath(); ctx.arc(64, 36, 7.5, 0, Math.PI * 2); ctx.fillStyle = '#FEBC2E'; ctx.fill();
+      ctx.beginPath(); ctx.arc(90, 36, 7.5, 0, Math.PI * 2); ctx.fillStyle = '#28C840'; ctx.fill();
 
       // Centered URL Bar
       ctx.fillStyle = '#0B0B0E';
       ctx.strokeStyle = '#27272E';
-      ctx.lineWidth = 1;
-      roundRect(ctx, 310, 13, 360, 26, 6);
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 640, 18, 640, 36, 8);
       ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#A1A1AA';
-      ctx.font = '500 11.5px monospace';
+      ctx.font = '500 16px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('aura-studio.staging.vercel.app', 490, 30);
+      ctx.fillText('aura-studio.staging.vercel.app', 960, 42);
 
       // Interactive Staging Badge
       ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
       ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
-      roundRect(ctx, 840, 13, 160, 26, 13);
+      roundRect(ctx, 1640, 18, 240, 36, 18);
       ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.arc(855, 26, 4, 0, Math.PI * 2); ctx.fillStyle = '#10B981'; ctx.fill();
+      ctx.beginPath(); ctx.arc(1662, 36, 5, 0, Math.PI * 2); ctx.fillStyle = '#10B981'; ctx.fill();
       ctx.fillStyle = '#10B981';
-      ctx.font = '600 10.5px monospace';
+      ctx.font = '600 14.5px monospace';
       ctx.textAlign = 'left';
-      ctx.fillText('Interactive Staging', 866, 30);
+      ctx.fillText('Interactive Staging', 1678, 42);
 
-      // Body Layout: Left Website (680px) | Right Feedback Sidebar (344px)
-      // Left: Aura Atelier Staging Site
+      // Left: Aura Atelier Staging Site (width 1260px)
       ctx.fillStyle = '#F4F1EA';
-      ctx.fillRect(0, 52, 680, 948);
+      ctx.fillRect(0, 72, 1260, 1208);
 
       // Site Nav
       ctx.fillStyle = '#171614';
-      ctx.font = '700 13px "Instrument Sans", sans-serif';
+      ctx.font = '700 20px "Instrument Sans", sans-serif';
       ctx.textAlign = 'left';
-      ctx.letterSpacing = '0.12em';
-      ctx.fillText('AURA ATELIER', 32, 90);
+      ctx.fillText('AURA ATELIER', 52, 126);
 
       ctx.fillStyle = '#78756F';
-      ctx.font = '500 11px "Instrument Sans", sans-serif';
-      ctx.fillText('Objects', 210, 90);
-      ctx.fillText('Spaces', 275, 90);
-      ctx.fillText('Archive', 340, 90);
-      ctx.fillText('Journal', 408, 90);
+      ctx.font = '500 16px "Instrument Sans", sans-serif';
+      ctx.fillText('Objects', 340, 126);
+      ctx.fillText('Spaces', 440, 126);
+      ctx.fillText('Archive', 540, 126);
+      ctx.fillText('Journal', 640, 126);
 
       ctx.fillStyle = '#171614';
-      roundRect(ctx, 580, 72, 70, 26, 4);
+      roundRect(ctx, 1130, 100, 100, 36, 6);
       ctx.fill();
       ctx.fillStyle = '#F4F1EA';
-      ctx.font = '600 10.5px "Instrument Sans", sans-serif';
+      ctx.font = '600 15px "Instrument Sans", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Inquire', 615, 89);
+      ctx.fillText('Inquire', 1180, 124);
 
       ctx.fillStyle = 'rgba(23, 22, 20, 0.08)';
-      ctx.fillRect(32, 112, 616, 1);
+      ctx.fillRect(52, 156, 1156, 1);
 
       // Site Hero Headline & Content
       ctx.textAlign = 'left';
       ctx.fillStyle = '#9E7D53';
-      ctx.font = '600 9.5px monospace';
-      ctx.fillText('CASE STUDY // EDITION 04', 32, 150);
+      ctx.font = '600 14px monospace';
+      ctx.fillText('CASE STUDY // EDITION 04', 52, 210);
 
       ctx.fillStyle = '#171614';
-      ctx.font = '700 28px "Instrument Sans", serif';
-      ctx.fillText('Sculptural vessels cast', 32, 190);
-      ctx.fillText('in raw bronze.', 32, 225);
+      ctx.font = '700 42px "Instrument Sans", serif';
+      ctx.fillText('Sculptural vessels cast', 52, 270);
+      ctx.fillText('in raw bronze.', 52, 320);
 
       ctx.fillStyle = '#69655E';
-      ctx.font = '400 12.5px "Instrument Sans", sans-serif';
-      ctx.fillText('Direct foundry pour. Hand-patinated in Kyoto', 32, 260);
-      ctx.fillText('with matte organic beeswax finish.', 32, 280);
+      ctx.font = '400 19px "Instrument Sans", sans-serif';
+      ctx.fillText('Direct foundry pour. Hand-patinated in Kyoto', 52, 370);
+      ctx.fillText('with matte organic beeswax finish.', 52, 400);
 
       // Specimen Button & Price
       ctx.fillStyle = '#171614';
-      roundRect(ctx, 32, 310, 155, 36, 6);
+      roundRect(ctx, 52, 440, 220, 50, 8);
       ctx.fill();
       ctx.fillStyle = '#F4F1EA';
-      ctx.font = '600 12px "Instrument Sans", sans-serif';
+      ctx.font = '600 17px "Instrument Sans", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Reserve Specimen', 110, 333);
+      ctx.fillText('Reserve Specimen', 162, 472);
 
       ctx.textAlign = 'left';
       ctx.fillStyle = '#78756F';
-      ctx.font = '500 11.5px monospace';
-      ctx.fillText('€1,850 · In Stock', 205, 333);
+      ctx.font = '500 17px monospace';
+      ctx.fillText('€1,850 · In Stock', 300, 472);
 
       // Bronze Specimen Graphic Box
-      var gGrad = ctx.createLinearGradient(380, 140, 640, 360);
-      gGrad.addColorStop(0, '#382F26');
+      var gGrad = ctx.createLinearGradient(740, 200, 1200, 500);
+      gGrad.addColorStop(0, '#3A3127');
       gGrad.addColorStop(0.5, '#1E1B17');
       gGrad.addColorStop(1, '#0F0E0C');
       ctx.fillStyle = gGrad;
-      roundRect(ctx, 380, 140, 268, 205, 8);
+      roundRect(ctx, 740, 200, 468, 290, 12);
       ctx.fill();
       ctx.strokeStyle = 'rgba(23, 22, 20, 0.2)';
       ctx.stroke();
 
       // Warm bronze vessel silhouette glow inside image
-      var vesselGlow = ctx.createRadialGradient(514, 230, 10, 514, 230, 90);
+      var vesselGlow = ctx.createRadialGradient(974, 330, 20, 974, 330, 150);
       vesselGlow.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
       vesselGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
       ctx.fillStyle = vesselGlow;
-      ctx.fillRect(380, 140, 268, 205);
+      ctx.fillRect(740, 200, 468, 290);
 
-      // Stylized minimal bronze vase in raw bronze tone
+      // Bronze Vase
       ctx.fillStyle = '#B48858';
       ctx.beginPath();
-      ctx.ellipse(514, 265, 34, 12, 0, 0, Math.PI * 2);
+      ctx.ellipse(974, 380, 58, 19, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.moveTo(480, 265);
-      ctx.quadraticCurveTo(465, 210, 495, 185);
-      ctx.lineTo(533, 185);
-      ctx.quadraticCurveTo(563, 210, 548, 265);
+      ctx.moveTo(916, 380);
+      ctx.quadraticCurveTo(890, 300, 942, 260);
+      ctx.lineTo(1006, 260);
+      ctx.quadraticCurveTo(1058, 300, 1032, 380);
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = '#D6A875';
       ctx.beginPath();
-      ctx.ellipse(514, 185, 19, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(974, 260, 32, 10, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Lower Editorial Strip
       ctx.fillStyle = 'rgba(23, 22, 20, 0.08)';
-      ctx.fillRect(32, 385, 616, 1);
+      ctx.fillRect(52, 535, 1156, 1);
       ctx.fillStyle = '#9E7D53';
-      ctx.font = '600 8.5px monospace';
+      ctx.font = '600 13.5px monospace';
       ctx.textAlign = 'left';
-      ctx.fillText('BRUTALIST ARCHITECTURE', 32, 404);
+      ctx.fillText('BRUTALIST ARCHITECTURE', 52, 562);
       ctx.textAlign = 'center';
-      ctx.fillText('KYOTO FOUNDRY ARCHIVE', 340, 404);
+      ctx.fillText('KYOTO FOUNDRY ARCHIVE', 630, 562);
       ctx.textAlign = 'right';
-      ctx.fillText('LIMITED SPECIMEN 04/40', 648, 404);
+      ctx.fillText('LIMITED SPECIMEN 04/40', 1208, 562);
 
-      // Additional Architectural Case Study Section below
+      // Architectural Section below
       ctx.fillStyle = '#EAE6DC';
-      roundRect(ctx, 32, 428, 616, 420, 8);
+      roundRect(ctx, 52, 595, 1156, 620, 12);
       ctx.fill();
 
       ctx.fillStyle = '#171614';
-      ctx.font = '700 18px "Instrument Sans", sans-serif';
+      ctx.font = '700 26px "Instrument Sans", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('Monolithic spatial proportion & poured form.', 52, 465);
+      ctx.fillText('Monolithic spatial proportion & poured form.', 86, 645);
 
       ctx.fillStyle = '#69655E';
-      ctx.font = '400 12px "Instrument Sans", sans-serif';
-      ctx.fillText('A curated study of raw textures, exposed aggregate, and deep acoustic mass.', 52, 492);
+      ctx.font = '400 17px "Instrument Sans", sans-serif';
+      ctx.fillText('A curated study of raw textures, exposed aggregate, and deep acoustic mass.', 86, 680);
 
-      // Architectural blocks
       ctx.fillStyle = '#DCD6C8';
-      roundRect(ctx, 52, 520, 180, 180, 6); ctx.fill();
-      roundRect(ctx, 250, 520, 180, 180, 6); ctx.fill();
-      roundRect(ctx, 448, 520, 180, 180, 6); ctx.fill();
+      roundRect(ctx, 86, 720, 340, 260, 8); ctx.fill();
+      roundRect(ctx, 460, 720, 340, 260, 8); ctx.fill();
+      roundRect(ctx, 834, 720, 340, 260, 8); ctx.fill();
 
       // Review Pins on Website
       // Pin 1 (Amber with pulse ring)
-      var p1x = 180, p1y = 330;
+      var p1x = 250, p1y = 465;
       var pulseProgress = (pulseTime % 1.5) / 1.5;
-      var pulseRadius = 14 + pulseProgress * 18;
-      var pulseAlpha = 0.8 * (1 - pulseProgress);
+      var pulseRadius = 20 + pulseProgress * 28;
+      var pulseAlpha = 0.85 * (1 - pulseProgress);
       ctx.beginPath();
       ctx.arc(p1x, p1y, pulseRadius, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(245, 158, 11, ' + pulseAlpha + ')';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(p1x, p1y, 13, 0, Math.PI * 2);
+      ctx.arc(p1x, p1y, 19, 0, Math.PI * 2);
       ctx.fillStyle = '#F59E0B';
       ctx.fill();
       ctx.strokeStyle = '#09090B';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
       ctx.fillStyle = '#09090B';
-      ctx.font = '700 11px sans-serif';
+      ctx.font = '700 16px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('1', p1x, p1y + 4);
+      ctx.fillText('1', p1x, p1y + 6);
 
       // Pin 2
-      var p2x = 514, p2y = 230;
-      ctx.beginPath(); ctx.arc(p2x, p2y, 13, 0, Math.PI * 2);
+      var p2x = 974, p2y = 330;
+      ctx.beginPath(); ctx.arc(p2x, p2y, 19, 0, Math.PI * 2);
       ctx.fillStyle = '#F59E0B'; ctx.fill();
-      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.fillStyle = '#09090B'; ctx.font = '700 11px sans-serif';
-      ctx.fillText('2', p2x, p2y + 4);
+      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = '#09090B'; ctx.font = '700 16px sans-serif';
+      ctx.fillText('2', p2x, p2y + 6);
 
       // Pin 3
-      var p3x = 240, p3y = 460;
-      ctx.beginPath(); ctx.arc(p3x, p3y, 13, 0, Math.PI * 2);
+      var p3x = 460, p3y = 640;
+      ctx.beginPath(); ctx.arc(p3x, p3y, 19, 0, Math.PI * 2);
       ctx.fillStyle = '#F59E0B'; ctx.fill();
-      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.fillStyle = '#09090B'; ctx.font = '700 11px sans-serif';
-      ctx.fillText('3', p3x, p3y + 4);
+      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = '#09090B'; ctx.font = '700 16px sans-serif';
+      ctx.fillText('3', p3x, p3y + 6);
 
       // Floating Feedback Popover attached to Pin 1
-      var popX = 205, popY = 245, popW = 340, popH = 88;
+      var popX = 290, popY = 345, popW = 490, popH = 120;
       ctx.fillStyle = '#18181E';
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
-      ctx.lineWidth = 1.5;
-      roundRect(ctx, popX, popY, popW, popH, 8);
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, popX, popY, popW, popH, 10);
       ctx.fill(); ctx.stroke();
 
       ctx.fillStyle = '#FAFAFA';
-      ctx.font = '600 11px "Instrument Sans", sans-serif';
+      ctx.font = '600 16px "Instrument Sans", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('Jane Cooper (Client)', popX + 14, popY + 22);
+      ctx.fillText('Jane Cooper (Client)', popX + 20, popY + 30);
 
       ctx.fillStyle = '#71717A';
-      ctx.font = '400 10px monospace';
+      ctx.font = '400 14px monospace';
       ctx.textAlign = 'right';
-      ctx.fillText('2m ago', popX + popW - 14, popY + 22);
+      ctx.fillText('2m ago', popX + popW - 20, popY + 30);
 
       ctx.fillStyle = '#E4E4E7';
-      ctx.font = '400 11.5px "Instrument Sans", sans-serif';
+      ctx.font = '400 16.5px "Instrument Sans", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText("Can we change this to 'Reserve via Concierge'?", popX + 14, popY + 44);
-      ctx.fillText('Also bump button horizontal padding.', popX + 14, popY + 60);
+      ctx.fillText("Can we change this to 'Reserve via Concierge'?", popX + 20, popY + 62);
+      ctx.fillText('Also bump button horizontal padding.', popX + 20, popY + 86);
 
       ctx.fillStyle = '#F59E0B';
-      ctx.font = '500 9.5px monospace';
-      ctx.fillText('1440×900 · Chrome 131 · macOS 15.1', popX + 14, popY + 76);
+      ctx.font = '500 13.5px monospace';
+      ctx.fillText('1440×900 · Chrome 131 · macOS 15.1', popX + 20, popY + 108);
 
-      // Right: Cyath Staging Review Telemetry Sidebar
+      // Right: Cyath Staging Review Telemetry Sidebar (width 660px)
       ctx.fillStyle = '#101014';
-      ctx.fillRect(680, 52, 344, 948);
+      ctx.fillRect(1260, 72, 660, 1208);
       ctx.fillStyle = '#22222A';
-      ctx.fillRect(680, 52, 1, 948);
+      ctx.fillRect(1260, 72, 2, 1208);
 
       // Sidebar Header
       ctx.fillStyle = '#FAFAFA';
-      ctx.font = '600 13px "Instrument Sans", sans-serif';
+      ctx.font = '600 21px "Instrument Sans", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('Feedback', 700, 85);
+      ctx.fillText('Feedback', 1295, 124);
 
       ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
       ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-      roundRect(ctx, 940, 70, 68, 22, 11);
+      roundRect(ctx, 1780, 100, 100, 36, 18);
       ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#F59E0B';
-      ctx.font = '600 10px monospace';
+      ctx.font = '600 15px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('3 total', 974, 85);
+      ctx.fillText('3 total', 1830, 124);
 
       ctx.fillStyle = '#22222A';
-      ctx.fillRect(680, 104, 344, 1);
+      ctx.fillRect(1260, 156, 660, 1);
 
       // Card 1
-      drawSidebarCard(ctx, 700, 118, 308, 1, 'OPEN', '2m',
+      drawSidebarCard(ctx, 1295, 180, 590, 1, 'OPEN', '2m',
         "Can we change this to 'Reserve via Concierge'? Also bump button padding.",
         '1440×900 · Chrome 131', true);
 
       // Card 2
-      drawSidebarCard(ctx, 700, 240, 308, 2, 'OPEN', '4m',
+      drawSidebarCard(ctx, 1295, 360, 590, 2, 'OPEN', '4m',
         'Hero image optimized to WebP with responsive srcset. Loads in 85ms.',
         '1512×982 · macOS Sonoma', false);
 
       // Card 3
-      drawSidebarCard(ctx, 700, 362, 308, 3, 'OPEN', '6m',
+      drawSidebarCard(ctx, 1295, 540, 590, 3, 'OPEN', '6m',
         'Inquiry button should open sliding sheet instead of anchor jump.',
         '375×812 · Safari iOS', false);
 
-      // Authentic CRT Scanlines Overlay
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
-      for (var y = 0; y < 1000; y += 4) {
-        ctx.fillRect(0, y, 1024, 1.8);
+      // Ultra-Fine CRT Scanlines (Non-intrusive, preserve text clarity)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+      for (var y = 0; y < 1280; y += 4) {
+        ctx.fillRect(0, y, 1920, 1.5);
       }
 
-      // CRT Subtle Phosphor Tube Vignette
-      var tubeVignette = ctx.createRadialGradient(512, 500, 380, 512, 500, 650);
+      // Soft Edge Vignette
+      var tubeVignette = ctx.createRadialGradient(960, 640, 500, 960, 640, 1050);
       tubeVignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      tubeVignette.addColorStop(0.7, 'rgba(0, 0, 0, 0.12)');
-      tubeVignette.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
+      tubeVignette.addColorStop(0.85, 'rgba(0, 0, 0, 0.08)');
+      tubeVignette.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
       ctx.fillStyle = tubeVignette;
-      ctx.fillRect(0, 0, 1024, 1000);
+      ctx.fillRect(0, 0, 1920, 1280);
     }
 
     function drawSidebarCard(ctx, x, y, w, num, status, time, text, meta, isFocused) {
       ctx.fillStyle = isFocused ? '#181820' : '#141418';
-      ctx.strokeStyle = isFocused ? 'rgba(245, 158, 11, 0.4)' : '#23232C';
-      ctx.lineWidth = 1;
-      roundRect(ctx, x, y, w, 108, 8);
+      ctx.strokeStyle = isFocused ? 'rgba(245, 158, 11, 0.45)' : '#23232C';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, x, y, w, 155, 12);
       ctx.fill(); ctx.stroke();
 
       // Number badge
-      ctx.beginPath(); ctx.arc(x + 16, y + 20, 9, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(x + 24, y + 28, 13, 0, Math.PI * 2);
       ctx.fillStyle = '#F59E0B'; ctx.fill();
-      ctx.fillStyle = '#09090B'; ctx.font = '700 9px sans-serif';
-      ctx.textAlign = 'center'; ctx.fillText(num, x + 16, y + 23);
+      ctx.fillStyle = '#09090B'; ctx.font = '700 13px sans-serif';
+      ctx.textAlign = 'center'; ctx.fillText(num, x + 24, y + 33);
 
       // Status pill
       ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
-      roundRect(ctx, x + 32, y + 11, 46, 18, 4);
+      roundRect(ctx, x + 48, y + 16, 68, 25, 6);
       ctx.fill();
-      ctx.fillStyle = '#F59E0B'; ctx.font = '600 8.5px monospace';
-      ctx.fillText(status, x + 55, y + 23);
+      ctx.fillStyle = '#F59E0B'; ctx.font = '600 12px monospace';
+      ctx.fillText(status, x + 82, y + 33);
 
       // Time
-      ctx.fillStyle = '#71717A'; ctx.font = '400 9px monospace';
-      ctx.textAlign = 'right'; ctx.fillText(time, x + w - 12, y + 23);
+      ctx.fillStyle = '#71717A'; ctx.font = '400 13px monospace';
+      ctx.textAlign = 'right'; ctx.fillText(time, x + w - 18, y + 33);
 
       // Text
       ctx.textAlign = 'left';
-      ctx.fillStyle = '#D4D4D8'; ctx.font = '400 11px "Instrument Sans", sans-serif';
-      wrapText(ctx, text, x + 12, y + 46, w - 24, 16);
+      ctx.fillStyle = '#E4E4E7'; ctx.font = '400 16px "Instrument Sans", sans-serif';
+      wrapText(ctx, text, x + 18, y + 68, w - 36, 23);
 
       // Meta
-      ctx.fillStyle = '#A1A1AA'; ctx.font = '500 9px monospace';
-      ctx.fillText(meta, x + 12, y + 96);
+      ctx.fillStyle = '#A1A1AA'; ctx.font = '500 13px monospace';
+      ctx.fillText(meta, x + 18, y + 138);
     }
 
     function roundRect(ctx, x, y, w, h, r) {
@@ -1749,50 +1723,45 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     var screenTexture = new THREE.CanvasTexture(screenCanvas);
     screenTexture.encoding = THREE.sRGBEncoding;
 
-    // 7. Curved CRT Screen Geometry & PBR Materials
-    var screenGeo = new THREE.PlaneGeometry(6.45, 6.34, 20, 20);
+    // 7. Precise Curved CRT Screen Geometry (Perfect fit centered at X=0, Y=5.40)
+    var screenGeo = new THREE.PlaneGeometry(9.45, 6.35, 32, 24);
     var posAttr = screenGeo.attributes.position;
     for (var i = 0; i < posAttr.count; i++) {
       var px = posAttr.getX(i);
       var py = posAttr.getY(i);
-      var nx = px / 3.225;
-      var ny = py / 3.17;
+      var nx = px / 4.725;
+      var ny = py / 3.175;
+      // Spherical bulge: 0 at bezel perimeter, +0.16 at center
       var curve = (1 - nx * nx) * (1 - ny * ny) * 0.16;
       posAttr.setZ(i, Math.max(0, curve));
     }
     screenGeo.computeVertexNormals();
 
-    var screenMat = new THREE.MeshStandardMaterial({
-      map: screenTexture,
-      emissiveMap: screenTexture,
-      emissive: 0xFFFFFF,
-      emissiveIntensity: 0.72,
-      roughness: 0.15,
-      metalness: 0.05
+    // Screen Material: MeshBasicMaterial ensures self-illuminating, 100% crisp, vibrant display
+    var screenMat = new THREE.MeshBasicMaterial({
+      map: screenTexture
     });
     var screenMesh = new THREE.Mesh(screenGeo, screenMat);
-    screenMesh.position.set(-1.155, 5.31, 3.66);
+    screenMesh.position.set(0.0, 5.40, 3.62);
 
-    // Curved Specular Glass Face Overlay (catches key light and amber rim)
+    // Subtle Specular Glass Layer Overlay
     var glassGeo = screenGeo.clone();
     var glassMat = new THREE.MeshPhysicalMaterial({
       color: 0xFFFFFF,
-      roughness: 0.06,
-      metalness: 0.08,
-      transmission: 0.90,
+      roughness: 0.1,
+      metalness: 0.0,
+      transmission: 0.94,
       transparent: true,
-      opacity: 0.35,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
-      reflectivity: 0.9
+      opacity: 0.18,
+      clearcoat: 0.8,
+      clearcoatRoughness: 0.1
     });
     var glassMesh = new THREE.Mesh(glassGeo, glassMat);
-    glassMesh.position.set(-1.155, 5.31, 3.68);
+    glassMesh.position.set(0.0, 5.40, 3.64);
 
     // 8. 3D Model Group & Orientation
     var tvRoot = new THREE.Group();
-    // Default angle: 20 degrees away from user towards the text on the left!
-    tvRoot.rotation.y = -0.35;
+    tvRoot.rotation.y = -0.35; // Default resting angle: 20° towards text
     tvRoot.rotation.x = 0.05;
     tvRoot.scale.set(0.92, 0.92, 0.92);
     scene.add(tvRoot);
@@ -1805,18 +1774,23 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
       // Center geometry at origin (0, 0, 0)
       tvModel.position.set(0, -4.808, 0.9325);
 
-      // Attach curved screen and specular glass mesh to the TV
+      // Attach curved screen and glass mesh as children of the TV model
       tvModel.add(screenMesh);
       tvModel.add(glassMesh);
 
-      // Enhance PBR specular reflections and shadows on all meshes
+      // Fix CRT casing materials: eliminate noisy glitter, set authentic matte retro plastic
       tvModel.traverse(function (child) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
           if (child.material) {
+            child.material.metalness = 0.02;
+            child.material.roughness = 0.72;
+            if (child.material.normalMap) {
+              child.material.normalScale.set(0.15, 0.15);
+            }
             child.material.envMap = envTexture;
-            child.material.envMapIntensity = 1.0;
+            child.material.envMapIntensity = 0.35;
             child.material.needsUpdate = true;
           }
         }
@@ -1926,7 +1900,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
       }
     }
 
-    // Click anywhere on the monitor wrapper to trigger the comedic spin
+    // Click anywhere on monitor wrapper to spin
     wrapper.addEventListener('click', spinCrtMonitor);
 
     // 10. Mouse Hover Parallax
