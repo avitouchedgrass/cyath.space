@@ -15,31 +15,31 @@
    CYATH LANDING — design tokens (spec §3)
    ============================================================ */
 :root {
-  /* Surfaces */
-  --surface-canvas: #09090B;
-  --surface-panel: #111114;
-  --surface-overlay: #18181C;
-  --surface-glass: rgba(18, 18, 22, 0.82);
+  /* Surfaces — Crimson Noir */
+  --surface-canvas: #090505;
+  --surface-panel: #120A0A;
+  --surface-overlay: #1A0F0F;
+  --surface-glass: rgba(18, 10, 10, 0.85);
 
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.16);
-  --border-glow: rgba(245, 158, 11, 0.35);
+  --border-active: rgba(239, 68, 68, 0.28);
+  --border-glow: rgba(239, 68, 68, 0.45);
 
   /* Text - High contrast WCAG AA/AAA calibrated */
-  --text-primary: #FAFAFA;
-  --text-secondary: #D4D4D8;
-  --text-muted: #A1A1AA;
-  --text-dim: #71717A;
+  --text-primary: #FFF5F5;
+  --text-secondary: #E2D1D1;
+  --text-muted: #9E7B7B;
+  --text-dim: #6E4F4F;
 
-  /* Accent */
-  --accent: #F59E0B;
-  --accent-dim: rgba(245, 158, 11, 0.12);
-  --accent-glow: rgba(245, 158, 11, 0.22);
+  /* Accent — Crimson */
+  --accent: #EF4444;
+  --accent-dim: rgba(239, 68, 68, 0.12);
+  --accent-glow: rgba(239, 68, 68, 0.25);
 
   /* Gradients */
-  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.12), transparent);
-  --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(245, 158, 11, 0.10), transparent);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(239, 68, 68, 0.14), transparent);
+  --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(239, 68, 68, 0.12), transparent);
 
   --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -66,11 +66,11 @@ body {
 }
 
 /* Browser Surface Theming (§craft-floor) */
-::selection { background: rgba(245, 158, 11, 0.28); color: #FAFAFA; }
+::selection { background: rgba(239, 68, 68, 0.3); color: #FFF5F5; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: #09090B; }
-::-webkit-scrollbar-thumb { background: #27272A; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+::-webkit-scrollbar-track { background: #090505; }
+::-webkit-scrollbar-thumb { background: #261616; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3D2222; }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
@@ -341,71 +341,475 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   3D WEBGL CRT MONITOR STAGE (§Hero 3D Physical Display)
+   FLOATING BROWSER STAGING MOCKUP (§Hero Option 1)
    ============================================================ */
 .hero-right {
   position: relative;
   width: 100%;
-  min-height: 560px;
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+.hero-browser-glow {
+  position: absolute;
+  width: 580px;
+  height: 480px;
+  background: radial-gradient(circle 260px at 50% 50%, rgba(239, 68, 68, 0.18), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+  transform: translateZ(0);
+}
+.browser-stage-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 680px;
+  background: var(--surface-panel);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 14px;
+  box-shadow:
+    0 32px 80px -10px rgba(0, 0, 0, 0.9),
+    0 0 50px -10px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transform: rotateX(6deg) rotateY(-8deg);
+  transform-style: preserve-3d;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 600ms ease;
+  will-change: transform;
+}
+.browser-stage-card:hover {
+  transform: rotateX(1deg) rotateY(-2deg) scale(1.015);
+  box-shadow:
+    0 40px 100px -10px rgba(0, 0, 0, 0.95),
+    0 0 65px -5px rgba(239, 68, 68, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Chrome Header */
+.browser-chrome {
+  background: #140A0A;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.browser-traffic-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.browser-traffic-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-red { background: #EF4444; }
+.dot-amber { background: #F59E0B; }
+.dot-green { background: #10B981; }
+
+.browser-url-bar {
+  flex: 1;
+  max-width: 310px;
+  margin: 0 auto;
+  background: #090505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #D4A5A5;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.browser-url-bar svg {
+  width: 10px;
+  height: 10px;
+  opacity: 0.5;
+}
+
+.browser-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 999px;
+  padding: 3px 9px;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+.badge-live-pulse {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 6px #EF4444;
+  animation: pulseBeacon 2s infinite ease-in-out;
+}
+@keyframes pulseBeacon {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Browser Body Split */
+.browser-body {
+  display: flex;
+  height: 380px;
+  background: #0D0707;
+}
+
+/* Staged Review Canvas (Left) */
+.staging-viewport-stage {
+  flex: 1;
+  position: relative;
+  background: #FAF8F4;
+  color: #171614;
+  overflow: hidden;
+  user-select: none;
+}
+.staging-site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(23, 22, 20, 0.07);
+}
+.staging-site-logo {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #171614;
+}
+.staging-site-links {
+  display: flex;
+  gap: 14px;
+  font-size: 10.5px;
+  color: #78756F;
+}
+.staging-site-btn {
+  font-size: 10.5px;
+  font-weight: 600;
+  background: #171614;
+  color: #FAF8F4;
+  padding: 4px 10px;
+  border-radius: 5px;
+  position: relative;
+}
+.staging-content-area {
+  padding: 20px 20px 0;
+}
+.staging-kicker {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9E7D53;
+  margin-bottom: 6px;
+}
+.staging-headline {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #171614;
+  margin-bottom: 8px;
+}
+.staging-subtext {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #69655E;
+  max-width: 250px;
+}
+.staging-specimen-box {
+  margin: 16px 20px 0;
+  height: 140px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #DDD4C4, #C6B79E);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.specimen-tag {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  color: rgba(23, 22, 20, 0.6);
+  letter-spacing: 0.05em;
+}
+
+/* Dynamic Pins */
+.stage-pin {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5), 0 0 0 2px #FAF8F4;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.stage-pin:hover {
+  transform: scale(1.15);
+}
+.stage-pin::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid #EF4444;
+  animation: pinRing 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes pinRing {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Floating Staging Comment Popover attached to Pin 1 */
+.stage-popover {
+  position: absolute;
+  top: 155px;
+  left: 20px;
+  width: 250px;
+  background: #140A0A;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 9px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(239, 68, 68, 0.15);
+  z-index: 15;
+  color: #FFF5F5;
+  pointer-events: auto;
+  animation: popoverFadeIn 500ms ease both 0.3s;
+}
+@keyframes popoverFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.popover-author {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #FFF5F5;
+}
+.popover-time {
+  font-size: 9.5px;
+  color: #9E7B7B;
+  font-family: var(--font-mono);
+}
+.popover-text {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #E2D1D1;
+  margin-bottom: 8px;
+}
+.popover-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #F87171;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+/* Interactive Cursor */
+.stage-cursor {
+  position: absolute;
+  top: 180px;
+  left: 170px;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  z-index: 20;
+  animation: cursorGlide 8s infinite ease-in-out;
+}
+@keyframes cursorGlide {
+  0% { transform: translate(140px, 90px); }
+  25% { transform: translate(0, 0); }
+  30% { transform: translate(0, 0) scale(0.9); }
+  35% { transform: translate(0, 0) scale(1); }
+  60% { transform: translate(90px, -70px); }
+  65% { transform: translate(90px, -70px) scale(0.9); }
+  70% { transform: translate(90px, -70px) scale(1); }
+  100% { transform: translate(140px, 90px); }
+}
+.stage-cursor svg {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.6));
+}
+
+/* Feedback Sidebar (Right) */
+.feedback-sidebar {
+  width: 250px;
+  background: #110808;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+}
+.sidebar-header {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFF5F5;
+  letter-spacing: -0.01em;
+}
+.sidebar-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.sidebar-list {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+.sidebar-item {
+  background: #160B0B;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+.sidebar-item:hover, .sidebar-item.active {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: #1C0E0E;
+}
+.item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.item-pin-num {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #FFF;
+  font-size: 9.5px;
+  font-weight: 700;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
-.crt-stage-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 720px;
-  height: 540px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.crt-canvas-container {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.crt-canvas-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-  outline: none;
-}
-.crt-action-hint {
-  margin-top: 10px;
+.item-status {
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  text-align: center;
-  user-select: none;
-  pointer-events: none;
-  transition: color 200ms ease;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+  letter-spacing: 0.05em;
 }
-.crt-stage-wrapper:hover + .crt-action-hint {
-  color: var(--text-secondary);
+.item-time {
+  font-size: 9.5px;
+  color: #9E7B7B;
+  font-family: var(--font-mono);
 }
-.crt-action-hint span {
-  color: var(--accent);
+.item-body {
+  font-size: 11px;
+  color: #E2D1D1;
+  line-height: 1.4;
+  margin-bottom: 5px;
 }
+.item-meta {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #9E7B7B;
+}
+
+/* Sidebar Footer: Milestone Sign-off Pill */
+.sidebar-footer {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0E0707;
+}
+.signoff-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #FFF5F5;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+.signoff-pill:hover {
+  background: #EF4444;
+  color: #FFF;
+  border-color: #EF4444;
+}
+
 @media (max-width: 1080px) {
   .hero-right {
-    min-height: 460px;
+    min-height: 480px;
   }
-  .crt-stage-wrapper {
-    height: 440px;
-    max-width: 580px;
+  .browser-stage-card {
+    transform: none !important;
   }
 }
-@media (max-width: 640px) {
-  .hero-right {
-    min-height: 380px;
+@media (max-width: 680px) {
+  .browser-body {
+    flex-direction: column;
+    height: auto;
   }
-  .crt-stage-wrapper {
-    height: 360px;
+  .feedback-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .staging-viewport-stage {
+    min-height: 320px;
   }
 }
 
@@ -752,8 +1156,6 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
   * { scroll-behavior: auto !important; }
 }
 </style>
-<script src="/vendor/three.min.js"></script>
-<script src="/vendor/GLTFLoader.js"></script>
 </head>
 <body>
 <div class="canvas-texture" aria-hidden="true"></div>
@@ -761,16 +1163,16 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
 <!-- ══════════ ARCHITECTURAL FLUSH NAV BAR (§4.1) ══════════ -->
 <header class="site-nav-bar" id="nav">
   <div class="nav-inner">
-    <!-- Brand Identity: Dual Viewport Frame -->
+    <!-- Brand Identity: Refractive Prism -->
     <a class="nav-brand" href="#top" id="navBrand" aria-label="Cyath home">
       <div class="brand-mark-wrap">
-        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-svg">
-          <!-- Viewport Staging Base Frame -->
-          <rect x="2.5" y="3.5" width="13" height="12" rx="2.5" stroke="#FAFAFA" stroke-width="1.5" stroke-opacity="0.8"/>
-          <!-- Client Review Inspection Frame (Occluded) -->
-          <rect x="8.5" y="8.5" width="13" height="12" rx="2.5" fill="#09090B" stroke="#F59E0B" stroke-width="1.5"/>
-          <!-- Pinned Inspection Datum Point -->
-          <circle cx="15.5" cy="8.5" r="2" fill="#F59E0B" id="brandDatum"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-svg">
+          <!-- Refractive Prism Mark: Top face highlight -->
+          <path d="M12 2.5L19.5 6.7L12 10.9L4.5 6.7L12 2.5Z" fill="#FFF5F5" fill-opacity="0.95"/>
+          <!-- Right face (crimson accent) -->
+          <path d="M12 10.9L19.5 6.7V16.3L12 20.5V10.9Z" fill="#EF4444"/>
+          <!-- Left face (deep shadow) -->
+          <path d="M12 10.9L4.5 6.7V16.3L12 20.5V10.9Z" fill="#FFF5F5" fill-opacity="0.25"/>
         </svg>
       </div>
       <span class="brand-name">cyath</span>
@@ -832,12 +1234,129 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
       </div>
     </div>
 
-    <!-- Right Column: Interactive 3D CRT Monitor Staging Canvas -->
-    <div class="hero-right">
-      <div class="crt-stage-wrapper" id="crtStageWrapper" title="Click monitor to spin">
-        <div id="crtCanvasContainer" class="crt-canvas-container"></div>
+    <!-- Right Column: Cinematic Floating Browser Review Stage (Option 1) -->
+    <div class="hero-right" id="heroVisual">
+      <div class="hero-browser-glow" aria-hidden="true"></div>
+
+      <div class="browser-stage-card" id="browserStageCard">
+        <!-- Browser Chrome Header -->
+        <div class="browser-chrome">
+          <div class="browser-traffic-dots">
+            <span class="dot-red"></span>
+            <span class="dot-amber"></span>
+            <span class="dot-green"></span>
+          </div>
+          <div class="browser-url-bar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>aura-atelier.staging.vercel.app</span>
+          </div>
+          <div class="browser-telemetry-badge">
+            <span class="badge-live-pulse"></span>
+            <span>1440×900 · Chrome 131</span>
+          </div>
+        </div>
+
+        <!-- Browser Body -->
+        <div class="browser-body">
+          <!-- Left: Staging Viewport Preview -->
+          <div class="staging-viewport-stage" id="stagingStage">
+            <div class="staging-site-nav">
+              <span class="staging-site-logo">AURA ATELIER</span>
+              <div class="staging-site-links">
+                <span>Spaces</span>
+                <span>Archive</span>
+                <span>Journal</span>
+              </div>
+              <span class="staging-site-btn">Inquire</span>
+            </div>
+
+            <div class="staging-content-area">
+              <div class="staging-kicker">Case Study // Edition 04</div>
+              <h2 class="staging-headline">Sculptural vessels cast in raw bronze.</h2>
+              <p class="staging-subtext">Direct foundry pour. Hand-patinated in Kyoto with organic beeswax finish.</p>
+            </div>
+
+            <div class="staging-specimen-box">
+              <span class="specimen-tag">Kyoto Foundry Specimen No. 04</span>
+            </div>
+
+            <!-- Dynamic Feedback Pins -->
+            <div class="stage-pin" id="stagePin1" style="top: 76px; right: 28px;" title="Pin 1: Inquire button">1</div>
+            <div class="stage-pin" id="stagePin2" style="top: 148px; left: 168px;" title="Pin 2: Specimen padding">2</div>
+            <div class="stage-pin" id="stagePin3" style="bottom: 24px; left: 80px;" title="Pin 3: Footer signature">3</div>
+
+            <!-- Active Comment Popover (attached to Pin 1) -->
+            <div class="stage-popover" id="stagePopover">
+              <div class="popover-header">
+                <span class="popover-author">Jane Cooper (Client)</span>
+                <span class="popover-time">just now</span>
+              </div>
+              <p class="popover-text" id="popoverText">"Can we change this to 'Reserve via Concierge'? Also bump button padding."</p>
+              <div class="popover-telemetry">
+                <span>1440×900</span>
+                <span>·</span>
+                <span>Chrome 131</span>
+                <span>·</span>
+                <span>macOS 15.1</span>
+              </div>
+            </div>
+
+            <!-- Animated Cursor -->
+            <div class="stage-cursor" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 3L11.5 21L14.5 13.5L22 10.5L4 3Z" fill="#FFF5F5" stroke="#140A0A" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Right: Feedback Telemetry Sidebar -->
+          <div class="feedback-sidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-title">Feedback</span>
+              <span class="sidebar-badge" id="sidebarCount">3 total</span>
+            </div>
+
+            <div class="sidebar-list">
+              <div class="sidebar-item active" data-pin="1">
+                <div class="item-top">
+                  <span class="item-pin-num">1</span>
+                  <span class="item-status">OPEN</span>
+                  <span class="item-time">now</span>
+                </div>
+                <p class="item-body">Can we change to 'Reserve via Concierge'?</p>
+                <span class="item-meta">1440×900 · Chrome 131</span>
+              </div>
+
+              <div class="sidebar-item" data-pin="2">
+                <div class="item-top">
+                  <span class="item-pin-num">2</span>
+                  <span class="item-status">OPEN</span>
+                  <span class="item-time">4m</span>
+                </div>
+                <p class="item-body">Hero image optimized to WebP with responsive srcset.</p>
+                <span class="item-meta">1512×982 · macOS</span>
+              </div>
+
+              <div class="sidebar-item" data-pin="3">
+                <div class="item-top">
+                  <span class="item-pin-num">3</span>
+                  <span class="item-status">OPEN</span>
+                  <span class="item-time">6m</span>
+                </div>
+                <p class="item-body">Button should open sliding sheet instead of anchor jump.</p>
+                <span class="item-meta">390×844 · Safari iOS</span>
+              </div>
+            </div>
+
+            <div class="sidebar-footer">
+              <div class="signoff-pill" id="signoffBtn" title="Click to verify milestone">
+                <span>✓ Sign-Off Ready</span>
+                <span style="opacity:0.6; font-family:var(--font-mono); font-size:9.5px;">SHA-256</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="crt-action-hint">Click monitor to <span>spin 360°</span></p>
     </div>
   </div>
 </header>
@@ -1248,704 +1767,127 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
     .from('#heroVisual', { autoAlpha: 0, x: 40, y: 15, scale: 0.98, duration: 1.1, ease: 'power3.out' }, '-=0.45');
 
-  /* ══════════ REALISTIC 3D WEBGL CRT MONITOR (Three.js PBR) ══════════ */
-  (function initCrtWebGL() {
-    var container = $('#crtCanvasContainer');
-    var wrapper = $('#crtStageWrapper');
-    if (!container || !wrapper || typeof THREE === 'undefined') return;
+  /* ══════════ CINEMATIC FLOATING BROWSER STAGING MOCKUP (§Hero Option 1) ══════════ */
+  (function initFloatingBrowser() {
+    var card = $('#browserStageCard');
+    var popover = $('#stagePopover');
+    var popoverText = $('#popoverText');
+    var pins = $$('.stage-pin');
+    var sidebarItems = $$('.sidebar-item');
+    var signoffBtn = $('#signoffBtn');
+    if (!card) return;
 
-    // 1. Scene & Camera Setup (Clean framing, proper FOV, no zoom clipping)
-    var width = container.clientWidth || 700;
-    var height = container.clientHeight || 540;
+    var pinData = {
+      1: {
+        author: 'Jane Cooper (Client)',
+        time: 'just now',
+        text: '"Can we change this to \'Reserve via Concierge\'? Also bump button padding."',
+        telemetry: '1440×900 · Chrome 131 · macOS 15.1'
+      },
+      2: {
+        author: 'Jane Cooper (Client)',
+        time: '4m ago',
+        text: '"Hero image optimized to WebP with responsive srcset. Loads in 85ms."',
+        telemetry: '1512×982 · Chrome 131 · macOS 15.1'
+      },
+      3: {
+        author: 'Jane Cooper (Client)',
+        time: '6m ago',
+        text: '"Button should open sliding sheet instead of anchor jump on mobile viewports."',
+        telemetry: '390×844 · Safari 18 · iOS 18'
+      }
+    };
 
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100);
-    camera.position.set(0, 0.1, 16.0);
-    camera.lookAt(0, 0, 0);
+    function selectPin(num) {
+      var d = pinData[num];
+      if (!d || !popover) return;
 
-    // 2. High-Performance WebGL Renderer
-    var renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance'
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
+      sidebarItems.forEach(function (item) {
+        item.classList.toggle('active', item.getAttribute('data-pin') === String(num));
+      });
 
-    // 3. Studio Lighting
-    var keyLight = new THREE.DirectionalLight(0xFFF7ED, 2.2);
-    keyLight.position.set(6, 8, 8);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 2048;
-    keyLight.shadow.mapSize.height = 2048;
-    keyLight.shadow.camera.near = 1;
-    keyLight.shadow.camera.far = 30;
-    keyLight.shadow.camera.left = -8;
-    keyLight.shadow.camera.right = 8;
-    keyLight.shadow.camera.top = 8;
-    keyLight.shadow.camera.bottom = -8;
-    keyLight.shadow.bias = -0.0005;
-    scene.add(keyLight);
+      pins.forEach(function (pin) {
+        var isThis = pin.textContent.trim() === String(num);
+        pin.style.transform = isThis ? 'scale(1.2)' : 'scale(1)';
+        pin.style.boxShadow = isThis
+          ? '0 6px 20px rgba(239, 68, 68, 0.7), 0 0 0 2.5px #FAF8F4'
+          : '0 4px 14px rgba(239, 68, 68, 0.5), 0 0 0 2px #FAF8F4';
+      });
 
-    // Brand Amber Rim Spotlight
-    var amberRim = new THREE.SpotLight(0xF59E0B, 3.2, 35, Math.PI / 4, 0.6, 1);
-    amberRim.position.set(-8, 5, -2);
-    amberRim.target.position.set(0, 0, 0);
-    scene.add(amberRim);
-    scene.add(amberRim.target);
-
-    // Soft Studio Front Fill
-    var fillLight = new THREE.DirectionalLight(0x94A3B8, 0.7);
-    fillLight.position.set(4, -2, 6);
-    scene.add(fillLight);
-
-    // Hemisphere Ambient
-    var hemiLight = new THREE.HemisphereLight(0x282936, 0x09090D, 1.0);
-    scene.add(hemiLight);
-
-    // 4. Studio Environment Reflection Map
-    var pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader();
-    var envScene = new THREE.Scene();
-    var envSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(80, 24, 16),
-      new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: 0x0A0A0E })
-    );
-    envScene.add(envSphere);
-
-    var keyReflector = new THREE.Mesh(
-      new THREE.PlaneGeometry(50, 35),
-      new THREE.MeshBasicMaterial({ color: 0xFFF5E8 })
-    );
-    keyReflector.position.set(35, 40, 35);
-    keyReflector.lookAt(0, 0, 0);
-    envScene.add(keyReflector);
-
-    var amberReflector = new THREE.Mesh(
-      new THREE.PlaneGeometry(45, 50),
-      new THREE.MeshBasicMaterial({ color: 0xF59E0B })
-    );
-    amberReflector.position.set(-45, 25, -25);
-    amberReflector.lookAt(0, 0, 0);
-    envScene.add(amberReflector);
-
-    var envTexture = pmremGenerator.fromScene(envScene).texture;
-    scene.environment = envTexture;
-
-    // 5. Contact Shadow Under Monitor Pedestal Stand
-    var shadowCanvas = document.createElement('canvas');
-    shadowCanvas.width = 256;
-    shadowCanvas.height = 256;
-    var sCtx = shadowCanvas.getContext('2d');
-    var sGrad = sCtx.createRadialGradient(128, 128, 0, 128, 128, 120);
-    sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.88)');
-    sGrad.addColorStop(0.35, 'rgba(0, 0, 0, 0.55)');
-    sGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.16)');
-    sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    sCtx.fillStyle = sGrad;
-    sCtx.fillRect(0, 0, 256, 256);
-
-    var shadowTex = new THREE.CanvasTexture(shadowCanvas);
-    var shadowPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(11, 11),
-      new THREE.MeshBasicMaterial({
-        map: shadowTex,
-        transparent: true,
-        opacity: 0.88,
-        depthWrite: false
-      })
-    );
-    shadowPlane.rotation.x = -Math.PI / 2;
-    shadowPlane.position.set(0, -3.46, 0);
-    scene.add(shadowPlane);
-
-    // 6. High-Definition 4:3 Offscreen Canvas (1600 × 1200)
-    var screenCanvas = document.createElement('canvas');
-    screenCanvas.width = 1600;
-    screenCanvas.height = 1200;
-    var ctx = screenCanvas.getContext('2d');
-
-    function drawCrtContent(pulseTime) {
-      ctx.clearRect(0, 0, 1600, 1200);
-
-      // Top Browser Bar (Dark Chrome)
-      ctx.fillStyle = '#141418';
-      ctx.fillRect(0, 0, 1600, 68);
-      ctx.fillStyle = '#22222A';
-      ctx.fillRect(0, 67, 1600, 1);
-
-      // Window Control Dots
-      ctx.beginPath(); ctx.arc(32, 34, 7, 0, Math.PI * 2); ctx.fillStyle = '#FF5F57'; ctx.fill();
-      ctx.beginPath(); ctx.arc(56, 34, 7, 0, Math.PI * 2); ctx.fillStyle = '#FEBC2E'; ctx.fill();
-      ctx.beginPath(); ctx.arc(80, 34, 7, 0, Math.PI * 2); ctx.fillStyle = '#28C840'; ctx.fill();
-
-      // Centered URL Bar
-      ctx.fillStyle = '#0B0B0E';
-      ctx.strokeStyle = '#27272E';
-      ctx.lineWidth = 1.5;
-      roundRect(ctx, 520, 16, 560, 36, 8);
-      ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#A1A1AA';
-      ctx.font = '500 15px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('aura-studio.staging.vercel.app', 800, 40);
-
-      // Interactive Staging Badge
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
-      roundRect(ctx, 1360, 16, 210, 36, 18);
-      ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.arc(1380, 34, 5, 0, Math.PI * 2); ctx.fillStyle = '#10B981'; ctx.fill();
-      ctx.fillStyle = '#10B981';
-      ctx.font = '600 14px monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText('Interactive Staging', 1395, 40);
-
-      // Left: Aura Atelier Staging Site (width 1080px)
-      ctx.fillStyle = '#F4F1EA';
-      ctx.fillRect(0, 68, 1080, 1132);
-
-      // Site Nav
-      ctx.fillStyle = '#171614';
-      ctx.font = '700 19px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('AURA ATELIER', 44, 118);
-
-      ctx.fillStyle = '#78756F';
-      ctx.font = '500 15px "Instrument Sans", sans-serif';
-      ctx.fillText('Objects', 280, 118);
-      ctx.fillText('Spaces', 370, 118);
-      ctx.fillText('Archive', 460, 118);
-      ctx.fillText('Journal', 550, 118);
-
-      ctx.fillStyle = '#171614';
-      roundRect(ctx, 960, 95, 90, 34, 5);
-      ctx.fill();
-      ctx.fillStyle = '#F4F1EA';
-      ctx.font = '600 14px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Inquire', 1005, 117);
-
-      ctx.fillStyle = 'rgba(23, 22, 20, 0.08)';
-      ctx.fillRect(44, 145, 1002, 1);
-
-      // Site Hero Headline & Content
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#9E7D53';
-      ctx.font = '600 13px monospace';
-      ctx.fillText('CASE STUDY // EDITION 04', 44, 190);
-
-      ctx.fillStyle = '#171614';
-      ctx.font = '700 38px "Instrument Sans", serif';
-      ctx.fillText('Sculptural vessels cast', 44, 245);
-      ctx.fillText('in raw bronze.', 44, 290);
-
-      ctx.fillStyle = '#69655E';
-      ctx.font = '400 18px "Instrument Sans", sans-serif';
-      ctx.fillText('Direct foundry pour. Hand-patinated in Kyoto', 44, 335);
-      ctx.fillText('with matte organic beeswax finish.', 44, 362);
-
-      // Specimen Button & Price
-      ctx.fillStyle = '#171614';
-      roundRect(ctx, 44, 400, 200, 46, 7);
-      ctx.fill();
-      ctx.fillStyle = '#F4F1EA';
-      ctx.font = '600 16px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Reserve Specimen', 144, 430);
-
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#78756F';
-      ctx.font = '500 16px monospace';
-      ctx.fillText('€1,850 · In Stock', 270, 430);
-
-      // Bronze Specimen Graphic Box
-      var gGrad = ctx.createLinearGradient(620, 180, 1040, 460);
-      gGrad.addColorStop(0, '#3A3127');
-      gGrad.addColorStop(0.5, '#1E1B17');
-      gGrad.addColorStop(1, '#0F0E0C');
-      ctx.fillStyle = gGrad;
-      roundRect(ctx, 620, 180, 426, 266, 10);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(23, 22, 20, 0.2)';
-      ctx.stroke();
-
-      // Warm bronze vessel silhouette glow inside image
-      var vesselGlow = ctx.createRadialGradient(833, 300, 20, 833, 300, 140);
-      vesselGlow.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
-      vesselGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      ctx.fillStyle = vesselGlow;
-      ctx.fillRect(620, 180, 426, 266);
-
-      // Bronze Vase
-      ctx.fillStyle = '#B48858';
-      ctx.beginPath();
-      ctx.ellipse(833, 345, 52, 17, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(781, 345);
-      ctx.quadraticCurveTo(757, 275, 804, 238);
-      ctx.lineTo(862, 238);
-      ctx.quadraticCurveTo(909, 275, 885, 345);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#D6A875';
-      ctx.beginPath();
-      ctx.ellipse(833, 238, 29, 9, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Lower Editorial Strip
-      ctx.fillStyle = 'rgba(23, 22, 20, 0.08)';
-      ctx.fillRect(44, 485, 1002, 1);
-      ctx.fillStyle = '#9E7D53';
-      ctx.font = '600 12.5px monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText('BRUTALIST ARCHITECTURE', 44, 510);
-      ctx.textAlign = 'center';
-      ctx.fillText('KYOTO FOUNDRY ARCHIVE', 545, 510);
-      ctx.textAlign = 'right';
-      ctx.fillText('LIMITED SPECIMEN 04/40', 1046, 510);
-
-      // Architectural Section below
-      ctx.fillStyle = '#EAE6DC';
-      roundRect(ctx, 44, 540, 1002, 600, 10);
-      ctx.fill();
-
-      ctx.fillStyle = '#171614';
-      ctx.font = '700 24px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('Monolithic spatial proportion & poured form.', 74, 586);
-
-      ctx.fillStyle = '#69655E';
-      ctx.font = '400 16px "Instrument Sans", sans-serif';
-      ctx.fillText('A curated study of raw textures, exposed aggregate, and deep acoustic mass.', 74, 618);
-
-      ctx.fillStyle = '#DCD6C8';
-      roundRect(ctx, 74, 655, 290, 240, 7); ctx.fill();
-      roundRect(ctx, 400, 655, 290, 240, 7); ctx.fill();
-      roundRect(ctx, 726, 655, 290, 240, 7); ctx.fill();
-
-      // Review Pins on Website
-      // Pin 1 (Amber with pulse ring)
-      var p1x = 220, p1y = 422;
-      var pulseProgress = (pulseTime % 1.5) / 1.5;
-      var pulseRadius = 18 + pulseProgress * 26;
-      var pulseAlpha = 0.85 * (1 - pulseProgress);
-      ctx.beginPath();
-      ctx.arc(p1x, p1y, pulseRadius, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(245, 158, 11, ' + pulseAlpha + ')';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(p1x, p1y, 18, 0, Math.PI * 2);
-      ctx.fillStyle = '#F59E0B';
-      ctx.fill();
-      ctx.strokeStyle = '#09090B';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-      ctx.fillStyle = '#09090B';
-      ctx.font = '700 15px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('1', p1x, p1y + 5);
-
-      // Pin 2
-      var p2x = 833, p2y = 300;
-      ctx.beginPath(); ctx.arc(p2x, p2y, 18, 0, Math.PI * 2);
-      ctx.fillStyle = '#F59E0B'; ctx.fill();
-      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = '#09090B'; ctx.font = '700 15px sans-serif';
-      ctx.fillText('2', p2x, p2y + 5);
-
-      // Pin 3
-      var p3x = 420, p3y = 580;
-      ctx.beginPath(); ctx.arc(p3x, p3y, 18, 0, Math.PI * 2);
-      ctx.fillStyle = '#F59E0B'; ctx.fill();
-      ctx.strokeStyle = '#09090B'; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = '#09090B'; ctx.font = '700 15px sans-serif';
-      ctx.fillText('3', p3x, p3y + 5);
-
-      // Floating Feedback Popover attached to Pin 1
-      var popX = 255, popY = 310, popW = 450, popH = 112;
-      ctx.fillStyle = '#18181E';
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
-      ctx.lineWidth = 2;
-      roundRect(ctx, popX, popY, popW, popH, 9);
-      ctx.fill(); ctx.stroke();
-
-      ctx.fillStyle = '#FAFAFA';
-      ctx.font = '600 15px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('Jane Cooper (Client)', popX + 18, popY + 28);
-
-      ctx.fillStyle = '#71717A';
-      ctx.font = '400 13px monospace';
-      ctx.textAlign = 'right';
-      ctx.fillText('2m ago', popX + popW - 18, popY + 28);
-
-      ctx.fillStyle = '#E4E4E7';
-      ctx.font = '400 15.5px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText("Can we change this to 'Reserve via Concierge'?", popX + 18, popY + 58);
-      ctx.fillText('Also bump button horizontal padding.', popX + 18, popY + 80);
-
-      ctx.fillStyle = '#F59E0B';
-      ctx.font = '500 12.5px monospace';
-      ctx.fillText('1440×900 · Chrome 131 · macOS 15.1', popX + 18, popY + 101);
-
-      // Right: Cyath Staging Review Telemetry Sidebar (width 520px)
-      ctx.fillStyle = '#101014';
-      ctx.fillRect(1080, 68, 520, 1132);
-      ctx.fillStyle = '#22222A';
-      ctx.fillRect(1080, 68, 2, 1132);
-
-      // Sidebar Header
-      ctx.fillStyle = '#FAFAFA';
-      ctx.font = '600 20px "Instrument Sans", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('Feedback', 1110, 118);
-
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-      roundRect(ctx, 1480, 96, 92, 34, 17);
-      ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#F59E0B';
-      ctx.font = '600 14px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('3 total', 1526, 118);
-
-      ctx.fillStyle = '#22222A';
-      ctx.fillRect(1080, 145, 520, 1);
-
-      // Card 1
-      drawSidebarCard(ctx, 1108, 168, 464, 1, 'OPEN', '2m',
-        "Can we change this to 'Reserve via Concierge'? Also bump button padding.",
-        '1440×900 · Chrome 131', true);
-
-      // Card 2
-      drawSidebarCard(ctx, 1108, 340, 464, 2, 'OPEN', '4m',
-        'Hero image optimized to WebP with responsive srcset. Loads in 85ms.',
-        '1512×982 · macOS Sonoma', false);
-
-      // Card 3
-      drawSidebarCard(ctx, 1108, 512, 464, 3, 'OPEN', '6m',
-        'Inquiry button should open sliding sheet instead of anchor jump.',
-        '375×812 · Safari iOS', false);
-
-      // Ultra-Fine CRT Scanlines
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      for (var y = 0; y < 1200; y += 4) {
-        ctx.fillRect(0, y, 1600, 1.5);
+      if (popoverText) {
+        popover.querySelector('.popover-author').textContent = d.author;
+        popover.querySelector('.popover-time').textContent = d.time;
+        popoverText.textContent = d.text;
+        var telEl = popover.querySelector('.popover-telemetry');
+        if (telEl) telEl.innerHTML = '<span>' + d.telemetry.replace(/ · /g, '</span><span>·</span><span>') + '</span>';
       }
 
-      // Soft Edge Vignette
-      var tubeVignette = ctx.createRadialGradient(800, 600, 450, 800, 600, 950);
-      tubeVignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      tubeVignette.addColorStop(0.85, 'rgba(0, 0, 0, 0.08)');
-      tubeVignette.addColorStop(1, 'rgba(0, 0, 0, 0.40)');
-      ctx.fillStyle = tubeVignette;
-      ctx.fillRect(0, 0, 1600, 1200);
+      gsap.fromTo(popover,
+        { scale: 0.94, opacity: 0.8 },
+        { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.8)' }
+      );
     }
 
-    function drawSidebarCard(ctx, x, y, w, num, status, time, text, meta, isFocused) {
-      ctx.fillStyle = isFocused ? '#181820' : '#141418';
-      ctx.strokeStyle = isFocused ? 'rgba(245, 158, 11, 0.45)' : '#23232C';
-      ctx.lineWidth = 1.5;
-      roundRect(ctx, x, y, w, 150, 10);
-      ctx.fill(); ctx.stroke();
+    pins.forEach(function (pin) {
+      pin.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var n = parseInt(pin.textContent.trim(), 10);
+        selectPin(n);
+      });
+    });
 
-      // Number badge
-      ctx.beginPath(); ctx.arc(x + 22, y + 26, 12, 0, Math.PI * 2);
-      ctx.fillStyle = '#F59E0B'; ctx.fill();
-      ctx.fillStyle = '#09090B'; ctx.font = '700 12px sans-serif';
-      ctx.textAlign = 'center'; ctx.fillText(num, x + 22, y + 30);
+    sidebarItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        var n = parseInt(item.getAttribute('data-pin'), 10);
+        selectPin(n);
+      });
+    });
 
-      // Status pill
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
-      roundRect(ctx, x + 44, y + 15, 62, 23, 5);
-      ctx.fill();
-      ctx.fillStyle = '#F59E0B'; ctx.font = '600 11.5px monospace';
-      ctx.fillText(status, x + 75, y + 31);
+    // 3D Parallax Tilt Response on Mouse Move
+    var rect = null;
+    function updateRect() { rect = card.getBoundingClientRect(); }
+    window.addEventListener('scroll', updateRect, { passive: true });
+    window.addEventListener('resize', updateRect);
 
-      // Time
-      ctx.fillStyle = '#71717A'; ctx.font = '400 12px monospace';
-      ctx.textAlign = 'right'; ctx.fillText(time, x + w - 16, y + 31);
+    card.addEventListener('mouseenter', updateRect);
 
-      // Text
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#E4E4E7'; ctx.font = '400 15px "Instrument Sans", sans-serif';
-      wrapText(ctx, text, x + 16, y + 64, w - 32, 21);
+    card.addEventListener('mousemove', function (e) {
+      if (!rect || window.innerWidth <= 1080) return;
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      var dx = (e.clientX - cx) / (rect.width / 2);
+      var dy = (e.clientY - cy) / (rect.height / 2);
 
-      // Meta
-      ctx.fillStyle = '#A1A1AA'; ctx.font = '500 12px monospace';
-      ctx.fillText(meta, x + 16, y + 132);
-    }
+      var rotX = 6 - dy * 6;
+      var rotY = -8 + dx * 8;
 
-    function roundRect(ctx, x, y, w, h, r) {
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.lineTo(x + w - r, y);
-      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-      ctx.lineTo(x + w, y + h - r);
-      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-      ctx.lineTo(x + r, y + h);
-      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-      ctx.lineTo(x, y + r);
-      ctx.quadraticCurveTo(x, y, x + r, y);
-      ctx.closePath();
-    }
+      card.style.transform = 'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) scale(1.015)';
+    });
 
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-      var words = text.split(' ');
-      var line = '';
-      for (var n = 0; n < words.length; n++) {
-        var testLine = line + words[n] + ' ';
-        var metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0) {
-          ctx.fillText(line, x, y);
-          line = words[n] + ' ';
-          y += lineHeight;
+    card.addEventListener('mouseleave', function () {
+      if (window.innerWidth <= 1080) return;
+      card.style.transform = 'rotateX(6deg) rotateY(-8deg) scale(1)';
+    });
+
+    // Interactive Milestone Sign-Off Pill
+    if (signoffBtn) {
+      var isSigned = false;
+      signoffBtn.addEventListener('click', function () {
+        isSigned = !isSigned;
+        if (isSigned) {
+          signoffBtn.innerHTML = '<span>✓ Milestone Locked & Signed</span>';
+          signoffBtn.style.background = '#10B981';
+          signoffBtn.style.borderColor = '#10B981';
+          signoffBtn.style.color = '#050A08';
+          gsap.fromTo(signoffBtn, { scale: 0.95 }, { scale: 1.05, duration: 0.2, yoyo: true, repeat: 1 });
         } else {
-          line = testLine;
-        }
-      }
-      ctx.fillText(line, x, y);
-    }
-
-    // Initial Screen Draw
-    drawCrtContent(0);
-    var screenTexture = new THREE.CanvasTexture(screenCanvas);
-    screenTexture.encoding = THREE.sRGBEncoding;
-
-    // 7. 3D Model Group & Orientation
-    var tvRoot = new THREE.Group();
-    tvRoot.rotation.y = -0.35; // Default resting angle: 20° towards text
-    tvRoot.rotation.x = 0.04;
-    scene.add(tvRoot);
-
-    // Load New PC CRT Monitor: /crt-monitor.glb
-    var loader = new THREE.GLTFLoader();
-    loader.load('/crt-monitor.glb', function (gltf) {
-      var monitorModel = gltf.scene;
-
-      // Perfectly scaled to fill 75% of the frame with generous negative space
-      var scale = 16.0;
-      monitorModel.scale.set(scale, scale, scale);
-      monitorModel.position.set(0, -0.2155 * scale, 0.0175 * scale); // Center at (0, 0, 0)
-
-      monitorModel.traverse(function (child) {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-
-          var mat = child.material;
-          var isScreen = (child.name && child.name.toLowerCase().includes('screen')) ||
-                         (mat && mat.name === 'Screen') ||
-                         (child.geometry && child.geometry.attributes.position && child.geometry.attributes.position.count === 4);
-
-          if (isScreen) {
-            // Remap UV coordinates of Screen quad so dynamic canvas maps full-bleed without letterboxing
-            if (child.geometry && child.geometry.attributes.uv) {
-              var uvs = child.geometry.attributes.uv;
-              // Vertex 0: pos = [ 0.173, 0.116, 0.178 ] (bottom-right) -> UV = (1, 0)
-              // Vertex 1: pos = [-0.173, 0.116, 0.178 ] (bottom-left)  -> UV = (0, 0)
-              // Vertex 2: pos = [ 0.173, 0.375, 0.178 ] (top-right)    -> UV = (1, 1)
-              // Vertex 3: pos = [-0.173, 0.375, 0.178 ] (top-left)     -> UV = (0, 1)
-              uvs.setXY(0, 1, 0);
-              uvs.setXY(1, 0, 0);
-              uvs.setXY(2, 1, 1);
-              uvs.setXY(3, 0, 1);
-              uvs.needsUpdate = true;
-            }
-
-            // Screen Material: Self-illuminating, crystal-clear, glowing phosphor
-            child.material = new THREE.MeshBasicMaterial({
-              map: screenTexture
-            });
-          } else if (mat) {
-            // Monitor Chassis Material: Solid retro beige/grey CRT plastic
-            mat.transparent = false;
-            mat.depthWrite = true;
-            mat.roughness = 0.65;
-            mat.metalness = 0.05;
-            if (mat.normalMap) {
-              mat.normalScale.set(0.35, 0.35);
-            }
-            mat.envMap = envTexture;
-            mat.envMapIntensity = 0.55;
-            mat.needsUpdate = true;
-          }
+          signoffBtn.innerHTML = '<span>✓ Sign-Off Ready</span><span style="opacity:0.6; font-family:var(--font-mono); font-size:9.5px;">SHA-256</span>';
+          signoffBtn.style.background = 'rgba(239, 68, 68, 0.15)';
+          signoffBtn.style.borderColor = 'rgba(239, 68, 68, 0.35)';
+          signoffBtn.style.color = '#FFF5F5';
         }
       });
-
-      tvRoot.add(monitorModel);
-
-      // Gentle initial reveal entrance
-      gsap.from(tvRoot.scale, {
-        x: 0.75, y: 0.75, z: 0.75,
-        duration: 1.2,
-        ease: 'power3.out'
-      });
-    }, undefined, function (err) {
-      console.warn('Could not load /crt-monitor.glb:', err);
-    });
-
-    // 8. Comedic 360° Whip-Spin & Elastic Slap Physics
-    var isCrtSpinning = false;
-    var isCrtFlat = false;
-
-    function spinCrtMonitor() {
-      if (isCrtSpinning || !tvRoot) return;
-      isCrtSpinning = true;
-
-      if (!isCrtFlat) {
-        // COMEDIC 360° WHIP SPIN TO 0°
-        var spinTl = gsap.timeline({
-          onComplete: function () {
-            isCrtFlat = true;
-            isCrtSpinning = false;
-            tvRoot.rotation.y = 0;
-            tvRoot.rotation.x = 0;
-          }
-        });
-
-        spinTl
-          .to(tvRoot.rotation, {
-            y: -0.48, // Anticipation wind-up
-            x: 0.06,
-            duration: 0.14,
-            ease: 'power2.in'
-          })
-          .to(tvRoot.scale, {
-            x: 0.94, y: 0.94, z: 0.94,
-            duration: 0.14,
-            ease: 'power2.in'
-          }, '<')
-          .to(tvRoot.rotation, {
-            y: Math.PI * 2, // Full 360° whip spin!
-            x: 0,
-            duration: 0.58,
-            ease: 'power3.inOut'
-          })
-          .to(tvRoot.scale, {
-            x: 1.05, y: 1.05, z: 1.05,
-            duration: 0.29,
-            yoyo: true,
-            repeat: 1,
-            ease: 'sine.inOut'
-          }, '<')
-          .to(tvRoot.rotation, {
-            y: 0, // Slap flat to 0° facing user!
-            x: 0,
-            duration: 0.52,
-            ease: 'elastic.out(1.2, 0.45)'
-          })
-          .to(tvRoot.scale, {
-            x: 1, y: 1, z: 1,
-            duration: 0.52,
-            ease: 'elastic.out(1.2, 0.45)'
-          }, '<');
-      } else {
-        // PLAYFUL WOBBLE-TILT BACK TO -20°
-        var tiltTl = gsap.timeline({
-          onComplete: function () {
-            isCrtFlat = false;
-            isCrtSpinning = false;
-            tvRoot.rotation.y = -0.35;
-            tvRoot.rotation.x = 0.04;
-          }
-        });
-
-        tiltTl
-          .to(tvRoot.rotation, {
-            y: 0.18, // Anticipation jolt
-            x: -0.02,
-            duration: 0.14,
-            ease: 'power1.in'
-          })
-          .to(tvRoot.scale, {
-            x: 0.95, y: 0.95, z: 0.95,
-            duration: 0.14,
-            ease: 'power1.in'
-          }, '<')
-          .to(tvRoot.rotation, {
-            y: -0.35, // Snap back to -20°
-            x: 0.04,
-            duration: 0.55,
-            ease: 'back.out(2.4)'
-          })
-          .to(tvRoot.scale, {
-            x: 1, y: 1, z: 1,
-            duration: 0.55,
-            ease: 'back.out(2.4)'
-          }, '<');
-      }
     }
-
-    // Click anywhere on monitor wrapper to spin
-    wrapper.addEventListener('click', spinCrtMonitor);
-
-    // 9. Mouse Hover Parallax
-    var mouseX = 0, mouseY = 0;
-    var targetMouseX = 0, targetMouseY = 0;
-
-    wrapper.addEventListener('mousemove', function (e) {
-      var rect = wrapper.getBoundingClientRect();
-      var x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      var y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-      targetMouseX = x * 0.08;
-      targetMouseY = y * 0.05;
-    });
-
-    wrapper.addEventListener('mouseleave', function () {
-      targetMouseX = 0;
-      targetMouseY = 0;
-    });
-
-    // 10. Render Loop
-    var lastCanvasUpdate = 0;
-    function animate(time) {
-      var t = time * 0.001;
-
-      // Update pulse animation on screen canvas at ~30fps
-      if (time - lastCanvasUpdate > 33) {
-        drawCrtContent(t);
-        screenTexture.needsUpdate = true;
-        lastCanvasUpdate = time;
-      }
-
-      // Smooth mouse parallax when not in high-speed spin
-      if (!isCrtSpinning && tvRoot) {
-        mouseX += (targetMouseX - mouseX) * 0.08;
-        mouseY += (targetMouseY - mouseY) * 0.08;
-
-        var baseAngleY = isCrtFlat ? 0 : -0.35;
-        var baseAngleX = isCrtFlat ? 0 : 0.04;
-        tvRoot.rotation.y = baseAngleY + mouseX;
-        tvRoot.rotation.x = baseAngleX - mouseY;
-      }
-
-      renderer.render(scene, camera);
-    }
-    renderer.setAnimationLoop(animate);
-
-    // 11. Responsive Resize Handling
-    window.addEventListener('resize', function () {
-      if (!container) return;
-      var newW = container.clientWidth;
-      var newH = container.clientHeight;
-      if (newW > 0 && newH > 0) {
-        camera.aspect = newW / newH;
-        camera.updateProjectionMatrix();
-        renderer.setSize(newW, newH);
-      }
-    });
   })();
 
   /* ══════════ SCROLL ENTRANCES (master map §5) ══════════ */

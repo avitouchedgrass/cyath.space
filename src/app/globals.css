@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  /* Surfaces */
-  --surface-canvas: #09090b;
-  --surface-panel: #121215;
-  --surface-overlay: #18181b;
-  --surface-glass: rgba(18, 18, 21, 0.75);
+  /* Surfaces — Crimson Noir */
+  --surface-canvas: #090505;
+  --surface-panel: #120A0A;
+  --surface-overlay: #1A0F0F;
+  --surface-glass: rgba(18, 10, 10, 0.85);
 
   /* Borders */
-  --border-subtle: #27272a;
-  --border-active: #3f3f46;
-  --border-glow: rgba(245, 158, 11, 0.4);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(239, 68, 68, 0.28);
+  --border-glow: rgba(239, 68, 68, 0.45);
 
   /* Text - High contrast WCAG AA calibrated */
-  --text-primary: #fafafa;
-  --text-secondary: #d4d4d8;
-  --text-muted: #a1a1aa;
-  --text-dim: #71717a;
+  --text-primary: #FFF5F5;
+  --text-secondary: #E2D1D1;
+  --text-muted: #9E7B7B;
+  --text-dim: #6E4F4F;
 
-  /* Accent */
-  --accent: #f59e0b;
-  --accent-dim: rgba(245, 158, 11, 0.12);
-  --accent-glow: rgba(245, 158, 11, 0.25);
+  /* Accent — Crimson */
+  --accent: #EF4444;
+  --accent-dim: rgba(239, 68, 68, 0.12);
+  --accent-glow: rgba(239, 68, 68, 0.25);
 
   /* Status Colors */
-  --status-open: #f59e0b;
+  --status-open: #EF4444;
   --status-progress: #6366f1;
   --status-resolved: #10b981;
   --status-danger: #ef4444;
 
   /* Gradients */
-  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.15), transparent);
-  --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(245, 158, 11, 0.12), transparent);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(239, 68, 68, 0.14), transparent);
+  --gradient-cta: radial-gradient(ellipse 60% 80% at 50% 110%, rgba(239, 68, 68, 0.12), transparent);
 }
 
 body {
@@ -42,8 +42,8 @@ body {
 }
 
 ::selection {
-  background: rgba(245, 158, 11, 0.28);
-  color: #fafafa;
+  background: rgba(239, 68, 68, 0.3);
+  color: #FFF5F5;
 }
 
 @property --angle {

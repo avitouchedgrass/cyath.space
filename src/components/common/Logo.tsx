@@ -12,15 +12,15 @@ interface LogoProps {
 }
 
 /**
- * Dual Viewport Frame Mark
- * Two offset architectural hairline frames (Staging Canvas + Review Layer)
- * locked at a precision coordinate inspection datum. Zero 'C' glyph.
+ * Refractive Prism Mark (Direction 1)
+ * Isometric geometric crystal with 3 calibrated light planes. Zero 'C', zero dots.
  */
-export const DualViewportMark: React.FC<{
+export const RefractivePrismMark: React.FC<{
   size?: number;
   locked?: boolean;
   className?: string;
-}> = ({ size = 25, locked = false, className = "" }) => {
+}> = ({ size = 24, locked = false, className = "" }) => {
+  const accentColor = locked ? "#10B981" : "#EF4444";
   return (
     <svg
       width={size}
@@ -30,43 +30,18 @@ export const DualViewportMark: React.FC<{
       xmlns="http://www.w3.org/2000/svg"
       className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-105 ${className}`}
     >
-      {/* Staging Viewport Base Frame (Rear) */}
-      <rect
-        x="2.5"
-        y="3.5"
-        width="13"
-        height="12"
-        rx="2.5"
-        stroke="#FAFAFA"
-        strokeWidth="1.5"
-        strokeOpacity="0.75"
-      />
-      {/* Client Inspection Layer Frame (Front with Occlusion) */}
-      <rect
-        x="8.5"
-        y="8.5"
-        width="13"
-        height="12"
-        rx="2.5"
-        fill="#09090B"
-        stroke={locked ? "#10B981" : "#F59E0B"}
-        strokeWidth="1.5"
-        className="transition-colors duration-300"
-      />
-      {/* Pinned Coordinate Datum Point */}
-      <circle
-        cx="15.5"
-        cy="8.5"
-        r="2"
-        fill={locked ? "#10B981" : "#F59E0B"}
-        className="transition-colors duration-300"
-      />
+      {/* Top face (platinum highlight) */}
+      <path d="M12 2.5L19.5 6.7L12 10.9L4.5 6.7L12 2.5Z" fill="#FFF5F5" fillOpacity="0.95" />
+      {/* Right face (accent) */}
+      <path d="M12 10.9L19.5 6.7V16.3L12 20.5V10.9Z" fill={accentColor} className="transition-colors duration-300" />
+      {/* Left face (deep shadow) */}
+      <path d="M12 10.9L4.5 6.7V16.3L12 20.5V10.9Z" fill="#FFF5F5" fillOpacity="0.25" />
     </svg>
   );
 };
 
 export const CyathLogo: React.FC<LogoProps> = ({
-  size = 25,
+  size = 24,
   showWordmark = true,
   showBadge = false,
   badgeText = "Staging",
@@ -75,18 +50,18 @@ export const CyathLogo: React.FC<LogoProps> = ({
 }) => {
   return (
     <div
-      className={`inline-flex items-center gap-[7.5px] select-none group cursor-pointer ${className}`}
+      className={`inline-flex items-center gap-[8px] select-none group cursor-pointer ${className}`}
     >
-      <DualViewportMark size={size} locked={locked} />
+      <RefractivePrismMark size={size} locked={locked} />
 
       {showWordmark && (
-        <span className="font-bold text-[15.5px] tracking-[-0.035em] text-[#FAFAFA] group-hover:text-white transition-colors">
+        <span className="font-bold text-[15.5px] tracking-[-0.035em] text-[#FFF5F5] group-hover:text-white transition-colors">
           cyath
         </span>
       )}
 
       {showBadge && (
-        <span className="font-mono text-[9.5px] font-semibold tracking-wider uppercase text-[#71717A] bg-white/[0.05] border border-white/[0.08] px-1.5 py-0.5 rounded leading-tight">
+        <span className="font-mono text-[9.5px] font-semibold tracking-wider uppercase text-[#9E7B7B] bg-white/[0.05] border border-white/[0.08] px-1.5 py-0.5 rounded leading-tight">
           {badgeText}
         </span>
       )}
@@ -94,4 +69,5 @@ export const CyathLogo: React.FC<LogoProps> = ({
   );
 };
 
+export const DualViewportMark = RefractivePrismMark;
 export const MilestoneDial = CyathLogo;
