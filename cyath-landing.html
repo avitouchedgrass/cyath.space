@@ -341,26 +341,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* ============================================================
-   FLOATING BROWSER STAGING MOCKUP (§Hero Option 1)
+   VIEWPORT SWITCHER REVIEW STAGE (FLAT 0° ORTHOGONAL — §Direction 1)
    ============================================================ */
 .hero-right {
   position: relative;
   width: 100%;
-  min-height: 540px;
+  min-height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 1200px;
 }
 .hero-browser-glow {
   position: absolute;
   width: 580px;
-  height: 480px;
-  background: radial-gradient(circle 260px at 50% 50%, rgba(239, 68, 68, 0.18), transparent 70%);
+  height: 460px;
+  background: radial-gradient(circle 260px at 50% 50%, rgba(239, 68, 68, 0.16), transparent 70%);
   filter: blur(40px);
   pointer-events: none;
   z-index: 0;
-  transform: translateZ(0);
 }
 .browser-stage-card {
   position: relative;
@@ -369,34 +367,32 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   max-width: 680px;
   background: var(--surface-panel);
   border: 1px solid rgba(239, 68, 68, 0.22);
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow:
-    0 32px 80px -10px rgba(0, 0, 0, 0.9),
-    0 0 50px -10px rgba(239, 68, 68, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 24px 60px -12px rgba(0, 0, 0, 0.9),
+    0 0 45px -10px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  transform: rotateX(6deg) rotateY(-8deg);
-  transform-style: preserve-3d;
-  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 600ms ease;
-  will-change: transform;
+  transform: none; /* 100% Flat orthogonal — zero cheap 3D tilt */
+  transition: border-color 220ms ease, box-shadow 220ms ease;
 }
 .browser-stage-card:hover {
-  transform: rotateX(1deg) rotateY(-2deg) scale(1.015);
+  border-color: rgba(239, 68, 68, 0.35);
   box-shadow:
-    0 40px 100px -10px rgba(0, 0, 0, 0.95),
-    0 0 65px -5px rgba(239, 68, 68, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 28px 75px -12px rgba(0, 0, 0, 0.95),
+    0 0 55px -8px rgba(239, 68, 68, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* Chrome Header */
 .browser-chrome {
   background: #140A0A;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 11px 16px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
 }
 .browser-traffic-dots {
   display: flex;
@@ -414,38 +410,63 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .dot-amber { background: #F59E0B; }
 .dot-green { background: #10B981; }
 
-.browser-url-bar {
-  flex: 1;
-  max-width: 310px;
-  margin: 0 auto;
-  background: #090505;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: #D4A5A5;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Interactive Segmented Viewport Switcher Tabs */
+.browser-viewport-tabs {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  background: #090505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  padding: 3px;
+  gap: 2px;
 }
-.browser-url-bar svg {
-  width: 10px;
-  height: 10px;
-  opacity: 0.5;
+.vp-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: #9E7B7B;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+.vp-tab:hover {
+  color: #FFF5F5;
+  background: rgba(255, 255, 255, 0.04);
+}
+.vp-tab.active {
+  color: #FFF5F5;
+  background: #1C0E0E;
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.vp-tab svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: stroke 180ms ease, opacity 180ms ease;
+}
+.vp-tab.active svg {
+  opacity: 1;
+  stroke: #EF4444;
 }
 
+/* Dynamic Live Telemetry Badge */
 .browser-telemetry-badge {
   display: flex;
   align-items: center;
   gap: 6px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 10px;
   color: #F87171;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.25);
@@ -453,6 +474,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 3px 9px;
   flex-shrink: 0;
   letter-spacing: 0.02em;
+  transition: all 250ms ease;
+}
+.browser-telemetry-badge.badge-amber {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.browser-telemetry-badge.badge-green {
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 .badge-live-pulse {
   width: 5px;
@@ -462,16 +494,38 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: 0 0 6px #EF4444;
   animation: pulseBeacon 2s infinite ease-in-out;
 }
+.browser-telemetry-badge.badge-amber .badge-live-pulse {
+  background: #F59E0B;
+  box-shadow: 0 0 6px #F59E0B;
+}
+.browser-telemetry-badge.badge-green .badge-live-pulse {
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+}
 @keyframes pulseBeacon {
   0%, 100% { opacity: 0.4; transform: scale(0.9); }
   50% { opacity: 1; transform: scale(1.3); }
 }
 
-/* Browser Body Split */
+/* Browser Body: Container for Viewports */
 .browser-body {
-  display: flex;
-  height: 380px;
+  position: relative;
+  height: 385px;
   background: #0D0707;
+  overflow: hidden;
+}
+.browser-view {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.browser-view.active {
+  display: flex;
+  opacity: 1;
 }
 
 /* Staged Review Canvas (Left) */
@@ -571,7 +625,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.5), 0 0 0 2px #FAF8F4;
   cursor: pointer;
   z-index: 10;
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
 }
 .stage-pin:hover {
   transform: scale(1.15);
@@ -698,6 +752,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 2px 7px;
   border-radius: 999px;
 }
+.sidebar-badge.badge-amber {
+  color: #FBBF24;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+}
 .sidebar-list {
   padding: 10px;
   display: flex;
@@ -746,6 +805,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: #F87171;
   letter-spacing: 0.05em;
 }
+.item-status.resolved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+}
 .item-time {
   font-size: 9.5px;
   color: #9E7B7B;
@@ -783,6 +846,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 6px;
   cursor: pointer;
   transition: all 180ms ease;
+  width: 100%;
 }
 .signoff-pill:hover {
   background: #EF4444;
@@ -790,16 +854,338 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-color: #EF4444;
 }
 
+/* ============================================================
+   VIEW 2: MOBILE VIEWPORT PREVIEW STYLES
+   ============================================================ */
+.mobile-stage-wrapper {
+  flex: 1;
+  position: relative;
+  background: #0A0505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+.mobile-phone-device {
+  width: 200px;
+  height: 350px;
+  background: #FAF8F4;
+  border-radius: 26px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.9),
+    0 0 25px rgba(239, 68, 68, 0.2),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mobile-phone-notch {
+  width: 50px;
+  height: 10px;
+  background: #0D0707;
+  border-radius: 999px;
+  margin: 5px auto 4px;
+  flex-shrink: 0;
+}
+.mobile-site-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(23, 22, 20, 0.08);
+  font-size: 10px;
+  font-weight: 700;
+  color: #171614;
+}
+.mobile-nav-hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+  width: 14px;
+  cursor: pointer;
+}
+.mobile-nav-hamburger span {
+  display: block;
+  height: 1.5px;
+  background: #171614;
+  border-radius: 1px;
+}
+.mobile-site-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.mobile-kicker {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9E7D53;
+  margin-bottom: 3px;
+}
+.mobile-headline {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #171614;
+  margin-bottom: 6px;
+}
+.mobile-specimen-card {
+  height: 85px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #DDD4C4, #C6B79E);
+  position: relative;
+  margin-bottom: 10px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.mobile-specimen-tag {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  color: rgba(23, 22, 20, 0.55);
+}
+.mobile-site-btn {
+  font-size: 9.5px;
+  font-weight: 600;
+  background: #171614;
+  color: #FAF8F4;
+  padding: 7px 10px;
+  border-radius: 6px;
+  text-align: center;
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 8px;
+}
+.mobile-phone-chin {
+  width: 60px;
+  height: 3px;
+  background: #171614;
+  border-radius: 2px;
+  margin: 0 auto 5px;
+  opacity: 0.25;
+}
+
+/* Floating Mobile Comment Popover */
+.mobile-stage-popover {
+  position: absolute;
+  bottom: 24px;
+  left: 18px;
+  width: 220px;
+  background: #140A0A;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 9px;
+  padding: 10px 12px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.85), 0 0 20px rgba(245, 158, 11, 0.15);
+  z-index: 15;
+  color: #FFF5F5;
+  animation: popoverFadeIn 400ms ease both;
+}
+.mobile-stage-popover .popover-telemetry {
+  color: #FBBF24;
+}
+
+/* ============================================================
+   VIEW 3: CRYPTOGRAPHIC SIGN-OFF RECEIPT STYLES
+   ============================================================ */
+.receipt-certificate-stage {
+  width: 100%;
+  height: 100%;
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle 350px at 50% 15%, rgba(16, 185, 129, 0.1), transparent 80%),
+    #0E0707;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+.rc-watermark-bg {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 220px;
+  height: 220px;
+  opacity: 0.04;
+  pointer-events: none;
+  stroke: #10B981;
+}
+.rc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.rc-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rc-shield-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #10B981;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.2);
+}
+.rc-title-block h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #FFF5F5;
+  margin-bottom: 2px;
+}
+.rc-title-block p {
+  font-size: 10.5px;
+  color: #9E7B7B;
+  font-family: var(--font-mono);
+}
+.rc-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+}
+.rc-status-pill .rc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px #10B981;
+  animation: pulseBeacon 2s infinite ease-in-out;
+}
+
+/* Audit Grid Parameters */
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 14px;
+  margin: 14px 0;
+}
+.rc-cell {
+  background: #140A0A;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 9px 12px;
+}
+.rc-cell-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #8C6A6A;
+  margin-bottom: 3px;
+}
+.rc-cell-val {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #FAF8F4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rc-cell-val.highlight {
+  color: #10B981;
+}
+
+/* Audit Footer & SHA Hash */
+.rc-footer {
+  background: #120909;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rc-hash-block {
+  flex: 1;
+  overflow: hidden;
+}
+.rc-hash-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #8C6A6A;
+  margin-bottom: 2px;
+}
+.rc-hash-code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #D4A5A5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: all;
+}
+.rc-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 5px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 180ms ease;
+  flex-shrink: 0;
+}
+.rc-copy-btn:hover {
+  background: #10B981;
+  color: #050A08;
+  border-color: #10B981;
+}
+
 @media (max-width: 1080px) {
   .hero-right {
     min-height: 480px;
   }
-  .browser-stage-card {
-    transform: none !important;
-  }
 }
 @media (max-width: 680px) {
+  .browser-viewport-tabs {
+    overflow-x: auto;
+  }
+  .vp-tab {
+    padding: 3px 7px;
+    font-size: 10px;
+  }
+  .browser-telemetry-badge {
+    display: none;
+  }
   .browser-body {
+    height: auto;
+    min-height: 420px;
+  }
+  .browser-view {
+    position: relative;
     flex-direction: column;
     height: auto;
   }
@@ -811,7 +1197,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .staging-viewport-stage {
     min-height: 320px;
   }
+  .rc-grid {
+    grid-template-columns: 1fr;
+  }
 }
+
 
 /* ============================================================
    SOCIAL PROOF BAR (§4.3)
@@ -1369,127 +1759,295 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
       </div>
     </div>
 
-    <!-- Right Column: Cinematic Floating Browser Review Stage (Option 1) -->
+    <!-- Right Column: Interactive Viewport Switcher Review Stage (§Direction 1) -->
     <div class="hero-right" id="heroVisual">
       <div class="hero-browser-glow" aria-hidden="true"></div>
 
       <div class="browser-stage-card" id="browserStageCard">
-        <!-- Browser Chrome Header -->
+        <!-- Browser Chrome Header: Traffic Dots + Viewport Switcher Tabs + Live Telemetry -->
         <div class="browser-chrome">
           <div class="browser-traffic-dots">
             <span class="dot-red"></span>
             <span class="dot-amber"></span>
             <span class="dot-green"></span>
           </div>
-          <div class="browser-url-bar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>aura-atelier.staging.vercel.app</span>
+
+          <!-- Segmented Viewport Switcher -->
+          <div class="browser-viewport-tabs" role="tablist" aria-label="Review Viewport Mode">
+            <button class="vp-tab active" data-view="desktop" role="tab" aria-selected="true" title="Desktop 1440px viewport">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+              <span>Desktop 1440</span>
+            </button>
+            <button class="vp-tab" data-view="mobile" role="tab" aria-selected="false" title="Mobile 390px viewport">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <line x1="11" y1="18" x2="13" y2="18"/>
+              </svg>
+              <span>Mobile 390</span>
+            </button>
+            <button class="vp-tab" data-view="receipt" role="tab" aria-selected="false" title="Cryptographic Sign-off Receipt">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <span>Sign-Off Receipt</span>
+            </button>
           </div>
-          <div class="browser-telemetry-badge">
+
+          <!-- Dynamic Live Telemetry Badge -->
+          <div class="browser-telemetry-badge" id="heroTelemetryBadge">
             <span class="badge-live-pulse"></span>
-            <span>1440×900 · Chrome 131</span>
+            <span id="heroTelemetryText">1440×900 · Chrome 131</span>
           </div>
         </div>
 
-        <!-- Browser Body -->
+        <!-- Browser Body: Multi-Viewport Panels -->
         <div class="browser-body">
-          <!-- Left: Staging Viewport Preview -->
-          <div class="staging-viewport-stage" id="stagingStage">
-            <div class="staging-site-nav">
-              <span class="staging-site-logo">AURA ATELIER</span>
-              <div class="staging-site-links">
-                <span>Spaces</span>
-                <span>Archive</span>
-                <span>Journal</span>
+
+          <!-- ══════ PANEL 1: DESKTOP 1440 VIEWPORT ══════ -->
+          <div class="browser-view active" id="viewDesktop">
+            <!-- Left: Staging Viewport Preview -->
+            <div class="staging-viewport-stage" id="stagingStage">
+              <div class="staging-site-nav">
+                <span class="staging-site-logo">AURA ATELIER</span>
+                <div class="staging-site-links">
+                  <span>Spaces</span>
+                  <span>Archive</span>
+                  <span>Journal</span>
+                </div>
+                <span class="staging-site-btn">Inquire</span>
               </div>
-              <span class="staging-site-btn">Inquire</span>
-            </div>
 
-            <div class="staging-content-area">
-              <div class="staging-kicker">Case Study // Edition 04</div>
-              <h2 class="staging-headline">Sculptural vessels cast in raw bronze.</h2>
-              <p class="staging-subtext">Direct foundry pour. Hand-patinated in Kyoto with organic beeswax finish.</p>
-            </div>
-
-            <div class="staging-specimen-box">
-              <span class="specimen-tag">Kyoto Foundry Specimen No. 04</span>
-            </div>
-
-            <!-- Dynamic Feedback Pins -->
-            <div class="stage-pin" id="stagePin1" style="top: 76px; right: 28px;" title="Pin 1: Inquire button">1</div>
-            <div class="stage-pin" id="stagePin2" style="top: 148px; left: 168px;" title="Pin 2: Specimen padding">2</div>
-            <div class="stage-pin" id="stagePin3" style="bottom: 24px; left: 80px;" title="Pin 3: Footer signature">3</div>
-
-            <!-- Active Comment Popover (attached to Pin 1) -->
-            <div class="stage-popover" id="stagePopover">
-              <div class="popover-header">
-                <span class="popover-author">Jane Cooper (Client)</span>
-                <span class="popover-time">just now</span>
+              <div class="staging-content-area">
+                <div class="staging-kicker">Case Study // Edition 04</div>
+                <h2 class="staging-headline">Sculptural vessels cast in raw bronze.</h2>
+                <p class="staging-subtext">Direct foundry pour. Hand-patinated in Kyoto with organic beeswax finish.</p>
               </div>
-              <p class="popover-text" id="popoverText">"Can we change this to 'Reserve via Concierge'? Also bump button padding."</p>
-              <div class="popover-telemetry">
-                <span>1440×900</span>
-                <span>·</span>
-                <span>Chrome 131</span>
-                <span>·</span>
-                <span>macOS 15.1</span>
+
+              <div class="staging-specimen-box">
+                <span class="specimen-tag">Kyoto Foundry Specimen No. 04</span>
+              </div>
+
+              <!-- Dynamic Feedback Pins -->
+              <div class="stage-pin" id="stagePin1" style="top: 76px; right: 28px;" title="Pin 1: Inquire button">1</div>
+              <div class="stage-pin" id="stagePin2" style="top: 148px; left: 168px;" title="Pin 2: Specimen padding">2</div>
+              <div class="stage-pin" id="stagePin3" style="bottom: 24px; left: 80px;" title="Pin 3: Footer signature">3</div>
+
+              <!-- Active Comment Popover (attached to Pin 1) -->
+              <div class="stage-popover" id="stagePopover">
+                <div class="popover-header">
+                  <span class="popover-author">Jane Cooper (Client)</span>
+                  <span class="popover-time">just now</span>
+                </div>
+                <p class="popover-text" id="popoverText">"Can we change this to 'Reserve via Concierge'? Also bump button padding."</p>
+                <div class="popover-telemetry">
+                  <span>1440×900</span>
+                  <span>·</span>
+                  <span>Chrome 131</span>
+                  <span>·</span>
+                  <span>macOS 15.1</span>
+                </div>
+              </div>
+
+              <!-- Animated Cursor -->
+              <div class="stage-cursor" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 3L11.5 21L14.5 13.5L22 10.5L4 3Z" fill="#FFF5F5" stroke="#140A0A" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
               </div>
             </div>
 
-            <!-- Animated Cursor -->
-            <div class="stage-cursor" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M4 3L11.5 21L14.5 13.5L22 10.5L4 3Z" fill="#FFF5F5" stroke="#140A0A" stroke-width="2" stroke-linejoin="round"/>
+            <!-- Right: Feedback Telemetry Sidebar -->
+            <div class="feedback-sidebar">
+              <div class="sidebar-header">
+                <span class="sidebar-title">Feedback</span>
+                <span class="sidebar-badge" id="sidebarCount">3 total</span>
+              </div>
+
+              <div class="sidebar-list">
+                <div class="sidebar-item active" data-pin="1">
+                  <div class="item-top">
+                    <span class="item-pin-num">1</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">now</span>
+                  </div>
+                  <p class="item-body">Can we change to 'Reserve via Concierge'?</p>
+                  <span class="item-meta">1440×900 · Chrome 131</span>
+                </div>
+
+                <div class="sidebar-item" data-pin="2">
+                  <div class="item-top">
+                    <span class="item-pin-num">2</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">4m</span>
+                  </div>
+                  <p class="item-body">Hero image optimized to WebP with responsive srcset.</p>
+                  <span class="item-meta">1512×982 · macOS</span>
+                </div>
+
+                <div class="sidebar-item" data-pin="3">
+                  <div class="item-top">
+                    <span class="item-pin-num">3</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">6m</span>
+                  </div>
+                  <p class="item-body">Button should open sliding sheet instead of anchor jump.</p>
+                  <span class="item-meta">390×844 · Safari iOS</span>
+                </div>
+              </div>
+
+              <div class="sidebar-footer">
+                <button class="signoff-pill jump-to-receipt" title="View Milestone Sign-Off Receipt">
+                  <span>✓ View Sign-Off Receipt →</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════ PANEL 2: MOBILE 390 VIEWPORT ══════ -->
+          <div class="browser-view" id="viewMobile" style="display: none;">
+            <!-- Left: Centered Mobile Device Frame -->
+            <div class="mobile-stage-wrapper">
+              <div class="mobile-phone-device">
+                <div class="mobile-phone-notch"></div>
+                <div class="mobile-site-nav">
+                  <span>AURA ATELIER</span>
+                  <div class="mobile-nav-hamburger" title="Mobile Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+
+                <div class="mobile-site-body">
+                  <div class="mobile-kicker">Edition 04</div>
+                  <div class="mobile-headline">Sculptural vessels cast in raw bronze.</div>
+                  <div class="mobile-specimen-card">
+                    <span class="mobile-specimen-tag">Kyoto Specimen 04</span>
+                  </div>
+                  <div class="mobile-site-btn">
+                    Reserve via Concierge
+                    <div class="stage-pin" style="top: -10px; right: -8px; width: 22px; height: 22px; font-size: 10px;">1</div>
+                  </div>
+                </div>
+                <div class="mobile-phone-chin"></div>
+              </div>
+
+              <!-- Floating Mobile Comment Popover -->
+              <div class="mobile-stage-popover" id="mobilePopover">
+                <div class="popover-header">
+                  <span class="popover-author">Jane Cooper (Mobile Safari)</span>
+                  <span class="popover-time">now</span>
+                </div>
+                <p class="popover-text">"CTA button touches viewport edge on 390px width. Add 16px horizontal margin."</p>
+                <div class="popover-telemetry">
+                  <span>390×844</span>
+                  <span>·</span>
+                  <span>Safari 18 (iOS)</span>
+                  <span>·</span>
+                  <span>DPR 3.0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Mobile Feedback Sidebar -->
+            <div class="feedback-sidebar">
+              <div class="sidebar-header">
+                <span class="sidebar-title">Mobile Telemetry</span>
+                <span class="sidebar-badge badge-amber">2 issues</span>
+              </div>
+
+              <div class="sidebar-list">
+                <div class="sidebar-item active" data-pin="1">
+                  <div class="item-top">
+                    <span class="item-pin-num">1</span>
+                    <span class="item-status">OPEN</span>
+                    <span class="item-time">now</span>
+                  </div>
+                  <p class="item-body">Button touches screen edge on 390px viewport width.</p>
+                  <span class="item-meta">390×844 · Safari iOS · DPR 3.0</span>
+                </div>
+
+                <div class="sidebar-item" data-pin="2">
+                  <div class="item-top">
+                    <span class="item-pin-num">2</span>
+                    <span class="item-status resolved">RESOLVED</span>
+                    <span class="item-time">14m</span>
+                  </div>
+                  <p class="item-body">Mobile hamburger menu tap target expanded to 44px.</p>
+                  <span class="item-meta">390×844 · Touch-Action: pan-y</span>
+                </div>
+              </div>
+
+              <div class="sidebar-footer">
+                <button class="signoff-pill jump-to-receipt" title="View Milestone Sign-Off Receipt">
+                  <span>✓ View Sign-Off Receipt →</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════ PANEL 3: CRYPTOGRAPHIC SIGN-OFF RECEIPT ══════ -->
+          <div class="browser-view" id="viewReceipt" style="display: none;">
+            <div class="receipt-certificate-stage">
+              <!-- Background Seal SVG Watermark -->
+              <svg class="rc-watermark-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
+
+              <!-- Certificate Header -->
+              <div class="rc-header">
+                <div class="rc-header-brand">
+                  <div class="rc-shield-badge">✓</div>
+                  <div class="rc-title-block">
+                    <h3>MILESTONE SIGN-OFF CERTIFICATE</h3>
+                    <p>Tamper-evident client approval ledger · Milestone 04: Launch Candidate</p>
+                  </div>
+                </div>
+
+                <div class="rc-status-pill">
+                  <span class="rc-dot"></span>
+                  <span>SCOPE LOCKED & SIGNED</span>
+                </div>
+              </div>
+
+              <!-- Certificate Audit Grid -->
+              <div class="rc-grid">
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Staging Target URL</div>
+                  <div class="rc-cell-val">aura-atelier.staging.vercel.app</div>
+                </div>
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Authorized Client Signer</div>
+                  <div class="rc-cell-val">Jane Cooper (Creative Director)</div>
+                </div>
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Feedback Scope Resolution</div>
+                  <div class="rc-cell-val highlight">12 of 12 Pins Resolved (100%)</div>
+                </div>
+                <div class="rc-cell">
+                  <div class="rc-cell-label">Audit Timestamp</div>
+                  <div class="rc-cell-val">November 8, 2026 · 14:32:08 UTC</div>
+                </div>
+              </div>
+
+              <!-- Cryptographic Hash & Actions -->
+              <div class="rc-footer">
+                <div class="rc-hash-block">
+                  <div class="rc-hash-label">Cryptographic Audit Digest (SHA-256)</div>
+                  <div class="rc-hash-code">844d8c91f0c2a7e93a65b4c10488ea9b3921f7d88aa20188ef7b620b704d9c</div>
+                </div>
+                <button class="rc-copy-btn" id="rcCopyBtn" title="Copy SHA-256 Receipt to Clipboard">
+                  <span>Copy Receipt</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Right: Feedback Telemetry Sidebar -->
-          <div class="feedback-sidebar">
-            <div class="sidebar-header">
-              <span class="sidebar-title">Feedback</span>
-              <span class="sidebar-badge" id="sidebarCount">3 total</span>
-            </div>
-
-            <div class="sidebar-list">
-              <div class="sidebar-item active" data-pin="1">
-                <div class="item-top">
-                  <span class="item-pin-num">1</span>
-                  <span class="item-status">OPEN</span>
-                  <span class="item-time">now</span>
-                </div>
-                <p class="item-body">Can we change to 'Reserve via Concierge'?</p>
-                <span class="item-meta">1440×900 · Chrome 131</span>
-              </div>
-
-              <div class="sidebar-item" data-pin="2">
-                <div class="item-top">
-                  <span class="item-pin-num">2</span>
-                  <span class="item-status">OPEN</span>
-                  <span class="item-time">4m</span>
-                </div>
-                <p class="item-body">Hero image optimized to WebP with responsive srcset.</p>
-                <span class="item-meta">1512×982 · macOS</span>
-              </div>
-
-              <div class="sidebar-item" data-pin="3">
-                <div class="item-top">
-                  <span class="item-pin-num">3</span>
-                  <span class="item-status">OPEN</span>
-                  <span class="item-time">6m</span>
-                </div>
-                <p class="item-body">Button should open sliding sheet instead of anchor jump.</p>
-                <span class="item-meta">390×844 · Safari iOS</span>
-              </div>
-            </div>
-
-            <div class="sidebar-footer">
-              <div class="signoff-pill" id="signoffBtn" title="Click to verify milestone">
-                <span>✓ Sign-Off Ready</span>
-                <span style="opacity:0.6; font-family:var(--font-mono); font-size:9.5px;">SHA-256</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -1902,17 +2460,77 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
     .from('#heroCta', { autoAlpha: 0, y: 16, duration: 0.7 }, '-=0.5')
     .from('#heroVisual', { autoAlpha: 0, x: 40, y: 15, scale: 0.98, duration: 1.1, ease: 'power3.out' }, '-=0.45');
 
-  /* ══════════ CINEMATIC FLOATING BROWSER STAGING MOCKUP (§Hero Option 1) ══════════ */
-  (function initFloatingBrowser() {
+  /* ══════════ INTERACTIVE VIEWPORT SWITCHER (§Hero Option 1) ══════════ */
+  (function initViewportSwitcher() {
     var card = $('#browserStageCard');
-    var popover = $('#stagePopover');
-    var popoverText = $('#popoverText');
-    var pins = $$('.stage-pin');
-    var sidebarItems = $$('.sidebar-item');
-    var signoffBtn = $('#signoffBtn');
     if (!card) return;
 
-    var pinData = {
+    var tabs = $$('.vp-tab');
+    var views = $$('.browser-view');
+    var badge = $('#heroTelemetryBadge');
+    var badgeText = $('#heroTelemetryText');
+    var signoffJumps = $$('.jump-to-receipt');
+
+    var viewMeta = {
+      desktop: {
+        telemetry: '1440×900 · Chrome 131',
+        badgeClass: ''
+      },
+      mobile: {
+        telemetry: '390×844 · Safari 18 · iOS',
+        badgeClass: 'badge-amber'
+      },
+      receipt: {
+        telemetry: 'SHA-256 844d…88aa · Scope Locked',
+        badgeClass: 'badge-green'
+      }
+    };
+
+    function switchView(viewKey) {
+      tabs.forEach(function (t) {
+        var isThis = t.getAttribute('data-view') === viewKey;
+        t.classList.toggle('active', isThis);
+        t.setAttribute('aria-selected', isThis ? 'true' : 'false');
+      });
+
+      views.forEach(function (v) {
+        var isThis = v.id === ('view' + viewKey.charAt(0).toUpperCase() + viewKey.slice(1));
+        if (isThis) {
+          v.style.display = 'flex';
+          gsap.fromTo(v, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' });
+        } else {
+          v.style.display = 'none';
+          v.style.opacity = '0';
+        }
+      });
+
+      if (badge && badgeText && viewMeta[viewKey]) {
+        badgeText.textContent = viewMeta[viewKey].telemetry;
+        badge.className = 'browser-telemetry-badge ' + viewMeta[viewKey].badgeClass;
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var v = tab.getAttribute('data-view');
+        switchView(v);
+      });
+    });
+
+    signoffJumps.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        switchView('receipt');
+      });
+    });
+
+    // Desktop Pins interaction
+    var popover = $('#stagePopover');
+    var popoverText = $('#popoverText');
+    var pins = $$('#viewDesktop .stage-pin');
+    var sidebarItems = $$('#viewDesktop .sidebar-item');
+
+    var desktopPinData = {
       1: {
         author: 'Jane Cooper (Client)',
         time: 'just now',
@@ -1933,8 +2551,8 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
       }
     };
 
-    function selectPin(num) {
-      var d = pinData[num];
+    function selectDesktopPin(num) {
+      var d = desktopPinData[num];
       if (!d || !popover) return;
 
       sidebarItems.forEach(function (item) {
@@ -1959,7 +2577,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
 
       gsap.fromTo(popover,
         { scale: 0.94, opacity: 0.8 },
-        { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.8)' }
+        { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.8)' }
       );
     }
 
@@ -1967,60 +2585,54 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
       pin.addEventListener('click', function (e) {
         e.stopPropagation();
         var n = parseInt(pin.textContent.trim(), 10);
-        selectPin(n);
+        selectDesktopPin(n);
       });
     });
 
     sidebarItems.forEach(function (item) {
       item.addEventListener('click', function () {
         var n = parseInt(item.getAttribute('data-pin'), 10);
-        selectPin(n);
+        selectDesktopPin(n);
       });
     });
 
-    // 3D Parallax Tilt Response on Mouse Move
-    var rect = null;
-    function updateRect() { rect = card.getBoundingClientRect(); }
-    window.addEventListener('scroll', updateRect, { passive: true });
-    window.addEventListener('resize', updateRect);
+    // Mobile Pins interaction
+    var mobilePins = $$('#viewMobile .stage-pin');
+    var mobileSidebarItems = $$('#viewMobile .sidebar-item');
+    var mobilePopover = $('#mobilePopover');
 
-    card.addEventListener('mouseenter', updateRect);
-
-    card.addEventListener('mousemove', function (e) {
-      if (!rect || window.innerWidth <= 1080) return;
-      var cx = rect.left + rect.width / 2;
-      var cy = rect.top + rect.height / 2;
-      var dx = (e.clientX - cx) / (rect.width / 2);
-      var dy = (e.clientY - cy) / (rect.height / 2);
-
-      var rotX = 6 - dy * 6;
-      var rotY = -8 + dx * 8;
-
-      card.style.transform = 'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) scale(1.015)';
+    mobilePins.forEach(function (pin) {
+      pin.addEventListener('click', function (e) {
+        e.stopPropagation();
+        gsap.fromTo(mobilePopover, { scale: 0.95 }, { scale: 1, duration: 0.25, ease: 'back.out(1.8)' });
+      });
     });
 
-    card.addEventListener('mouseleave', function () {
-      if (window.innerWidth <= 1080) return;
-      card.style.transform = 'rotateX(6deg) rotateY(-8deg) scale(1)';
+    mobileSidebarItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        mobileSidebarItems.forEach(function (it) { it.classList.remove('active'); });
+        item.classList.add('active');
+        gsap.fromTo(mobilePopover, { scale: 0.95 }, { scale: 1, duration: 0.25, ease: 'back.out(1.8)' });
+      });
     });
 
-    // Interactive Milestone Sign-Off Pill
-    if (signoffBtn) {
-      var isSigned = false;
-      signoffBtn.addEventListener('click', function () {
-        isSigned = !isSigned;
-        if (isSigned) {
-          signoffBtn.innerHTML = '<span>✓ Milestone Locked & Signed</span>';
-          signoffBtn.style.background = '#10B981';
-          signoffBtn.style.borderColor = '#10B981';
-          signoffBtn.style.color = '#050A08';
-          gsap.fromTo(signoffBtn, { scale: 0.95 }, { scale: 1.05, duration: 0.2, yoyo: true, repeat: 1 });
-        } else {
-          signoffBtn.innerHTML = '<span>✓ Sign-Off Ready</span><span style="opacity:0.6; font-family:var(--font-mono); font-size:9.5px;">SHA-256</span>';
-          signoffBtn.style.background = 'rgba(239, 68, 68, 0.15)';
-          signoffBtn.style.borderColor = 'rgba(239, 68, 68, 0.35)';
-          signoffBtn.style.color = '#FFF5F5';
+    // Copy Audit Receipt SHA
+    var copyBtn = $('#rcCopyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var hash = '844d8c91f0c2a7e93a65b4c10488ea9b3921f7d88aa20188ef7b620b704d9c';
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(hash).catch(function () {});
         }
+        var origText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<span>Copied! ✓</span>';
+        copyBtn.style.background = '#10B981';
+        copyBtn.style.color = '#050A08';
+        setTimeout(function () {
+          copyBtn.innerHTML = origText;
+          copyBtn.style.background = '';
+          copyBtn.style.color = '';
+        }, 2000);
       });
     }
   })();
