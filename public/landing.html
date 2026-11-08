@@ -1733,7 +1733,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
     <!-- Left Column: Copy & Actions -->
     <div class="hero-left">
       <h1 class="hero-headline" id="heroHeadline">Stop chasing client feedback across 15 emails.</h1>
-      <p class="hero-sub" id="heroSub">Send a single review link. Clients pinpoint feedback directly on live staging builds with automated viewport and OS telemetry, then verify completion with 1-click milestone sign-off.</p>
+      <p class="hero-sub" id="heroSub">Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.</p>
       
       <div class="hero-cta-row" id="heroCta">
         <div class="hero-btn-group">
@@ -1746,15 +1746,15 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
       <div class="hero-trust-list">
         <div class="trust-item">
           <span class="trust-dot"></span>
-          <span>Zero client signup required</span>
+          <span>No login needed for clients</span>
         </div>
         <div class="trust-item">
           <span class="trust-dot"></span>
-          <span>Automated browser & OS telemetry</span>
+          <span>Captures browser & screen size automatically</span>
         </div>
         <div class="trust-item">
           <span class="trust-dot"></span>
-          <span>Cryptographic milestone sign-off</span>
+          <span>Timestamped sign-off receipt when done</span>
         </div>
       </div>
     </div>
@@ -1789,7 +1789,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
               </svg>
               <span>Mobile 390</span>
             </button>
-            <button class="vp-tab" data-view="receipt" role="tab" aria-selected="false" title="Cryptographic Sign-off Receipt">
+            <button class="vp-tab" data-view="receipt" role="tab" aria-selected="false" title="Client Sign-off Receipt">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <polyline points="9 12 11 14 15 10"/>
@@ -1957,7 +1957,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
             <!-- Right: Mobile Feedback Sidebar -->
             <div class="feedback-sidebar">
               <div class="sidebar-header">
-                <span class="sidebar-title">Mobile Telemetry</span>
+                <span class="sidebar-title">Mobile Notes</span>
                 <span class="sidebar-badge badge-amber">2 issues</span>
               </div>
 
@@ -1978,8 +1978,8 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
                     <span class="item-status resolved">RESOLVED</span>
                     <span class="item-time">14m</span>
                   </div>
-                  <p class="item-body">Mobile hamburger menu tap target expanded to 44px.</p>
-                  <span class="item-meta">390×844 · Touch-Action: pan-y</span>
+                  <p class="item-body">Mobile menu button made easier to tap.</p>
+                  <span class="item-meta">390×844 · iPhone 15 · Safari</span>
                 </div>
               </div>
 
@@ -2004,33 +2004,33 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
                 <div class="rc-header-brand">
                   <div class="rc-shield-badge">✓</div>
                   <div class="rc-title-block">
-                    <h3>MILESTONE SIGN-OFF CERTIFICATE</h3>
-                    <p>Tamper-evident client approval ledger · Milestone 04: Launch Candidate</p>
+                    <h3>CLIENT SIGN-OFF RECEIPT</h3>
+                    <p>Official client approval · Milestone 04: Ready for Launch</p>
                   </div>
                 </div>
 
                 <div class="rc-status-pill">
                   <span class="rc-dot"></span>
-                  <span>SCOPE LOCKED & SIGNED</span>
+                  <span>SIGNED & APPROVED</span>
                 </div>
               </div>
 
               <!-- Certificate Audit Grid -->
               <div class="rc-grid">
                 <div class="rc-cell">
-                  <div class="rc-cell-label">Staging Target URL</div>
+                  <div class="rc-cell-label">Staging URL</div>
                   <div class="rc-cell-val">aura-atelier.staging.vercel.app</div>
                 </div>
                 <div class="rc-cell">
-                  <div class="rc-cell-label">Authorized Client Signer</div>
+                  <div class="rc-cell-label">Approved By</div>
                   <div class="rc-cell-val">Jane Cooper (Creative Director)</div>
                 </div>
                 <div class="rc-cell">
-                  <div class="rc-cell-label">Feedback Scope Resolution</div>
+                  <div class="rc-cell-label">All Notes Completed</div>
                   <div class="rc-cell-val highlight">12 of 12 Pins Resolved (100%)</div>
                 </div>
                 <div class="rc-cell">
-                  <div class="rc-cell-label">Audit Timestamp</div>
+                  <div class="rc-cell-label">Date & Time</div>
                   <div class="rc-cell-val">November 8, 2026 · 14:32:08 UTC</div>
                 </div>
               </div>
@@ -2038,10 +2038,10 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
               <!-- Cryptographic Hash & Actions -->
               <div class="rc-footer">
                 <div class="rc-hash-block">
-                  <div class="rc-hash-label">Cryptographic Audit Digest (SHA-256)</div>
+                  <div class="rc-hash-label">Receipt Verification Code</div>
                   <div class="rc-hash-code">844d8c91f0c2a7e93a65b4c10488ea9b3921f7d88aa20188ef7b620b704d9c</div>
                 </div>
-                <button class="rc-copy-btn" id="rcCopyBtn" title="Copy SHA-256 Receipt to Clipboard">
+                <button class="rc-copy-btn" id="rcCopyBtn" title="Copy Receipt Code to Clipboard">
                   <span>Copy Receipt</span>
                 </button>
               </div>
@@ -2104,22 +2104,22 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
         </div>
-        <h3 class="feature-title">Frictionless Client Access</h3>
-        <p class="feature-body">Send a private staging link directly to your client. They open it on desktop or mobile and drop pins immediately—no accounts to create, passwords to remember, or extensions to install.</p>
+        <h3 class="feature-title">No accounts or setup for clients</h3>
+        <p class="feature-body">Send a link directly to your client. They open it on their phone or laptop and leave feedback right on the page—no accounts to create, no passwords, and nothing to install.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         </div>
-        <h3 class="feature-title">Deterministic Telemetry</h3>
-        <p class="feature-body">Every pin captures viewport resolution, device pixel ratio, operating system, browser engine, and scroll offset. Developers receive reproducible tickets rather than vague email screenshots.</p>
+        <h3 class="feature-title">Exact screen size and browser on every note</h3>
+        <p class="feature-body">Every pin automatically records your client's screen size, browser, operating system, and scroll position. You see exactly what they saw—no more asking "what browser are you using?" or guessing what a blurry phone photo means.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
         </div>
-        <h3 class="feature-title">Tamper-Evident Scope Lock</h3>
-        <p class="feature-body">When open feedback items are resolved, clients verify approval with a single click. Cyath produces a cryptographically signed approval receipt to protect your scope and eliminate unpaid revision cycles.</p>
+        <h3 class="feature-title">Clear sign-off when the work is done</h3>
+        <p class="feature-body">Once you fix the feedback, your client approves the site with a single click. Cyath generates a timestamped sign-off receipt so both sides agree the milestone is complete—putting an end to endless "just one more quick change" emails.</p>
       </div>
     </div>
   </div>
@@ -2147,7 +2147,7 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
         </div>
         <div class="demo-step" data-step="4">
           <span class="demo-step-num">4</span>
-          <div><h3>Client hits Approve</h3><p>Signed, timestamped, tamper-evident receipt. You're done.</p></div>
+          <div><h3>Client hits Approve</h3><p>A signed, timestamped receipt confirms the project is approved. You're done.</p></div>
         </div>
       </div>
     </div>
@@ -2183,8 +2183,8 @@ html.js.pin-on .chapter .line .w { opacity: 0; }
             <div class="mini-popover" id="demoApprove" style="left: 50%; top: 50%; transform: translate(-50%,-50%); width: 230px; text-align:center;">
               <div style="width:34px;height:34px;border-radius:50%;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);color:#34D399;display:flex;align-items:center;justify-content:center;margin:2px auto 8px;font-size:15px;font-weight:700;">✓</div>
               <div style="font-size:12px;font-weight:600;">Approved by Jane Cooper</div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-family:var(--font-mono);">Nov 7, 2026 · SHA-256 844d…88aa</div>
-              <div style="margin-top:8px;font-size:10px;color:#34D399;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:4px 8px;">Scope locked · Feedback read-only</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:4px;font-family:var(--font-mono);">Nov 7, 2026 · Receipt #844d88</div>
+              <div style="margin-top:8px;font-size:10px;color:#34D399;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:6px;padding:4px 8px;">Approved · Feedback closed</div>
             </div>
           </div>
           <div class="demo-sidebar">
@@ -2481,7 +2481,7 @@ var k="1.1.14";function w(r,t,e){return Math.max(r,Math.min(t,e))}function _(r,t
         badgeClass: 'badge-amber'
       },
       receipt: {
-        telemetry: 'SHA-256 844d…88aa · Scope Locked',
+        telemetry: 'Receipt #844d88 · Approved & Signed',
         badgeClass: 'badge-green'
       }
     };

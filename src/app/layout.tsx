@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Cyath — Stop chasing client feedback across 15 emails",
-  description: "One link. Clients pin feedback directly on your live staging site with automated telemetry. Milestone approval sign-off with a timestamped receipt.",
+  description: "One link. Clients click anywhere on your staging site to leave notes with their exact browser and screen size attached. Get final sign-off with a timestamped receipt.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
