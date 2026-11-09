@@ -85,3 +85,4 @@ create policy "Public can view projects" on public.projects for select using (tr
 -- Pins & Comments: Frictionless client collaboration (no client account needed)
 create policy "Public can read and create pins" on public.pins for all using (true);
 create policy "Public can read and create comments" on public.comments for all using (true);
+
