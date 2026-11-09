@@ -216,10 +216,10 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
           bool isBg = (bgDist < 0.025);
 
           // Horizontal Dither Fade:
-          // Increased coverage towards the right, dissolving cleanly into solid background before the modal
+          // Pushed till the exact centre of viewport (vUv.x = 0.50)
           float fade = 1.0;
           if (uIsDesktop > 0.5) {
-            fade = 1.0 - smoothstep(0.37, 0.435, vUv.x);
+            fade = 1.0 - smoothstep(0.47, 0.52, vUv.x);
           } else {
             fade = 1.0 - smoothstep(0.42, 0.58, 1.0 - vUv.y);
           }

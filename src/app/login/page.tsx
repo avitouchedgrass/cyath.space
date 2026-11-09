@@ -136,6 +136,30 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setErrorMsg("Enter your email address above to receive a password reset link.");
+      return;
+    }
+    setErrorMsg(null);
+    setInfoMsg(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/login?reset=true`,
+      });
+      if (error) {
+        setErrorMsg(error.message);
+      } else {
+        setInfoMsg("Password reset email sent! Check your inbox.");
+      }
+    } catch {
+      setErrorMsg("Unable to process password reset request.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const isDay = theme === "day";
 
   return (
@@ -402,26 +426,36 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Footer switcher note */}
+          {/* Footer switcher note / Forgot Password */}
           <div className="mt-5 text-center">
-            <span className="text-[11px] text-zinc-500 font-mono">
-              {mode === "signin"
-                ? "Need a studio workspace?"
-                : "Already registered?"}{" "}
+            {mode === "signin" ? (
               <button
                 type="button"
-                onClick={() => {
-                  setMode(mode === "signin" ? "signup" : "signin");
-                  setErrorMsg(null);
-                  setInfoMsg(null);
-                }}
-                className={`underline font-medium cursor-pointer ${
-                  isDay ? "text-black hover:text-zinc-700" : "text-white hover:text-zinc-300"
+                onClick={handleForgotPassword}
+                className={`text-[11px] font-mono underline cursor-pointer transition-colors ${
+                  isDay ? "text-zinc-600 hover:text-black" : "text-zinc-400 hover:text-white"
                 }`}
               >
-                {mode === "signin" ? "Create one free" : "Sign in here"}
+                Forgot your password?
               </button>
-            </span>
+            ) : (
+              <span className="text-[11px] text-zinc-500 font-mono">
+                Already registered?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("signin");
+                    setErrorMsg(null);
+                    setInfoMsg(null);
+                  }}
+                  className={`underline font-medium cursor-pointer ${
+                    isDay ? "text-black hover:text-zinc-700" : "text-white hover:text-zinc-300"
+                  }`}
+                >
+                  Sign in here
+                </button>
+              </span>
+            )}
           </div>
         </div>
       </main>
