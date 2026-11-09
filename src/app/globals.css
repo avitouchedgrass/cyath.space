@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  /* Surfaces — Crimson Noir */
-  --surface-canvas: #090505;
-  --surface-panel: #120A0A;
-  --surface-overlay: #1A0F0F;
-  --surface-glass: rgba(18, 10, 10, 0.85);
+  /* Surfaces — Graphite / Archival */
+  --surface-canvas: #1b1b1b;
+  --surface-panel: #242424;
+  --surface-overlay: #2d2d2d;
+  --surface-glass: rgba(36, 36, 36, 0.85);
 
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(239, 68, 68, 0.28);
-  --border-glow: rgba(239, 68, 68, 0.45);
+  --border-active: rgba(255, 255, 255, 0.28);
+  --border-glow: rgba(255, 255, 255, 0.45);
 
   /* Text - High contrast WCAG AA calibrated */
   --text-primary: #FFF5F5;

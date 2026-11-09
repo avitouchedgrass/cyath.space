@@ -23,8 +23,9 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const isDay = theme === "day";
-    const bgColor = new THREE.Color(isDay ? 0xf5f3ec : 0x1b1b1b);
-    const fgColor = new THREE.Color(isDay ? 0x1c1a18 : 0xffffff);
+    const bgVec = isDay ? new THREE.Vector3(245 / 255, 243 / 255, 236 / 255) : new THREE.Vector3(27 / 255, 27 / 255, 27 / 255);
+    const fgVec = isDay ? new THREE.Vector3(28 / 255, 26 / 255, 24 / 255) : new THREE.Vector3(1.0, 1.0, 1.0);
+    const bgColor = new THREE.Color().setRGB(bgVec.x, bgVec.y, bgVec.z, THREE.LinearSRGBColorSpace);
 
     // 1. Renderer & Render Targets
     const renderer = new THREE.WebGLRenderer({
@@ -63,31 +64,31 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     rimLight.position.set(-3.5, 2.5, -2.5);
     scene.add(rimLight);
 
-    // 3. 3D Isometric Tesseract (Smaller, refined proportions)
+    // 3. 3D Isometric Tesseract
     const tesseractGroup = new THREE.Group();
     const isDesktop = W >= 1024;
-    tesseractGroup.position.set(isDesktop ? -1.45 : 0, isDesktop ? 0 : 0.6, 0);
+    tesseractGroup.position.set(isDesktop ? -1.65 : 0, isDesktop ? 0.05 : 0.65, 0);
     scene.add(tesseractGroup);
 
-    // Smaller scale
-    const edgeRadius = 0.016;
-    const sOuter = 0.82;
-    const sInner = 0.41;
+    // Architectural scale: compact & balanced, crisp presence
+    const edgeRadius = 0.021;
+    const sOuter = 0.88;
+    const sInner = 0.44;
 
     const strutMat = new THREE.MeshStandardMaterial({
       color: isDay ? 0x1e2026 : 0xf8fafc,
-      roughness: 0.22,
+      roughness: 0.20,
       metalness: 0.88,
     });
     const innerStrutMat = new THREE.MeshStandardMaterial({
       color: 0x38bdf8,
-      roughness: 0.18,
+      roughness: 0.16,
       metalness: 0.92,
     });
     const nodeMat = new THREE.MeshStandardMaterial({
       color: isDay ? 0x0f172a : 0xffffff,
-      roughness: 0.2,
-      metalness: 0.8,
+      roughness: 0.18,
+      metalness: 0.85,
     });
 
     function makeCylinderEdge(p1: THREE.Vector3, p2: THREE.Vector3, mat: THREE.Material, radius = edgeRadius) {
@@ -190,26 +191,15 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
         uniform float uMouseStrength;
         uniform float uIsDesktop;
 
-        const float SCREEN_ANGLE = 0.70710678; // 45 deg rotation
-        const float CORNER_REACH = 1.41421356;
-
-        float halftoneThreshold(vec2 cellCoord) {
-          vec2 screen = vec2(
-            cellCoord.x * SCREEN_ANGLE - cellCoord.y * SCREEN_ANGLE,
-            cellCoord.x * SCREEN_ANGLE + cellCoord.y * SCREEN_ANGLE
-          );
-          return clamp(length(fract(screen) - 0.5) * CORNER_REACH, 0.0, 1.0);
-        }
-
         void main() {
           vec2 fragCoord = vUv * uResolution;
           vec2 cellCoord = fragCoord / uGridSize;
 
-          // Magnetic Halftone Repel
+          // Magnetic Halftone Repel displacement
           vec2 mDiff = vUv - uMouse;
           mDiff.x *= uResolution.x / uResolution.y;
           float mDist = length(mDiff);
-          float repelRadius = 0.18;
+          float repelRadius = 0.20;
           if (mDist < repelRadius && uMouseStrength > 0.001) {
             float force = 1.0 - mDist / repelRadius;
             force = force * force * (3.0 - 2.0 * force);
@@ -219,58 +209,63 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
 
           vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
           vec4 tex = texture2D(tDiffuse, quantizedUv);
+          float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
 
-          // Identical to landing page: pure clean background where no 3D meshes exist
+          // Check whether cell is empty scene background or 3D geometry
           float bgDist = length(tex.rgb - uBgColor);
-          if (bgDist < 0.02) {
-            gl_FragColor = vec4(uBgColor, 1.0);
-            return;
+          bool isBg = (bgDist < 0.025);
+
+          // Horizontal Dither Fade:
+          // Full dither dots on left, dissolving smoothly into solid background before the card
+          float fade = 1.0;
+          if (uIsDesktop > 0.5) {
+            fade = 1.0 - smoothstep(0.38, 0.54, vUv.x);
+          } else {
+            fade = 1.0 - smoothstep(0.42, 0.58, 1.0 - vUv.y);
           }
 
-          float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
-          float th = halftoneThreshold(cellCoord);
-
-          vec3 finalColor;
+          vec2 local = fract(cellCoord) - 0.5;
+          float d = length(local);
 
           if (uInvert > 0.5) {
-            // Day mode: archival vellum + charcoal ink dots
-            float inkDensity = clamp((0.94 - lum) / 0.85, 0.0, 1.0);
-            if (inkDensity <= 0.03) {
-              finalColor = uBgColor;
+            // DAY MODE: Archival Vellum (#F5F3EC) + Charcoal Ink Dots
+            float inkDensity;
+            if (isBg) {
+              inkDensity = 0.075 * fade;
             } else {
-              bool hasInk = (inkDensity >= th);
-              finalColor = hasInk ? mix(uFgColor, tex.rgb * 0.5, 0.25) : uBgColor;
+              inkDensity = clamp((0.96 - lum) / 0.82, 0.0, 1.0);
+              inkDensity = mix(inkDensity * 0.25, inkDensity, max(fade, 0.65));
             }
+
+            float dotSize = sqrt(inkDensity) * 0.52;
+            float dotMask = smoothstep(dotSize + 0.035, dotSize - 0.035, d);
+            vec3 inkColor = mix(uFgColor, tex.rgb * 0.45, 0.28);
+            vec3 finalColor = mix(uBgColor, inkColor, dotMask);
+            gl_FragColor = vec4(finalColor, 1.0);
           } else {
-            // Night mode: matte neutral graphite (#1b1b1b) + liquid chrome dots
-            float lightDensity = clamp(lum * 1.18, 0.0, 1.0);
-            if (lightDensity <= 0.03) {
-              finalColor = uBgColor;
+            // NIGHT MODE: Neutral Graphite (#1B1B1B) + Gleaming Chrome / Cyan Dots
+            float lightDensity;
+            if (isBg) {
+              lightDensity = 0.11 * fade;
             } else {
-              bool lit = lightDensity >= th;
-              finalColor = lit ? mix(uFgColor, tex.rgb * 1.25, 0.38) : uBgColor;
+              lightDensity = clamp(lum * 1.30, 0.0, 1.0);
+              lightDensity = mix(lightDensity * 0.25, lightDensity, max(fade, 0.65));
             }
-          }
 
-          // Fade away dither quicker towards the center/card:
-          // Dissolves completely by x = 0.44 on desktop
-          if (uIsDesktop > 0.5) {
-            float fadeRight = smoothstep(0.44, 0.24, vUv.x);
-            finalColor = mix(uBgColor, finalColor, fadeRight);
-          } else {
-            float fadeDown = smoothstep(0.50, 0.25, vUv.y);
-            finalColor = mix(uBgColor, finalColor, fadeDown);
+            float dotSize = sqrt(lightDensity) * 0.52;
+            float dotMask = smoothstep(dotSize + 0.035, dotSize - 0.035, d);
+            vec3 dotColor = mix(uFgColor, tex.rgb * 1.35, 0.40);
+            vec3 finalColor = mix(uBgColor, dotColor, dotMask);
+            gl_FragColor = vec4(finalColor, 1.0);
           }
-
-          gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
       uniforms: {
         tDiffuse: { value: null },
         uResolution: { value: new THREE.Vector2(W * dpr, H * dpr) },
         uGridSize: { value: 3.2 * dpr },
-        uBgColor: { value: bgColor },
-        uFgColor: { value: fgColor },
+        uBgColor: { value: bgVec },
+        uFgColor: { value: fgVec },
         uInvert: { value: isDay ? 1.0 : 0.0 },
         uMouse: { value: new THREE.Vector2(0.5, 0.5) },
         uMouseStrength: { value: 0.0 },
@@ -344,7 +339,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       camera.updateProjectionMatrix();
 
       const desktopNow = W >= 1024;
-      tesseractGroup.position.set(desktopNow ? -1.45 : 0, desktopNow ? 0 : 0.6, 0);
+      tesseractGroup.position.set(desktopNow ? -1.65 : 0, desktopNow ? 0.05 : 0.65, 0);
       postMaterial.uniforms.uIsDesktop.value = desktopNow ? 1.0 : 0.0;
 
       renderer.setSize(W, H, false);
