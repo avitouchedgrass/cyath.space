@@ -302,15 +302,26 @@ html[data-theme="day"] .nav-cta-filled {
   font-size: clamp(3.2rem, 5.6vw, 4.8rem);
   font-weight: 400;
   line-height: 1.05;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.04em;
   color: var(--text-primary);
   margin-bottom: 22px;
 }
 
+/* Negative text knockout effect matching the hand-drawn sketch */
 .hero-emphasis {
   font-weight: 700;
   font-style: italic;
   display: inline-block;
+  background-color: var(--text-primary);
+  color: var(--bg-page);
+  padding: 0.02em 0.28em 0.08em 0.22em;
+  border-radius: 6px;
+  margin-right: 0.12em;
+  line-height: 0.98;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: var(--transition-theme);
 }
 
 .hero-subtitle {
@@ -1384,20 +1395,19 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   const darkMetalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x6E7482 : 0x363B48, roughness: 0.22, metalness: 0.90 });
   const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xA07855 : 0x484E5E, roughness: 0.32, metalness: 0.25 });
   const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x726B62 : 0x4B5262, roughness: 0.45, metalness: 0.20 });
-  const edgeLineMat = new THREE.LineBasicMaterial({ color: isDay ? 0x1C1A18 : 0xFFFFFF, linewidth: 1.5 });
 
-  // 1. Studio Window Floating Behind Desk (Directly behind the desk setup)
+  // 1. Studio Window (Positioned on the Right Wall)
   const windowGroup = new THREE.Group();
-  windowGroup.position.set(1.45, 1.85, -2.5);
+  windowGroup.position.set(2.4, 1.85, -2.2);
+  windowGroup.rotation.y = -0.15;
 
   const frameMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x685D52 : 0x545B6C, roughness: 0.3, metalness: 0.6 });
-  const frameW = 3.2, frameH = 2.3, frameT = 0.08;
+  const frameW = 2.6, frameH = 2.2, frameT = 0.08;
 
   function makeBar(w, h, d, x, y) {
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), frameMat);
     b.position.set(x, y, 0);
     windowGroup.add(b);
-    windowGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry), edgeLineMat));
   }
   // Outer frame
   makeBar(frameW, frameT, 0.11, 0, frameH/2);
@@ -1417,99 +1427,92 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   windowGroup.add(glass);
   roomGroup.add(windowGroup);
 
-  // 2. Architectural Studio Chair Behind Desk
+  // 2. Architectural Studio Chair (Angled in Foreground to the Right of Table)
   const chairGroup = new THREE.Group();
-  chairGroup.position.set(1.45, -0.40, -0.65);
-  chairGroup.rotation.y = 0.18;
+  chairGroup.position.set(2.20, -0.42, 1.45);
+  chairGroup.rotation.y = -0.85; // Angled facing toward desk & camera
 
-  const seat = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.15, 1.2), fabricMat);
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.85), fabricMat);
   chairGroup.add(seat);
-  chairGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(seat.geometry), edgeLineMat));
 
-  const backrest = new THREE.Mesh(new THREE.BoxGeometry(1.25, 1.5, 0.10), fabricMat);
-  backrest.position.set(0, 0.85, -0.55);
-  backrest.rotation.x = -0.12;
+  const backrest = new THREE.Mesh(new THREE.BoxGeometry(0.80, 1.05, 0.08), fabricMat);
+  backrest.position.set(0, 0.58, -0.38);
+  backrest.rotation.x = -0.10;
   chairGroup.add(backrest);
-  chairGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(backrest.geometry), edgeLineMat));
 
-  const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.32, 0.09), fabricMat);
-  headrest.position.set(0, 1.75, -0.68);
+  const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.20, 0.08), fabricMat);
+  headrest.position.set(0, 1.20, -0.48);
   chairGroup.add(headrest);
-  chairGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(headrest.geometry), edgeLineMat));
 
   function makeArmrest(side) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.8), metalMat);
-    arm.position.set(side * 0.68, 0.38, -0.08);
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.38), darkMetalMat);
-    post.position.set(side * 0.68, 0.19, 0);
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 0.58), metalMat);
+    arm.position.set(side * 0.44, 0.26, -0.05);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.26), darkMetalMat);
+    post.position.set(side * 0.44, 0.13, 0);
     chairGroup.add(arm);
     chairGroup.add(post);
   }
   makeArmrest(1);
   makeArmrest(-1);
 
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.6), darkMetalMat);
-  stem.position.set(0, -0.32, 0);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.45), darkMetalMat);
+  stem.position.set(0, -0.24, 0);
   chairGroup.add(stem);
 
   for (let a = 0; a < 5; a++) {
     const ang = (a / 5) * Math.PI * 2;
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.06, 0.07), darkMetalMat);
-    leg.position.set(Math.cos(ang) * 0.32, -0.58, Math.sin(ang) * 0.32);
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.045, 0.055), darkMetalMat);
+    leg.position.set(Math.cos(ang) * 0.22, -0.44, Math.sin(ang) * 0.22);
     leg.rotation.y = -ang;
     chairGroup.add(leg);
   }
   roomGroup.add(chairGroup);
 
-  // 3. Drafting Desk (Positioned on the Right Half of Viewport)
+  // 3. Drafting Desk (Clean solid architectural surfaces)
   const deskGroup = new THREE.Group();
-  deskGroup.position.set(1.45, -0.45, 0.5);
+  deskGroup.position.set(1.20, -0.45, 0.45);
 
-  const deskW = 3.2, deskD = 1.9, deskH = 0.11;
+  const deskW = 2.8, deskD = 1.70, deskH = 0.09;
   const deskTop = new THREE.Mesh(new THREE.BoxGeometry(deskW, deskH, deskD), woodMat);
   deskGroup.add(deskTop);
-  deskGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(deskTop.geometry), edgeLineMat));
 
   function makeDeskLeg(x, z) {
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.10, 1.15, 0.10), darkMetalMat);
-    leg.position.set(x, -0.63, z);
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.08), darkMetalMat);
+    leg.position.set(x, -0.62, z);
     deskGroup.add(leg);
-    deskGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(leg.geometry), edgeLineMat));
   }
-  makeDeskLeg(-deskW/2 + 0.22, -deskD/2 + 0.22);
-  makeDeskLeg(-deskW/2 + 0.22, deskD/2 - 0.22);
-  makeDeskLeg(deskW/2 - 0.22, -deskD/2 + 0.22);
-  makeDeskLeg(deskW/2 - 0.22, deskD/2 - 0.22);
+  makeDeskLeg(-deskW/2 + 0.18, -deskD/2 + 0.18);
+  makeDeskLeg(-deskW/2 + 0.18, deskD/2 - 0.18);
+  makeDeskLeg(deskW/2 - 0.18, -deskD/2 + 0.18);
+  makeDeskLeg(deskW/2 - 0.18, deskD/2 - 0.18);
   roomGroup.add(deskGroup);
 
-  // 4. Laptop With Official Cyath Tesseract Logo Screen (Dominant Centerpiece)
+  // 4. Laptop With Official Cyath Tesseract Logo Screen (Sleek, Proportional Notebook)
   const laptopGroup = new THREE.Group();
-  laptopGroup.position.set(1.55, -0.39, 0.65);
-  laptopGroup.rotation.y = -0.16;
+  laptopGroup.position.set(1.05, -0.395, 0.55);
+  laptopGroup.rotation.y = -0.14;
 
-  const lapW = 2.1, lapD = 1.45, lapH = 0.05;
+  const lapW = 1.62, lapD = 1.12, lapH = 0.035;
   const lapBase = new THREE.Mesh(new THREE.BoxGeometry(lapW, lapH, lapD), metalMat);
   laptopGroup.add(lapBase);
-  laptopGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(lapBase.geometry), edgeLineMat));
 
-  const lapKb = new THREE.Mesh(new THREE.PlaneGeometry(1.85, 0.82), new THREE.MeshStandardMaterial({ color: isDay ? 0x222428 : 0x1A1D24, roughness: 0.9 }));
+  const lapKb = new THREE.Mesh(new THREE.PlaneGeometry(1.42, 0.62), new THREE.MeshStandardMaterial({ color: isDay ? 0x222428 : 0x1A1D24, roughness: 0.9 }));
   lapKb.rotation.x = -Math.PI / 2;
-  lapKb.position.set(0, lapH/2 + 0.005, -0.18);
+  lapKb.position.set(0, lapH/2 + 0.003, -0.14);
   laptopGroup.add(lapKb);
 
-  const lapTp = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.42), new THREE.MeshStandardMaterial({ color: isDay ? 0x363942 : 0x2E323C, roughness: 0.7 }));
+  const lapTp = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.30), new THREE.MeshStandardMaterial({ color: isDay ? 0x363942 : 0x2E323C, roughness: 0.7 }));
   lapTp.rotation.x = -Math.PI / 2;
-  lapTp.position.set(0, lapH/2 + 0.005, 0.40);
+  lapTp.position.set(0, lapH/2 + 0.003, 0.32);
   laptopGroup.add(lapTp);
 
   const screenHinged = new THREE.Group();
   screenHinged.position.set(0, lapH/2, -lapD/2);
   screenHinged.rotation.x = -0.32; // Tilted back so screen faces UP and forward to camera!
 
-  const lapLid = new THREE.Mesh(new THREE.BoxGeometry(lapW, 1.45, 0.04), metalMat);
-  lapLid.position.set(0, 0.725, 0);
+  const lapLid = new THREE.Mesh(new THREE.BoxGeometry(lapW, 1.12, 0.03), metalMat);
+  lapLid.position.set(0, 0.56, 0);
   screenHinged.add(lapLid);
-  screenHinged.add(new THREE.LineSegments(new THREE.EdgesGeometry(lapLid.geometry), edgeLineMat));
 
   // Cyath Tesseract Logo Screen Canvas (High-Definition Texture)
   const logoCanvas = document.createElement('canvas');
@@ -1603,29 +1606,28 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   drawLogoScreen(currentTheme);
 
   const screenMat = new THREE.MeshBasicMaterial({ map: logoTex, side: THREE.DoubleSide });
-  const screenDisplay = new THREE.Mesh(new THREE.PlaneGeometry(1.98, 1.34), screenMat);
-  screenDisplay.position.set(0, 0.725, 0.03);
+  const screenDisplay = new THREE.Mesh(new THREE.PlaneGeometry(1.54, 1.04), screenMat);
+  screenDisplay.position.set(0, 0.56, 0.022);
   screenHinged.add(screenDisplay);
 
   laptopGroup.add(screenHinged);
   roomGroup.add(laptopGroup);
 
-  // 5. Coffee Mug & Dynamic Steam (Left of laptop on the desk)
+  // 5. Coffee Mug & Dynamic Steam (Positioned to the Right of Laptop - Zero Intersection!)
   const mugGroup = new THREE.Group();
-  mugGroup.position.set(0.35, -0.32, 0.95);
+  mugGroup.position.set(2.10, -0.32, 0.70);
 
   const mugMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xBA4D22 : 0xC2632B, roughness: 0.25, metalness: 0.3 });
-  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 0.40, 16), mugMat);
+  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 0.36, 16), mugMat);
   mugGroup.add(mug);
-  mugGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(mug.geometry), edgeLineMat));
 
-  const mugCoffee = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.13, 0.10, 16), new THREE.MeshStandardMaterial({ color: 0x1E140E, roughness: 0.9 }));
-  mugCoffee.position.set(0, 0.16, 0);
+  const mugCoffee = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.11, 0.08, 16), new THREE.MeshStandardMaterial({ color: 0x1E140E, roughness: 0.9 }));
+  mugCoffee.position.set(0, 0.14, 0);
   mugGroup.add(mugCoffee);
 
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.034, 8, 16, Math.PI), mugMat);
-  handle.position.set(-0.16, 0, 0);
-  handle.rotation.z = Math.PI / 2;
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.028, 8, 16, Math.PI), mugMat);
+  handle.position.set(0.14, 0, 0);
+  handle.rotation.z = -Math.PI / 2;
   mugGroup.add(handle);
   roomGroup.add(mugGroup);
 
@@ -1634,9 +1636,9 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   const steamPos = new Float32Array(steamCount * 3);
   const steamVel = [];
   for (let s = 0; s < steamCount; s++) {
-    steamPos[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.08;
-    steamPos[s*3 + 1] = mugGroup.position.y + 0.18 + Math.random() * 0.6;
-    steamPos[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.08;
+    steamPos[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.06;
+    steamPos[s*3 + 1] = mugGroup.position.y + 0.16 + Math.random() * 0.5;
+    steamPos[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.06;
     steamVel.push({
       vy: 0.008 + Math.random() * 0.008,
       phase: Math.random() * Math.PI * 2,
@@ -1649,10 +1651,9 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 
   // 6. Potted Succulent Plant (Left back corner of desk)
   const plantGroup = new THREE.Group();
-  plantGroup.position.set(0.15, -0.30, 0.10);
+  plantGroup.position.set(0.30, -0.30, 0.15);
   const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.12, 0.28, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
   plantGroup.add(pot);
-  plantGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(pot.geometry), edgeLineMat));
 
   const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x22C55E, roughness: 0.28, metalness: 0.2 });
   for (let i = 0; i < 5; i++) {
@@ -1665,25 +1666,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   }
   roomGroup.add(plantGroup);
 
-  // 7. Crumpled Paper Revisions (Right front desk corner)
-  function makePaperBall(x, y, z, s) {
-    const geo = new THREE.DodecahedronGeometry(s, 1);
-    const p = geo.attributes.position;
-    for (let idx = 0; idx < p.count; idx++) {
-      const vx = p.getX(idx), vy = p.getY(idx), vz = p.getZ(idx);
-      const n = 1 + (Math.sin(vx*18) + Math.cos(vy*18)) * 0.18;
-      p.setXYZ(idx, vx*n, vy*n, vz*n);
-    }
-    geo.computeVertexNormals();
-    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: isDay ? 0x7A746C : 0xA4ACB8, roughness: 0.65 }));
-    m.position.set(x, y, z);
-    roomGroup.add(m);
-    roomGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeLineMat));
-  }
-  makePaperBall(2.45, -0.38, 0.95, 0.10);
-  makePaperBall(2.65, -0.39, 0.70, 0.08);
-
-  // 8. Studio Lighting (Directional Key + Rim + Ambient)
+  // 7. Studio Lighting (Directional Key + Rim + Ambient)
   const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x4B5563, isDay ? 2.2 : 2.6);
   scene.add(ambLight);
 
@@ -1696,7 +1679,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   scene.add(rimLight);
 
   const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 2.2, 4.0);
-  screenLight.position.set(1.55, 0.1, 0.85);
+  screenLight.position.set(1.25, 0.1, 0.75);
   scene.add(screenLight);
 
   function update3DTheme(theme) {
@@ -1712,15 +1695,15 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 
     if (isD) {
       ambLight.color.setHex(0xE8E4D8);
-      ambLight.intensity = 2.2;
+      ambLight.intensity = 2.0;
       dirLight.color.setHex(0xFFFBEB);
-      dirLight.intensity = 3.0;
+      dirLight.intensity = 2.8;
       glassMat.color.setHex(0xFAF7F0);
-      woodMat.color.setHex(0xA07855);
+      woodMat.color.setHex(0x8C6847);
       frameMat.color.setHex(0x685D52);
-      metalMat.color.setHex(0x8A92A2);
-      darkMetalMat.color.setHex(0x6E7482);
-      edgeLineMat.color.setHex(0x1C1A18);
+      metalMat.color.setHex(0x6E7482);
+      darkMetalMat.color.setHex(0x4B505C);
+      fabricMat.color.setHex(0x48423B);
     } else {
       ambLight.color.setHex(0x4B5563);
       ambLight.intensity = 2.6;
@@ -1731,7 +1714,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
       frameMat.color.setHex(0x545B6C);
       metalMat.color.setHex(0x8C96A8);
       darkMetalMat.color.setHex(0x363B48);
-      edgeLineMat.color.setHex(0xFFFFFF);
+      fabricMat.color.setHex(0x4B5262);
     }
   }
 
@@ -1815,9 +1798,10 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     for (let s = 0; s < steamCount; s++) {
       posArr[s*3 + 1] += steamVel[s].vy;
       posArr[s*3] += Math.sin(time * 0.003 + steamVel[s].phase) * steamVel[s].sway;
-      if (posArr[s*3 + 1] > mugGroup.position.y + 1.2) {
-        posArr[s*3 + 1] = mugGroup.position.y + 0.18;
-        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.08;
+      if (posArr[s*3 + 1] > mugGroup.position.y + 0.9) {
+        posArr[s*3 + 1] = mugGroup.position.y + 0.16;
+        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.06;
+        posArr[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.06;
       }
     }
     steamGeo.attributes.position.needsUpdate = true;
