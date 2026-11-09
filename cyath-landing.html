@@ -11,57 +11,55 @@
 <script src="/vendor/three.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   ARCHITECTURAL TOKENS: DARK GRAPHITE EDITORIAL
+   ARCHITECTURAL TOKENS: TRUE CARBON GRAPHITE & ARCHIVAL VELLUM
    ══════════════════════════════════════════════════════════════════ */
 :root {
   --font-serif: 'Oranienbaum', Georgia, serif;
   --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --transition-theme: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+  --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
-/* ☽ NIGHT MODE (DARK GRAPHITE) */
+/* ☽ NIGHT MODE (TRUE NEUTRAL CARBON GRAPHITE - ZERO BLUE) */
 html[data-theme="night"] {
-  --bg-page: #121419;
-  --bg-page-rgb: 18, 20, 25;
-  --bg-surface: #181B22;
-  --bg-surface-elevated: #20242E;
+  --bg-page: #131416;
+  --bg-surface: #1A1B1F;
+  --bg-surface-elevated: #22242A;
   
   --bg-pill: rgba(255, 255, 255, 0.08);
   --bg-pill-hover: rgba(255, 255, 255, 0.14);
   
-  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.11);
   --border-medium: rgba(255, 255, 255, 0.22);
-  --border-pill: rgba(255, 255, 255, 0.18);
+  --border-pill: rgba(255, 255, 255, 0.16);
   
   --text-primary: #FFFFFF;
-  --text-secondary: #CBD5E1;
-  --text-muted: #8E9BAE;
+  --text-secondary: #D1D5DB;
+  --text-muted: #8E929B;
   
-  --card-bg: #161920;
-  --card-border: rgba(255, 255, 255, 0.12);
+  --card-bg: #18191E;
+  --card-border: rgba(255, 255, 255, 0.10);
 }
 
-/* ☼ DAY MODE (WARM GRAPHITE VELLUM) */
+/* ☼ DAY MODE (CLEAN WARM ARCHITECTURAL VELLUM) */
 html[data-theme="day"] {
-  --bg-page: #E9E6DC;
-  --bg-page-rgb: 233, 230, 220;
-  --bg-surface: #DFDBD0;
-  --bg-surface-elevated: #D4CFC2;
+  --bg-page: #F5F3EC;
+  --bg-surface: #EBE7DC;
+  --bg-surface-elevated: #E2DDCE;
   
   --bg-pill: rgba(0, 0, 0, 0.06);
   --bg-pill-hover: rgba(0, 0, 0, 0.12);
   
   --border-subtle: rgba(0, 0, 0, 0.10);
   --border-medium: rgba(0, 0, 0, 0.22);
-  --border-pill: rgba(0, 0, 0, 0.15);
+  --border-pill: rgba(0, 0, 0, 0.14);
   
-  --text-primary: #171513;
-  --text-secondary: #3D3935;
-  --text-muted: #736C65;
+  --text-primary: #1C1A18;
+  --text-secondary: #423E3A;
+  --text-muted: #7A746C;
   
-  --card-bg: #DFDBD0;
-  --card-border: rgba(0, 0, 0, 0.14);
+  --card-bg: #EBE7DC;
+  --card-border: rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -89,7 +87,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   NAVIGATION: EXACT MATCH TO USER'S SKETCH
+   NAVIGATION: EXACT MATCH TO USER'S HAND-DRAWN SKETCH
    ══════════════════════════════════════════════════════════════════ */
 .site-nav {
   position: fixed;
@@ -152,7 +150,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Right Unified Segmented Nav Bar */
+/* Right Unified Segmented Bar */
 .nav-unified-bar {
   display: inline-flex;
   align-items: center;
@@ -189,7 +187,6 @@ body {
   margin: 0 2px;
 }
 
-/* Theme Toggle Button inside the bar */
 .nav-theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -211,7 +208,6 @@ body {
   background: var(--bg-pill-hover);
 }
 
-/* Filled Solid CTA Button at the end of the bar */
 .nav-cta-filled {
   display: inline-flex;
   align-items: center;
@@ -234,7 +230,7 @@ body {
 }
 
 html[data-theme="day"] .nav-cta-filled {
-  background: #171513;
+  background: #1C1A18;
   color: #FFFFFF;
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -267,11 +263,11 @@ html[data-theme="day"] .nav-cta-filled {
   cursor: grabbing;
 }
 
-/* Hero Content Floating on the Left (Matching Sketch) */
+/* Left Hero Content (Matches Sketch) */
 .hero-content-left {
   position: relative;
   z-index: 10;
-  max-width: 660px;
+  max-width: 640px;
   margin-left: max(40px, 7vw);
   pointer-events: none;
 }
@@ -301,7 +297,7 @@ html[data-theme="day"] .nav-cta-filled {
   font-weight: 400;
   line-height: 1.58;
   color: var(--text-secondary);
-  max-width: 540px;
+  max-width: 530px;
   margin-bottom: 34px;
 }
 
@@ -312,7 +308,6 @@ html[data-theme="day"] .nav-cta-filled {
   flex-wrap: wrap;
 }
 
-/* Primary Solid CTA Button */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -328,7 +323,7 @@ html[data-theme="day"] .nav-cta-filled {
 }
 
 html[data-theme="day"] .btn-primary {
-  background: #171513;
+  background: #1C1A18;
   color: #FFFFFF;
 }
 
@@ -337,7 +332,6 @@ html[data-theme="day"] .btn-primary {
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.38);
 }
 
-/* Secondary Outlined CTA Button */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -362,34 +356,6 @@ html[data-theme="day"] .btn-primary {
   font-size: 13px;
   color: var(--text-muted);
   margin-top: 16px;
-}
-
-/* 3D Scene Interactive Overlay Badge (Bottom-Right) */
-.scene-badge {
-  position: absolute;
-  bottom: 24px;
-  right: 36px;
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  background: rgba(var(--bg-page-rgb), 0.75);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: 9999px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: var(--text-muted);
-}
-
-.scene-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #38BDF8;
-  box-shadow: 0 0 8px #38BDF8;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -456,7 +422,6 @@ html[data-theme="day"] .btn-primary {
   color: var(--text-primary);
 }
 
-/* Interactive Artifact Cards */
 .artifact-card {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -590,8 +555,8 @@ html[data-theme="day"] .btn-primary {
 }
 
 html[data-theme="day"] .punch-item.resolved .punch-checkbox {
-  background: #171513;
-  border-color: #171513;
+  background: #1C1A18;
+  border-color: #1C1A18;
   color: #FFFFFF;
 }
 
@@ -929,12 +894,6 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     </div>
     <p class="hero-footnote">No credit card required. No client login needed. One active staging project free forever.</p>
   </div>
-
-  <!-- Micro 3D Status Badge -->
-  <div class="scene-badge">
-    <span class="scene-dot"></span>
-    <span id="sceneStatus">WebGL 3D ASCII Engine // 60 FPS</span>
-  </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
@@ -1204,7 +1163,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     FULL-SCREEN 3D WEBGL TO REAL-TIME ASCII ENGINE
+     FULL-SCREEN 3D WEBGL TO REAL-TIME MICRO-ASCII ENGINE
      ══════════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
@@ -1212,7 +1171,6 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const themeIcon = document.getElementById('themeIcon');
   const themeLabel = document.getElementById('themeLabel');
-  const sceneStatus = document.getElementById('sceneStatus');
 
   let currentTheme = 'night';
 
@@ -1240,220 +1198,371 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   themeToggleBtn.addEventListener('click', toggleTheme);
 
   // ══════════════════════════════════════════════════════════════════
-  // THREE.JS 3D SCENE SETUP
+  // THREE.JS ARCHITECTURAL 3D STUDIO SCENE
   // ══════════════════════════════════════════════════════════════════
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x121419);
+  scene.background = new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x131416);
 
-  const camera = new THREE.PerspectiveCamera(38, (window.innerWidth / window.innerHeight) * 0.6, 0.1, 100);
-  camera.position.set(0, 3.5, 9.8);
-  camera.lookAt(0, 0.3, 0);
+  // Exact 1:1 architectural perspective camera matching screen aspect ratio
+  const aspect = window.innerWidth / window.innerHeight;
+  const camera = new THREE.PerspectiveCamera(30, aspect, 0.1, 100);
+  camera.position.set(0, 1.9, 7.2);
+  camera.lookAt(0, 0, 0);
 
-  // Resolution of the offscreen 3D buffer (each pixel = one ASCII character)
-  const COLS = 180;
-  const ROWS = 75;
+  // Micro-ASCII Resolution matching JetBrains Mono font ratio (~1.75)
+  const ROWS = 105;
+  const COLS = Math.round(ROWS * aspect * 1.75);
   const offCanvas = document.createElement('canvas');
   offCanvas.width = COLS;
   offCanvas.height = ROWS;
 
-  const glRenderer = new THREE.WebGLRenderer({ canvas: offCanvas, antialias: false, preserveDrawingBuffer: true });
+  const glRenderer = new THREE.WebGLRenderer({ canvas: offCanvas, antialias: true, preserveDrawingBuffer: true });
   glRenderer.setSize(COLS, ROWS);
 
-  // 1. Desk (Comfortably framed on the right half)
+  const isDay = (currentTheme === 'day');
+  const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x8C5634 : 0x363A46, roughness: 0.6, metalness: 0.1 });
+  const metalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x4D525D : 0x484E5E, roughness: 0.4, metalness: 0.6 });
+  const darkMetalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x2A2C32 : 0x262932, roughness: 0.7, metalness: 0.8 });
+  const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x58524A : 0x3C414E, roughness: 0.85 });
+  const edgeLineMat = new THREE.LineBasicMaterial({ color: isDay ? 0x1C1A18 : 0x8E9CB2, linewidth: 1.5 });
+
+  // 1. Studio Window Floating Behind Desk (Directly behind the desk setup)
+  const windowGroup = new THREE.Group();
+  windowGroup.position.set(1.45, 1.85, -2.5);
+
+  const frameMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x685D52 : 0x4E5566, roughness: 0.4 });
+  const frameW = 3.2, frameH = 2.3, frameT = 0.08;
+
+  function makeBar(w, h, d, x, y) {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), frameMat);
+    b.position.set(x, y, 0);
+    windowGroup.add(b);
+    windowGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry), edgeLineMat));
+  }
+  // Outer frame
+  makeBar(frameW, frameT, 0.11, 0, frameH/2);
+  makeBar(frameW, frameT, 0.11, 0, -frameH/2);
+  makeBar(frameT, frameH, 0.11, -frameW/2, 0);
+  makeBar(frameT, frameH, 0.11, frameW/2, 0);
+  // Mullions (6 panes: 2 vertical, 1 horizontal)
+  makeBar(frameT * 0.8, frameH, 0.08, -frameW/6, 0);
+  makeBar(frameT * 0.8, frameH, 0.08, frameW/6, 0);
+  makeBar(frameW, frameT * 0.8, 0.08, 0, 0);
+
+  // Window Panes Glass (Atmospheric backdrop)
+  const glassGeo = new THREE.PlaneGeometry(frameW - 0.08, frameH - 0.08);
+  const glassMat = new THREE.MeshBasicMaterial({ color: isDay ? 0xFAF7F0 : 0x181B24 });
+  const glass = new THREE.Mesh(glassGeo, glassMat);
+  glass.position.set(0, 0, -0.02);
+  windowGroup.add(glass);
+  scene.add(windowGroup);
+
+  // 2. Architectural Studio Chair Behind Desk
+  const chairGroup = new THREE.Group();
+  chairGroup.position.set(1.45, -0.40, -0.65);
+  chairGroup.rotation.y = 0.18;
+
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.15, 1.2), fabricMat);
+  chairGroup.add(seat);
+  chairGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(seat.geometry), edgeLineMat));
+
+  const backrest = new THREE.Mesh(new THREE.BoxGeometry(1.25, 1.5, 0.10), fabricMat);
+  backrest.position.set(0, 0.85, -0.55);
+  backrest.rotation.x = -0.12;
+  chairGroup.add(backrest);
+  chairGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(backrest.geometry), edgeLineMat));
+
+  const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.32, 0.09), fabricMat);
+  headrest.position.set(0, 1.75, -0.68);
+  chairGroup.add(headrest);
+  chairGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(headrest.geometry), edgeLineMat));
+
+  function makeArmrest(side) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.8), metalMat);
+    arm.position.set(side * 0.68, 0.38, -0.08);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.38), darkMetalMat);
+    post.position.set(side * 0.68, 0.19, 0);
+    chairGroup.add(arm);
+    chairGroup.add(post);
+  }
+  makeArmrest(1);
+  makeArmrest(-1);
+
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.6), darkMetalMat);
+  stem.position.set(0, -0.32, 0);
+  chairGroup.add(stem);
+
+  for (let a = 0; a < 5; a++) {
+    const ang = (a / 5) * Math.PI * 2;
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.06, 0.07), darkMetalMat);
+    leg.position.set(Math.cos(ang) * 0.32, -0.58, Math.sin(ang) * 0.32);
+    leg.rotation.y = -ang;
+    chairGroup.add(leg);
+  }
+  scene.add(chairGroup);
+
+  // 3. Drafting Desk (Positioned on the Right Half of Viewport)
   const deskGroup = new THREE.Group();
-  deskGroup.position.set(2.4, -0.9, 0.5);
+  deskGroup.position.set(1.45, -0.45, 0.5);
 
-  const deskGeo = new THREE.BoxGeometry(8.5, 0.35, 7.0);
-  const deskMat = new THREE.MeshStandardMaterial({ color: 0x2A2E38, roughness: 0.7, metalness: 0.1 });
-  const desk = new THREE.Mesh(deskGeo, deskMat);
-  deskGroup.add(desk);
+  const deskW = 3.2, deskD = 1.9, deskH = 0.11;
+  const deskTop = new THREE.Mesh(new THREE.BoxGeometry(deskW, deskH, deskD), woodMat);
+  deskGroup.add(deskTop);
+  deskGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(deskTop.geometry), edgeLineMat));
 
-  const edgeGeo = new THREE.BoxGeometry(8.55, 0.08, 7.05);
-  const edgeMat = new THREE.MeshStandardMaterial({ color: 0x3D4350, roughness: 0.5 });
-  const edge = new THREE.Mesh(edgeGeo, edgeMat);
-  edge.position.set(0, 0.14, 0);
-  deskGroup.add(edge);
+  function makeDeskLeg(x, z) {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.10, 1.15, 0.10), darkMetalMat);
+    leg.position.set(x, -0.63, z);
+    deskGroup.add(leg);
+    deskGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(leg.geometry), edgeLineMat));
+  }
+  makeDeskLeg(-deskW/2 + 0.22, -deskD/2 + 0.22);
+  makeDeskLeg(-deskW/2 + 0.22, deskD/2 - 0.22);
+  makeDeskLeg(deskW/2 - 0.22, -deskD/2 + 0.22);
+  makeDeskLeg(deskW/2 - 0.22, deskD/2 - 0.22);
   scene.add(deskGroup);
 
-  // 2. Laptop on Desk (Angled toward viewer/left)
+  // 4. Laptop With Official Cyath Tesseract Logo Screen (Dominant Centerpiece)
   const laptopGroup = new THREE.Group();
-  laptopGroup.position.set(2.4, -0.62, 0.8);
-  laptopGroup.rotation.y = -0.35;
+  laptopGroup.position.set(1.55, -0.39, 0.65);
+  laptopGroup.rotation.y = -0.16;
 
-  const baseGeo = new THREE.BoxGeometry(4.2, 0.18, 3.0);
-  const laptopMat = new THREE.MeshStandardMaterial({ color: 0x373D4B, roughness: 0.4, metalness: 0.5 });
-  const base = new THREE.Mesh(baseGeo, laptopMat);
-  laptopGroup.add(base);
+  const lapW = 2.1, lapD = 1.45, lapH = 0.05;
+  const lapBase = new THREE.Mesh(new THREE.BoxGeometry(lapW, lapH, lapD), metalMat);
+  laptopGroup.add(lapBase);
+  laptopGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(lapBase.geometry), edgeLineMat));
 
-  const kbGeo = new THREE.PlaneGeometry(3.6, 1.7);
-  const kbMat = new THREE.MeshStandardMaterial({ color: 0x181B22, roughness: 0.85 });
-  const kb = new THREE.Mesh(kbGeo, kbMat);
-  kb.rotation.x = -Math.PI / 2;
-  kb.position.set(0, 0.1, -0.35);
-  laptopGroup.add(kb);
+  const lapKb = new THREE.Mesh(new THREE.PlaneGeometry(1.85, 0.82), new THREE.MeshStandardMaterial({ color: isDay ? 0x222428 : 0x1A1D24, roughness: 0.9 }));
+  lapKb.rotation.x = -Math.PI / 2;
+  lapKb.position.set(0, lapH/2 + 0.005, -0.18);
+  laptopGroup.add(lapKb);
 
-  const tpGeo = new THREE.PlaneGeometry(1.4, 0.8);
-  const tpMat = new THREE.MeshStandardMaterial({ color: 0x2A2E38, roughness: 0.7 });
-  const tp = new THREE.Mesh(tpGeo, tpMat);
-  tp.rotation.x = -Math.PI / 2;
-  tp.position.set(0, 0.1, 0.85);
-  laptopGroup.add(tp);
+  const lapTp = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.42), new THREE.MeshStandardMaterial({ color: isDay ? 0x363942 : 0x2E323C, roughness: 0.7 }));
+  lapTp.rotation.x = -Math.PI / 2;
+  lapTp.position.set(0, lapH/2 + 0.005, 0.40);
+  laptopGroup.add(lapTp);
 
-  // Screen Lid
-  const screenGroup = new THREE.Group();
-  screenGroup.position.set(0, 0.09, -1.45);
-  screenGroup.rotation.x = 0.28;
+  const screenHinged = new THREE.Group();
+  screenHinged.position.set(0, lapH/2, -lapD/2);
+  screenHinged.rotation.x = -0.32; // Tilted back so screen faces UP and forward to camera!
 
-  const lidGeo = new THREE.BoxGeometry(4.2, 2.8, 0.12);
-  const lid = new THREE.Mesh(lidGeo, laptopMat);
-  lid.position.set(0, 1.4, 0);
-  screenGroup.add(lid);
+  const lapLid = new THREE.Mesh(new THREE.BoxGeometry(lapW, 1.45, 0.04), metalMat);
+  lapLid.position.set(0, 0.725, 0);
+  screenHinged.add(lapLid);
+  screenHinged.add(new THREE.LineSegments(new THREE.EdgesGeometry(lapLid.geometry), edgeLineMat));
 
-  const screenBezel = new THREE.Mesh(new THREE.PlaneGeometry(3.9, 2.5), new THREE.MeshBasicMaterial({ color: 0x080B10 }));
-  screenBezel.position.set(0, 1.4, 0.07);
-  screenGroup.add(screenBezel);
+  // Cyath Tesseract Logo Screen Canvas (High-Definition Texture)
+  const logoCanvas = document.createElement('canvas');
+  logoCanvas.width = 1024;
+  logoCanvas.height = 680;
+  const lctx = logoCanvas.getContext('2d');
+  const logoTex = new THREE.CanvasTexture(logoCanvas);
+  logoTex.needsUpdate = true;
 
-  // 3D Rotating Tesseract inside/floating on the screen
-  const tesseractGroup = new THREE.Group();
-  tesseractGroup.position.set(0, 1.4, 0.22);
-  tesseractGroup.scale.set(0.65, 0.65, 0.65);
+  function drawLogoScreen(theme) {
+    const isD = (theme === 'day');
+    lctx.clearRect(0, 0, 1024, 680);
+    lctx.fillStyle = isD ? '#FAF8F2' : '#0B0D12';
+    lctx.fillRect(0, 0, 1024, 680);
 
-  const outerBox = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(1.4, 1.4, 1.4)),
-    new THREE.LineBasicMaterial({ color: 0xE0F2FE, linewidth: 2 })
-  );
-  tesseractGroup.add(outerBox);
+    // Bezel outline
+    lctx.strokeStyle = isD ? '#1C1A18' : '#8E9CB2';
+    lctx.lineWidth = 14;
+    lctx.strokeRect(7, 7, 1010, 666);
 
-  const innerBox = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(0.7, 0.7, 0.7)),
-    new THREE.LineBasicMaterial({ color: 0x38BDF8, linewidth: 2 })
-  );
-  tesseractGroup.add(innerBox);
+    // Top header bar
+    lctx.fillStyle = isD ? '#ECE7DC' : '#161922';
+    lctx.fillRect(14, 14, 996, 52);
+    lctx.fillStyle = isD ? '#8A8278' : '#64748B';
+    lctx.beginPath();
+    lctx.arc(44, 40, 8, 0, Math.PI * 2);
+    lctx.arc(74, 40, 8, 0, Math.PI * 2);
+    lctx.arc(104, 40, 8, 0, Math.PI * 2);
+    lctx.fill();
 
-  const strutCoords = [];
-  const o = 0.7, i = 0.35;
-  [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]].forEach(([x,y,z]) => {
-    strutCoords.push(x*o, y*o, z*o, x*i, y*i, z*i);
-  });
-  const strutGeo = new THREE.BufferGeometry();
-  strutGeo.setAttribute('position', new THREE.Float32BufferAttribute(strutCoords, 3));
-  const struts = new THREE.LineSegments(strutGeo, new THREE.LineBasicMaterial({ color: 0x7DD3FC, linewidth: 1.5 }));
-  tesseractGroup.add(struts);
+    // Draw Official Cyath 4D Tesseract Logo
+    const cx = 512, cy = 310;
+    const rOut = 145;
+    const outPts = [];
+    for (let p = 0; p < 6; p++) {
+      const ang = (Math.PI / 3) * p - Math.PI / 6;
+      outPts.push({ x: cx + Math.cos(ang) * rOut, y: cy + Math.sin(ang) * rOut });
+    }
 
-  screenGroup.add(tesseractGroup);
-  laptopGroup.add(screenGroup);
+    const rIn = 72;
+    const inPts = [];
+    for (let p = 0; p < 6; p++) {
+      const ang = (Math.PI / 3) * p - Math.PI / 6;
+      inPts.push({ x: cx + Math.cos(ang) * rIn, y: cy + Math.sin(ang) * rIn });
+    }
+
+    // Outer Hexagon
+    lctx.fillStyle = isD ? '#F0ECE1' : '#FFFFFF';
+    lctx.strokeStyle = isD ? '#1C1A18' : '#000000';
+    lctx.lineWidth = 14;
+    lctx.lineJoin = 'round';
+
+    lctx.beginPath();
+    lctx.moveTo(outPts[0].x, outPts[0].y);
+    for (let p = 1; p < 6; p++) lctx.lineTo(outPts[p].x, outPts[p].y);
+    lctx.closePath();
+    lctx.fill();
+    lctx.stroke();
+
+    // Outer to Inner spokes
+    lctx.beginPath();
+    for (let p = 0; p < 6; p++) {
+      lctx.moveTo(outPts[p].x, outPts[p].y);
+      lctx.lineTo(inPts[p].x, inPts[p].y);
+    }
+    lctx.stroke();
+
+    // Inner Hexagon
+    lctx.beginPath();
+    lctx.moveTo(inPts[0].x, inPts[0].y);
+    for (let p = 1; p < 6; p++) lctx.lineTo(inPts[p].x, inPts[p].y);
+    lctx.closePath();
+    lctx.fill();
+    lctx.stroke();
+
+    // Inner Y spokes
+    lctx.beginPath();
+    lctx.moveTo(cx, cy); lctx.lineTo(inPts[0].x, inPts[0].y);
+    lctx.moveTo(cx, cy); lctx.lineTo(inPts[2].x, inPts[2].y);
+    lctx.moveTo(cx, cy); lctx.lineTo(inPts[4].x, inPts[4].y);
+    lctx.stroke();
+
+    // Wordmark underneath
+    lctx.fillStyle = isD ? '#1C1A18' : '#FFFFFF';
+    lctx.font = '700 76px "Space Grotesk", sans-serif';
+    lctx.textAlign = 'center';
+    lctx.fillText('cyath', cx, 545);
+
+    lctx.fillStyle = isD ? '#0284C7' : '#38BDF8';
+    lctx.font = '600 24px "JetBrains Mono", monospace';
+    lctx.fillText('● STAGING ACTIVE', cx, 605);
+
+    logoTex.needsUpdate = true;
+  }
+  drawLogoScreen(currentTheme);
+
+  const screenMat = new THREE.MeshBasicMaterial({ map: logoTex, side: THREE.DoubleSide });
+  const screenDisplay = new THREE.Mesh(new THREE.PlaneGeometry(1.98, 1.34), screenMat);
+  screenDisplay.position.set(0, 0.725, 0.03);
+  screenHinged.add(screenDisplay);
+
+  laptopGroup.add(screenHinged);
   scene.add(laptopGroup);
 
-  // 3. Coffee Mug (Left of laptop, at x = 0.4)
+  // 5. Coffee Mug & Dynamic Steam (Left of laptop on the desk)
   const mugGroup = new THREE.Group();
-  mugGroup.position.set(0.4, -0.38, 1.1);
+  mugGroup.position.set(0.35, -0.32, 0.95);
 
-  const mugMat = new THREE.MeshStandardMaterial({ color: 0xC2632B, roughness: 0.5 });
-  const mugMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.36, 0.85, 16), mugMat);
-  mugGroup.add(mugMesh);
+  const mugMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xBA4D22 : 0xC2632B, roughness: 0.5 });
+  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 0.40, 16), mugMat);
+  mugGroup.add(mug);
+  mugGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(mug.geometry), edgeLineMat));
 
-  const mugInner = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.3, 0.2, 16), new THREE.MeshStandardMaterial({ color: 0x271911, roughness: 0.8 }));
-  mugInner.position.set(0, 0.34, 0);
-  mugGroup.add(mugInner);
+  const mugCoffee = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.13, 0.10, 16), new THREE.MeshStandardMaterial({ color: 0x1E140E, roughness: 0.9 }));
+  mugCoffee.position.set(0, 0.16, 0);
+  mugGroup.add(mugCoffee);
 
-  const handleMesh = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.08, 8, 16, Math.PI), mugMat);
-  handleMesh.position.set(-0.42, 0, 0);
-  handleMesh.rotation.z = Math.PI / 2;
-  mugGroup.add(handleMesh);
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.034, 8, 16, Math.PI), mugMat);
+  handle.position.set(-0.16, 0, 0);
+  handle.rotation.z = Math.PI / 2;
+  mugGroup.add(handle);
   scene.add(mugGroup);
 
-  // 4. 3D Dynamic Rising Steam Particles
-  const steamCount = 38;
+  const steamCount = 28;
   const steamGeo = new THREE.BufferGeometry();
   const steamPos = new Float32Array(steamCount * 3);
   const steamVel = [];
   for (let s = 0; s < steamCount; s++) {
-    steamPos[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.25;
-    steamPos[s*3 + 1] = mugGroup.position.y + 0.45 + Math.random() * 1.5;
-    steamPos[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.25;
+    steamPos[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.08;
+    steamPos[s*3 + 1] = mugGroup.position.y + 0.18 + Math.random() * 0.6;
+    steamPos[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.08;
     steamVel.push({
-      vy: 0.015 + Math.random() * 0.015,
+      vy: 0.008 + Math.random() * 0.008,
       phase: Math.random() * Math.PI * 2,
-      sway: 0.008 + Math.random() * 0.008
+      sway: 0.003 + Math.random() * 0.003
     });
   }
   steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPos, 3));
-  const steamMat = new THREE.PointsMaterial({ color: 0xF59E0B, size: 0.2, transparent: true, opacity: 0.85 });
-  const steamParticles = new THREE.Points(steamGeo, steamMat);
+  const steamParticles = new THREE.Points(steamGeo, new THREE.PointsMaterial({ color: isDay ? 0x92400E : 0xD97706, size: 0.14, transparent: true, opacity: 0.85 }));
   scene.add(steamParticles);
 
-  // 5. Crumpled Paper Drafts on Right (x = 4.4 to 4.9)
-  function makeCrumpled(x, y, z, r) {
-    const geo = new THREE.DodecahedronGeometry(r, 1);
-    const p = geo.attributes.position;
-    for (let idx = 0; idx < p.count; idx++) {
-      const vx = p.getX(idx), vy = p.getY(idx), vz = p.getZ(idx);
-      const n = 1 + (Math.sin(vx*12) + Math.cos(vy*12)) * 0.18;
-      p.setXYZ(idx, vx*n, vy*n, vz*n);
-    }
-    geo.computeVertexNormals();
-    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x94A3B8, roughness: 0.85 }));
-    mesh.position.set(x, y, z);
-    scene.add(mesh);
-  }
-  makeCrumpled(4.4, -0.62, 1.2, 0.32);
-  makeCrumpled(4.9, -0.65, 0.6, 0.25);
-
-  // 6. Small Potted Plant (Tucked behind mug, x = -0.2)
+  // 6. Potted Succulent Plant (Left back corner of desk)
   const plantGroup = new THREE.Group();
-  plantGroup.position.set(-0.2, -0.4, -0.4);
-  const pot = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.44, 0.32, 0.65, 12),
-    new THREE.MeshStandardMaterial({ color: 0x9A3412, roughness: 0.8 })
-  );
+  plantGroup.position.set(0.40, -0.26, 0.15);
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.25, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.8 }));
   plantGroup.add(pot);
+  plantGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(pot.geometry), edgeLineMat));
 
-  const plantMat = new THREE.MeshStandardMaterial({ color: 0x2D6A4F, roughness: 0.6 });
+  const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x2A6242, roughness: 0.6 });
   for (let i = 0; i < 5; i++) {
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.6, 5), plantMat);
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.24, 5), plantMat);
     const ang = (i / 5) * Math.PI * 2;
-    leaf.position.set(Math.cos(ang) * 0.16, 0.32 + i * 0.05, Math.sin(ang) * 0.16);
-    leaf.rotation.x = 0.3 * Math.sin(ang);
-    leaf.rotation.z = -0.3 * Math.cos(ang);
+    leaf.position.set(Math.cos(ang) * 0.07, 0.12 + i * 0.02, Math.sin(ang) * 0.07);
+    leaf.rotation.x = 0.26 * Math.sin(ang);
+    leaf.rotation.z = -0.26 * Math.cos(ang);
     plantGroup.add(leaf);
   }
   scene.add(plantGroup);
 
-  // 7. Lighting
-  const ambLight = new THREE.AmbientLight(0x3B4252, 1.6);
+  // 7. Crumpled Paper Revisions (Right front desk corner)
+  function makePaperBall(x, y, z, s) {
+    const geo = new THREE.DodecahedronGeometry(s, 1);
+    const p = geo.attributes.position;
+    for (let idx = 0; idx < p.count; idx++) {
+      const vx = p.getX(idx), vy = p.getY(idx), vz = p.getZ(idx);
+      const n = 1 + (Math.sin(vx*18) + Math.cos(vy*18)) * 0.18;
+      p.setXYZ(idx, vx*n, vy*n, vz*n);
+    }
+    geo.computeVertexNormals();
+    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: isDay ? 0x7A746C : 0xA4ACB8, roughness: 0.85 }));
+    m.position.set(x, y, z);
+    scene.add(m);
+    scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeLineMat));
+  }
+  makePaperBall(2.45, -0.38, 0.95, 0.10);
+  makePaperBall(2.65, -0.39, 0.70, 0.08);
+
+  // 8. Studio Lighting (Directional Key + Fill)
+  const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x3B3F4C, isDay ? 2.4 : 3.0);
   scene.add(ambLight);
 
-  const dirLight = new THREE.DirectionalLight(0xF1F5F9, 1.4);
-  dirLight.position.set(5, 9, 6);
+  const dirLight = new THREE.DirectionalLight(isDay ? 0xFFFBEB : 0xF1F5F9, isDay ? 2.6 : 2.0);
+  dirLight.position.set(isDay ? 2.5 : 3.5, 5.0, 4.0);
   scene.add(dirLight);
 
-  const screenLight = new THREE.PointLight(0x38BDF8, 2.8, 7);
-  screenLight.position.set(2.4, 0.6, 1.1);
+  const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 1.8, 3.5);
+  screenLight.position.set(1.45, 0.1, 0.8);
   scene.add(screenLight);
 
-  const mugLight = new THREE.PointLight(0xF59E0B, 1.5, 3.5);
-  mugLight.position.set(0.4, 0.3, 1.1);
-  scene.add(mugLight);
-
   function update3DTheme(theme) {
+    drawLogoScreen(theme);
     if (theme === 'day') {
-      scene.background = new THREE.Color(0xE9E6DC);
-      ambLight.color.setHex(0xE2DDD0);
-      ambLight.intensity = 1.8;
+      scene.background.setHex(0xF5F3EC);
+      ambLight.color.setHex(0xE8E4D8);
+      ambLight.intensity = 2.4;
       dirLight.color.setHex(0xFFFBEB);
-      dirLight.intensity = 1.9;
-      dirLight.position.set(-3, 8, 4); // Sunbeam from top-left
-      deskMat.color.setHex(0x8C6544);
-      deskMat.roughness = 0.6;
+      dirLight.intensity = 2.6;
+      dirLight.position.set(2.5, 5.0, 4.0);
+      glassMat.color.setHex(0xFAF7F0);
+      woodMat.color.setHex(0x8C5634);
+      frameMat.color.setHex(0x685D52);
+      edgeLineMat.color.setHex(0x1C1A18);
     } else {
-      scene.background = new THREE.Color(0x121419);
-      ambLight.color.setHex(0x3B4252);
-      ambLight.intensity = 1.6;
+      scene.background.setHex(0x131416);
+      ambLight.color.setHex(0x3B3F4C);
+      ambLight.intensity = 3.0;
       dirLight.color.setHex(0xF1F5F9);
-      dirLight.intensity = 1.4;
-      dirLight.position.set(4, 9, 6);
-      deskMat.color.setHex(0x2A2E38);
-      deskMat.roughness = 0.7;
+      dirLight.intensity = 2.0;
+      dirLight.position.set(3.5, 5.0, 4.0);
+      glassMat.color.setHex(0x181B24);
+      woodMat.color.setHex(0x363A46);
+      frameMat.color.setHex(0x4E5566);
+      edgeLineMat.color.setHex(0x8E9CB2);
     }
   }
 
@@ -1462,7 +1571,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // ASCII RASTERIZER & PARALLAX ENGINE
+  // REAL-TIME MICRO-ASCII RASTERIZER (HIGH DENSITY)
   // ══════════════════════════════════════════════════════════════════
   const displayCanvas = document.getElementById('asciiCanvas');
   const displayCtx = displayCanvas.getContext('2d');
@@ -1475,52 +1584,35 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     mouseY = e.clientY / window.innerHeight;
   });
 
-  let frameCount = 0;
-  let lastTime = performance.now();
-
   function animate(time) {
-    frameCount++;
-    if (time - lastTime >= 1000) {
-      const fps = Math.round((frameCount * 1000) / (time - lastTime));
-      sceneStatus.textContent = `WebGL 3D ASCII // ${fps} FPS`;
-      frameCount = 0;
-      lastTime = time;
-    }
-
-    // Rotate Tesseract
-    tesseractGroup.rotation.x += 0.012;
-    tesseractGroup.rotation.y += 0.018;
-
-    // Animate Steam
     const posArr = steamGeo.attributes.position.array;
     for (let s = 0; s < steamCount; s++) {
       posArr[s*3 + 1] += steamVel[s].vy;
       posArr[s*3] += Math.sin(time * 0.003 + steamVel[s].phase) * steamVel[s].sway;
-      if (posArr[s*3 + 1] > mugGroup.position.y + 2.2) {
-        posArr[s*3 + 1] = mugGroup.position.y + 0.45;
-        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.3;
+      if (posArr[s*3 + 1] > mugGroup.position.y + 1.2) {
+        posArr[s*3 + 1] = mugGroup.position.y + 0.25;
+        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.10;
       }
     }
     steamGeo.attributes.position.needsUpdate = true;
 
-    // Camera Parallax smoothly lerping to mouse
-    const targetCamX = (mouseX - 0.5) * 1.5;
-    const targetCamY = 3.5 - (mouseY - 0.5) * 1.0;
+    // Gentle camera parallax lerp centered on viewport
+    const targetCamX = (mouseX - 0.5) * 0.35;
+    const targetCamY = 1.9 - (mouseY - 0.5) * 0.25;
     camera.position.x += (targetCamX - camera.position.x) * 0.05;
     camera.position.y += (targetCamY - camera.position.y) * 0.05;
-    camera.lookAt(0, 0.3, 0);
+    camera.lookAt(0, 0, 0);
 
-    // Render 3D Scene to offscreen buffer
+    // Render 3D Scene
     glRenderer.render(scene, camera);
 
     // Readback pixels
     const gl = glRenderer.getContext();
     gl.readPixels(0, 0, COLS, ROWS, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
 
-    // Resize Display Canvas to Match Viewport
     const dpr = window.devicePixelRatio || 1;
-    const W = displayCanvas.clientWidth || window.innerWidth;
-    const H = displayCanvas.clientHeight || window.innerHeight;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
 
     if (displayCanvas.width !== W * dpr || displayCanvas.height !== H * dpr) {
       displayCanvas.width = W * dpr;
@@ -1530,14 +1622,14 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     displayCtx.save();
     displayCtx.scale(dpr, dpr);
 
-    // Background Fill
-    displayCtx.fillStyle = (currentTheme === 'day') ? '#E9E6DC' : '#121419';
+    // Background Fill: True Neutral Carbon Graphite in Night, Clean Warm Vellum in Day (ZERO NOISE!)
+    displayCtx.fillStyle = (currentTheme === 'day') ? '#F5F3EC' : '#131416';
     displayCtx.fillRect(0, 0, W, H);
 
-    // Font Configuration
+    // Micro monospace font
     const cellW = W / COLS;
     const cellH = H / ROWS;
-    const fontSize = Math.floor(cellH * 0.94);
+    const fontSize = Math.floor(cellH * 0.92);
     displayCtx.font = `600 ${fontSize}px "JetBrains Mono", monospace`;
     displayCtx.textBaseline = 'top';
 
@@ -1553,33 +1645,39 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
         const blue = pixelBuffer[idx + 2];
 
         const lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-        if (lum < 0.04) {
-          // Faint ambient room stipples in background
-          if ((r * 13 + c * 29) % 43 === 0) {
-            displayCtx.fillStyle = (currentTheme === 'day') ? 'rgba(115, 108, 101, 0.15)' : 'rgba(71, 85, 105, 0.18)';
-            displayCtx.fillText('·', c * cellW, destY);
-          }
-          continue;
-        }
-
-        const charIdx = Math.min(ramp.length - 1, Math.floor(lum * ramp.length));
-        const ch = ramp[charIdx];
-
-        // Muted color grading
-        const grey = (red + green + blue) / 3;
-        let mr = Math.round(red * 0.65 + grey * 0.35);
-        let mg = Math.round(green * 0.65 + grey * 0.35);
-        let mb = Math.round(blue * 0.65 + grey * 0.35);
 
         if (currentTheme === 'day') {
-          // In day mode, darken colors slightly for contrast against light background
-          mr = Math.max(0, mr - 30);
-          mg = Math.max(0, mg - 30);
-          mb = Math.max(0, mb - 30);
-        }
+          // DAY MODE: Clean background paper, dark architectural ink for shadows & objects
+          if (lum > 0.88) continue; // Clean background vellum
 
-        displayCtx.fillStyle = `rgb(${mr},${mg},${mb})`;
-        displayCtx.fillText(ch, c * cellW, destY);
+          const inkDensity = Math.max(0, Math.min(1.0, (0.88 - lum) / 0.85));
+          if (inkDensity < 0.06) continue;
+
+          const charIdx = Math.min(ramp.length - 1, Math.floor(inkDensity * ramp.length));
+          const ch = ramp[charIdx];
+
+          const mr = Math.max(20, Math.min(60, Math.round(red * 0.35)));
+          const mg = Math.max(18, Math.min(55, Math.round(green * 0.35)));
+          const mb = Math.max(16, Math.min(50, Math.round(blue * 0.35)));
+
+          displayCtx.fillStyle = `rgb(${mr},${mg},${mb})`;
+          displayCtx.fillText(ch, c * cellW, destY);
+
+        } else {
+          // NIGHT MODE: True carbon graphite, zero void noise
+          if (lum < 0.015) continue;
+
+          const charIdx = Math.min(ramp.length - 1, Math.floor(lum * ramp.length));
+          const ch = ramp[charIdx];
+
+          const grey = (red + green + blue) / 3;
+          const mr = Math.round(red * 0.7 + grey * 0.3);
+          const mg = Math.round(green * 0.7 + grey * 0.3);
+          const mb = Math.round(blue * 0.7 + grey * 0.3);
+
+          displayCtx.fillStyle = `rgb(${mr},${mg},${mb})`;
+          displayCtx.fillText(ch, c * cellW, destY);
+        }
       }
     }
 
