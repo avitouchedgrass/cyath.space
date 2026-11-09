@@ -36,14 +36,17 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const urlTheme = params.get("theme");
+      let active: "day" | "night" = "night";
       if (urlTheme === "day" || urlTheme === "night") {
-        setTheme(urlTheme);
-        return;
+        active = urlTheme;
+      } else {
+        const saved = localStorage.getItem("cyath_theme");
+        if (saved === "day" || saved === "night") {
+          active = saved;
+        }
       }
-      const saved = localStorage.getItem("cyath_theme");
-      if (saved === "day" || saved === "night") {
-        setTheme(saved);
-      }
+      setTheme(active);
+      document.documentElement.setAttribute("data-theme", active);
     }
   }, []);
 
@@ -51,6 +54,9 @@ export default function LoginPage() {
     const next = theme === "night" ? "day" : "night";
     setTheme(next);
     localStorage.setItem("cyath_theme", next);
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", next);
+    }
   };
 
   useEffect(() => {
@@ -180,7 +186,7 @@ export default function LoginPage() {
       <header className="relative z-20 h-16 px-6 sm:px-12 flex items-center justify-between pointer-events-none">
         <div className="pointer-events-auto">
           <Link href="/">
-            <CyathLogo />
+            <CyathLogo theme={theme} />
           </Link>
         </div>
 

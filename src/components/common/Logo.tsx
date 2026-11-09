@@ -9,6 +9,8 @@ interface LogoProps {
   badgeText?: string;
   locked?: boolean;
   className?: string;
+  theme?: "night" | "day";
+  wordmarkClassName?: string;
 }
 
 /**
@@ -73,6 +75,8 @@ export const CyathLogo: React.FC<LogoProps> = ({
   badgeText = "Staging",
   locked = false,
   className = "",
+  theme = "night",
+  wordmarkClassName = "",
 }) => {
   return (
     <div
@@ -81,7 +85,15 @@ export const CyathLogo: React.FC<LogoProps> = ({
       <TesseractMark size={size} locked={locked} />
 
       {showWordmark && (
-        <span className="font-bold text-[17px] tracking-[-0.035em] text-[#FFFFFF] group-hover:text-white transition-colors">
+        <span
+          className={`font-bold text-[17px] tracking-[-0.035em] transition-colors ${
+            wordmarkClassName
+              ? wordmarkClassName
+              : theme === "day"
+              ? "text-[#1C1A18] group-hover:text-black"
+              : "text-[#FFFFFF] group-hover:text-white"
+          }`}
+        >
           cyath
         </span>
       )}
