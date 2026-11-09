@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <main className="w-full h-screen overflow-hidden bg-[#131416]">
+    <main className="w-full h-screen overflow-hidden bg-[#1b1b1b]">
       <iframe
         src="/landing.html"
         title="Cyath — Visual Staging Review & Client Sign-Off Canvas"

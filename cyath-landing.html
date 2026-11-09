@@ -20,11 +20,11 @@
   --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
-/* ☽ NIGHT MODE (TRUE NEUTRAL CARBON GRAPHITE - ZERO BLUE) */
+/* ☽ NIGHT MODE (TRUE NEUTRAL MATTE GRAPHITE #1b1b1b) */
 html[data-theme="night"] {
-  --bg-page: #131416;
-  --bg-surface: #1A1B1F;
-  --bg-surface-elevated: #22242A;
+  --bg-page: #1b1b1b;
+  --bg-surface: #242424;
+  --bg-surface-elevated: #2d2d2d;
   
   --bg-pill: rgba(255, 255, 255, 0.08);
   --bg-pill-hover: rgba(255, 255, 255, 0.14);
@@ -37,7 +37,7 @@ html[data-theme="night"] {
   --text-secondary: #D1D5DB;
   --text-muted: #8E929B;
   
-  --card-bg: #18191E;
+  --card-bg: #222222;
   --card-border: rgba(255, 255, 255, 0.10);
 }
 
@@ -84,6 +84,27 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   transition: var(--transition-theme);
+}
+
+/* Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+html[data-theme="day"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+html[data-theme="day"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1163,7 +1184,8 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     FULL-SCREEN 3D WEBGL TO REAL-TIME MICRO-ASCII ENGINE
+     REAL-TIME 3D GPU HALFTONE & BAYER DITHER SHADER ENGINE
+     (Inspired by caelangray.com — Pure GPU Post-Processing Pipeline)
      ══════════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
@@ -1198,39 +1220,177 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   themeToggleBtn.addEventListener('click', toggleTheme);
 
   // ══════════════════════════════════════════════════════════════════
-  // THREE.JS ARCHITECTURAL 3D STUDIO SCENE
+  // THREE.JS SCENE SETUP & RENDER TARGETS
   // ══════════════════════════════════════════════════════════════════
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x131416);
+  const displayCanvas = document.getElementById('asciiCanvas');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let W = window.innerWidth;
+  let H = window.innerHeight;
 
-  // Exact 1:1 architectural perspective camera matching screen aspect ratio
-  const aspect = window.innerWidth / window.innerHeight;
-  const camera = new THREE.PerspectiveCamera(30, aspect, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({
+    canvas: displayCanvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: "high-performance"
+  });
+  renderer.setPixelRatio(dpr);
+  renderer.setSize(W, H, false);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b);
+
+  const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
   camera.position.set(0, 1.9, 7.2);
   camera.lookAt(0, 0, 0);
 
-  // Micro-ASCII Resolution matching JetBrains Mono font ratio (~1.75)
-  const ROWS = 105;
-  const COLS = Math.round(ROWS * aspect * 1.75);
-  const offCanvas = document.createElement('canvas');
-  offCanvas.width = COLS;
-  offCanvas.height = ROWS;
+  // Offscreen Render Target for the 3D scene before post-processing
+  const renderTarget = new THREE.WebGLRenderTarget(W * dpr, H * dpr, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    format: THREE.RGBAFormat,
+    type: THREE.UnsignedByteType
+  });
 
-  const glRenderer = new THREE.WebGLRenderer({ canvas: offCanvas, antialias: true, preserveDrawingBuffer: true });
-  glRenderer.setSize(COLS, ROWS);
+  // ══════════════════════════════════════════════════════════════════
+  // GPU POST-PROCESSING SHADER (Bayer Matrix & Halftone Dot Screening)
+  // ══════════════════════════════════════════════════════════════════
+  const postScene = new THREE.Scene();
+  const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const postMaterial = new THREE.ShaderMaterial({
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      precision highp float;
+      varying vec2 vUv;
+      uniform sampler2D tDiffuse;
+      uniform vec2 uResolution;
+      uniform float uGridSize;
+      uniform int uMethod; // 1 = Halftone Dot Screen (caelangray.com), 0 = Bayer Matrix
+      uniform vec3 uBgColor;
+      uniform vec3 uFgColor;
+      uniform float uInvert;
+
+      const mat4 THRESHOLDS = mat4(
+        0.94118, 0.29412, 0.76471, 0.05882,
+        0.47059, 0.70588, 0.23529, 0.52941,
+        0.82353, 0.11765, 0.88235, 0.17647,
+        0.35294, 0.58824, 0.41176, 0.64706
+      );
+
+      const float SCREEN_ANGLE = 0.70710678; // 45 deg rotation
+      const float CORNER_REACH = 1.41421356;
+
+      float bayerThreshold(vec2 cellCoord) {
+        ivec2 p = ivec2(mod(cellCoord, 4.0));
+        return THRESHOLDS[p.x][p.y];
+      }
+
+      float halftoneThreshold(vec2 cellCoord) {
+        vec2 screen = vec2(
+          cellCoord.x * SCREEN_ANGLE - cellCoord.y * SCREEN_ANGLE,
+          cellCoord.x * SCREEN_ANGLE + cellCoord.y * SCREEN_ANGLE
+        );
+        return clamp(length(fract(screen) - 0.5) * CORNER_REACH, 0.0, 1.0);
+      }
+
+      float thresholdAt(vec2 cellCoord) {
+        if (uMethod == 1) return halftoneThreshold(cellCoord);
+        return bayerThreshold(cellCoord);
+      }
+
+      void main() {
+        vec2 fragCoord = vUv * uResolution;
+        vec2 cellCoord = fragCoord / uGridSize;
+        
+        // Sample 3D texture at the center of the quantized cell
+        vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
+        vec4 tex = texture2D(tDiffuse, quantizedUv);
+
+        // Check if sample is the empty scene background
+        float bgDist = length(tex.rgb - uBgColor);
+        if (bgDist < 0.02) {
+          gl_FragColor = vec4(uBgColor, 1.0);
+          return;
+        }
+
+        // Perceptual luminance
+        float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
+        float th = thresholdAt(cellCoord);
+
+        vec3 finalColor;
+
+        if (uInvert > 0.5) {
+          // ☼ DAY MODE: Warm archival vellum (#F5F3EC) + charcoal ink halftone dots
+          float inkDensity = clamp((0.94 - lum) / 0.85, 0.0, 1.0);
+          if (inkDensity <= 0.03) {
+            finalColor = uBgColor;
+          } else {
+            bool hasInk = (inkDensity >= th);
+            if (hasInk) {
+              vec3 inkColor = mix(uFgColor, tex.rgb * 0.5, 0.25);
+              finalColor = inkColor;
+            } else {
+              finalColor = uBgColor;
+            }
+          }
+        } else {
+          // ☽ NIGHT MODE: Matte neutral graphite (#1b1b1b) + gleaming liquid chrome halftone dots
+          float lightDensity = clamp(lum * 1.18, 0.0, 1.0);
+          if (lightDensity <= 0.03) {
+            finalColor = uBgColor;
+          } else {
+            bool lit = lightDensity >= th;
+            if (lit) {
+              vec3 dotColor = mix(uFgColor, tex.rgb * 1.25, 0.38);
+              finalColor = dotColor;
+            } else {
+              finalColor = uBgColor;
+            }
+          }
+        }
+
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `,
+    uniforms: {
+      tDiffuse: { value: null },
+      uResolution: { value: new THREE.Vector2(W * dpr, H * dpr) },
+      uGridSize: { value: 3.2 * dpr }, // 3.2px dense micro-halftone screen
+      uMethod: { value: 1 }, // 1 = Halftone Dot Screen (as on caelangray.com)
+      uBgColor: { value: new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b) },
+      uFgColor: { value: new THREE.Color(currentTheme === 'day' ? 0x1c1a18 : 0xffffff) },
+      uInvert: { value: (currentTheme === 'day' ? 1.0 : 0.0) }
+    }
+  });
+
+  const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
+  postScene.add(postQuad);
+
+  // ══════════════════════════════════════════════════════════════════
+  // ARCHITECTURAL 3D STUDIO SCENE (RIGHT-ALIGNED ROOM GROUP)
+  // ══════════════════════════════════════════════════════════════════
+  const roomGroup = new THREE.Group();
+  scene.add(roomGroup);
 
   const isDay = (currentTheme === 'day');
-  const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x8C5634 : 0x363A46, roughness: 0.6, metalness: 0.1 });
-  const metalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x4D525D : 0x484E5E, roughness: 0.4, metalness: 0.6 });
-  const darkMetalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x2A2C32 : 0x262932, roughness: 0.7, metalness: 0.8 });
-  const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x58524A : 0x3C414E, roughness: 0.85 });
-  const edgeLineMat = new THREE.LineBasicMaterial({ color: isDay ? 0x1C1A18 : 0x8E9CB2, linewidth: 1.5 });
+  // High-specular, low-roughness materials (creates glistening metallic liquid halftone dots)
+  const metalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x8A92A2 : 0x8C96A8, roughness: 0.18, metalness: 0.85 });
+  const darkMetalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x6E7482 : 0x363B48, roughness: 0.22, metalness: 0.90 });
+  const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xA07855 : 0x484E5E, roughness: 0.32, metalness: 0.25 });
+  const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x726B62 : 0x4B5262, roughness: 0.45, metalness: 0.20 });
+  const edgeLineMat = new THREE.LineBasicMaterial({ color: isDay ? 0x1C1A18 : 0xFFFFFF, linewidth: 1.5 });
 
   // 1. Studio Window Floating Behind Desk (Directly behind the desk setup)
   const windowGroup = new THREE.Group();
   windowGroup.position.set(1.45, 1.85, -2.5);
 
-  const frameMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x685D52 : 0x4E5566, roughness: 0.4 });
+  const frameMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x685D52 : 0x545B6C, roughness: 0.3, metalness: 0.6 });
   const frameW = 3.2, frameH = 2.3, frameT = 0.08;
 
   function makeBar(w, h, d, x, y) {
@@ -1251,11 +1411,11 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 
   // Window Panes Glass (Atmospheric backdrop)
   const glassGeo = new THREE.PlaneGeometry(frameW - 0.08, frameH - 0.08);
-  const glassMat = new THREE.MeshBasicMaterial({ color: isDay ? 0xFAF7F0 : 0x181B24 });
+  const glassMat = new THREE.MeshBasicMaterial({ color: isDay ? 0xFAF7F0 : 0x222735 });
   const glass = new THREE.Mesh(glassGeo, glassMat);
   glass.position.set(0, 0, -0.02);
   windowGroup.add(glass);
-  scene.add(windowGroup);
+  roomGroup.add(windowGroup);
 
   // 2. Architectural Studio Chair Behind Desk
   const chairGroup = new THREE.Group();
@@ -1299,7 +1459,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     leg.rotation.y = -ang;
     chairGroup.add(leg);
   }
-  scene.add(chairGroup);
+  roomGroup.add(chairGroup);
 
   // 3. Drafting Desk (Positioned on the Right Half of Viewport)
   const deskGroup = new THREE.Group();
@@ -1320,7 +1480,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   makeDeskLeg(-deskW/2 + 0.22, deskD/2 - 0.22);
   makeDeskLeg(deskW/2 - 0.22, -deskD/2 + 0.22);
   makeDeskLeg(deskW/2 - 0.22, deskD/2 - 0.22);
-  scene.add(deskGroup);
+  roomGroup.add(deskGroup);
 
   // 4. Laptop With Official Cyath Tesseract Logo Screen (Dominant Centerpiece)
   const laptopGroup = new THREE.Group();
@@ -1381,15 +1541,15 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     lctx.fill();
 
     // Draw Official Cyath 4D Tesseract Logo
-    const cx = 512, cy = 310;
-    const rOut = 145;
+    const cx = 512, cy = 290;
+    const rOut = 150;
     const outPts = [];
     for (let p = 0; p < 6; p++) {
       const ang = (Math.PI / 3) * p - Math.PI / 6;
       outPts.push({ x: cx + Math.cos(ang) * rOut, y: cy + Math.sin(ang) * rOut });
     }
 
-    const rIn = 72;
+    const rIn = 75;
     const inPts = [];
     for (let p = 0; p < 6; p++) {
       const ang = (Math.PI / 3) * p - Math.PI / 6;
@@ -1434,13 +1594,9 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 
     // Wordmark underneath
     lctx.fillStyle = isD ? '#1C1A18' : '#FFFFFF';
-    lctx.font = '700 76px "Space Grotesk", sans-serif';
+    lctx.font = '700 82px "Space Grotesk", sans-serif';
     lctx.textAlign = 'center';
     lctx.fillText('cyath', cx, 545);
-
-    lctx.fillStyle = isD ? '#0284C7' : '#38BDF8';
-    lctx.font = '600 24px "JetBrains Mono", monospace';
-    lctx.fillText('● STAGING ACTIVE', cx, 605);
 
     logoTex.needsUpdate = true;
   }
@@ -1452,13 +1608,13 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   screenHinged.add(screenDisplay);
 
   laptopGroup.add(screenHinged);
-  scene.add(laptopGroup);
+  roomGroup.add(laptopGroup);
 
   // 5. Coffee Mug & Dynamic Steam (Left of laptop on the desk)
   const mugGroup = new THREE.Group();
   mugGroup.position.set(0.35, -0.32, 0.95);
 
-  const mugMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xBA4D22 : 0xC2632B, roughness: 0.5 });
+  const mugMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xBA4D22 : 0xC2632B, roughness: 0.25, metalness: 0.3 });
   const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 0.40, 16), mugMat);
   mugGroup.add(mug);
   mugGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(mug.geometry), edgeLineMat));
@@ -1471,7 +1627,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   handle.position.set(-0.16, 0, 0);
   handle.rotation.z = Math.PI / 2;
   mugGroup.add(handle);
-  scene.add(mugGroup);
+  roomGroup.add(mugGroup);
 
   const steamCount = 28;
   const steamGeo = new THREE.BufferGeometry();
@@ -1489,25 +1645,25 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   }
   steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPos, 3));
   const steamParticles = new THREE.Points(steamGeo, new THREE.PointsMaterial({ color: isDay ? 0x92400E : 0xD97706, size: 0.14, transparent: true, opacity: 0.85 }));
-  scene.add(steamParticles);
+  roomGroup.add(steamParticles);
 
   // 6. Potted Succulent Plant (Left back corner of desk)
   const plantGroup = new THREE.Group();
-  plantGroup.position.set(0.40, -0.26, 0.15);
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.25, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.8 }));
+  plantGroup.position.set(0.15, -0.30, 0.10);
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.12, 0.28, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
   plantGroup.add(pot);
   plantGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(pot.geometry), edgeLineMat));
 
-  const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x2A6242, roughness: 0.6 });
+  const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x22C55E, roughness: 0.28, metalness: 0.2 });
   for (let i = 0; i < 5; i++) {
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.24, 5), plantMat);
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.28, 5), plantMat);
     const ang = (i / 5) * Math.PI * 2;
-    leaf.position.set(Math.cos(ang) * 0.07, 0.12 + i * 0.02, Math.sin(ang) * 0.07);
+    leaf.position.set(Math.cos(ang) * 0.08, 0.14 + i * 0.02, Math.sin(ang) * 0.08);
     leaf.rotation.x = 0.26 * Math.sin(ang);
     leaf.rotation.z = -0.26 * Math.cos(ang);
     plantGroup.add(leaf);
   }
-  scene.add(plantGroup);
+  roomGroup.add(plantGroup);
 
   // 7. Crumpled Paper Revisions (Right front desk corner)
   function makePaperBall(x, y, z, s) {
@@ -1519,50 +1675,63 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
       p.setXYZ(idx, vx*n, vy*n, vz*n);
     }
     geo.computeVertexNormals();
-    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: isDay ? 0x7A746C : 0xA4ACB8, roughness: 0.85 }));
+    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: isDay ? 0x7A746C : 0xA4ACB8, roughness: 0.65 }));
     m.position.set(x, y, z);
-    scene.add(m);
-    scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeLineMat));
+    roomGroup.add(m);
+    roomGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeLineMat));
   }
   makePaperBall(2.45, -0.38, 0.95, 0.10);
   makePaperBall(2.65, -0.39, 0.70, 0.08);
 
-  // 8. Studio Lighting (Directional Key + Fill)
-  const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x3B3F4C, isDay ? 2.4 : 3.0);
+  // 8. Studio Lighting (Directional Key + Rim + Ambient)
+  const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x4B5563, isDay ? 2.2 : 2.6);
   scene.add(ambLight);
 
-  const dirLight = new THREE.DirectionalLight(isDay ? 0xFFFBEB : 0xF1F5F9, isDay ? 2.6 : 2.0);
-  dirLight.position.set(isDay ? 2.5 : 3.5, 5.0, 4.0);
+  const dirLight = new THREE.DirectionalLight(isDay ? 0xFFFBEB : 0xF8FAFC, isDay ? 3.0 : 3.4);
+  dirLight.position.set(4.0, 5.5, 4.5);
   scene.add(dirLight);
 
-  const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 1.8, 3.5);
-  screenLight.position.set(1.45, 0.1, 0.8);
+  const rimLight = new THREE.DirectionalLight(0x38BDF8, isDay ? 1.2 : 2.0);
+  rimLight.position.set(-3.5, 3.0, -2.0);
+  scene.add(rimLight);
+
+  const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 2.2, 4.0);
+  screenLight.position.set(1.55, 0.1, 0.85);
   scene.add(screenLight);
 
   function update3DTheme(theme) {
     drawLogoScreen(theme);
-    if (theme === 'day') {
-      scene.background.setHex(0xF5F3EC);
+    const isD = (theme === 'day');
+    const bgCol = isD ? 0xF5F3EC : 0x1b1b1b;
+    const fgCol = isD ? 0x1c1a18 : 0xffffff;
+
+    scene.background.setHex(bgCol);
+    postMaterial.uniforms.uBgColor.value.setHex(bgCol);
+    postMaterial.uniforms.uFgColor.value.setHex(fgCol);
+    postMaterial.uniforms.uInvert.value = isD ? 1.0 : 0.0;
+
+    if (isD) {
       ambLight.color.setHex(0xE8E4D8);
-      ambLight.intensity = 2.4;
+      ambLight.intensity = 2.2;
       dirLight.color.setHex(0xFFFBEB);
-      dirLight.intensity = 2.6;
-      dirLight.position.set(2.5, 5.0, 4.0);
+      dirLight.intensity = 3.0;
       glassMat.color.setHex(0xFAF7F0);
-      woodMat.color.setHex(0x8C5634);
+      woodMat.color.setHex(0xA07855);
       frameMat.color.setHex(0x685D52);
+      metalMat.color.setHex(0x8A92A2);
+      darkMetalMat.color.setHex(0x6E7482);
       edgeLineMat.color.setHex(0x1C1A18);
     } else {
-      scene.background.setHex(0x131416);
-      ambLight.color.setHex(0x3B3F4C);
-      ambLight.intensity = 3.0;
-      dirLight.color.setHex(0xF1F5F9);
-      dirLight.intensity = 2.0;
-      dirLight.position.set(3.5, 5.0, 4.0);
-      glassMat.color.setHex(0x181B24);
-      woodMat.color.setHex(0x363A46);
-      frameMat.color.setHex(0x4E5566);
-      edgeLineMat.color.setHex(0x8E9CB2);
+      ambLight.color.setHex(0x4B5563);
+      ambLight.intensity = 2.6;
+      dirLight.color.setHex(0xF8FAFC);
+      dirLight.intensity = 3.4;
+      glassMat.color.setHex(0x222735);
+      woodMat.color.setHex(0x484E5E);
+      frameMat.color.setHex(0x545B6C);
+      metalMat.color.setHex(0x8C96A8);
+      darkMetalMat.color.setHex(0x363B48);
+      edgeLineMat.color.setHex(0xFFFFFF);
     }
   }
 
@@ -1571,117 +1740,108 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // REAL-TIME MICRO-ASCII RASTERIZER (HIGH DENSITY)
+  // INTERACTIVE 3D ORBIT / DRAG ROTATION & PARALLAX (caelangray.com style)
   // ══════════════════════════════════════════════════════════════════
-  const displayCanvas = document.getElementById('asciiCanvas');
-  const displayCtx = displayCanvas.getContext('2d');
-  const pixelBuffer = new Uint8Array(COLS * ROWS * 4);
-  const ramp = " ·.-~:;=+*#%@█";
-
+  let isDragging = false;
+  let prevMouseX = 0, prevMouseY = 0;
+  let targetRotX = 0, targetRotY = 0;
   let mouseX = 0.5, mouseY = 0.5;
+
+  displayCanvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', () => { isDragging = false; });
+  window.addEventListener('mouseleave', () => { isDragging = false; });
+
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX / window.innerWidth;
     mouseY = e.clientY / window.innerHeight;
+    if (isDragging) {
+      const dx = e.clientX - prevMouseX;
+      const dy = e.clientY - prevMouseY;
+      targetRotY += dx * 0.005;
+      targetRotX += dy * 0.003;
+      targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+    }
   });
 
+  // Touch support for mobile/trackpads
+  displayCanvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      prevMouseX = e.touches[0].clientX;
+      prevMouseY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => { isDragging = false; });
+  window.addEventListener('touchmove', (e) => {
+    if (isDragging && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - prevMouseX;
+      const dy = e.touches[0].clientY - prevMouseY;
+      targetRotY += dx * 0.005;
+      targetRotX += dy * 0.003;
+      targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
+      prevMouseX = e.touches[0].clientX;
+      prevMouseY = e.touches[0].clientY;
+    }
+  }, { passive: true });
+
+  // Window Resize Listener
+  window.addEventListener('resize', () => {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(W, H, false);
+    renderTarget.setSize(W * dpr, H * dpr);
+
+    postMaterial.uniforms.uResolution.value.set(W * dpr, H * dpr);
+    postMaterial.uniforms.uGridSize.value = 3.2 * dpr;
+  });
+
+  // ══════════════════════════════════════════════════════════════════
+  // ANIMATION LOOP (LOCKED 60-120 FPS GPU RENDERING)
+  // ══════════════════════════════════════════════════════════════════
   function animate(time) {
+    // 1. Steam particle animation
     const posArr = steamGeo.attributes.position.array;
     for (let s = 0; s < steamCount; s++) {
       posArr[s*3 + 1] += steamVel[s].vy;
       posArr[s*3] += Math.sin(time * 0.003 + steamVel[s].phase) * steamVel[s].sway;
       if (posArr[s*3 + 1] > mugGroup.position.y + 1.2) {
-        posArr[s*3 + 1] = mugGroup.position.y + 0.25;
-        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.10;
+        posArr[s*3 + 1] = mugGroup.position.y + 0.18;
+        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.08;
       }
     }
     steamGeo.attributes.position.needsUpdate = true;
 
-    // Gentle camera parallax lerp centered on viewport
+    // 2. Smooth drag rotation & subtle idle breathing
+    roomGroup.rotation.y += (targetRotY - roomGroup.rotation.y) * 0.08;
+    roomGroup.rotation.x += (targetRotX - roomGroup.rotation.x) * 0.08;
+
+    // Gentle camera parallax lerp
     const targetCamX = (mouseX - 0.5) * 0.35;
     const targetCamY = 1.9 - (mouseY - 0.5) * 0.25;
     camera.position.x += (targetCamX - camera.position.x) * 0.05;
     camera.position.y += (targetCamY - camera.position.y) * 0.05;
     camera.lookAt(0, 0, 0);
 
-    // Render 3D Scene
-    glRenderer.render(scene, camera);
+    // 3. PASS 1: Render 3D Scene into High-Precision Render Target
+    renderer.setRenderTarget(renderTarget);
+    renderer.render(scene, camera);
 
-    // Readback pixels
-    const gl = glRenderer.getContext();
-    gl.readPixels(0, 0, COLS, ROWS, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
+    // 4. PASS 2: Render GPU Halftone Screen-Space Shader Directly to Canvas
+    renderer.setRenderTarget(null);
+    postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
+    renderer.render(postScene, postCamera);
 
-    const dpr = window.devicePixelRatio || 1;
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-
-    if (displayCanvas.width !== W * dpr || displayCanvas.height !== H * dpr) {
-      displayCanvas.width = W * dpr;
-      displayCanvas.height = H * dpr;
-    }
-
-    displayCtx.save();
-    displayCtx.scale(dpr, dpr);
-
-    // Background Fill: True Neutral Carbon Graphite in Night, Clean Warm Vellum in Day (ZERO NOISE!)
-    displayCtx.fillStyle = (currentTheme === 'day') ? '#F5F3EC' : '#131416';
-    displayCtx.fillRect(0, 0, W, H);
-
-    // Micro monospace font
-    const cellW = W / COLS;
-    const cellH = H / ROWS;
-    const fontSize = Math.floor(cellH * 0.92);
-    displayCtx.font = `600 ${fontSize}px "JetBrains Mono", monospace`;
-    displayCtx.textBaseline = 'top';
-
-    for (let r = 0; r < ROWS; r++) {
-      const glRow = ROWS - 1 - r;
-      const rowOffset = glRow * COLS * 4;
-      const destY = r * cellH;
-
-      for (let c = 0; c < COLS; c++) {
-        const idx = rowOffset + c * 4;
-        const red = pixelBuffer[idx];
-        const green = pixelBuffer[idx + 1];
-        const blue = pixelBuffer[idx + 2];
-
-        const lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-
-        if (currentTheme === 'day') {
-          // DAY MODE: Clean background paper, dark architectural ink for shadows & objects
-          if (lum > 0.88) continue; // Clean background vellum
-
-          const inkDensity = Math.max(0, Math.min(1.0, (0.88 - lum) / 0.85));
-          if (inkDensity < 0.06) continue;
-
-          const charIdx = Math.min(ramp.length - 1, Math.floor(inkDensity * ramp.length));
-          const ch = ramp[charIdx];
-
-          const mr = Math.max(20, Math.min(60, Math.round(red * 0.35)));
-          const mg = Math.max(18, Math.min(55, Math.round(green * 0.35)));
-          const mb = Math.max(16, Math.min(50, Math.round(blue * 0.35)));
-
-          displayCtx.fillStyle = `rgb(${mr},${mg},${mb})`;
-          displayCtx.fillText(ch, c * cellW, destY);
-
-        } else {
-          // NIGHT MODE: True carbon graphite, zero void noise
-          if (lum < 0.015) continue;
-
-          const charIdx = Math.min(ramp.length - 1, Math.floor(lum * ramp.length));
-          const ch = ramp[charIdx];
-
-          const grey = (red + green + blue) / 3;
-          const mr = Math.round(red * 0.7 + grey * 0.3);
-          const mg = Math.round(green * 0.7 + grey * 0.3);
-          const mb = Math.round(blue * 0.7 + grey * 0.3);
-
-          displayCtx.fillStyle = `rgb(${mr},${mg},${mb})`;
-          displayCtx.fillText(ch, c * cellW, destY);
-        }
-      }
-    }
-
-    displayCtx.restore();
     requestAnimationFrame(animate);
   }
 
