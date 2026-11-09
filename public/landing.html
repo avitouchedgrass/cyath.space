@@ -8,25 +8,27 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Oranienbaum&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script src="/vendor/three.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   ARCHITECTURAL DESIGN SYSTEM & COLOR TOKENS
+   ARCHITECTURAL TOKENS: DARK GRAPHITE EDITORIAL
    ══════════════════════════════════════════════════════════════════ */
 :root {
   --font-serif: 'Oranienbaum', Georgia, serif;
   --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+  --transition-theme: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
 
-/* ☽ NIGHT MODE (DEFAULT) */
+/* ☽ NIGHT MODE (DARK GRAPHITE) */
 html[data-theme="night"] {
-  --bg-page: #080A10;
-  --bg-surface: #0F1420;
-  --bg-surface-elevated: #151C2C;
+  --bg-page: #121419;
+  --bg-page-rgb: 18, 20, 25;
+  --bg-surface: #181B22;
+  --bg-surface-elevated: #20242E;
+  
   --bg-pill: rgba(255, 255, 255, 0.08);
   --bg-pill-hover: rgba(255, 255, 255, 0.14);
-  --bg-pill-active: rgba(255, 255, 255, 0.20);
   
   --border-subtle: rgba(255, 255, 255, 0.12);
   --border-medium: rgba(255, 255, 255, 0.22);
@@ -34,43 +36,32 @@ html[data-theme="night"] {
   
   --text-primary: #FFFFFF;
   --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
+  --text-muted: #8E9BAE;
   
-  --accent-cyan: #38BDF8;
-  --accent-amber: #F59E0B;
-  --accent-green: #10B981;
-  
-  --card-bg: #111724;
+  --card-bg: #161920;
   --card-border: rgba(255, 255, 255, 0.12);
-  --ascii-bg: #06080D;
-  --canvas-border: rgba(255, 255, 255, 0.14);
 }
 
-/* ☼ DAY MODE */
+/* ☼ DAY MODE (WARM GRAPHITE VELLUM) */
 html[data-theme="day"] {
-  --bg-page: #F7F5EE;
-  --bg-surface: #ECE8DA;
-  --bg-surface-elevated: #E2DDD0;
+  --bg-page: #E9E6DC;
+  --bg-page-rgb: 233, 230, 220;
+  --bg-surface: #DFDBD0;
+  --bg-surface-elevated: #D4CFC2;
+  
   --bg-pill: rgba(0, 0, 0, 0.06);
-  --bg-pill-hover: rgba(0, 0, 0, 0.10);
-  --bg-pill-active: rgba(0, 0, 0, 0.16);
+  --bg-pill-hover: rgba(0, 0, 0, 0.12);
   
   --border-subtle: rgba(0, 0, 0, 0.10);
-  --border-medium: rgba(0, 0, 0, 0.20);
-  --border-pill: rgba(0, 0, 0, 0.14);
+  --border-medium: rgba(0, 0, 0, 0.22);
+  --border-pill: rgba(0, 0, 0, 0.15);
   
-  --text-primary: #1A1816;
-  --text-secondary: #423E3A;
-  --text-muted: #78716C;
+  --text-primary: #171513;
+  --text-secondary: #3D3935;
+  --text-muted: #736C65;
   
-  --accent-cyan: #0284C7;
-  --accent-amber: #D97706;
-  --accent-green: #059669;
-  
-  --card-bg: #EAE6D8;
+  --card-bg: #DFDBD0;
   --card-border: rgba(0, 0, 0, 0.14);
-  --ascii-bg: #F0EDE2;
-  --canvas-border: rgba(0, 0, 0, 0.16);
 }
 
 * {
@@ -98,14 +89,14 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   NAVIGATION: COFOUNDER-STYLE FROSTED GLASS PILLS
+   NAVIGATION: EXACT MATCH TO USER'S SKETCH
    ══════════════════════════════════════════════════════════════════ */
 .site-nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 80px;
+  height: 84px;
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -113,65 +104,68 @@ body {
 }
 
 .nav-container {
-  max-width: 1320px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   pointer-events: auto;
 }
 
-.nav-brand {
+/* Left Brand Pill */
+.nav-brand-pill {
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  padding: 8px 18px 8px 12px;
+  background: var(--bg-pill);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-pill);
+  border-radius: 9999px;
   text-decoration: none;
   color: var(--text-primary);
-  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
+  transition: all 0.25s ease;
+}
+
+.nav-brand-pill:hover {
+  background: var(--bg-pill-hover);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
 }
 
 .brand-tesseract {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
   display: block;
-  transition: transform 0.25s ease;
-}
-
-.nav-brand:hover .brand-tesseract {
-  transform: rotate(10deg) scale(1.08);
 }
 
 .brand-wordmark {
   font-family: var(--font-sans);
   font-weight: 700;
-  font-size: 21px;
+  font-size: 19px;
   letter-spacing: -0.04em;
   color: var(--text-primary);
 }
 
-/* Frosted Glass Navigation Pill Clusters */
-.nav-cluster {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pill-segmented {
+/* Right Unified Segmented Nav Bar */
+.nav-unified-bar {
   display: inline-flex;
   align-items: center;
   background: var(--bg-pill);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border: 1px solid var(--border-pill);
   border-radius: 9999px;
-  padding: 3px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
 }
 
-.pill-segment {
+.nav-segment {
   display: inline-block;
   padding: 8px 16px;
   font-size: 13.5px;
@@ -183,123 +177,132 @@ body {
   white-space: nowrap;
 }
 
-.pill-segment:hover {
+.nav-segment:hover {
   color: var(--text-primary);
   background: var(--bg-pill-hover);
 }
 
-.pill-divider {
+.nav-divider {
   width: 1px;
   height: 14px;
   background-color: var(--border-subtle);
-  margin: 0 1px;
+  margin: 0 2px;
 }
 
-.pill-standalone {
+/* Theme Toggle Button inside the bar */
+.nav-theme-toggle {
   display: inline-flex;
   align-items: center;
-  padding: 9px 18px;
-  font-size: 13.5px;
-  font-weight: 500;
+  gap: 5px;
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font-mono);
   color: var(--text-secondary);
-  text-decoration: none;
-  background: var(--bg-pill);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-pill);
+  background: transparent;
+  border: none;
   border-radius: 9999px;
+  cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.pill-standalone:hover {
+.nav-theme-toggle:hover {
   color: var(--text-primary);
   background: var(--bg-pill-hover);
 }
 
-.pill-cta {
+/* Filled Solid CTA Button at the end of the bar */
+.nav-cta-filled {
   display: inline-flex;
   align-items: center;
-  padding: 9px 22px;
+  padding: 8px 22px;
   font-size: 13.5px;
   font-weight: 600;
   color: #000000;
   background: #FFFFFF;
   text-decoration: none;
   border-radius: 9999px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
+  margin-left: 4px;
 }
 
-.pill-cta:hover {
+.nav-cta-filled:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
-html[data-theme="day"] .pill-cta {
-  background: #1A1816;
+html[data-theme="day"] .nav-cta-filled {
+  background: #171513;
   color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.pill-theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  background: var(--bg-pill);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-pill);
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pill-theme-toggle:hover {
-  color: var(--text-primary);
-  background: var(--bg-pill-hover);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   HERO SECTION
+   HERO VIEWPORT & 3D ASCII WORLD
    ══════════════════════════════════════════════════════════════════ */
-.hero-section {
-  padding-top: 130px;
-  padding-bottom: 70px;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding-left: 32px;
-  padding-right: 32px;
+.hero-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 720px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
-.hero-copy-wrap {
-  max-width: 880px;
-  margin-bottom: 44px;
+/* Full-Screen 3D ASCII Canvas */
+#asciiCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: auto;
+  cursor: grab;
+}
+
+#asciiCanvas:active {
+  cursor: grabbing;
+}
+
+/* Hero Content Floating on the Left (Matching Sketch) */
+.hero-content-left {
+  position: relative;
+  z-index: 10;
+  max-width: 660px;
+  margin-left: max(40px, 7vw);
+  pointer-events: none;
+}
+
+.hero-content-left * {
+  pointer-events: auto;
 }
 
 .hero-title {
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 5.8vw, 4.8rem);
+  font-size: clamp(3.2rem, 5.6vw, 4.8rem);
   font-weight: 400;
-  line-height: 1.06;
-  letter-spacing: -0.015em;
+  line-height: 1.05;
+  letter-spacing: -0.018em;
   color: var(--text-primary);
   margin-bottom: 22px;
 }
 
+.hero-emphasis {
+  font-weight: 700;
+  font-style: italic;
+  display: inline-block;
+}
+
 .hero-subtitle {
-  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
   font-weight: 400;
-  line-height: 1.55;
+  line-height: 1.58;
   color: var(--text-secondary);
-  max-width: 680px;
-  margin-bottom: 32px;
+  max-width: 540px;
+  margin-bottom: 34px;
 }
 
 .hero-actions {
@@ -309,150 +312,93 @@ html[data-theme="day"] .pill-cta {
   flex-wrap: wrap;
 }
 
-.hero-btn-primary {
+/* Primary Solid CTA Button */
+.btn-primary {
   display: inline-flex;
   align-items: center;
-  padding: 13px 28px;
+  padding: 14px 30px;
   font-size: 15px;
   font-weight: 600;
   color: #000000;
   background: #FFFFFF;
   border-radius: 9999px;
   text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
 }
 
-html[data-theme="day"] .hero-btn-primary {
-  background: #1A1816;
+html[data-theme="day"] .btn-primary {
+  background: #171513;
   color: #FFFFFF;
 }
 
-.hero-btn-primary:hover {
+.btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.38);
 }
 
-.hero-btn-secondary {
+/* Secondary Outlined CTA Button */
+.btn-secondary {
   display: inline-flex;
   align-items: center;
-  padding: 13px 26px;
+  padding: 14px 28px;
   font-size: 15px;
   font-weight: 500;
   color: var(--text-primary);
   background: var(--bg-pill);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--border-medium);
   border-radius: 9999px;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
-.hero-btn-secondary:hover {
+.btn-secondary:hover {
   background: var(--bg-pill-hover);
 }
 
-.hero-note {
+.hero-footnote {
   font-size: 13px;
   color: var(--text-muted);
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   DYNAMIC ASCII ART HERO CANVAS FRAME
-   ══════════════════════════════════════════════════════════════════ */
-.ascii-frame {
-  margin-top: 36px;
-  border-radius: 16px;
-  background-color: var(--ascii-bg);
-  border: 1px solid var(--canvas-border);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
-  overflow: hidden;
-  position: relative;
-}
-
-.ascii-frame-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: rgba(0, 0, 0, 0.15);
-  border-bottom: 1px solid var(--border-subtle);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.ascii-bar-left {
-  display: flex;
+/* 3D Scene Interactive Overlay Badge (Bottom-Right) */
+.scene-badge {
+  position: absolute;
+  bottom: 24px;
+  right: 36px;
+  z-index: 10;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
-}
-
-.ascii-bar-dots {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ascii-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--border-medium);
-}
-
-.ascii-bar-title {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.ascii-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.ascii-canvas-wrap {
-  position: relative;
-  width: 100%;
-  height: 480px;
-  background-color: var(--ascii-bg);
-}
-
-#asciiCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  cursor: crosshair;
-}
-
-.ascii-caption-bar {
-  padding: 12px 20px;
-  background: rgba(0, 0, 0, 0.12);
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12.5px;
-  color: var(--text-muted);
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.ascii-caption-tag {
+  padding: 8px 16px;
+  background: rgba(var(--bg-page-rgb), 0.75);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
   font-family: var(--font-mono);
-  color: var(--text-secondary);
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.scene-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38BDF8;
+  box-shadow: 0 0 8px #38BDF8;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   EDITORIAL FEATURE SECTIONS
+   EDITORIAL FEATURE SECTIONS (BELOW HERO)
    ══════════════════════════════════════════════════════════════════ */
 .section-wrap {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 100px 32px;
+  padding: 120px 40px;
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -461,10 +407,6 @@ html[data-theme="day"] .hero-btn-primary {
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: center;
-}
-
-.section-text {
-  max-width: 520px;
 }
 
 .section-number {
@@ -478,19 +420,19 @@ html[data-theme="day"] .hero-btn-primary {
 
 .section-heading {
   font-family: var(--font-serif);
-  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  font-size: clamp(2.3rem, 3.8vw, 3.3rem);
   font-weight: 400;
-  line-height: 1.14;
+  line-height: 1.12;
   letter-spacing: -0.015em;
   color: var(--text-primary);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .section-body {
   font-size: 16px;
   color: var(--text-secondary);
   line-height: 1.65;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .section-bullets {
@@ -514,13 +456,13 @@ html[data-theme="day"] .hero-btn-primary {
   color: var(--text-primary);
 }
 
+/* Interactive Artifact Cards */
 .artifact-card {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 32px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
-  position: relative;
+  border-radius: 16px;
+  padding: 34px;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
 }
 
 .artifact-card-header {
@@ -535,11 +477,11 @@ html[data-theme="day"] .hero-btn-primary {
   color: var(--text-muted);
 }
 
-/* Feature 1: Pin Note Demo */
+/* Feature 1: Live Pin Note */
 .pin-demo-box {
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.22);
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 24px;
   position: relative;
 }
@@ -559,7 +501,6 @@ html[data-theme="day"] .hero-btn-primary {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .pin-popover {
@@ -600,7 +541,7 @@ html[data-theme="day"] .hero-btn-primary {
   font-size: 11.5px;
 }
 
-/* Feature 2: Punchlist Checkbox Demo */
+/* Feature 2: Punchlist Checkboxes */
 .punchlist-box {
   display: flex;
   flex-direction: column;
@@ -649,8 +590,8 @@ html[data-theme="day"] .hero-btn-primary {
 }
 
 html[data-theme="day"] .punch-item.resolved .punch-checkbox {
-  background: #1A1816;
-  border-color: #1A1816;
+  background: #171513;
+  border-color: #171513;
   color: #FFFFFF;
 }
 
@@ -674,7 +615,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   color: var(--text-muted);
 }
 
-/* Feature 3: Milestone Approval Certificate */
+/* Feature 3: Milestone Certificate */
 .cert-box {
   background: var(--bg-surface);
   border: 1px dashed var(--border-medium);
@@ -735,7 +676,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   font-size: 10.5px;
   color: var(--text-muted);
   word-break: break-all;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.18);
   padding: 8px 12px;
   border-radius: 6px;
 }
@@ -746,13 +687,8 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 .comparison-section {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 100px 32px;
+  padding: 100px 40px;
   border-top: 1px solid var(--border-subtle);
-}
-
-.comp-header {
-  max-width: 680px;
-  margin-bottom: 48px;
 }
 
 .comp-table {
@@ -763,6 +699,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--card-border);
+  margin-top: 40px;
 }
 
 .comp-table th,
@@ -779,7 +716,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .comp-table th.col-cyath,
@@ -795,7 +732,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 .pricing-section {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 100px 32px;
+  padding: 100px 40px;
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -867,7 +804,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 .site-footer {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 60px 32px;
+  padding: 60px 40px;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -900,7 +837,6 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   color: var(--text-primary);
 }
 
-/* Responsive adjustments */
 @media (max-width: 960px) {
   .section-grid {
     grid-template-columns: 1fr;
@@ -915,14 +851,12 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   .nav-container {
     padding: 0 16px;
   }
-  .pill-segmented {
+  .nav-segment:not(:first-child):not(:nth-child(2)) {
     display: none;
   }
-  .hero-section {
-    padding-top: 100px;
-  }
-  .ascii-canvas-wrap {
-    height: 380px;
+  .hero-content-left {
+    margin-left: 20px;
+    padding-right: 20px;
   }
 }
 </style>
@@ -930,11 +864,12 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 <body>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     NAVIGATION: COFOUNDER-STYLE FROSTED GLASS PILLS
+     NAVIGATION: MATCHING USER'S HAND-DRAWN SKETCH
      ══════════════════════════════════════════════════════════════════ -->
 <header class="site-nav">
   <div class="nav-container">
-    <a href="#" class="nav-brand" aria-label="Cyath Home">
+    <!-- Left Pill: Tesseract Logo + cyath wordmark -->
+    <a href="#" class="nav-brand-pill" aria-label="Cyath Home">
       <svg class="brand-tesseract" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polygon points="16,3.5 26.8,9.75 26.8,22.25 16,28.5 5.2,22.25 5.2,9.75" fill="#FFFFFF" stroke="#000000" stroke-width="1.6" stroke-linejoin="round"/>
         <line x1="16" y1="3.5" x2="16" y2="10.2" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
@@ -951,73 +886,54 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
       <span class="brand-wordmark">cyath</span>
     </a>
 
-    <nav class="nav-cluster" aria-label="Primary Navigation">
-      <div class="pill-segmented">
-        <a href="#how-it-works" class="pill-segment">How It Works</a>
-        <div class="pill-divider"></div>
-        <a href="#capture" class="pill-segment">Capture</a>
-        <div class="pill-divider"></div>
-        <a href="#punchlist" class="pill-segment">Punchlist</a>
-        <div class="pill-divider"></div>
-        <a href="#approval" class="pill-segment">Approval</a>
-      </div>
-
-      <a href="#compare" class="pill-standalone">Compare</a>
-      <a href="#pricing" class="pill-standalone">Pricing</a>
-
-      <button id="themeToggleBtn" class="pill-theme-toggle" type="button" aria-label="Toggle Day and Night mode">
+    <!-- Right Unified Bar: Segmented Navigation ending in Solid CTA -->
+    <nav class="nav-unified-bar" aria-label="Main Navigation">
+      <button id="themeToggleBtn" class="nav-theme-toggle" type="button" aria-label="Toggle Day and Night mode">
         <span id="themeIcon">☽</span> <span id="themeLabel">Night</span>
       </button>
-
-      <a href="#pricing" class="pill-cta">Start Free</a>
+      <div class="nav-divider"></div>
+      <a href="#how-it-works" class="nav-segment">How It Works</a>
+      <div class="nav-divider"></div>
+      <a href="#capture" class="nav-segment">Capture</a>
+      <div class="nav-divider"></div>
+      <a href="#punchlist" class="nav-segment">Punchlist</a>
+      <div class="nav-divider"></div>
+      <a href="#pricing" class="nav-segment">Pricing</a>
+      <!-- Filled Solid CTA Button attached to the bar -->
+      <a href="#pricing" class="nav-cta-filled">Start Free</a>
     </nav>
   </div>
 </header>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     HERO SECTION
+     HERO VIEWPORT: FULL-SCREEN 3D ASCII SCENE WITH LEFT HERO OVERLAY
      ══════════════════════════════════════════════════════════════════ -->
 <main>
-<section class="hero-section">
-  <div class="hero-copy-wrap">
-    <h1 class="hero-title">Stop chasing client feedback across 15 emails.</h1>
+<section class="hero-viewport">
+  <!-- The Real-Time 3D ASCII Engine Canvas -->
+  <canvas id="asciiCanvas" role="img" aria-label="Real-time 3D ASCII Art scene: 3D desk with angled laptop displaying rotating tesseract, steaming coffee mug, and crumpled revisions."></canvas>
+
+  <!-- Left Hero Content (Positioned exactly as in the user's sketch) -->
+  <div class="hero-content-left">
+    <h1 class="hero-title">
+      <span class="hero-emphasis">Stop</span> chasing<br>
+      client feedback<br>
+      across 15 emails.
+    </h1>
     <p class="hero-subtitle">
       Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
     </p>
     <div class="hero-actions">
-      <a href="#pricing" class="hero-btn-primary">Start for Free</a>
-      <a href="#how-it-works" class="hero-btn-secondary">See How It Works</a>
+      <a href="#pricing" class="btn-primary">Start for Free</a>
+      <a href="#how-it-works" class="btn-secondary">See How It Works</a>
     </div>
-    <p class="hero-note">No credit card required. No client login needed. One active staging project free forever.</p>
+    <p class="hero-footnote">No credit card required. No client login needed. One active staging project free forever.</p>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════
-       THE DYNAMIC ASCII ART HERO CANVAS FRAME
-       ══════════════════════════════════════════════════════════════════ -->
-  <div class="ascii-frame">
-    <div class="ascii-frame-bar">
-      <div class="ascii-bar-left">
-        <div class="ascii-bar-dots">
-          <span class="ascii-dot"></span>
-          <span class="ascii-dot"></span>
-          <span class="ascii-dot"></span>
-        </div>
-        <span class="ascii-bar-title">cyath // studio_desk.ascii (interactive engine)</span>
-      </div>
-      <div class="ascii-bar-right">
-        <span id="canvasFps">60 FPS</span>
-        <span id="canvasThemeBadge">☽ Night Mode</span>
-      </div>
-    </div>
-
-    <div class="ascii-canvas-wrap">
-      <canvas id="asciiCanvas" role="img" aria-label="Interactive Dynamic ASCII Art illustration of a designer workspace: open laptop displaying the Cyath tesseract, hot steaming coffee, potted monstera, and crumpled draft revisions."></canvas>
-    </div>
-
-    <div class="ascii-caption-bar">
-      <span>The late-night staging desk: steaming espresso, open staging terminal with Cyath tesseract, and crumpled client email drafts.</span>
-      <span class="ascii-caption-tag">[ hover to disturb particles ]</span>
-    </div>
+  <!-- Micro 3D Status Badge -->
+  <div class="scene-badge">
+    <span class="scene-dot"></span>
+    <span id="sceneStatus">WebGL 3D ASCII Engine // 60 FPS</span>
   </div>
 </section>
 
@@ -1176,13 +1092,11 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
      COMPARISON TABLE
      ══════════════════════════════════════════════════════════════════ -->
 <section id="compare" class="comparison-section">
-  <div class="comp-header">
-    <div class="section-number">04 / COMPARISON</div>
-    <h2 class="section-heading">Why staging with Cyath beats the alternatives.</h2>
-    <p class="section-body">
-      Traditional feedback loops bleed billable hours into administrative chaos. Here is how Cyath compares.
-    </p>
-  </div>
+  <div class="section-number">04 / COMPARISON</div>
+  <h2 class="section-heading">Why staging with Cyath beats the alternatives.</h2>
+  <p class="section-body">
+    Traditional feedback loops bleed billable hours into administrative chaos. Here is how Cyath compares.
+  </p>
 
   <table class="comp-table">
     <thead>
@@ -1226,13 +1140,11 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
      PRICING SECTION
      ══════════════════════════════════════════════════════════════════ -->
 <section id="pricing" class="pricing-section">
-  <div class="comp-header">
-    <div class="section-number">05 / PRICING</div>
-    <h2 class="section-heading">Fair pricing. Zero lock-in.</h2>
-    <p class="section-body">
-      Start free on your current project. Upgrade to agency tier when you manage multiple concurrent client rollouts.
-    </p>
-  </div>
+  <div class="section-number">05 / PRICING</div>
+  <h2 class="section-heading">Fair pricing. Zero lock-in.</h2>
+  <p class="section-body">
+    Start free on your current project. Upgrade to agency tier when you manage multiple concurrent client rollouts.
+  </p>
 
   <div class="pricing-grid">
     <div class="price-card">
@@ -1248,7 +1160,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
           <li class="price-feature-item"><span class="bullet-dash">—</span> 1-click milestone approval receipts</li>
         </ul>
       </div>
-      <a href="#how-it-works" class="hero-btn-primary" style="text-align: center; justify-content: center;">Start Free</a>
+      <a href="#how-it-works" class="btn-primary" style="text-align: center; justify-content: center;">Start Free</a>
     </div>
 
     <div class="price-card">
@@ -1264,7 +1176,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
           <li class="price-feature-item"><span class="bullet-dash">—</span> Team member roles & assignments</li>
         </ul>
       </div>
-      <a href="#how-it-works" class="hero-btn-primary" style="text-align: center; justify-content: center;">Upgrade to Agency</a>
+      <a href="#how-it-works" class="btn-primary" style="text-align: center; justify-content: center;">Upgrade to Agency</a>
     </div>
   </div>
 </section>
@@ -1292,7 +1204,7 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     DYNAMIC ASCII ART ENGINE SCRIPT
+     FULL-SCREEN 3D WEBGL TO REAL-TIME ASCII ENGINE
      ══════════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
@@ -1300,449 +1212,382 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const themeIcon = document.getElementById('themeIcon');
   const themeLabel = document.getElementById('themeLabel');
-  const canvasThemeBadge = document.getElementById('canvasThemeBadge');
-  const canvasFps = document.getElementById('canvasFps');
+  const sceneStatus = document.getElementById('sceneStatus');
 
   let currentTheme = 'night';
 
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('theme') === 'day') {
-    setTheme('day');
+    currentTheme = 'day';
+    htmlRoot.setAttribute('data-theme', 'day');
+    themeIcon.textContent = '☼';
+    themeLabel.textContent = 'Day';
   }
 
-  function setTheme(theme) {
-    currentTheme = theme;
-    htmlRoot.setAttribute('data-theme', theme);
-    if (theme === 'day') {
+  function toggleTheme() {
+    currentTheme = (currentTheme === 'night') ? 'day' : 'night';
+    htmlRoot.setAttribute('data-theme', currentTheme);
+    if (currentTheme === 'day') {
       themeIcon.textContent = '☼';
       themeLabel.textContent = 'Day';
-      canvasThemeBadge.textContent = '☼ Day Mode';
+      update3DTheme('day');
     } else {
       themeIcon.textContent = '☽';
       themeLabel.textContent = 'Night';
-      canvasThemeBadge.textContent = '☽ Night Mode';
+      update3DTheme('night');
+    }
+  }
+  themeToggleBtn.addEventListener('click', toggleTheme);
+
+  // ══════════════════════════════════════════════════════════════════
+  // THREE.JS 3D SCENE SETUP
+  // ══════════════════════════════════════════════════════════════════
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x121419);
+
+  const camera = new THREE.PerspectiveCamera(38, (window.innerWidth / window.innerHeight) * 0.6, 0.1, 100);
+  camera.position.set(0, 3.5, 9.8);
+  camera.lookAt(0, 0.3, 0);
+
+  // Resolution of the offscreen 3D buffer (each pixel = one ASCII character)
+  const COLS = 180;
+  const ROWS = 75;
+  const offCanvas = document.createElement('canvas');
+  offCanvas.width = COLS;
+  offCanvas.height = ROWS;
+
+  const glRenderer = new THREE.WebGLRenderer({ canvas: offCanvas, antialias: false, preserveDrawingBuffer: true });
+  glRenderer.setSize(COLS, ROWS);
+
+  // 1. Desk (Comfortably framed on the right half)
+  const deskGroup = new THREE.Group();
+  deskGroup.position.set(2.4, -0.9, 0.5);
+
+  const deskGeo = new THREE.BoxGeometry(8.5, 0.35, 7.0);
+  const deskMat = new THREE.MeshStandardMaterial({ color: 0x2A2E38, roughness: 0.7, metalness: 0.1 });
+  const desk = new THREE.Mesh(deskGeo, deskMat);
+  deskGroup.add(desk);
+
+  const edgeGeo = new THREE.BoxGeometry(8.55, 0.08, 7.05);
+  const edgeMat = new THREE.MeshStandardMaterial({ color: 0x3D4350, roughness: 0.5 });
+  const edge = new THREE.Mesh(edgeGeo, edgeMat);
+  edge.position.set(0, 0.14, 0);
+  deskGroup.add(edge);
+  scene.add(deskGroup);
+
+  // 2. Laptop on Desk (Angled toward viewer/left)
+  const laptopGroup = new THREE.Group();
+  laptopGroup.position.set(2.4, -0.62, 0.8);
+  laptopGroup.rotation.y = -0.35;
+
+  const baseGeo = new THREE.BoxGeometry(4.2, 0.18, 3.0);
+  const laptopMat = new THREE.MeshStandardMaterial({ color: 0x373D4B, roughness: 0.4, metalness: 0.5 });
+  const base = new THREE.Mesh(baseGeo, laptopMat);
+  laptopGroup.add(base);
+
+  const kbGeo = new THREE.PlaneGeometry(3.6, 1.7);
+  const kbMat = new THREE.MeshStandardMaterial({ color: 0x181B22, roughness: 0.85 });
+  const kb = new THREE.Mesh(kbGeo, kbMat);
+  kb.rotation.x = -Math.PI / 2;
+  kb.position.set(0, 0.1, -0.35);
+  laptopGroup.add(kb);
+
+  const tpGeo = new THREE.PlaneGeometry(1.4, 0.8);
+  const tpMat = new THREE.MeshStandardMaterial({ color: 0x2A2E38, roughness: 0.7 });
+  const tp = new THREE.Mesh(tpGeo, tpMat);
+  tp.rotation.x = -Math.PI / 2;
+  tp.position.set(0, 0.1, 0.85);
+  laptopGroup.add(tp);
+
+  // Screen Lid
+  const screenGroup = new THREE.Group();
+  screenGroup.position.set(0, 0.09, -1.45);
+  screenGroup.rotation.x = 0.28;
+
+  const lidGeo = new THREE.BoxGeometry(4.2, 2.8, 0.12);
+  const lid = new THREE.Mesh(lidGeo, laptopMat);
+  lid.position.set(0, 1.4, 0);
+  screenGroup.add(lid);
+
+  const screenBezel = new THREE.Mesh(new THREE.PlaneGeometry(3.9, 2.5), new THREE.MeshBasicMaterial({ color: 0x080B10 }));
+  screenBezel.position.set(0, 1.4, 0.07);
+  screenGroup.add(screenBezel);
+
+  // 3D Rotating Tesseract inside/floating on the screen
+  const tesseractGroup = new THREE.Group();
+  tesseractGroup.position.set(0, 1.4, 0.22);
+  tesseractGroup.scale.set(0.65, 0.65, 0.65);
+
+  const outerBox = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(1.4, 1.4, 1.4)),
+    new THREE.LineBasicMaterial({ color: 0xE0F2FE, linewidth: 2 })
+  );
+  tesseractGroup.add(outerBox);
+
+  const innerBox = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(0.7, 0.7, 0.7)),
+    new THREE.LineBasicMaterial({ color: 0x38BDF8, linewidth: 2 })
+  );
+  tesseractGroup.add(innerBox);
+
+  const strutCoords = [];
+  const o = 0.7, i = 0.35;
+  [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]].forEach(([x,y,z]) => {
+    strutCoords.push(x*o, y*o, z*o, x*i, y*i, z*i);
+  });
+  const strutGeo = new THREE.BufferGeometry();
+  strutGeo.setAttribute('position', new THREE.Float32BufferAttribute(strutCoords, 3));
+  const struts = new THREE.LineSegments(strutGeo, new THREE.LineBasicMaterial({ color: 0x7DD3FC, linewidth: 1.5 }));
+  tesseractGroup.add(struts);
+
+  screenGroup.add(tesseractGroup);
+  laptopGroup.add(screenGroup);
+  scene.add(laptopGroup);
+
+  // 3. Coffee Mug (Left of laptop, at x = 0.4)
+  const mugGroup = new THREE.Group();
+  mugGroup.position.set(0.4, -0.38, 1.1);
+
+  const mugMat = new THREE.MeshStandardMaterial({ color: 0xC2632B, roughness: 0.5 });
+  const mugMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.36, 0.85, 16), mugMat);
+  mugGroup.add(mugMesh);
+
+  const mugInner = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.3, 0.2, 16), new THREE.MeshStandardMaterial({ color: 0x271911, roughness: 0.8 }));
+  mugInner.position.set(0, 0.34, 0);
+  mugGroup.add(mugInner);
+
+  const handleMesh = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.08, 8, 16, Math.PI), mugMat);
+  handleMesh.position.set(-0.42, 0, 0);
+  handleMesh.rotation.z = Math.PI / 2;
+  mugGroup.add(handleMesh);
+  scene.add(mugGroup);
+
+  // 4. 3D Dynamic Rising Steam Particles
+  const steamCount = 38;
+  const steamGeo = new THREE.BufferGeometry();
+  const steamPos = new Float32Array(steamCount * 3);
+  const steamVel = [];
+  for (let s = 0; s < steamCount; s++) {
+    steamPos[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.25;
+    steamPos[s*3 + 1] = mugGroup.position.y + 0.45 + Math.random() * 1.5;
+    steamPos[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.25;
+    steamVel.push({
+      vy: 0.015 + Math.random() * 0.015,
+      phase: Math.random() * Math.PI * 2,
+      sway: 0.008 + Math.random() * 0.008
+    });
+  }
+  steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPos, 3));
+  const steamMat = new THREE.PointsMaterial({ color: 0xF59E0B, size: 0.2, transparent: true, opacity: 0.85 });
+  const steamParticles = new THREE.Points(steamGeo, steamMat);
+  scene.add(steamParticles);
+
+  // 5. Crumpled Paper Drafts on Right (x = 4.4 to 4.9)
+  function makeCrumpled(x, y, z, r) {
+    const geo = new THREE.DodecahedronGeometry(r, 1);
+    const p = geo.attributes.position;
+    for (let idx = 0; idx < p.count; idx++) {
+      const vx = p.getX(idx), vy = p.getY(idx), vz = p.getZ(idx);
+      const n = 1 + (Math.sin(vx*12) + Math.cos(vy*12)) * 0.18;
+      p.setXYZ(idx, vx*n, vy*n, vz*n);
+    }
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x94A3B8, roughness: 0.85 }));
+    mesh.position.set(x, y, z);
+    scene.add(mesh);
+  }
+  makeCrumpled(4.4, -0.62, 1.2, 0.32);
+  makeCrumpled(4.9, -0.65, 0.6, 0.25);
+
+  // 6. Small Potted Plant (Tucked behind mug, x = -0.2)
+  const plantGroup = new THREE.Group();
+  plantGroup.position.set(-0.2, -0.4, -0.4);
+  const pot = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.44, 0.32, 0.65, 12),
+    new THREE.MeshStandardMaterial({ color: 0x9A3412, roughness: 0.8 })
+  );
+  plantGroup.add(pot);
+
+  const plantMat = new THREE.MeshStandardMaterial({ color: 0x2D6A4F, roughness: 0.6 });
+  for (let i = 0; i < 5; i++) {
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.6, 5), plantMat);
+    const ang = (i / 5) * Math.PI * 2;
+    leaf.position.set(Math.cos(ang) * 0.16, 0.32 + i * 0.05, Math.sin(ang) * 0.16);
+    leaf.rotation.x = 0.3 * Math.sin(ang);
+    leaf.rotation.z = -0.3 * Math.cos(ang);
+    plantGroup.add(leaf);
+  }
+  scene.add(plantGroup);
+
+  // 7. Lighting
+  const ambLight = new THREE.AmbientLight(0x3B4252, 1.6);
+  scene.add(ambLight);
+
+  const dirLight = new THREE.DirectionalLight(0xF1F5F9, 1.4);
+  dirLight.position.set(5, 9, 6);
+  scene.add(dirLight);
+
+  const screenLight = new THREE.PointLight(0x38BDF8, 2.8, 7);
+  screenLight.position.set(2.4, 0.6, 1.1);
+  scene.add(screenLight);
+
+  const mugLight = new THREE.PointLight(0xF59E0B, 1.5, 3.5);
+  mugLight.position.set(0.4, 0.3, 1.1);
+  scene.add(mugLight);
+
+  function update3DTheme(theme) {
+    if (theme === 'day') {
+      scene.background = new THREE.Color(0xE9E6DC);
+      ambLight.color.setHex(0xE2DDD0);
+      ambLight.intensity = 1.8;
+      dirLight.color.setHex(0xFFFBEB);
+      dirLight.intensity = 1.9;
+      dirLight.position.set(-3, 8, 4); // Sunbeam from top-left
+      deskMat.color.setHex(0x8C6544);
+      deskMat.roughness = 0.6;
+    } else {
+      scene.background = new THREE.Color(0x121419);
+      ambLight.color.setHex(0x3B4252);
+      ambLight.intensity = 1.6;
+      dirLight.color.setHex(0xF1F5F9);
+      dirLight.intensity = 1.4;
+      dirLight.position.set(4, 9, 6);
+      deskMat.color.setHex(0x2A2E38);
+      deskMat.roughness = 0.7;
     }
   }
 
-  themeToggleBtn.addEventListener('click', () => {
-    setTheme(currentTheme === 'night' ? 'day' : 'night');
-  });
-
-  // ══════════════════════════════════════════════════════════════════
-  // ASCII ENGINE WITH EXACT MONOSPACE CHARACTER METRICS
-  // ══════════════════════════════════════════════════════════════════
-  const canvas = document.getElementById('asciiCanvas');
-  const ctx = canvas.getContext('2d');
-
-  // Interactive Cursor Tracking
-  let mouseGridCol = -1;
-  let mouseGridRow = -1;
-  let mouseHoverActive = false;
-
-  canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    mouseHoverActive = true;
-    canvas._lastMouseX = x;
-    canvas._lastMouseY = y;
-  });
-
-  canvas.addEventListener('mouseleave', () => {
-    mouseHoverActive = false;
-    mouseGridCol = -1;
-    mouseGridRow = -1;
-  });
-
-  // Dynamic Procedural Rising Steam Particles
-  const steamParticles = [];
-  const maxSteamParticles = 36;
-
-  function spawnSteam(baseCol) {
-    return {
-      offsetCol: (Math.random() - 0.5) * 3.5,
-      row: 15.5,
-      vy: -(0.06 + Math.random() * 0.05),
-      swayFreq: 0.06 + Math.random() * 0.04,
-      swayPhase: Math.random() * Math.PI * 2,
-      swayAmp: 0.8 + Math.random() * 0.7,
-      age: 0,
-      maxAge: 160 + Math.random() * 50
-    };
+  if (currentTheme === 'day') {
+    update3DTheme('day');
   }
 
-  for (let i = 0; i < maxSteamParticles; i++) {
-    const p = spawnSteam(0);
-    p.age = Math.random() * p.maxAge;
-    p.row -= (p.age / p.maxAge) * 12;
-    steamParticles.push(p);
-  }
+  // ══════════════════════════════════════════════════════════════════
+  // ASCII RASTERIZER & PARALLAX ENGINE
+  // ══════════════════════════════════════════════════════════════════
+  const displayCanvas = document.getElementById('asciiCanvas');
+  const displayCtx = displayCanvas.getContext('2d');
+  const pixelBuffer = new Uint8Array(COLS * ROWS * 4);
+  const ramp = " ·.-~:;=+*#%@█";
 
-  const palettes = {
-    night: {
-      bg: '#06080D',
-      default: '#475569',
-      desk_top: '#1E293B',
-      desk_edge: '#334155',
-      desk_front: '#1E293B',
-      plant: '#10B981',
-      plant_pot: '#EA580C',
-      mug: '#F8FAFC',
-      mug_accent: '#F59E0B',
-      laptop: '#64748B',
-      laptop_screen: '#38BDF8',
-      screen_tesseract: '#38BDF8',
-      paper: '#94A3B8',
-      steam_base: '#F59E0B',
-      steam_fade: '#38BDF8'
-    },
-    day: {
-      bg: '#F0EDE2',
-      default: '#78716C',
-      desk_top: '#B45309',
-      desk_edge: '#78350F',
-      desk_front: '#92400E',
-      plant: '#166534',
-      plant_pot: '#9A3412',
-      mug: '#1A1816',
-      mug_accent: '#D97706',
-      laptop: '#334155',
-      laptop_screen: '#0F172A',
-      screen_tesseract: '#0284C7',
-      paper: '#57534E',
-      steam_base: '#D97706',
-      steam_fade: '#78716C'
-    }
-  };
+  let mouseX = 0.5, mouseY = 0.5;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX / window.innerWidth;
+    mouseY = e.clientY / window.innerHeight;
+  });
 
   let frameCount = 0;
   let lastTime = performance.now();
 
-  function render(time) {
+  function animate(time) {
     frameCount++;
     if (time - lastTime >= 1000) {
       const fps = Math.round((frameCount * 1000) / (time - lastTime));
-      canvasFps.textContent = fps + ' FPS';
+      sceneStatus.textContent = `WebGL 3D ASCII // ${fps} FPS`;
       frameCount = 0;
       lastTime = time;
     }
 
+    // Rotate Tesseract
+    tesseractGroup.rotation.x += 0.012;
+    tesseractGroup.rotation.y += 0.018;
+
+    // Animate Steam
+    const posArr = steamGeo.attributes.position.array;
+    for (let s = 0; s < steamCount; s++) {
+      posArr[s*3 + 1] += steamVel[s].vy;
+      posArr[s*3] += Math.sin(time * 0.003 + steamVel[s].phase) * steamVel[s].sway;
+      if (posArr[s*3 + 1] > mugGroup.position.y + 2.2) {
+        posArr[s*3 + 1] = mugGroup.position.y + 0.45;
+        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.3;
+      }
+    }
+    steamGeo.attributes.position.needsUpdate = true;
+
+    // Camera Parallax smoothly lerping to mouse
+    const targetCamX = (mouseX - 0.5) * 1.5;
+    const targetCamY = 3.5 - (mouseY - 0.5) * 1.0;
+    camera.position.x += (targetCamX - camera.position.x) * 0.05;
+    camera.position.y += (targetCamY - camera.position.y) * 0.05;
+    camera.lookAt(0, 0.3, 0);
+
+    // Render 3D Scene to offscreen buffer
+    glRenderer.render(scene, camera);
+
+    // Readback pixels
+    const gl = glRenderer.getContext();
+    gl.readPixels(0, 0, COLS, ROWS, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
+
+    // Resize Display Canvas to Match Viewport
     const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const targetW = Math.floor(rect.width * dpr);
-    const targetH = Math.floor(rect.height * dpr);
+    const W = displayCanvas.clientWidth || window.innerWidth;
+    const H = displayCanvas.clientHeight || window.innerHeight;
 
-    if (canvas.width !== targetW || canvas.height !== targetH) {
-      canvas.width = targetW;
-      canvas.height = targetH;
+    if (displayCanvas.width !== W * dpr || displayCanvas.height !== H * dpr) {
+      displayCanvas.width = W * dpr;
+      displayCanvas.height = H * dpr;
     }
 
-    ctx.save();
-    ctx.scale(dpr, dpr);
+    displayCtx.save();
+    displayCtx.scale(dpr, dpr);
 
-    const W = rect.width;
-    const H = rect.height;
+    // Background Fill
+    displayCtx.fillStyle = (currentTheme === 'day') ? '#E9E6DC' : '#121419';
+    displayCtx.fillRect(0, 0, W, H);
 
-    // Grid sizing based on container height
-    const ROWS = 34;
-    const cellH = Math.max(11, Math.floor(H / ROWS));
+    // Font Configuration
+    const cellW = W / COLS;
+    const cellH = H / ROWS;
     const fontSize = Math.floor(cellH * 0.94);
-    ctx.font = `600 ${fontSize}px "JetBrains Mono", monospace`;
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'left';
+    displayCtx.font = `600 ${fontSize}px "JetBrains Mono", monospace`;
+    displayCtx.textBaseline = 'top';
 
-    const metrics = ctx.measureText("M");
-    const cellW = metrics.width || (cellH * 0.60);
-
-    const COLS = Math.floor(W / cellW);
-    const offsetX = Math.floor((W - COLS * cellW) / 2);
-    const offsetY = Math.floor((H - ROWS * cellH) / 2);
-
-    const pal = palettes[currentTheme];
-
-    // Background
-    ctx.fillStyle = pal.bg;
-    ctx.fillRect(0, 0, W, H);
-
-    // Build the grid for this frame
-    const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(' '));
-    const tags = Array.from({ length: ROWS }, () => Array(COLS).fill('none'));
-
-    function put(r, c, text, tag) {
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        if (r >= 0 && r < ROWS && c + i >= 0 && c + i < COLS) {
-          if (ch !== ' ') {
-            grid[r][c + i] = ch;
-            tags[r][c + i] = tag;
-          }
-        }
-      }
-    }
-
-    // 1. Desk Horizon & Surface extending across full width
-    for (let c = 0; c < COLS; c++) {
-      grid[22][c] = '_';
-      tags[22][c] = 'desk_top';
-      grid[29][c] = '=';
-      tags[29][c] = 'desk_edge';
-    }
-
-    // Desk perspective edges
-    for (let r = 23; r < 29; r++) {
-      const dr = Math.floor((r - 22) * 1.5);
-      if (dr < COLS) {
-        grid[r][dr] = '/';
-        tags[r][dr] = 'desk_edge';
-      }
-      if (COLS - 1 - dr >= 0) {
-        grid[r][COLS - 1 - dr] = '\\';
-        tags[r][COLS - 1 - dr] = 'desk_edge';
-      }
-    }
-
-    // Desk front legs / shadow
-    for (let r = 30; r < ROWS; r++) {
-      if (8 < COLS) { grid[r][8] = '|'; tags[r][8] = 'desk_front'; }
-      if (COLS - 9 >= 0) { grid[r][COLS - 9] = '|'; tags[r][COLS - 9] = 'desk_front'; }
-    }
-
-    // Center anchor for scene items
-    const centerCol = Math.floor(COLS / 2);
-
-    // 2. Open Laptop in Center
-    const laptopLines = [
-      ".-------------------------------.",
-      "|  .-------------------------.  |",
-      "|  |                         |  |",
-      "|  |           /\\            |  |",
-      "|  |          /  \\           |  |",
-      "|  |        /|    |\\         |  |",
-      "|  |       | | /\\ | |        |  |",
-      "|  |       | | \\/ | |        |  |",
-      "|  |        \\|    |/         |  |",
-      "|  |          \\  /           |  |",
-      "|  |           \\/            |  |",
-      "|  |       staging.space     |  |",
-      "|  '-------------------------'  |",
-      "'-------------------------------'",
-      " /=============================\\ ",
-      "/  [esc][q][w][e][r][t][y][u]   \\",
-      "|  [tab][a][s][d][f][g][h][j]   |",
-      "|  [shift][z][x][c][v][b][n]    |",
-      "\\   [ctrl] [===space===] [cmd]  /",
-      " '-----------------------------' "
-    ];
-    const laptopCol = centerCol - 16;
-    laptopLines.forEach((line, idx) => {
-      const row = 5 + idx;
-      let tag = 'laptop';
-      if (row >= 8 && row <= 15) tag = 'laptop_screen';
-      put(row, laptopCol, line, tag);
-    });
-
-    // 3. Coffee Mug on the Left of Laptop
-    const mugCol = centerCol - 30;
-    const mugLines = [
-      "  .-------.   ",
-      " |         |==)",
-      " |  cyath  |  )",
-      " |  (100%) |==)",
-      "  \\_______/   ",
-      "   '-----'    "
-    ];
-    mugLines.forEach((line, idx) => {
-      put(16 + idx, mugCol, line, 'mug');
-    });
-
-    // 4. Monstera Plant on Far Left
-    const plantCol = centerCol - 48;
-    if (plantCol >= 0) {
-      const plantLines = [
-        "      ,      ",
-        "     /|  __  ",
-        "  _ / |_/  \\ ",
-        " ( \\   /   | ",
-        "  \\ \\ /   /  ",
-        "   \\ V   /   ",
-        "    \\ | /    ",
-        "     \\|/     ",
-        "   .-----.   ",
-        "  /       \\  ",
-        " |  TERRA  | ",
-        " |  [░░░]  | ",
-        "  \\_______/  ",
-        "   '-----'   "
-      ];
-      plantLines.forEach((line, idx) => {
-        put(8 + idx, plantCol, line, 'plant');
-      });
-    }
-
-    // 5. Crumpled Paper Rolls on the Right of Laptop
-    const p1Col = centerCol + 21;
-    const p1 = [
-      "   .---.   ",
-      " .( #@% ). ",
-      "( %*#@#&% )",
-      " '( _.-' )'",
-      "  '-----'  "
-    ];
-    p1.forEach((line, idx) => put(16 + idx, p1Col, line, 'paper'));
-
-    const p2Col = centerCol + 27;
-    const p2 = [
-      "   _..._   ",
-      " .( &%#@ ).",
-      "( @#%*&@% )",
-      " '-(_.-)'  "
-    ];
-    p2.forEach((line, idx) => put(21 + idx, p2Col, line, 'paper'));
-
-    const p3Col = centerCol + 18;
-    const p3 = [
-      " .-=-. ",
-      "( #&% )",
-      " '-=-' "
-    ];
-    p3.forEach((line, idx) => put(25 + idx, p3Col, line, 'paper'));
-
-    // Dynamic Steam Update (rising from mug center)
-    const mugCenterCol = mugCol + 5;
-    const activeSteam = new Map();
-    for (let i = 0; i < steamParticles.length; i++) {
-      const p = steamParticles[i];
-      p.age++;
-      p.row += p.vy;
-
-      const lifeRatio = p.age / p.maxAge;
-      if (lifeRatio >= 1.0 || p.row < 2) {
-        steamParticles[i] = spawnSteam(mugCenterCol);
-        continue;
-      }
-
-      const sway = Math.sin(time * 0.003 * (p.swayFreq * 20) + p.swayPhase + p.row * 0.35) * (p.swayAmp * (1 + (16 - p.row) * 0.12));
-      const curCol = Math.round(mugCenterCol + p.offsetCol + sway);
-      const curRow = Math.round(p.row);
-
-      if (curRow >= 2 && curRow <= 16 && curCol >= 0 && curCol < COLS) {
-        let glyph = '~';
-        if (p.row > 13) {
-          glyph = lifeRatio < 0.25 ? 'o' : '*';
-        } else if (p.row > 9) {
-          glyph = (Math.floor(time * 0.005 + i) % 2 === 0) ? '(' : ')';
-        } else if (p.row > 6) {
-          glyph = '~';
-        } else {
-          glyph = lifeRatio > 0.8 ? '·' : '°';
-        }
-
-        const alpha = Math.max(0.18, 1.0 - lifeRatio);
-        activeSteam.set(`${curRow},${curCol}`, { glyph, alpha });
-      }
-    }
-
-    // Cursor coordinates in grid
-    if (mouseHoverActive && canvas._lastMouseX !== undefined) {
-      mouseGridCol = Math.floor((canvas._lastMouseX - offsetX) / cellW);
-      mouseGridRow = Math.floor((canvas._lastMouseY - offsetY) / cellH);
-    }
-
-    const breath = 0.75 + Math.sin(time * 0.0035) * 0.25;
-
-    // Draw Characters
     for (let r = 0; r < ROWS; r++) {
+      const glRow = ROWS - 1 - r;
+      const rowOffset = glRow * COLS * 4;
+      const destY = r * cellH;
+
       for (let c = 0; c < COLS; c++) {
-        let ch = grid[r][c];
-        const tag = tags[r][c];
+        const idx = rowOffset + c * 4;
+        const red = pixelBuffer[idx];
+        const green = pixelBuffer[idx + 1];
+        const blue = pixelBuffer[idx + 2];
 
-        const steamKey = `${r},${c}`;
-        const steamData = activeSteam.get(steamKey);
-        let isSteam = false;
-        let steamAlpha = 1.0;
-
-        if (steamData && tag === 'none') {
-          ch = steamData.glyph;
-          isSteam = true;
-          steamAlpha = steamData.alpha;
-        }
-
-        if (ch === ' ' && !isSteam) {
-          // Day mode subtle sunlight ray motes
-          if (currentTheme === 'day') {
-            const diag = c - r * 2.2;
-            if (diag > 10 && diag < 80 && (r * 13 + c * 29 + Math.floor(time * 0.002)) % 47 === 0 && r < 21) {
-              ctx.fillStyle = 'rgba(217, 119, 6, 0.22)';
-              ctx.fillText('·', offsetX + c * cellW, offsetY + r * cellH);
-            }
-          }
-          // Night mode subtle window dust/stars
-          if (currentTheme === 'night' && r < 8 && c > 2 && c < centerCol - 25) {
-            if ((r * 19 + c * 37) % 53 === 0) {
-              const twinkle = 0.2 + Math.sin(time * 0.003 + r * 2) * 0.15;
-              ctx.fillStyle = `rgba(148, 163, 184, ${twinkle})`;
-              ctx.fillText('·', offsetX + c * cellW, offsetY + r * cellH);
-            }
+        const lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+        if (lum < 0.04) {
+          // Faint ambient room stipples in background
+          if ((r * 13 + c * 29) % 43 === 0) {
+            displayCtx.fillStyle = (currentTheme === 'day') ? 'rgba(115, 108, 101, 0.15)' : 'rgba(71, 85, 105, 0.18)';
+            displayCtx.fillText('·', c * cellW, destY);
           }
           continue;
         }
 
-        let color = pal.default;
-        if (isSteam) {
-          color = r > 11 ? pal.steam_base : pal.steam_fade;
-          ctx.globalAlpha = steamAlpha;
-        } else if (tag === 'desk_top') {
-          color = pal.desk_top;
-        } else if (tag === 'desk_edge') {
-          color = pal.desk_edge;
-        } else if (tag === 'desk_front') {
-          color = pal.desk_front;
-        } else if (tag === 'plant') {
-          if (ch === '[' || ch === '░' || ch === ']' || ch === 'T' || ch === 'E' || ch === 'R' || ch === 'A') {
-            color = pal.plant_pot;
-          } else {
-            color = pal.plant;
-          }
-        } else if (tag === 'mug') {
-          color = (ch === 'c' || ch === 'y' || ch === 'a' || ch === 't' || ch === 'h') ? pal.mug_accent : pal.mug;
-        } else if (tag === 'laptop') {
-          color = pal.laptop;
-        } else if (tag === 'laptop_screen') {
-          if (ch === '/' || ch === '\\' || ch === '|' || ch === 'v') {
-            color = pal.screen_tesseract;
-            ctx.globalAlpha = breath;
-          } else if (ch === 's' || ch === 't' || ch === 'a' || ch === 'g' || ch === 'i' || ch === 'n' || ch === 'g') {
-            color = currentTheme === 'night' ? '#7DD3FC' : '#0369A1';
-          } else {
-            color = pal.laptop;
-          }
-        } else if (tag === 'paper') {
-          color = pal.paper;
+        const charIdx = Math.min(ramp.length - 1, Math.floor(lum * ramp.length));
+        const ch = ramp[charIdx];
+
+        // Muted color grading
+        const grey = (red + green + blue) / 3;
+        let mr = Math.round(red * 0.65 + grey * 0.35);
+        let mg = Math.round(green * 0.65 + grey * 0.35);
+        let mb = Math.round(blue * 0.65 + grey * 0.35);
+
+        if (currentTheme === 'day') {
+          // In day mode, darken colors slightly for contrast against light background
+          mr = Math.max(0, mr - 30);
+          mg = Math.max(0, mg - 30);
+          mb = Math.max(0, mb - 30);
         }
 
-        // Mouse hover ripple
-        if (mouseHoverActive) {
-          const dc = c - mouseGridCol;
-          const dr = r - mouseGridRow;
-          const distSq = dc * dc + dr * dr;
-          if (distSq < 26) {
-            const influence = 1.0 - (Math.sqrt(distSq) / 5.1);
-            color = currentTheme === 'night' ? '#FFFFFF' : '#000000';
-            ctx.globalAlpha = Math.min(1.0, 0.7 + influence * 0.3);
-          }
-        }
-
-        ctx.fillStyle = color;
-        ctx.fillText(ch, offsetX + c * cellW, offsetY + r * cellH);
-        ctx.globalAlpha = 1.0;
+        displayCtx.fillStyle = `rgb(${mr},${mg},${mb})`;
+        displayCtx.fillText(ch, c * cellW, destY);
       }
     }
 
-    ctx.restore();
-    requestAnimationFrame(render);
+    displayCtx.restore();
+    requestAnimationFrame(animate);
   }
 
-  requestAnimationFrame(render);
+  requestAnimationFrame(animate);
 })();
 </script>
 </body>
