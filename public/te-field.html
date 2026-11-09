@@ -9,39 +9,42 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   TEENAGE ENGINEERING FIELD EDITION — DESIGN SYSTEM TOKENS
+   TEENAGE ENGINEERING FIELD SYSTEM — ULTRA-TACTILE DESIGN TOKENS
    ══════════════════════════════════════════════════════════════════ */
 :root {
-  --chassis-bg: #EAE8E1;
-  --chassis-surface: #F2F1EC;
-  --chassis-border: #D1CFCA;
-  --chassis-groove: #C4C2BC;
-  --chassis-shadow: rgba(30, 28, 25, 0.14);
+  /* Anodized Bead-Blasted Aluminum Palette */
+  --chassis-top: #FAF9F5;
+  --chassis-mid: #ECEAE2;
+  --chassis-bottom: #DFDDD4;
+  --chassis-rim: #BEBBB0;
+  --chassis-groove: #C2BFB5;
+  --chassis-shadow: rgba(22, 20, 16, 0.22);
   
-  --ink-primary: #191816;
-  --ink-secondary: #575550;
-  --ink-muted: #8E8B83;
-  --ink-hairline: #BCB9B1;
+  --ink-primary: #181715;
+  --ink-secondary: #56534C;
+  --ink-muted: #8A877E;
+  --ink-hairline: #C4C1B8;
   
-  /* TE Signature Accents */
-  --te-orange: #FF4E00;
+  /* TE Four Iconic Encoder Accents */
+  --enc-orange: #FF4E00;
+  --enc-blue: #0066FF;
+  --enc-green: #00B859;
+  --enc-ochre: #E09F00;
   --te-red: #E6352B;
-  --te-blue: #0066FF;
-  --te-green: #00B359;
-  --te-yellow: #FFCC00;
   
-  /* Keycaps & Controls */
-  --key-cap: #FAF9F5;
-  --key-shadow: #BEBBB3;
-  --key-edge: #D6D4CC;
+  /* PBT Mechanical Keycaps */
+  --key-top: #FAF8F2;
+  --key-bevel: #EFECE3;
+  --key-side: #D2CEC2;
+  --key-shadow: #A8A496;
+  --well-shadow: inset 0 3px 6px rgba(0,0,0,0.22);
   
-  /* LCD Screen Panel */
-  --lcd-bg: #141517;
-  --lcd-glass: #1A1C1E;
-  --lcd-text: #E8E7E3;
-  --lcd-dim: rgba(232, 231, 227, 0.22);
-  --lcd-amber: #FF9400;
-  --lcd-green: #22C55E;
+  /* Optical Glass & Vacuum Fluorescent Display (VFD) */
+  --lcd-frame: #0E0F11;
+  --lcd-glass: #141619;
+  --vfd-active-amber: #FF9E0B;
+  --vfd-active-green: #10B981;
+  --vfd-ghost: rgba(255, 255, 255, 0.05);
   
   --font-sans: 'Space Grotesk', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -55,17 +58,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   STUDIO BENCH ATMOSPHERE (Overhead Gallery Spotlight)
+   ══════════════════════════════════════════════════════════════════ */
 body {
-  background-color: #DFDDD6;
+  background-color: #D6D4CC;
   background-image: 
-    radial-gradient(#C8C6BD 1px, transparent 1px),
-    linear-gradient(to right, rgba(200, 198, 189, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(200, 198, 189, 0.3) 1px, transparent 1px);
-  background-size: 20px 20px, 100px 100px, 100px 100px;
+    radial-gradient(ellipse 90% 60% at 50% 25%, #EBE9E1 0%, #D3D0C7 60%, #BCB9AF 100%),
+    radial-gradient(#B0ACA1 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px;
   color: var(--ink-primary);
   font-family: var(--font-sans);
   min-height: 100vh;
-  padding: 32px 20px 80px;
+  padding: 36px 20px 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,7 +78,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   NAVIGATION & META HEADER
+   NAVIGATION & BRAND BANNER
    ══════════════════════════════════════════════════════════════════ */
 .te-topbar {
   max-width: 1240px;
@@ -81,8 +86,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-  padding: 0 4px;
+  margin-bottom: 26px;
+  padding: 0 6px;
 }
 
 .te-brand-mark {
@@ -94,9 +99,9 @@ body {
 }
 
 .te-logo-glyph {
-  width: 28px;
-  height: 28px;
-  background: var(--ink-primary);
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(145deg, #262422, #100F0E);
   color: #FFF;
   display: flex;
   align-items: center;
@@ -104,34 +109,41 @@ body {
   font-family: var(--font-mono);
   font-weight: 800;
   font-size: 13px;
-  border-radius: 4px;
+  border-radius: 5px;
   letter-spacing: -0.05em;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .te-logo-type {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: -0.04em;
   text-transform: lowercase;
+}
+
+.te-top-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .te-system-badge {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ink-secondary);
-  background: rgba(0, 0, 0, 0.05);
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: 1px solid var(--chassis-border);
-  letter-spacing: 0.04em;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--chassis-rim);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 #FFF;
+  letter-spacing: 0.05em;
 }
 
 .te-sound-toggle {
-  background: var(--chassis-surface);
-  border: 1px solid var(--chassis-border);
-  padding: 6px 12px;
+  background: linear-gradient(to bottom, #FAF9F5, #ECE9E1);
+  border: 1px solid var(--chassis-rim);
+  padding: 6px 14px;
   border-radius: 6px;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -140,19 +152,20 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  gap: 7px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08), inset 0 1px 0 #FFF;
   transition: all 120ms ease;
 }
 .te-sound-toggle:hover {
   background: #FFF;
+  transform: translateY(-1px);
 }
 .te-sound-indicator {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--te-green);
-  box-shadow: 0 0 6px var(--te-green);
+  background: var(--enc-green);
+  box-shadow: 0 0 6px var(--enc-green);
 }
 .te-sound-indicator.muted {
   background: var(--ink-hairline);
@@ -160,15 +173,15 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   HERO HEADLINE & VALUE PROP (TE DRY/CONFIDENT VOICE)
+   HERO VALUE PROP
    ══════════════════════════════════════════════════════════════════ */
 .te-hero-header {
   max-width: 1240px;
   width: 100%;
-  margin-bottom: 28px;
+  margin-bottom: 30px;
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 36px;
   align-items: flex-end;
 }
 @media (max-width: 900px) {
@@ -181,7 +194,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--te-orange);
+  color: var(--enc-orange);
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -190,16 +203,17 @@ body {
 .te-kicker::before {
   content: "";
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  background: var(--te-orange);
+  width: 7px;
+  height: 7px;
+  background: var(--enc-orange);
+  box-shadow: 0 0 6px rgba(255, 78, 0, 0.4);
 }
 
 .te-main-h1 {
-  font-size: clamp(32px, 4.4vw, 54px);
+  font-size: clamp(34px, 4.5vw, 56px);
   font-weight: 700;
   letter-spacing: -0.04em;
-  line-height: 1.05;
+  line-height: 1.04;
   color: var(--ink-primary);
 }
 
@@ -211,7 +225,7 @@ body {
   max-width: 480px;
 }
 .te-sub-specs {
-  margin-top: 12px;
+  margin-top: 14px;
   font-family: var(--font-mono);
   font-size: 11.5px;
   color: var(--ink-muted);
@@ -230,68 +244,95 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   THE CHASSIS: MODEL CY-01 FIELD UNIT (Physical Hardware Bench)
+   THE CHASSIS: MODEL CY-01 FIELD UNIT (3D Anodized Billet Aluminum)
    ══════════════════════════════════════════════════════════════════ */
 .te-chassis {
   max-width: 1240px;
   width: 100%;
-  background: var(--chassis-bg);
-  border: 1px solid var(--chassis-border);
-  border-radius: 20px;
+  background: linear-gradient(180deg, var(--chassis-top) 0%, var(--chassis-mid) 28%, var(--chassis-bottom) 100%);
+  border: 1px solid var(--chassis-rim);
+  border-radius: 24px;
   box-shadow: 
-    0 24px 60px -8px var(--chassis-shadow),
-    0 2px 6px rgba(0,0,0,0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.08);
-  padding: 24px;
+    0 35px 80px -15px var(--chassis-shadow),
+    0 12px 28px -6px rgba(25, 23, 20, 0.16),
+    0 2px 4px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  padding: 26px 28px 32px;
   position: relative;
   user-select: none;
 }
 
-/* CNC Milled Torx Corner Fasteners */
+/* 45° CNC Chamfered Outer Bevel */
+.te-chassis::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  z-index: -1;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* CNC Torx Corner Screws with Realistic Radial Sheen */
 .torx-screw {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #D8D6CF;
-  border: 1px solid #BFBDB5;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.8);
+  background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #D2CFCA 50%, #A4A198 100%);
+  border: 1px solid #9A978E;
+  box-shadow: 
+    inset 0 1px 2px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.9);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .torx-screw::after {
   content: "";
-  width: 6px;
-  height: 6px;
-  background: #9D9B93;
+  width: 7px;
+  height: 7px;
+  background: #5A5852;
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.8);
 }
-.torx-screw.tl { top: 12px; left: 12px; }
-.torx-screw.tr { top: 12px; right: 12px; }
-.torx-screw.bl { bottom: 12px; left: 12px; }
-.torx-screw.br { bottom: 12px; right: 12px; }
+.torx-screw.tl { top: 14px; left: 14px; }
+.torx-screw.tr { top: 14px; right: 14px; }
+.torx-screw.bl { bottom: 14px; left: 14px; }
+.torx-screw.br { bottom: 14px; right: 14px; }
 
-/* Mechanical Engraved Header Strip */
+/* Mechanical Header Strip */
 .te-chassis-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-bottom: 16px;
-  border-bottom: 2px solid var(--chassis-border);
-  margin-bottom: 20px;
+  border-bottom: 2px solid var(--chassis-groove);
+  margin-bottom: 22px;
+  position: relative;
 }
+.te-chassis-top::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
 .te-chassis-title {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 14px;
 }
 .te-model-no {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--ink-primary);
 }
 .te-model-desc {
@@ -299,10 +340,45 @@ body {
   font-size: 11px;
   font-weight: 600;
   color: var(--ink-secondary);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
-/* Mechanical LED Dot Array Status */
+/* TE Acoustic Speaker Grille & Mic Pinhole */
+.te-hardware-details {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.te-mic-hole {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.mic-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #111;
+  box-shadow: inset 0 1px 1px #000, 0 1px 0 #FFF;
+}
+.te-speaker-grille {
+  display: grid;
+  grid-template-columns: repeat(6, 4px);
+  grid-template-rows: repeat(3, 4px);
+  gap: 4px;
+}
+.speaker-hole {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #252422;
+  box-shadow: inset 0 1px 1px #000, 0 1px 0 rgba(255,255,255,0.7);
+}
+
 .te-status-strip {
   display: flex;
   align-items: center;
@@ -321,8 +397,8 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--te-green);
-  box-shadow: 0 0 5px var(--te-green);
+  background: var(--enc-green);
+  box-shadow: 0 0 6px var(--enc-green);
   animation: pulseLed 3s infinite ease-in-out;
 }
 @keyframes pulseLed {
@@ -331,87 +407,129 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   UPPER DECK: CONTROLS, VIEWPORT SCALER & LCD PANEL
+   UPPER DECK: 4-ENCODER POD + CALIBRATION TUNER + VFD LCD
    ══════════════════════════════════════════════════════════════════ */
 .te-upper-deck {
   display: grid;
-  grid-template-columns: 240px 1fr 280px;
+  grid-template-columns: 310px 1fr 270px;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   align-items: center;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
   .te-upper-deck { grid-template-columns: 1fr; }
 }
 
-/* Left Pod: Knurled Rotary Encoder (Dial) */
-.te-dial-pod {
-  background: var(--chassis-surface);
-  border: 1px solid var(--chassis-border);
-  border-radius: 12px;
-  padding: 14px;
+/* ─── 4 Iconic TE Color-Coded Encoders (OP-1 Style) ─── */
+.te-encoders-quad {
+  background: linear-gradient(to bottom, #E8E5DD, #DFDCD2);
+  border: 1px solid var(--chassis-groove);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 
+    inset 0 2px 4px rgba(0,0,0,0.12),
+    0 1px 0 #FFF;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+.encoder-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 3D Knurled Rotary Knob */
+.knurled-dial-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+  justify-content: center;
+}
+/* Recessed Knob Well */
+.dial-well {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #C8C5BC;
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.8);
 }
 .knurled-dial {
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: 
-    repeating-conic-gradient(#C6C4BC 0deg 5deg, #DDDCD5 5deg 10deg);
-  border: 2px solid #ABA9A0;
+    repeating-conic-gradient(#BDBBB2 0deg 4deg, #D4D2C9 4deg 8deg);
+  border: 1px solid #9D9A90;
   box-shadow: 
-    0 4px 10px rgba(0,0,0,0.18),
-    inset 0 1px 1px rgba(255,255,255,0.8),
-    inset 0 -2px 3px rgba(0,0,0,0.25);
+    0 6px 14px rgba(0,0,0,0.28),
+    0 2px 4px rgba(0,0,0,0.18),
+    inset 0 1px 1px rgba(255,255,255,0.9),
+    inset 0 -3px 4px rgba(0,0,0,0.3);
   position: relative;
   cursor: grab;
   transition: transform 60ms linear;
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .knurled-dial:active {
   cursor: grabbing;
 }
-.knurled-dial::after {
-  content: "";
+/* Brushed Aluminum Cap with Specular Reflection */
+.dial-cap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, #FFFFFF 0deg, #CBC8BF 90deg, #FFFFFF 180deg, #B5B2A8 270deg, #FFFFFF 360deg);
+  border: 1px solid #9C998F;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25), inset 0 1px 0 #FFF;
+  position: relative;
+}
+/* Engraved Colored Indicator Line */
+.dial-indicator {
   position: absolute;
-  top: 6px;
+  top: 3px;
   left: 50%;
   transform: translateX(-50%);
   width: 4px;
-  height: 12px;
-  background: var(--te-orange);
+  height: 9px;
   border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
-.dial-info {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.dial-label {
+.dial-indicator.c-orange { background: var(--enc-orange); }
+.dial-indicator.c-blue   { background: var(--enc-blue); }
+.dial-indicator.c-green  { background: var(--enc-green); }
+.dial-indicator.c-ochre  { background: var(--enc-ochre); }
+
+.dial-tag {
   font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   color: var(--ink-secondary);
   text-transform: uppercase;
 }
-.dial-val {
+.dial-status-readout {
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: 10px;
   font-weight: 800;
   color: var(--ink-primary);
 }
 
-/* Center Pod: Calibration Ruler & Snap Presets */
+/* ─── Center: Viewport Frequency Tuner & Ruler ─── */
 .te-ruler-pod {
-  background: var(--chassis-surface);
-  border: 1px solid var(--chassis-border);
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+  background: linear-gradient(to bottom, #FAF9F5, #ECEAE1);
+  border: 1px solid var(--chassis-groove);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: 
+    inset 0 1px 0 #FFF,
+    0 3px 8px rgba(0,0,0,0.06);
 }
 .ruler-top {
   display: flex;
@@ -421,9 +539,9 @@ body {
 }
 .ruler-title {
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   color: var(--ink-secondary);
   text-transform: uppercase;
 }
@@ -436,24 +554,31 @@ body {
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 4px;
-  background: var(--key-cap);
-  border: 1px solid var(--key-edge);
+  padding: 5px 11px;
+  border-radius: 5px;
+  background: var(--key-top);
+  border: 1px solid var(--chassis-rim);
+  border-bottom: 2px solid var(--key-side);
   color: var(--ink-primary);
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-  transition: all 120ms ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: all 100ms ease;
 }
 .ruler-btn:hover {
   background: #FFF;
-  border-color: #ABA89F;
+  border-color: #A3A096;
+}
+.ruler-btn:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px;
 }
 .ruler-btn.active {
   background: var(--ink-primary);
   color: #FFF;
   border-color: var(--ink-primary);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  border-bottom-width: 1px;
+  transform: translateY(1px);
 }
 
 /* Mechanical Engraved Ticks */
@@ -463,37 +588,54 @@ body {
 }
 .ruler-ticks {
   width: 100%;
-  height: 12px;
+  height: 14px;
   background: repeating-linear-gradient(
     to right,
     var(--ink-hairline) 0px,
     var(--ink-hairline) 1px,
     transparent 1px,
-    transparent 10px
+    transparent 12px
   );
   position: relative;
-  border-bottom: 1px solid var(--chassis-border);
-  margin-bottom: 6px;
+  border-bottom: 1px solid var(--chassis-groove);
+  margin-bottom: 8px;
+}
+.ruler-ticks::before {
+  content: "390mm ········································· 768mm ·············································· 1440mm";
+  position: absolute;
+  top: -9px;
+  left: 0;
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+  pointer-events: none;
 }
 .ruler-slider {
   width: 100%;
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
-  background: #D5D3CC;
-  border-radius: 3px;
+  height: 8px;
+  background: linear-gradient(to bottom, #C2BEB4, #E2DFD6);
+  border-radius: 4px;
+  border: 1px solid #AAA79D;
   outline: none;
   cursor: pointer;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 .ruler-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  background: var(--key-cap);
-  border: 2px solid var(--te-orange);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: linear-gradient(145deg, #FAF8F2, #DDD9CE);
+  border: 2px solid var(--enc-blue);
+  box-shadow: 
+    0 4px 10px rgba(0,0,0,0.3),
+    0 1px 2px rgba(0,0,0,0.2),
+    inset 0 1px 0 #FFF;
   cursor: ew-resize;
   transition: transform 100ms ease;
 }
@@ -501,70 +643,133 @@ body {
   transform: scale(1.15);
 }
 
-/* Right Pod: LCD Segment Telemetry Display */
+/* ─── Right: Vacuum Fluorescent Display (VFD) Screen ─── */
 .te-lcd-screen {
-  background: var(--lcd-bg);
-  border: 3px solid #323539;
-  border-radius: 8px;
-  padding: 10px 14px;
+  background: var(--lcd-glass);
+  border: 3px solid #232529;
+  border-radius: 10px;
+  padding: 12px 14px;
   box-shadow: 
-    inset 0 2px 6px rgba(0,0,0,0.7),
-    0 2px 5px rgba(0,0,0,0.1);
+    inset 0 3px 10px rgba(0,0,0,0.9),
+    0 3px 8px rgba(0,0,0,0.18),
+    0 1px 0 rgba(255,255,255,0.7);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 82px;
+  height: 96px;
+  position: relative;
+  overflow: hidden;
 }
+/* Smoked Acrylic Glass Specular Reflection */
+.te-lcd-screen::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 60%, transparent 100%);
+  pointer-events: none;
+}
+/* Phosphor Scanlines */
+.te-lcd-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.25) 2px,
+    rgba(0, 0, 0, 0.25) 3px
+  );
+  pointer-events: none;
+}
+
 .lcd-row-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  z-index: 1;
 }
 .lcd-freq-tag {
   font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--lcd-amber);
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--vfd-active-amber);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 8px rgba(255, 158, 11, 0.6);
 }
 .lcd-status-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--lcd-green);
-  box-shadow: 0 0 6px var(--lcd-green);
+  background: var(--vfd-active-green);
+  box-shadow: 0 0 8px var(--vfd-active-green);
+}
+
+.lcd-readout-wrap {
+  position: relative;
+  z-index: 1;
+}
+/* Ghost Segments Underneath */
+.lcd-ghost-readout {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--vfd-ghost);
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }
 .lcd-main-readout {
   font-family: var(--font-mono);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--lcd-text);
-  text-shadow: 0 0 8px rgba(255,255,255,0.25);
+  color: #F4F3EE;
+  text-shadow: 0 0 10px rgba(255,255,255,0.4);
 }
+
 .lcd-sub-meta {
   font-family: var(--font-mono);
   font-size: 9.5px;
   font-weight: 600;
-  color: rgba(232, 231, 227, 0.6);
+  color: rgba(232, 231, 227, 0.65);
   letter-spacing: 0.04em;
   display: flex;
   justify-content: space-between;
+  z-index: 1;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   MAIN STAGE: RECESSED RETINA SCREEN & LIVE STAGED SITE
+   MAIN STAGE: CNC RECESSED BEZEL & STAGED WEBSITE
    ══════════════════════════════════════════════════════════════════ */
 .te-screen-bezel {
-  background: #1C1D20;
-  border: 1px solid #141517;
-  border-radius: 12px;
+  background: linear-gradient(145deg, #18191B, #0E0F11);
+  border: 1px solid #090A0B;
+  border-radius: 16px;
   box-shadow: 
-    inset 0 3px 12px rgba(0,0,0,0.75),
-    0 1px 0 rgba(255,255,255,0.7);
-  padding: 12px;
+    inset 0 4px 16px rgba(0,0,0,0.9),
+    inset 0 1px 3px rgba(0,0,0,0.8),
+    0 1px 0 rgba(255,255,255,0.9);
+  padding: 14px;
   position: relative;
   overflow: hidden;
+}
+
+/* Glass Specular Glare across screen */
+.te-screen-bezel::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 70%;
+  height: 120%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 45%, transparent 70%);
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 15;
 }
 
 .te-viewport-container {
@@ -572,18 +777,18 @@ body {
   width: 100%;
   max-width: 100%;
   transition: max-width 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  background: #FAF9F5;
-  border-radius: 8px;
+  background: #FAF8F5;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
   position: relative;
 }
 
 /* Screen Chrome Header */
 .screen-chrome {
-  background: #25272B;
-  border-bottom: 1px solid #33363C;
-  padding: 8px 14px;
+  background: linear-gradient(to bottom, #2B2D33, #212327);
+  border-bottom: 1px solid #383B42;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -591,53 +796,90 @@ body {
 .chrome-dots {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 .c-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #484B52;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.4);
 }
 .c-dot.red { background: #FF5F56; }
 .c-dot.yellow { background: #FFBD2E; }
 .c-dot.green { background: #27C93F; }
 
 .chrome-url-bar {
-  background: #18191B;
-  border: 1px solid #363940;
-  padding: 3px 14px;
-  border-radius: 4px;
+  background: #151618;
+  border: 1px solid #34373F;
+  padding: 4px 16px;
+  border-radius: 5px;
   font-family: var(--font-mono);
   font-size: 11px;
-  color: #DDD;
+  color: #E2E1DC;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
 }
 .url-lock {
-  width: 8px;
-  height: 8px;
-  color: var(--te-green);
+  width: 9px;
+  height: 9px;
+  color: var(--enc-green);
 }
 .chrome-inspect-badge {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
   color: #FFF;
-  background: var(--te-orange);
-  padding: 2px 7px;
-  border-radius: 3px;
-  letter-spacing: 0.04em;
+  background: var(--enc-orange);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 5px rgba(255, 78, 0, 0.4);
 }
 
-/* Staged Site Canvas (Aura Atelier Website Simulation) */
+/* Staged Site Canvas (Aura Atelier Simulation) */
 .staged-site {
   background: #FAF8F5;
   color: #171614;
-  min-height: 440px;
+  min-height: 450px;
   position: relative;
   cursor: crosshair;
+}
+
+/* CAD Crosshair Reticle Overlay */
+.cad-crosshair-x {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(255, 78, 0, 0.4);
+  pointer-events: none;
+  z-index: 12;
+  display: none;
+}
+.cad-crosshair-y {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(255, 78, 0, 0.4);
+  pointer-events: none;
+  z-index: 12;
+  display: none;
+}
+.cad-coord-tag {
+  position: absolute;
+  background: var(--ink-primary);
+  color: #FFF;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 14;
+  transform: translate(8px, 8px);
+  display: none;
+  white-space: nowrap;
 }
 
 /* Staged Site Content */
@@ -645,106 +887,107 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 28px;
+  padding: 18px 32px;
   border-bottom: 1px solid #EBE7DF;
 }
 .ss-logo {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 800;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
 .ss-links {
   display: flex;
-  gap: 20px;
-  font-size: 12px;
+  gap: 24px;
+  font-size: 12.5px;
   font-weight: 500;
   color: #636159;
 }
 .ss-btn {
   background: #171614;
   color: #FFF;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 6px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 16px;
   border-radius: 4px;
 }
 
 .ss-hero {
-  padding: 44px 28px;
+  padding: 48px 32px;
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 36px;
   align-items: center;
 }
-@media (max-width: 680px) {
+@media (max-width: 700px) {
   .ss-hero { grid-template-columns: 1fr; padding: 24px 16px; }
   .ss-links { display: none; }
 }
 
 .ss-headline {
-  font-size: clamp(24px, 3.2vw, 36px);
+  font-size: clamp(25px, 3.4vw, 38px);
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.15;
-  margin-bottom: 14px;
+  line-height: 1.14;
+  margin-bottom: 16px;
 }
 .ss-desc {
   font-size: 13.5px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: #68655C;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 .ss-cta-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 .ss-primary-cta {
-  background: var(--te-orange);
+  background: var(--enc-orange);
   color: #FFF;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
-  padding: 9px 18px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(255, 78, 0, 0.35);
-  position: relative;
+  box-shadow: 0 4px 12px rgba(255, 78, 0, 0.4);
 }
 
 .ss-image-card {
-  height: 220px;
-  background: #E5E1D8;
-  border-radius: 6px;
+  height: 230px;
+  background: linear-gradient(135deg, #ECE8DF, #D8D3C6);
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #D6D1C4;
+  border: 1px solid #D0C9BA;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
 }
 .ss-mock-art {
   width: 90%;
-  height: 80%;
-  border: 1px dashed #AFA99C;
-  border-radius: 4px;
+  height: 82%;
+  border: 1px dashed #A6A092;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #7D786D;
+  color: #726E63;
   font-family: var(--font-mono);
   font-size: 11px;
+  background: rgba(255,255,255,0.25);
 }
 
-/* Precision Crosshair Inspection Pins on Staged Site */
+/* Precision Crosshair Review Pins */
 .review-pin {
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: var(--te-red);
+  background: radial-gradient(circle at 35% 35%, #FF6559 0%, #E6352B 70%, #BA1D14 100%);
   color: #FFF;
   display: flex;
   align-items: center;
@@ -752,21 +995,24 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 800;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 
+    0 0 0 3px rgba(255,255,255,0.95),
+    0 6px 14px rgba(230, 53, 43, 0.45),
+    0 2px 4px rgba(0,0,0,0.3);
   cursor: pointer;
   z-index: 10;
   transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .review-pin:hover {
-  transform: scale(1.22);
+  transform: scale(1.25);
 }
 .review-pin::before {
   content: "";
   position: absolute;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 1px dashed rgba(230, 53, 43, 0.5);
+  border: 1.5px dashed rgba(230, 53, 43, 0.6);
   animation: radarPing 2.4s infinite ease-out;
 }
 @keyframes radarPing {
@@ -774,15 +1020,17 @@ body {
   100% { transform: scale(1.4); opacity: 0; }
 }
 
-/* Pin Popover Card (TE Technical Inspection Note) */
+/* Pin Popover Card */
 .pin-popover {
   position: absolute;
   background: #FFF;
   border: 2px solid var(--ink-primary);
-  border-radius: 6px;
-  padding: 12px 14px;
-  width: 280px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  border-radius: 8px;
+  padding: 14px 16px;
+  width: 290px;
+  box-shadow: 
+    0 14px 32px rgba(0,0,0,0.25),
+    0 2px 6px rgba(0,0,0,0.15);
   z-index: 20;
   pointer-events: none;
   display: none;
@@ -829,30 +1077,32 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   LOWER DECK: MECHANICAL SWITCHES & THERMAL RECEIPT PRINTER
+   LOWER DECK: 3D MECHANICAL PBT KEYPAD & THERMAL PRINTER
    ══════════════════════════════════════════════════════════════════ */
 .te-lower-deck {
-  margin-top: 20px;
+  margin-top: 22px;
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 20px;
+  grid-template-columns: 1fr 350px;
+  gap: 22px;
   align-items: stretch;
 }
 @media (max-width: 900px) {
   .te-lower-deck { grid-template-columns: 1fr; }
 }
 
-/* Keypad & Mode Switches */
+/* Controls Bank */
 .te-controls-bank {
-  background: var(--chassis-surface);
-  border: 1px solid var(--chassis-border);
-  border-radius: 12px;
-  padding: 16px 20px;
-  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+  background: linear-gradient(to bottom, #FAF9F5, #ECE8DF);
+  border: 1px solid var(--chassis-groove);
+  border-radius: 14px;
+  padding: 18px 22px;
+  box-shadow: 
+    inset 0 1px 0 #FFF,
+    0 3px 8px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
 }
 
 .cb-row {
@@ -869,108 +1119,143 @@ body {
 }
 .cb-title {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
   color: var(--ink-primary);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 .cb-desc {
   font-size: 12px;
   color: var(--ink-secondary);
 }
 
+/* ─── 3D Sculpted PBT Keycaps (Mechanical Switches) ─── */
 .te-key-group {
   display: flex;
-  gap: 8px;
+  gap: 9px;
+}
+.te-key-well {
+  background: #C4C0B6;
+  border-radius: 8px;
+  padding: 2px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.35), 0 1px 0 #FFF;
 }
 .te-key {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
-  background: var(--key-cap);
-  border: 1px solid var(--key-edge);
-  border-bottom: 3px solid var(--key-shadow);
+  font-weight: 800;
+  background: linear-gradient(180deg, var(--key-top) 0%, var(--key-bevel) 85%, var(--key-side) 100%);
+  border: 1px solid #BCB8AC;
+  border-bottom: 3.5px solid var(--key-shadow);
   border-radius: 6px;
-  padding: 8px 14px;
+  padding: 9px 15px;
   color: var(--ink-primary);
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  box-shadow: 
+    0 3px 6px rgba(0,0,0,0.14),
+    inset 0 1px 0 #FFF,
+    inset 0 -1px 1px rgba(0,0,0,0.05);
   transition: all 80ms ease;
+  position: relative;
+}
+/* Sculpted Spherical Finger Dish */
+.te-key::before {
+  content: "";
+  position: absolute;
+  inset: 3px 5px 6px;
+  border-radius: 4px;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.7) 0%, transparent 80%);
+  pointer-events: none;
+}
+.te-key:hover {
+  transform: translateY(-1px);
+  border-bottom-width: 4.5px;
 }
 .te-key:active {
-  transform: translateY(2px);
+  transform: translateY(2.5px);
   border-bottom-width: 1px;
-  box-shadow: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
 }
 .te-key.active {
-  background: #E4E2D8;
-  border-color: #B5B2A6;
+  background: linear-gradient(180deg, #E2DFD6, #D4D0C5);
+  border-color: #A8A599;
   border-bottom-width: 1px;
   transform: translateY(2px);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+  color: var(--ink-primary);
 }
 
-/* Red Mechanical Rocker Switch (Milestone Sign-Off) */
+/* ─── Heavy Red Mechanical Rocker Switch ─── */
 .te-rocker-module {
   display: flex;
   align-items: center;
-  gap: 14px;
-  background: #E3E1DA;
-  border: 1px solid #CECBC2;
-  padding: 10px 14px;
-  border-radius: 8px;
+  gap: 16px;
+  background: linear-gradient(to bottom, #E3E0D8, #D6D2C8);
+  border: 1px solid var(--chassis-groove);
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 1px 0 #FFF;
 }
 .te-rocker-switch {
-  width: 68px;
-  height: 38px;
-  background: #252628;
-  border-radius: 6px;
-  padding: 3px;
+  width: 76px;
+  height: 42px;
+  background: #18191B;
+  border-radius: 8px;
+  padding: 4px;
   cursor: pointer;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+  box-shadow: 
+    inset 0 3px 6px rgba(0,0,0,0.8),
+    0 1px 0 rgba(255,255,255,0.8);
   display: flex;
 }
 .te-rocker-handle {
   width: 50%;
   height: 100%;
-  background: var(--te-red);
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
-  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background 160ms ease;
+  background: linear-gradient(180deg, #FF5A4E 0%, #E6352B 70%, #B81F17 100%);
+  border-radius: 5px;
+  box-shadow: 
+    0 3px 6px rgba(0,0,0,0.4),
+    inset 0 1px 1px rgba(255,255,255,0.6),
+    inset 0 -2px 3px rgba(0,0,0,0.3);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background 180ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
   color: #FFF;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 .te-rocker-switch.locked .te-rocker-handle {
   transform: translateX(100%);
-  background: var(--te-green);
+  background: linear-gradient(180deg, #22C55E 0%, #16A34A 70%, #15803D 100%);
 }
 .rocker-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--ink-primary);
 }
 .rocker-sub {
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--ink-secondary);
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   SHOWSTOPPER: THE PHYSICAL THERMAL RECEIPT PRINTER
+   SHOWSTOPPER: PHYSICAL THERMAL RECEIPT PRINTER
    ══════════════════════════════════════════════════════════════════ */
 .te-printer-module {
-  background: var(--chassis-surface);
-  border: 1px solid var(--chassis-border);
-  border-radius: 12px;
-  padding: 16px;
+  background: linear-gradient(to bottom, #FAF9F5, #ECE8DF);
+  border: 1px solid var(--chassis-groove);
+  border-radius: 14px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  box-shadow: inset 0 1px 0 #FFF, 0 2px 5px rgba(0,0,0,0.04);
+  box-shadow: 
+    inset 0 1px 0 #FFF,
+    0 3px 8px rgba(0,0,0,0.06);
   position: relative;
   overflow: hidden;
 }
@@ -983,7 +1268,7 @@ body {
 }
 .printer-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--ink-secondary);
@@ -991,39 +1276,43 @@ body {
 }
 .printer-status {
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 700;
-  color: var(--te-green);
+  color: var(--enc-green);
 }
 
-/* Laser-Cut Chassis Exit Slot */
+/* CNC Laser-Cut Chassis Exit Slot */
 .printer-slot {
   width: 100%;
-  height: 8px;
-  background: #191816;
+  height: 9px;
+  background: #11100E;
   border-radius: 3px;
-  box-shadow: inset 0 2px 3px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow: 
+    inset 0 3px 4px rgba(0,0,0,0.9),
+    0 1px 0 rgba(255,255,255,0.9);
   margin-bottom: 12px;
   position: relative;
 }
 
-/* Perforated Thermal Receipt Paper */
+/* Perforated Thermal Receipt Paper with 3D Curl Shadow */
 .receipt-paper {
-  background: #FFFEFA;
-  border: 1px solid #D6D2C4;
+  background: #FFFEFB;
+  border: 1px solid #D1CDBF;
   border-top: none;
   padding: 16px 14px;
   font-family: var(--font-mono);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 
+    0 14px 28px rgba(0,0,0,0.18),
+    0 2px 6px rgba(0,0,0,0.08);
   position: relative;
-  transform: translateY(-20px);
-  opacity: 0.3;
-  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+  transform: translateY(-24px);
+  opacity: 0.25;
+  transition: transform 650ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease;
   clip-path: polygon(
     0% 0%, 
     100% 0%, 
-    100% calc(100% - 6px),
-    95% 100%, 90% calc(100% - 6px), 85% 100%, 80% calc(100% - 6px), 75% 100%, 70% calc(100% - 6px), 65% 100%, 60% calc(100% - 6px), 55% 100%, 50% calc(100% - 6px), 45% 100%, 40% calc(100% - 6px), 35% 100%, 30% calc(100% - 6px), 25% 100%, 20% calc(100% - 6px), 15% 100%, 10% calc(100% - 6px), 5% 100%, 0% calc(100% - 6px)
+    100% calc(100% - 7px),
+    95% 100%, 90% calc(100% - 7px), 85% 100%, 80% calc(100% - 7px), 75% 100%, 70% calc(100% - 7px), 65% 100%, 60% calc(100% - 7px), 55% 100%, 50% calc(100% - 7px), 45% 100%, 40% calc(100% - 7px), 35% 100%, 30% calc(100% - 7px), 25% 100%, 20% calc(100% - 7px), 15% 100%, 10% calc(100% - 7px), 5% 100%, 0% calc(100% - 7px)
   );
 }
 .receipt-paper.printed {
@@ -1031,27 +1320,36 @@ body {
   opacity: 1;
 }
 
+/* Torn State Animation */
+.receipt-paper.torn {
+  transform: translateY(18px) rotate(-2deg);
+  opacity: 0.95;
+  box-shadow: 0 18px 36px rgba(0,0,0,0.25);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .receipt-header {
   text-align: center;
-  border-bottom: 1px dashed #A8A497;
+  border-bottom: 1px dashed #A6A192;
   padding-bottom: 8px;
   margin-bottom: 10px;
 }
 .receipt-brand {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 800;
   letter-spacing: 0.06em;
 }
 .receipt-stamp-tag {
-  font-size: 8.5px;
-  font-weight: 700;
+  font-size: 9px;
+  font-weight: 800;
   background: #E8F5E9;
   color: #1B5E20;
   border: 1px solid #81C784;
-  padding: 1px 6px;
-  border-radius: 2px;
+  padding: 2px 7px;
+  border-radius: 3px;
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 5px;
+  letter-spacing: 0.04em;
 }
 
 .receipt-lines {
@@ -1071,12 +1369,30 @@ body {
 .r-val { font-weight: 700; }
 
 .receipt-hash-block {
-  border-top: 1px dashed #A8A497;
+  border-top: 1px dashed #A6A192;
   padding-top: 8px;
   font-size: 8.5px;
   color: #615E56;
   text-align: center;
   word-break: break-all;
+}
+
+.receipt-tear-action {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--enc-blue);
+  cursor: pointer;
+  border-top: 1px dotted #BCB7AA;
+  padding-top: 6px;
+}
+.receipt-tear-action:hover {
+  text-decoration: underline;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1085,36 +1401,36 @@ body {
 .te-footer-specs {
   max-width: 1240px;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--chassis-border);
-  padding-top: 20px;
+  border-top: 1px solid var(--chassis-rim);
+  padding-top: 24px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px;
 }
 
 .te-cta-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 .te-primary-btn {
   background: var(--ink-primary);
   color: #FFF;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
-  padding: 12px 24px;
+  padding: 13px 26px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  gap: 9px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
   transition: transform 120ms ease, background 120ms ease;
 }
 .te-primary-btn:hover {
@@ -1122,19 +1438,20 @@ body {
   transform: translateY(-2px);
 }
 .te-secondary-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.4);
   color: var(--ink-primary);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
-  padding: 12px 20px;
+  padding: 13px 22px;
   border-radius: 6px;
-  border: 1px solid var(--chassis-border);
+  border: 1px solid var(--chassis-rim);
   cursor: pointer;
   text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .te-secondary-btn:hover {
-  background: rgba(0,0,0,0.04);
+  background: #FFF;
 }
 
 .te-copyright {
@@ -1153,12 +1470,13 @@ body {
     <span class="te-logo-type">cyath</span>
   </a>
 
-  <div class="te-system-badge">FIELD RECORDER · UNIT CY-01</div>
-
-  <button class="te-sound-toggle" id="soundToggle" title="Toggle Mechanical Audio Feedback">
-    <span class="te-sound-indicator" id="soundIndicator"></span>
-    <span id="soundLabel">AUDIO: ON</span>
-  </button>
+  <div class="te-top-meta">
+    <div class="te-system-badge">FIELD RECORDER · UNIT CY-01</div>
+    <button class="te-sound-toggle" id="soundToggle" title="Toggle Mechanical Audio Feedback">
+      <span class="te-sound-indicator" id="soundIndicator"></span>
+      <span id="soundLabel">AUDIO: ON</span>
+    </button>
+  </div>
 </header>
 
 <!-- ══════════ VALUE PROP / HEADLINE ══════════ -->
@@ -1172,16 +1490,16 @@ body {
       Send one calibrated staging link. Clients click anywhere to log notes with automatic screen and browser telemetry. When you fix the work, one mechanical switch prints a tamper-proof sign-off receipt.
     </p>
     <div class="te-sub-specs">
-      <span class="te-spec-item">No accounts required</span>
+      <span class="te-spec-item">Zero client accounts</span>
       <span class="te-spec-item">Hardware telemetry</span>
-      <span class="te-spec-item">SHA-256 Milestone Lock</span>
+      <span class="te-spec-item">SHA-256 Milestone Seal</span>
     </div>
   </div>
 </section>
 
 <!-- ══════════ THE CHASSIS: MODEL CY-01 FIELD BENCH ══════════ -->
 <main class="te-chassis" id="teBench">
-  <!-- Torx Corner Fasteners -->
+  <!-- CNC Torx Corner Screws -->
   <div class="torx-screw tl" aria-hidden="true"></div>
   <div class="torx-screw tr" aria-hidden="true"></div>
   <div class="torx-screw bl" aria-hidden="true"></div>
@@ -1191,8 +1509,23 @@ body {
   <div class="te-chassis-top">
     <div class="te-chassis-title">
       <span class="te-model-no">MODEL CY-01</span>
-      <span class="te-model-desc">PRECISION STAGING BENCH · SWEDISH SPEC</span>
+      <span class="te-model-desc">BILLET ALUMINUM STAGING BENCH · SWEDISH SPEC</span>
     </div>
+    
+    <div class="te-hardware-details">
+      <!-- Integrated Mic Hole -->
+      <div class="te-mic-hole">
+        <span class="mic-dot"></span>
+        <span>MIC</span>
+      </div>
+      <!-- Acoustic Speaker Grille -->
+      <div class="te-speaker-grille" title="Acoustic monitor matrix">
+        <div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div>
+        <div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div>
+        <div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div><div class="speaker-hole"></div>
+      </div>
+    </div>
+
     <div class="te-status-strip">
       <span class="led-indicator">
         <span class="led-light"></span>
@@ -1203,21 +1536,71 @@ body {
     </div>
   </div>
 
-  <!-- Upper Deck: Knurled Dial + Viewport Scrubber + LCD Readout -->
+  <!-- Upper Deck: 4 Encoders + Viewport Tuner + VFD Display -->
   <div class="te-upper-deck">
-    <!-- Rotary Encoder (Knurled Dial) -->
-    <div class="te-dial-pod">
-      <div class="knurled-dial" id="knurledDial" title="Drag to adjust zoom scale"></div>
-      <div class="dial-info">
-        <span class="dial-label">ZOOM SCALE</span>
-        <span class="dial-val" id="dialVal">100%</span>
+    <!-- 4 Iconic Teenage Engineering Encoders -->
+    <div class="te-encoders-quad">
+      <!-- Encoder 1: Orange (Zoom / Scale) -->
+      <div class="encoder-unit">
+        <div class="knurled-dial-wrap">
+          <div class="dial-well"></div>
+          <div class="knurled-dial" id="dialZoom" data-color="orange" title="Drag to adjust zoom scale">
+            <div class="dial-cap">
+              <div class="dial-indicator c-orange"></div>
+            </div>
+          </div>
+        </div>
+        <span class="dial-tag">SCALE</span>
+        <span class="dial-status-readout" id="readoutZoom">100%</span>
+      </div>
+
+      <!-- Encoder 2: Blue (Viewport Frequency) -->
+      <div class="encoder-unit">
+        <div class="knurled-dial-wrap">
+          <div class="dial-well"></div>
+          <div class="knurled-dial" id="dialWidth" data-color="blue" title="Drag to tune viewport width">
+            <div class="dial-cap">
+              <div class="dial-indicator c-blue"></div>
+            </div>
+          </div>
+        </div>
+        <span class="dial-tag">WIDTH</span>
+        <span class="dial-status-readout" id="readoutWidth">1440</span>
+      </div>
+
+      <!-- Encoder 3: Green (Pin Inspector) -->
+      <div class="encoder-unit">
+        <div class="knurled-dial-wrap">
+          <div class="dial-well"></div>
+          <div class="knurled-dial" id="dialPins" data-color="green" title="Drag to cycle inspection pins">
+            <div class="dial-cap">
+              <div class="dial-indicator c-green"></div>
+            </div>
+          </div>
+        </div>
+        <span class="dial-tag">PINS</span>
+        <span class="dial-status-readout" id="readoutPins">#01</span>
+      </div>
+
+      <!-- Encoder 4: Ochre (Milestone Lock) -->
+      <div class="encoder-unit">
+        <div class="knurled-dial-wrap">
+          <div class="dial-well"></div>
+          <div class="knurled-dial" id="dialLock" data-color="ochre" title="Drag to seal milestone">
+            <div class="dial-cap">
+              <div class="dial-indicator c-ochre"></div>
+            </div>
+          </div>
+        </div>
+        <span class="dial-tag">LOCK</span>
+        <span class="dial-status-readout" id="readoutLock">OPEN</span>
       </div>
     </div>
 
-    <!-- Center: Calibration Ruler & Snap Buttons -->
+    <!-- Center: Calibration Tuner & Ruler Presets -->
     <div class="te-ruler-pod">
       <div class="ruler-top">
-        <span class="ruler-title">VIEWPORT FREQUENCY TUNER</span>
+        <span class="ruler-title">VIEWPORT CALIBRATION TUNER</span>
         <div class="ruler-presets">
           <button class="ruler-btn" data-width="390">390 MOBILE</button>
           <button class="ruler-btn" data-width="768">768 TABLET</button>
@@ -1230,13 +1613,16 @@ body {
       </div>
     </div>
 
-    <!-- Right: LCD Segment Telemetry Screen -->
+    <!-- Right: Vacuum Fluorescent Display (VFD) Screen -->
     <div class="te-lcd-screen">
       <div class="lcd-row-top">
         <span class="lcd-freq-tag">CLIENT TELEMETRY</span>
         <span class="lcd-status-dot"></span>
       </div>
-      <div class="lcd-main-readout" id="lcdDimensions">1440 × 900</div>
+      <div class="lcd-readout-wrap">
+        <div class="lcd-ghost-readout">8888 × 8888</div>
+        <div class="lcd-main-readout" id="lcdDimensions">1440 × 900</div>
+      </div>
       <div class="lcd-sub-meta">
         <span>CHROME 131.0</span>
         <span>macOS 15.1</span>
@@ -1264,6 +1650,11 @@ body {
 
       <!-- Live Staged Site (Aura Atelier) -->
       <div class="staged-site" id="stagedSite" title="Click anywhere to drop an inspection pin">
+        <!-- Interactive CAD Crosshairs -->
+        <div class="cad-crosshair-x" id="crosshairX"></div>
+        <div class="cad-crosshair-y" id="crosshairY"></div>
+        <div class="cad-coord-tag" id="coordTag">X: 0px · Y: 0px</div>
+
         <!-- Site Navigation -->
         <div class="ss-nav">
           <div class="ss-logo">AURA ATELIER</div>
@@ -1316,7 +1707,7 @@ body {
     </div>
   </div>
 
-  <!-- Lower Deck: Mechanical Controls & Perforated Receipt Printer -->
+  <!-- Lower Deck: 3D PBT Keypad & Thermal Receipt Printer -->
   <div class="te-lower-deck">
     <!-- Controls Bank -->
     <div class="te-controls-bank">
@@ -1326,13 +1717,13 @@ body {
           <span class="cb-desc">Switch instrument behavior on click</span>
         </div>
         <div class="te-key-group">
-          <button class="te-key active" id="modePin">✦ PIN NOTE</button>
-          <button class="te-key" id="modeMeasure">⌖ CROSSHAIR</button>
-          <button class="te-key" id="modeBrowse">↗ BROWSE</button>
+          <div class="te-key-well"><button class="te-key active" id="modePin">✦ PIN NOTE</button></div>
+          <div class="te-key-well"><button class="te-key" id="modeMeasure">⌖ CROSSHAIR</button></div>
+          <div class="te-key-well"><button class="te-key" id="modeBrowse">↗ BROWSE</button></div>
         </div>
       </div>
 
-      <!-- Rocker Switch Module -->
+      <!-- Heavy Red Mechanical Rocker Switch -->
       <div class="te-rocker-module">
         <div class="te-rocker-switch" id="rockerSwitch" title="Click to Approve and Print Milestone Receipt">
           <div class="te-rocker-handle" id="rockerHandle">SIGN</div>
@@ -1352,7 +1743,7 @@ body {
       </div>
       <div class="printer-slot"></div>
 
-      <!-- Physical Paper Receipt -->
+      <!-- Physical Paper Receipt with Tear-Off Action -->
       <div class="receipt-paper" id="receiptPaper">
         <div class="receipt-header">
           <div class="receipt-brand">CYATH · FIELD VERIFICATION</div>
@@ -1361,11 +1752,14 @@ body {
         <div class="receipt-lines">
           <div class="r-row"><span class="r-label">PROJECT:</span><span class="r-val">AURA ATELIER v2.4</span></div>
           <div class="r-row"><span class="r-label">CLIENT:</span><span class="r-val">JANE COOPER (SIGNED)</span></div>
-          <div class="r-row"><span class="r-label">STATUS:</span><span class="r-val" style="color:var(--te-green);">ALL 12 PINS RESOLVED</span></div>
+          <div class="r-row"><span class="r-label">STATUS:</span><span class="r-val" style="color:var(--enc-green);">ALL 12 PINS RESOLVED</span></div>
           <div class="r-row"><span class="r-label">STAMPED:</span><span class="r-val">2026.11.09 · 00:35 UTC</span></div>
         </div>
         <div class="receipt-hash-block">
           SHA-256: 844d88e92a4f6103b417c
+        </div>
+        <div class="receipt-tear-action" id="tearReceiptBtn">
+          <span>✂ TEAR RECEIPT TAPE</span>
         </div>
       </div>
     </div>
@@ -1375,7 +1769,7 @@ body {
 <!-- ══════════ BOTTOM CALL TO ACTION ══════════ -->
 <footer class="te-footer-specs">
   <div class="te-copyright">
-    CYATH INSTRUMENTS · SWEDISH CRAFT · NO SPREADSHEETS · NO 15-EMAIL THREADS
+    CYATH INSTRUMENTS · SWEDISH BILLET ALUMINUM SPEC · ZERO EMAIL SPREADSHEETS
   </div>
   <div class="te-cta-row">
     <a href="/dashboard" class="te-primary-btn">
@@ -1387,7 +1781,7 @@ body {
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
-   INTERACTIVITY ENGINE: AUDIO SYNTHESIZER, SCALING & RECEIPT ENGINE
+   INTERACTIVITY & AUDIO SYNTHESIS ENGINE
    ══════════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
@@ -1407,7 +1801,7 @@ body {
     }
   }
 
-  function playClick(freq, duration, type) {
+  function playClick(freq, duration, type, vol) {
     if (!soundEnabled) return;
     initAudio();
     if (!audioCtx) return;
@@ -1416,7 +1810,7 @@ body {
       var gain = audioCtx.createGain();
       osc.type = type || 'sine';
       osc.frequency.setValueAtTime(freq || 1200, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.setValueAtTime(vol || 0.08, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (duration || 0.04));
       osc.connect(gain);
       gain.connect(audioCtx.destination);
@@ -1426,11 +1820,36 @@ body {
   }
 
   function playThud() {
-    playClick(140, 0.08, 'triangle');
+    playClick(120, 0.09, 'triangle', 0.15);
   }
 
-  function playTick() {
-    playClick(1800, 0.015, 'square');
+  function playRatchet(freq) {
+    playClick(freq || 2200, 0.012, 'square', 0.05);
+  }
+
+  function playTear() {
+    if (!soundEnabled) return;
+    initAudio();
+    // Simulate paper tearing white noise burst
+    try {
+      var bufferSize = audioCtx.sampleRate * 0.12;
+      var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+      }
+      var noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      var filter = audioCtx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 1800;
+      var gain = audioCtx.createGain();
+      gain.gain.value = 0.08;
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      noise.start();
+    } catch(e) {}
   }
 
   /* Sound Toggle */
@@ -1442,36 +1861,40 @@ body {
     if (soundEnabled) {
       soundIndicator.classList.remove('muted');
       soundLabel.textContent = 'AUDIO: ON';
-      playTick();
+      playRatchet(2400);
     } else {
       soundIndicator.classList.add('muted');
       soundLabel.textContent = 'AUDIO: OFF';
     }
   });
 
-  /* Viewport Tuner Slider & Buttons */
+  /* Viewport Tuner Slider & Presets */
   var slider = document.getElementById('viewportSlider');
   var viewportContainer = document.getElementById('viewportContainer');
   var lcdDimensions = document.getElementById('lcdDimensions');
   var presetBtns = document.querySelectorAll('.ruler-btn');
+  var readoutWidth = document.getElementById('readoutWidth');
 
   function setViewportWidth(val) {
     if (val >= 1200) {
       viewportContainer.style.maxWidth = '100%';
       lcdDimensions.textContent = '1440 × 900';
+      readoutWidth.textContent = '1440';
     } else if (val >= 768) {
       viewportContainer.style.maxWidth = '768px';
       lcdDimensions.textContent = '768 × 1024';
+      readoutWidth.textContent = '768';
     } else {
       viewportContainer.style.maxWidth = '390px';
       lcdDimensions.textContent = '390 × 844';
+      readoutWidth.textContent = '390';
     }
     slider.value = val;
     presetBtns.forEach(function(b) {
       var target = parseInt(b.getAttribute('data-width'), 10);
       b.classList.toggle('active', Math.abs(target - val) < 80);
     });
-    playTick();
+    playRatchet(1600 + (val * 0.5));
   }
 
   slider.addEventListener('input', function(e) {
@@ -1485,44 +1908,120 @@ body {
     });
   });
 
-  /* Knurled Rotary Dial Drag Interaction */
-  var dial = document.getElementById('knurledDial');
-  var dialVal = document.getElementById('dialVal');
-  var dialAngle = 0;
-  var isDraggingDial = false;
-  var startY = 0;
+  /* 4 Rotary Encoders Interaction Engine */
+  function setupEncoder(elementId, onRotate) {
+    var dial = document.getElementById(elementId);
+    if (!dial) return;
+    var angle = 0;
+    var isDragging = false;
+    var startY = 0;
 
-  dial.addEventListener('mousedown', function(e) {
-    isDraggingDial = true;
-    startY = e.clientY;
-    initAudio();
-    playClick(800, 0.03);
-    document.body.style.cursor = 'grabbing';
+    dial.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      startY = e.clientY;
+      initAudio();
+      playClick(800, 0.02, 'triangle', 0.08);
+      document.body.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      var delta = startY - e.clientY;
+      startY = e.clientY;
+      angle += delta * 2.5;
+      dial.style.transform = 'rotate(' + angle + 'deg)';
+      if (Math.abs(delta) > 1) {
+        playRatchet(1800 + Math.abs(delta) * 80);
+      }
+      if (onRotate) onRotate(angle, delta);
+    });
+
+    window.addEventListener('mouseup', function() {
+      if (isDragging) {
+        isDragging = false;
+        document.body.style.cursor = 'default';
+        playThud();
+      }
+    });
+  }
+
+  // Encoder 1: Zoom
+  var readoutZoom = document.getElementById('readoutZoom');
+  setupEncoder('dialZoom', function(angle) {
+    var scalePct = Math.round(100 + (angle / 6));
+    if (scalePct < 75) scalePct = 75;
+    if (scalePct > 130) scalePct = 130;
+    readoutZoom.textContent = scalePct + '%';
   });
 
-  window.addEventListener('mousemove', function(e) {
-    if (!isDraggingDial) return;
-    var delta = startY - e.clientY;
-    startY = e.clientY;
-    dialAngle += delta * 2;
-    dial.style.transform = 'rotate(' + dialAngle + 'deg)';
-    
-    // Scale factor from 80% to 120%
-    var scalePct = Math.round(100 + (dialAngle / 5));
-    if (scalePct < 80) scalePct = 80;
-    if (scalePct > 125) scalePct = 125;
-    dialVal.textContent = scalePct + '%';
-    if (Math.abs(delta) > 2) {
-      playClick(1400 + scalePct * 4, 0.015, 'square');
+  // Encoder 2: Width
+  setupEncoder('dialWidth', function(angle, delta) {
+    var cur = parseInt(slider.value, 10) + Math.round(delta * 8);
+    if (cur < 360) cur = 360;
+    if (cur > 1200) cur = 1200;
+    setViewportWidth(cur);
+  });
+
+  // Encoder 3: Pins
+  var readoutPins = document.getElementById('readoutPins');
+  var pinCycle = 1;
+  setupEncoder('dialPins', function(angle, delta) {
+    if (Math.abs(delta) > 3) {
+      pinCycle = (pinCycle % 2) + 1;
+      readoutPins.textContent = '#0' + pinCycle;
+      var targetPin = document.getElementById('pin' + pinCycle);
+      if (targetPin) {
+        targetPin.dispatchEvent(new MouseEvent('mouseenter'));
+      }
     }
   });
 
-  window.addEventListener('mouseup', function() {
-    if (isDraggingDial) {
-      isDraggingDial = false;
-      document.body.style.cursor = 'default';
-      playThud();
+  // Encoder 4: Lock / Rocker Sync
+  var readoutLock = document.getElementById('readoutLock');
+  setupEncoder('dialLock', function(angle) {
+    if (angle > 40 && !isLocked) {
+      rocker.click();
+      readoutLock.textContent = 'SEALED';
+      readoutLock.style.color = 'var(--enc-green)';
+    } else if (angle < -40 && isLocked) {
+      rocker.click();
+      readoutLock.textContent = 'OPEN';
+      readoutLock.style.color = 'var(--ink-primary)';
     }
+  });
+
+  /* CAD Crosshair Reticle & Telemetry Tracking */
+  var stagedSite = document.getElementById('stagedSite');
+  var crossX = document.getElementById('crosshairX');
+  var crossY = document.getElementById('crosshairY');
+  var coordTag = document.getElementById('coordTag');
+  var isCrosshairMode = true;
+
+  stagedSite.addEventListener('mouseenter', function() {
+    if (isCrosshairMode) {
+      crossX.style.display = 'block';
+      crossY.style.display = 'block';
+      coordTag.style.display = 'block';
+    }
+  });
+
+  stagedSite.addEventListener('mouseleave', function() {
+    crossX.style.display = 'none';
+    crossY.style.display = 'none';
+    coordTag.style.display = 'none';
+  });
+
+  stagedSite.addEventListener('mousemove', function(e) {
+    if (!isCrosshairMode) return;
+    var rect = stagedSite.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+
+    crossX.style.left = x + 'px';
+    crossY.style.top = y + 'px';
+    coordTag.style.left = x + 'px';
+    coordTag.style.top = y + 'px';
+    coordTag.textContent = 'X: ' + Math.round(x) + 'px · Y: ' + Math.round(y) + 'px';
   });
 
   /* Interactive Pin Hover & Inspect */
@@ -1542,13 +2041,13 @@ body {
       
       var leftPos = rect.left - parentRect.left + 32;
       var topPos = rect.top - parentRect.top - 10;
-      if (leftPos + 290 > parentRect.width) {
-        leftPos = leftPos - 320;
+      if (leftPos + 300 > parentRect.width) {
+        leftPos = leftPos - 330;
       }
       popover.style.left = leftPos + 'px';
       popover.style.top = topPos + 'px';
       popover.classList.add('visible');
-      playClick(900, 0.02);
+      playClick(950, 0.025, 'sine', 0.08);
     });
 
     pin.addEventListener('mouseleave', function() {
@@ -1557,11 +2056,9 @@ body {
   });
 
   /* Dropping New Pins on Click */
-  var stagedSite = document.getElementById('stagedSite');
   var pinCount = 2;
   stagedSite.addEventListener('click', function(e) {
-    // If clicking an existing pin, ignore
-    if (e.target.classList.contains('review-pin')) return;
+    if (e.target.classList.contains('review-pin') || e.target.closest('.review-pin')) return;
     
     var rect = stagedSite.getBoundingClientRect();
     var x = e.clientX - rect.left;
@@ -1570,17 +2067,16 @@ body {
     pinCount++;
     var newPin = document.createElement('div');
     newPin.className = 'review-pin';
-    newPin.style.left = (x - 13) + 'px';
-    newPin.style.top = (y - 13) + 'px';
+    newPin.style.left = (x - 14) + 'px';
+    newPin.style.top = (y - 14) + 'px';
     newPin.textContent = pinCount;
     newPin.setAttribute('data-title', 'Client Coordinate Tag');
-    newPin.setAttribute('data-text', 'Viewport note placed at (' + Math.round(x) + 'px, ' + Math.round(y) + 'px).');
+    newPin.setAttribute('data-text', 'Viewport telemetry captured at coordinate (' + Math.round(x) + 'px, ' + Math.round(y) + 'px).');
     newPin.setAttribute('data-telemetry', lcdDimensions.textContent + ' · Chrome 131 · Jane Cooper');
     
     stagedSite.appendChild(newPin);
-    playClick(1100, 0.05, 'square');
+    playClick(1200, 0.04, 'square', 0.1);
 
-    // Attach hover to new pin
     newPin.addEventListener('mouseenter', function() {
       var r = newPin.getBoundingClientRect();
       var pr = stagedSite.getBoundingClientRect();
@@ -1589,11 +2085,11 @@ body {
       popTelemetry.textContent = newPin.getAttribute('data-telemetry');
       var lp = r.left - pr.left + 32;
       var tp = r.top - pr.top - 10;
-      if (lp + 290 > pr.width) lp = lp - 320;
+      if (lp + 300 > pr.width) lp = lp - 330;
       popover.style.left = lp + 'px';
       popover.style.top = tp + 'px';
       popover.classList.add('visible');
-      playClick(900, 0.02);
+      playClick(950, 0.025);
     });
     newPin.addEventListener('mouseleave', function() {
       popover.classList.remove('visible');
@@ -1606,15 +2102,24 @@ body {
     k.addEventListener('click', function() {
       modeKeys.forEach(function(o) { o.classList.remove('active'); });
       k.classList.add('active');
-      playClick(600, 0.03);
+      playClick(620, 0.03, 'triangle', 0.12);
+      if (k.id === 'modeMeasure') {
+        isCrosshairMode = true;
+      } else {
+        isCrosshairMode = false;
+        crossX.style.display = 'none';
+        crossY.style.display = 'none';
+        coordTag.style.display = 'none';
+      }
     });
   });
 
-  /* Rocker Switch & Thermal Receipt Printer Engine */
+  /* Heavy Rocker Switch & Thermal Receipt Printer Engine */
   var rocker = document.getElementById('rockerSwitch');
   var rockerHandle = document.getElementById('rockerHandle');
   var receiptPaper = document.getElementById('receiptPaper');
   var printerStatus = document.getElementById('printerStatus');
+  var tearBtn = document.getElementById('tearReceiptBtn');
   var isLocked = false;
 
   rocker.addEventListener('click', function() {
@@ -1625,29 +2130,38 @@ body {
 
     if (isLocked) {
       printerStatus.textContent = 'PRINTING...';
-      printerStatus.style.color = 'var(--te-orange)';
+      printerStatus.style.color = 'var(--enc-orange)';
+      receiptPaper.classList.remove('torn');
       
       // Simulate stepper motor feeding receipt
       var step = 0;
       var printInterval = setInterval(function() {
         step++;
-        playClick(1600 + (step * 80), 0.015, 'square');
+        playClick(1500 + (step * 90), 0.016, 'square', 0.06);
         if (step >= 5) {
           clearInterval(printInterval);
           receiptPaper.classList.add('printed');
           printerStatus.textContent = 'SEALED · VERIFIED';
-          printerStatus.style.color = 'var(--te-green)';
-          playClick(880, 0.12, 'sine');
+          printerStatus.style.color = 'var(--enc-green)';
+          playClick(880, 0.14, 'sine', 0.1);
         }
-      }, 100);
+      }, 110);
     } else {
       receiptPaper.classList.remove('printed');
+      receiptPaper.classList.remove('torn');
       printerStatus.textContent = 'READY';
-      printerStatus.style.color = 'var(--te-green)';
+      printerStatus.style.color = 'var(--enc-green)';
     }
   });
 
-  // Auto trigger initial sample print after 1.5s for instant delight
+  /* Tear Receipt Tape Action */
+  tearBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    playTear();
+    receiptPaper.classList.add('torn');
+  });
+
+  // Auto trigger initial sample print after 1.2s for instant delight
   setTimeout(function() {
     if (!isLocked) {
       rocker.click();
