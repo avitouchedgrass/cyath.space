@@ -542,6 +542,70 @@ html[data-theme="day"] .btn-primary {
   z-index: 10;
   pointer-events: none;
   animation: cursorGlide 6.5s infinite cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.25s ease;
+}
+
+.pin-demo-box:hover .anim-cursor {
+  opacity: 0.15;
+}
+
+/* Interactive Staging Cursor Tag (Follows user cursor with lerp physics) */
+.interactive-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+
+.pin-demo-box:hover .interactive-cursor {
+  opacity: 1;
+}
+
+.interactive-cursor svg {
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
+}
+
+.interactive-cursor-label {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  background: #38BDF8;
+  color: #000000;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.interactive-pin {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #38BDF8;
+  color: #000000;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.5);
+  transform: translate(-50%, -50%) scale(0);
+  animation: dropPinPop 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: none;
+  z-index: 15;
+}
+
+@keyframes dropPinPop {
+  to { transform: translate(-50%, -50%) scale(1); }
 }
 
 .anim-cursor svg {
@@ -838,6 +902,70 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   border: 1px dashed var(--border-medium);
   border-radius: 12px;
   padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cert-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), rgba(56, 189, 248, 0.16), rgba(255, 255, 255, 0.06), transparent);
+  transform: skewX(-22deg);
+  pointer-events: none;
+}
+
+.cert-box.stamped::before {
+  animation: certRefractSheen 1.3s 0.35s ease-out forwards;
+}
+
+@keyframes certRefractSheen {
+  to { left: 180%; }
+}
+
+.cert-stamp-badge {
+  position: absolute;
+  bottom: 22px;
+  right: 24px;
+  color: #38BDF8;
+  opacity: 0;
+  transform: scale(2.8) rotate(-26deg);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cert-box.stamped .cert-stamp-badge {
+  opacity: 0.95;
+  transform: scale(1) rotate(-8deg);
+}
+
+.stamp-ink-ripple {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid #38BDF8;
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+}
+
+.cert-box.stamped .stamp-ink-ripple {
+  animation: inkRipple 0.85s 0.38s ease-out forwards;
+}
+
+@keyframes inkRipple {
+  0% { opacity: 0.85; transform: scale(0.65); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+html[data-theme="day"] .cert-stamp-badge {
+  color: #0F172A;
+}
+html[data-theme="day"] .stamp-ink-ripple {
+  border-color: #0F172A;
 }
 
 .cert-header {
@@ -1150,6 +1278,35 @@ html[data-theme="day"] .animated-dashed-border rect {
   line-height: 1;
   color: var(--text-primary);
   margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+}
+
+/* Odometer Number Ticker Roll-Up Animation */
+.ticker-box {
+  display: inline-block;
+  height: 1.1em;
+  line-height: 1.1em;
+  overflow: hidden;
+  vertical-align: bottom;
+  position: relative;
+}
+
+.ticker-roller {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ticker-roller.monthly {
+  transform: translateY(-50%);
+}
+
+.ticker-digit {
+  height: 1.1em;
+  line-height: 1.1em;
+  display: block;
+}
 }
 
 .price-period {
@@ -1337,6 +1494,14 @@ html[data-theme="day"] .animated-dashed-border rect {
         <span>NOTE #104</span>
       </div>
       <div class="pin-demo-box">
+        <!-- Interactive Staging Cursor (Follows cursor with lerp physics) -->
+        <div class="interactive-cursor" id="interactiveCursor" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M4 3L11 20L14 13L21 10L4 3Z" fill="#38BDF8" stroke="#000000" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <div class="interactive-cursor-label">You (Reviewer)</div>
+        </div>
+
         <!-- Animated Simulated Page Element -->
         <div class="sim-page-preview">
           <div class="sim-page-header">
@@ -1483,6 +1648,19 @@ html[data-theme="day"] .animated-dashed-border rect {
         <div class="cert-hash">
           HASH: 8f92c10b77e4a11f2389d5bc40986e82a39b9c
         </div>
+        <div class="cert-stamp-badge" id="certStamp" aria-hidden="true">
+          <svg width="76" height="76" viewBox="0 0 100 100" class="stamp-svg">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="4 3"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <path id="stampCurveArch" d="M 18,50 A 32,32 0 1,1 82,50" fill="none"/>
+            <text font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" fill="currentColor" letter-spacing="2">
+              <textPath href="#stampCurveArch" startOffset="50%" text-anchor="middle">MILESTONE SIGNED</textPath>
+            </text>
+            <polygon points="50,38 58,42 58,52 50,56 42,52 42,42" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <text x="50" y="72" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle" fill="currentColor" letter-spacing="1.5">SHA-256</text>
+          </svg>
+          <div class="stamp-ink-ripple"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1579,7 +1757,9 @@ html[data-theme="day"] .animated-dashed-border rect {
       </svg>
       <div>
         <div class="price-tier-name">STUDIO & AGENCY</div>
-        <div class="price-figure" id="agencyPriceNum">$12</div>
+        <div class="price-figure" id="agencyPriceNum">
+          <span>$</span><span class="ticker-box"><span class="ticker-roller" id="agencyPriceRoller"><span class="ticker-digit">12</span><span class="ticker-digit">15</span></span></span>
+        </div>
         <div class="price-period" id="agencyPriceNotice">per seat / month · only when billed annually ($144/year)</div>
         <p class="price-desc">For studios and web agencies managing multiple staging links with client teams.</p>
         <ul class="price-features">
@@ -1694,25 +1874,98 @@ html[data-theme="day"] .animated-dashed-border rect {
     }
   };
 
-  // Interactive Billing switcher ($12 annually, $15 monthly)
+  // Interactive Billing switcher ($12 annually, $15 monthly with Odometer Ticker)
   window.setBilling = function(mode) {
-    const num = document.getElementById('agencyPriceNum');
+    const roller = document.getElementById('agencyPriceRoller');
     const notice = document.getElementById('agencyPriceNotice');
     const annualBtn = document.getElementById('billingAnnualBtn');
     const monthlyBtn = document.getElementById('billingMonthlyBtn');
 
     if (mode === 'monthly') {
-      if (num) num.textContent = '$15';
+      if (roller) roller.classList.add('monthly');
       if (notice) notice.textContent = 'per seat / month · billed monthly ($15/month)';
       if (annualBtn) annualBtn.classList.remove('active');
       if (monthlyBtn) monthlyBtn.classList.add('active');
     } else {
-      if (num) num.textContent = '$12';
+      if (roller) roller.classList.remove('monthly');
       if (notice) notice.textContent = 'per seat / month · only when billed annually ($144/year)';
       if (monthlyBtn) monthlyBtn.classList.remove('active');
       if (annualBtn) annualBtn.classList.add('active');
     }
   };
+
+  // ══════════════════════════════════════════════════════════════════
+  // MICRO-ANIMATIONS 2 & 4 (CAPTURE PIN STAGING & APPROVAL SEAL STAMP)
+  // ══════════════════════════════════════════════════════════════════
+  // Micro-Animation 2: Interactive Staging Reviewer Cursor & Pin Drop in 01 / Capture
+  const pinDemoBox = document.querySelector('.pin-demo-box');
+  const interactiveCursor = document.getElementById('interactiveCursor');
+  if (pinDemoBox && interactiveCursor) {
+    let pinCount = 1;
+    let targetCurX = 0, targetCurY = 0;
+    let curX = 0, curY = 0;
+    let isHovered = false;
+
+    pinDemoBox.addEventListener('mouseenter', () => {
+      isHovered = true;
+      interactiveCursor.style.opacity = '1';
+    });
+
+    pinDemoBox.addEventListener('mouseleave', () => {
+      isHovered = false;
+      interactiveCursor.style.opacity = '0';
+    });
+
+    pinDemoBox.addEventListener('mousemove', (e) => {
+      const rect = pinDemoBox.getBoundingClientRect();
+      targetCurX = e.clientX - rect.left;
+      targetCurY = e.clientY - rect.top;
+    });
+
+    pinDemoBox.addEventListener('click', (e) => {
+      const rect = pinDemoBox.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      pinCount++;
+      const pin = document.createElement('div');
+      pin.className = 'interactive-pin';
+      pin.textContent = pinCount;
+      pin.style.left = `${clickX}px`;
+      pin.style.top = `${clickY}px`;
+      pinDemoBox.appendChild(pin);
+
+      const allPins = pinDemoBox.querySelectorAll('.interactive-pin');
+      if (allPins.length > 7) {
+        allPins[0].remove();
+      }
+    });
+
+    function renderInteractiveCursor() {
+      if (isHovered) {
+        curX += (targetCurX - curX) * 0.24;
+        curY += (targetCurY - curY) * 0.24;
+        interactiveCursor.style.left = `${curX}px`;
+        interactiveCursor.style.top = `${curY}px`;
+      }
+      requestAnimationFrame(renderInteractiveCursor);
+    }
+    renderInteractiveCursor();
+  }
+
+  // Micro-Animation 4: Milestone Certificate Cryptographic Hologram Stamp in 03 / Approval
+  const certBox = document.querySelector('.cert-box');
+  if (certBox && 'IntersectionObserver' in window) {
+    const stampObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          certBox.classList.add('stamped');
+          stampObserver.unobserve(certBox);
+        }
+      });
+    }, { threshold: 0.35 });
+    stampObserver.observe(certBox);
+  }
 
   // ══════════════════════════════════════════════════════════════════
   // THREE.JS SCENE SETUP & RENDER TARGETS
@@ -1770,6 +2023,8 @@ html[data-theme="day"] .animated-dashed-border rect {
       uniform vec3 uBgColor;
       uniform vec3 uFgColor;
       uniform float uInvert;
+      uniform vec2 uMouse;
+      uniform float uMouseStrength;
 
       const mat4 THRESHOLDS = mat4(
         0.94118, 0.29412, 0.76471, 0.05882,
@@ -1803,6 +2058,18 @@ html[data-theme="day"] .animated-dashed-border rect {
         vec2 fragCoord = vUv * uResolution;
         vec2 cellCoord = fragCoord / uGridSize;
         
+        // Magnetic ASCII / Halftone Repel displacement
+        vec2 mDiff = vUv - uMouse;
+        mDiff.x *= uResolution.x / uResolution.y;
+        float mDist = length(mDiff);
+        float repelRadius = 0.16;
+        if (mDist < repelRadius && uMouseStrength > 0.001) {
+          float force = 1.0 - mDist / repelRadius;
+          force = force * force * (3.0 - 2.0 * force);
+          vec2 repelDir = normalize(mDiff);
+          cellCoord += repelDir * force * 5.0 * uMouseStrength;
+        }
+
         // Sample 3D texture at the center of the quantized cell
         vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
         vec4 tex = texture2D(tDiffuse, quantizedUv);
@@ -1860,7 +2127,9 @@ html[data-theme="day"] .animated-dashed-border rect {
       uMethod: { value: 1 }, // 1 = Halftone Dot Screen (as on caelangray.com)
       uBgColor: { value: new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b) },
       uFgColor: { value: new THREE.Color(currentTheme === 'day' ? 0x1c1a18 : 0xffffff) },
-      uInvert: { value: (currentTheme === 'day' ? 1.0 : 0.0) }
+      uInvert: { value: (currentTheme === 'day' ? 1.0 : 0.0) },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uMouseStrength: { value: 0.0 }
     }
   });
 
@@ -1995,25 +2264,6 @@ html[data-theme="day"] .animated-dashed-border rect {
     glide.position.set(x, -1.17, z);
     deskGroup.add(glide);
   }
-  makeDeskLeg(-deskW/2 + 0.18, -deskD/2 + 0.18);
-  makeDeskLeg(-deskW/2 + 0.18, deskD/2 - 0.18);
-  makeDeskLeg(deskW/2 - 0.18, -deskD/2 + 0.18);
-  makeDeskLeg(deskW/2 - 0.18, deskD/2 - 0.18);
-  roomGroup.add(deskGroup);
-
-  // Volumetric blue atmospheric beam from laptop screen extending behind heading
-  const beamGeo = new THREE.PlaneGeometry(4.2, 2.6);
-  const beamMat = new THREE.MeshBasicMaterial({
-    color: 0x2563EB,
-    transparent: true,
-    opacity: isDay ? 0.05 : 0.22,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  });
-  const ambientBeam = new THREE.Mesh(beamGeo, beamMat);
-  ambientBeam.position.set(-0.55, 0.35, 0.15);
-  ambientBeam.rotation.y = 0.22;
-  roomGroup.add(ambientBeam);
   makeDeskLeg(-deskW/2 + 0.18, -deskD/2 + 0.18);
   makeDeskLeg(-deskW/2 + 0.18, deskD/2 - 0.18);
   makeDeskLeg(deskW/2 - 0.18, -deskD/2 + 0.18);
@@ -2249,7 +2499,6 @@ html[data-theme="day"] .animated-dashed-border rect {
       footGlideMat.color.setHex(0x1E2026);
       chairBaseMat.color.setHex(0x3A3E48);
       casterWheelMat.color.setHex(0x181A20);
-      if (typeof ambientBeam !== 'undefined' && ambientBeam.material) ambientBeam.material.opacity = 0.05;
     } else {
       ambLight.color.setHex(0x4B5563);
       ambLight.intensity = 2.6;
@@ -2267,7 +2516,6 @@ html[data-theme="day"] .animated-dashed-border rect {
       footGlideMat.color.setHex(0xE2E8F0);
       chairBaseMat.color.setHex(0x94A3B8);
       casterWheelMat.color.setHex(0xE2E8F0);
-      if (typeof ambientBeam !== 'undefined' && ambientBeam.material) ambientBeam.material.opacity = 0.22;
     }
   }
 
@@ -2282,6 +2530,9 @@ html[data-theme="day"] .animated-dashed-border rect {
   let prevMouseX = 0, prevMouseY = 0;
   let targetRotX = 0, targetRotY = 0;
   let mouseX = 0.5, mouseY = 0.5;
+  let curMouseUvX = 0.5, curMouseUvY = 0.5;
+  let curMouseStrength = 0.0;
+  let targetMouseActive = 0.0;
 
   displayCanvas.addEventListener('mousedown', (e) => {
     isDragging = true;
@@ -2290,11 +2541,15 @@ html[data-theme="day"] .animated-dashed-border rect {
   });
 
   window.addEventListener('mouseup', () => { isDragging = false; });
-  window.addEventListener('mouseleave', () => { isDragging = false; });
+  window.addEventListener('mouseleave', () => { 
+    isDragging = false; 
+    targetMouseActive = 0.0;
+  });
 
   window.addEventListener('mousemove', (e) => {
     mouseX = e.clientX / window.innerWidth;
     mouseY = e.clientY / window.innerHeight;
+    targetMouseActive = (e.clientY <= window.innerHeight * 1.05) ? 1.0 : 0.0;
     if (isDragging) {
       const dx = e.clientX - prevMouseX;
       const dy = e.clientY - prevMouseY;
@@ -2362,6 +2617,13 @@ html[data-theme="day"] .animated-dashed-border rect {
     // 2. Smooth drag rotation & subtle idle breathing
     roomGroup.rotation.y += (targetRotY - roomGroup.rotation.y) * 0.08;
     roomGroup.rotation.x += (targetRotX - roomGroup.rotation.x) * 0.08;
+
+    // Magnetic ASCII / Halftone Repel displacement physics
+    curMouseUvX += (mouseX - curMouseUvX) * 0.14;
+    curMouseUvY += ((1.0 - mouseY) - curMouseUvY) * 0.14;
+    curMouseStrength += (targetMouseActive - curMouseStrength) * 0.08;
+    postMaterial.uniforms.uMouse.value.set(curMouseUvX, curMouseUvY);
+    postMaterial.uniforms.uMouseStrength.value = curMouseStrength;
 
     // Gentle camera parallax lerp
     const targetCamX = (mouseX - 0.5) * 0.35;
