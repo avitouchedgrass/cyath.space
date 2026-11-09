@@ -99,13 +99,10 @@ html.custom-cursor-active * {
   position: fixed;
   top: 0;
   left: 0;
+  width: 0;
+  height: 0;
   pointer-events: none;
   z-index: 999998;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -119,7 +116,10 @@ html.custom-cursor-active * {
 }
 
 .loupe-ring {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -188,8 +188,13 @@ html.custom-cursor-active * {
 .crop-br { bottom: -3px; right: -3px; border-bottom: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
 
 .loupe-badge {
-  margin-top: 7px;
+  position: absolute;
+  top: 29px;
+  left: 0;
+  transform: translateX(-50%);
   pointer-events: none;
+  white-space: nowrap;
+  transition: top 0.25s ease;
 }
 
 .loupe-badge span {
@@ -216,6 +221,10 @@ html.custom-cursor-active * {
   background: rgba(56, 189, 248, 0.06);
 }
 
+.loupe-cursor.hovering-link .loupe-badge {
+  top: 36px;
+}
+
 .loupe-cursor.hovering-link .loupe-tick {
   opacity: 0;
 }
@@ -235,6 +244,10 @@ html.custom-cursor-active * {
   border-color: rgba(255, 255, 255, 0.75);
 }
 
+.loupe-cursor.hovering-canvas .loupe-badge {
+  top: 34px;
+}
+
 .loupe-cursor.clicking .loupe-ring {
-  transform: scale(0.85);
+  transform: translate(-50%, -50%) scale(0.85);
 }

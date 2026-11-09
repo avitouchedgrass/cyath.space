@@ -98,7 +98,7 @@ export function PrintmakerLoupeCursor() {
       if (isVisible) {
         loupeX += (mouseX - loupeX) * 0.18;
         loupeY += (mouseY - loupeY) * 0.18;
-        loupeEl.style.transform = `translate3d(${loupeX}px, ${loupeY}px, 0) translate(-50%, -50%)`;
+        loupeEl.style.transform = `translate3d(${loupeX}px, ${loupeY}px, 0)`;
       }
       animId = requestAnimationFrame(updateLoupe);
     };
