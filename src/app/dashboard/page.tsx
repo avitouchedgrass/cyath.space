@@ -2,12 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, ExternalLink, Share2, CheckCircle2, Globe, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, ExternalLink, Share2, CheckCircle2, Globe, Clock, LogOut, User as UserIcon } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { CyathLogo } from "@/components/common/Logo";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const [mounted, setMounted] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [targetUrl, setTargetUrl] = useState("");
@@ -16,8 +23,20 @@ export default function DashboardPage() {
   const { projects, createProject } = useReviewStore();
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        router.replace("/login");
+      } else {
+        setCurrentUser(user);
+        setMounted(true);
+      }
+    });
+  }, [router, supabase]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.replace("/login");
+  };
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +47,8 @@ export default function DashboardPage() {
       formattedUrl = "https://" + formattedUrl;
     }
 
-    createProject(title.trim(), formattedUrl);
+    const agency = (currentUser?.user_metadata?.agency_name as string) || "Independent Studio";
+    createProject(title.trim(), formattedUrl, agency);
     setTitle("");
     setTargetUrl("");
     setShowModal(false);
@@ -60,16 +80,35 @@ export default function DashboardPage() {
             <CyathLogo />
           </Link>
           <span className="text-xs text-[#52525B]">/</span>
-          <span className="text-xs text-[#A1A1AA]">Agency Staging Hub</span>
+          <span className="text-xs text-[#A1A1AA]">
+            {(currentUser?.user_metadata?.agency_name as string) || "Agency Staging Hub"}
+          </span>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-3.5 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B] font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Review Canvas</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {currentUser && (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-[#18181B] border border-[#27272A] rounded-lg text-xs text-[#A1A1AA]">
+              <UserIcon className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <span className="font-mono text-[11px] truncate max-w-[180px]">{currentUser.email}</span>
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-3.5 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B] font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Review Canvas</span>
+          </button>
+
+          <button
+            onClick={handleSignOut}
+            title="Sign out of agency account"
+            className="p-1.5 rounded-lg border border-[#27272A] hover:border-red-500/30 hover:bg-red-500/10 text-[#A1A1AA] hover:text-red-400 transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}
