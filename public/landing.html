@@ -1,37 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyath — Stop Chasing Client Feedback Across 15 Emails</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Oranienbaum&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   BESPOKE EDITORIAL DESIGN TOKENS
+   ARCHITECTURAL DESIGN SYSTEM & COLOR TOKENS
    ══════════════════════════════════════════════════════════════════ */
 :root {
-  --bg-deep: #08090C;
-  --bg-surface: #101217;
-  --bg-card: #151821;
-  --bg-card-hover: #1A1E29;
+  --font-serif: 'Oranienbaum', Georgia, serif;
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+/* ☽ NIGHT MODE (DEFAULT) */
+html[data-theme="night"] {
+  --bg-page: #080A10;
+  --bg-surface: #0F1420;
+  --bg-surface-elevated: #151C2C;
+  --bg-pill: rgba(255, 255, 255, 0.08);
+  --bg-pill-hover: rgba(255, 255, 255, 0.14);
+  --bg-pill-active: rgba(255, 255, 255, 0.20);
   
   --border-subtle: rgba(255, 255, 255, 0.12);
-  --border-medium: rgba(255, 255, 255, 0.24);
+  --border-medium: rgba(255, 255, 255, 0.22);
+  --border-pill: rgba(255, 255, 255, 0.18);
   
   --text-primary: #FFFFFF;
-  --text-secondary: #D4D4D8;
-  --text-muted: #A1A1AA;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
   
-  --accent-red: #FF3B30;
-  --accent-green: #10B981;
+  --accent-cyan: #38BDF8;
   --accent-amber: #F59E0B;
+  --accent-green: #10B981;
   
-  --font-display: 'Syne', sans-serif;
-  --font-editorial: 'Newsreader', Georgia, serif;
-  --font-body: 'Space Grotesk', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --card-bg: #111724;
+  --card-border: rgba(255, 255, 255, 0.12);
+  --ascii-bg: #06080D;
+  --canvas-border: rgba(255, 255, 255, 0.14);
+}
+
+/* ☼ DAY MODE */
+html[data-theme="day"] {
+  --bg-page: #F7F5EE;
+  --bg-surface: #ECE8DA;
+  --bg-surface-elevated: #E2DDD0;
+  --bg-pill: rgba(0, 0, 0, 0.06);
+  --bg-pill-hover: rgba(0, 0, 0, 0.10);
+  --bg-pill-active: rgba(0, 0, 0, 0.16);
+  
+  --border-subtle: rgba(0, 0, 0, 0.10);
+  --border-medium: rgba(0, 0, 0, 0.20);
+  --border-pill: rgba(0, 0, 0, 0.14);
+  
+  --text-primary: #1A1816;
+  --text-secondary: #423E3A;
+  --text-muted: #78716C;
+  
+  --accent-cyan: #0284C7;
+  --accent-amber: #D97706;
+  --accent-green: #059669;
+  
+  --card-bg: #EAE6D8;
+  --card-border: rgba(0, 0, 0, 0.14);
+  --ascii-bg: #F0EDE2;
+  --canvas-border: rgba(0, 0, 0, 0.16);
 }
 
 * {
@@ -44,1044 +83,1667 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--bg-deep);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition: var(--transition-theme);
 }
 
 body {
-  background-color: var(--bg-deep);
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 59, 48, 0.08) 0%, transparent 70%);
+  transition: var(--transition-theme);
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   NAVIGATION
+   NAVIGATION: COFOUNDER-STYLE FROSTED GLASS PILLS
    ══════════════════════════════════════════════════════════════════ */
 .site-nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 72px;
-  background: rgba(8, 9, 12, 0.92);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border-subtle);
-  z-index: 100;
+  height: 80px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
 }
-.nav-inner {
-  max-width: 1280px;
+
+.nav-container {
+  max-width: 1320px;
+  width: 100%;
   margin: 0 auto;
-  height: 100%;
-  padding: 0 40px;
+  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  pointer-events: auto;
 }
-.brand-link {
-  display: flex;
+
+.nav-brand {
+  display: inline-flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
   color: var(--text-primary);
+  cursor: pointer;
 }
-.brand-icon {
-  width: 26px;
-  height: 26px;
-  background: #FFFFFF;
-  color: #000000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14px;
-  border-radius: 5px;
-  transform: rotate(-3deg);
-  transition: transform 180ms ease;
+
+.brand-tesseract {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: block;
+  transition: transform 0.25s ease;
 }
-.brand-link:hover .brand-icon {
-  transform: rotate(0deg) scale(1.08);
+
+.nav-brand:hover .brand-tesseract {
+  transform: rotate(10deg) scale(1.08);
 }
-.brand-title {
-  font-family: var(--font-display);
-  font-weight: 800;
+
+.brand-wordmark {
+  font-family: var(--font-sans);
+  font-weight: 700;
   font-size: 21px;
   letter-spacing: -0.04em;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 36px;
-}
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-}
-.nav-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 14.5px;
-  font-weight: 500;
-  transition: color 150ms ease;
-}
-.nav-links a:hover {
   color: var(--text-primary);
 }
 
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.nav-signin {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-}
-.nav-signin:hover {
-  color: var(--text-primary);
-}
-
-.btn-primary {
-  background: #FFFFFF;
-  color: #000000;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  padding: 11px 22px;
-  border-radius: 999px;
-  text-decoration: none;
+/* Frosted Glass Navigation Pill Clusters */
+.nav-cluster {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(255,255,255,0.15);
-  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
-}
-.btn-primary:hover {
-  background: #F4F4F5;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255,255,255,0.22);
+  gap: 10px;
 }
 
-.btn-secondary {
-  background: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  padding: 11px 22px;
-  border-radius: 999px;
+.pill-segmented {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-pill);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-pill);
+  border-radius: 9999px;
+  padding: 3px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.pill-segment {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
   text-decoration: none;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pill-segment:hover {
+  color: var(--text-primary);
+  background: var(--bg-pill-hover);
+}
+
+.pill-divider {
+  width: 1px;
+  height: 14px;
+  background-color: var(--border-subtle);
+  margin: 0 1px;
+}
+
+.pill-standalone {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  background: var(--bg-pill);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-pill);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.pill-standalone:hover {
+  color: var(--text-primary);
+  background: var(--bg-pill-hover);
+}
+
+.pill-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #000000;
+  background: #FFFFFF;
+  text-decoration: none;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: all 0.2s ease;
+}
+
+.pill-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="day"] .pill-cta {
+  background: #1A1816;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pill-theme-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  background: var(--bg-pill);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-pill);
+  border-radius: 9999px;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: all 0.2s ease;
 }
-.btn-secondary:hover {
-  background: var(--bg-surface);
-  border-color: var(--border-medium);
-  transform: translateY(-1px);
+
+.pill-theme-toggle:hover {
+  color: var(--text-primary);
+  background: var(--bg-pill-hover);
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   HERO: ASYMMETRIC, MASSIVE, CHARMING
+   HERO SECTION
    ══════════════════════════════════════════════════════════════════ */
-.hero-stage {
-  padding: 180px 40px 140px;
-  max-width: 1280px;
+.hero-section {
+  padding-top: 130px;
+  padding-bottom: 70px;
+  max-width: 1320px;
   margin: 0 auto;
-  position: relative;
+  padding-left: 32px;
+  padding-right: 32px;
 }
 
-/* Playful Background Email Nightmare Floating Tags */
-.nightmare-pill {
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.03);
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-}
-.np-1 { top: 120px; right: 80px; transform: rotate(3deg); }
-.np-2 { top: 220px; right: 140px; transform: rotate(-2.5deg); text-decoration: line-through; opacity: 0.6; }
-@media (max-width: 1024px) {
-  .nightmare-pill { display: none; }
+.hero-copy-wrap {
+  max-width: 880px;
+  margin-bottom: 44px;
 }
 
-.hero-content {
-  max-width: 980px;
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 5.8vw, 4.8rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin-bottom: 22px;
 }
 
-.hero-main-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(44px, 6.4vw, 84px);
-  font-weight: 800;
-  letter-spacing: -0.045em;
-  line-height: 1.02;
-  color: #FFFFFF;
+.hero-subtitle {
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 680px;
   margin-bottom: 32px;
 }
 
-.hero-editorial-italic {
-  font-family: var(--font-editorial);
-  font-style: italic;
-  font-weight: 400;
-  color: var(--text-secondary);
-  font-size: 0.92em;
-  display: inline-block;
-}
-
-.hero-narrative {
-  font-size: 21px;
-  line-height: 1.65;
-  color: var(--text-secondary);
-  font-weight: 400;
-  max-width: 660px;
-  margin-bottom: 36px;
-}
-
-.hero-ctas {
+.hero-actions {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
 }
 
-.hero-humor-note {
-  font-family: var(--font-editorial);
-  font-style: italic;
-  font-size: 15px;
-  color: var(--text-muted);
-  display: flex;
+.hero-btn-primary {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  padding: 13px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #000000;
+  background: #FFFFFF;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+}
+
+html[data-theme="day"] .hero-btn-primary {
+  background: #1A1816;
+  color: #FFFFFF;
+}
+
+.hero-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+}
+
+.hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 26px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-pill);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-medium);
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hero-btn-secondary:hover {
+  background: var(--bg-pill-hover);
+}
+
+.hero-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 14px;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   ASYMMETRICAL THREE ARTIFACTS
+   DYNAMIC ASCII ART HERO CANVAS FRAME
    ══════════════════════════════════════════════════════════════════ */
-.artifacts-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 60px 40px 160px;
-  display: flex;
-  flex-direction: column;
-  gap: 180px;
+.ascii-frame {
+  margin-top: 36px;
+  border-radius: 16px;
+  background-color: var(--ascii-bg);
+  border: 1px solid var(--canvas-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  position: relative;
 }
 
-.artifact-block {
-  display: grid;
+.ascii-frame-bar {
+  display: flex;
   align-items: center;
-  gap: 80px;
-}
-.artifact-block.left-heavy {
-  grid-template-columns: 1fr 1.2fr;
-}
-.artifact-block.right-heavy {
-  grid-template-columns: 1.2fr 1fr;
-}
-@media (max-width: 960px) {
-  .artifact-block.left-heavy,
-  .artifact-block.right-heavy {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-}
-
-.artifact-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.artifact-numeral {
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid var(--border-subtle);
   font-family: var(--font-mono);
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 12px;
   color: var(--text-muted);
-  letter-spacing: 0.1em;
 }
 
-.artifact-h2 {
-  font-family: var(--font-display);
-  font-size: clamp(32px, 3.8vw, 48px);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.1;
-  color: #FFFFFF;
+.ascii-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.artifact-desc {
-  font-size: 17.5px;
-  line-height: 1.65;
+.ascii-bar-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ascii-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--border-medium);
+}
+
+.ascii-bar-title {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ascii-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ascii-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  background-color: var(--ascii-bg);
+}
+
+#asciiCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.ascii-caption-bar {
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.12);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ascii-caption-tag {
+  font-family: var(--font-mono);
   color: var(--text-secondary);
 }
 
-/* ─── Artifact 01: The Interactive Pin & Popover ─── */
-.interactive-crop-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 44px 38px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-  transform: rotate(-1deg);
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms ease;
-  position: relative;
-}
-.interactive-crop-card:hover {
-  transform: rotate(0deg) scale(1.01);
-  box-shadow: 0 32px 80px rgba(0,0,0,0.65);
+/* ══════════════════════════════════════════════════════════════════
+   EDITORIAL FEATURE SECTIONS
+   ══════════════════════════════════════════════════════════════════ */
+.section-wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 100px 32px;
+  border-top: 1px solid var(--border-subtle);
 }
 
-/* Jaunty Angled Tape Sticker */
-.crop-tape-sticker {
-  position: absolute;
-  top: -14px;
-  right: 28px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #09090B;
+.section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.section-text {
+  max-width: 520px;
+}
+
+.section-number {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 800;
-  padding: 4px 12px;
-  border-radius: 3px;
-  transform: rotate(2.5deg);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  letter-spacing: 0.05em;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
 }
 
-.crop-preview-surface {
-  background: #FAF8F5;
-  color: #171614;
-  border-radius: 10px;
-  padding: 36px 32px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+.section-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin-bottom: 18px;
 }
-.cps-eyebrow {
+
+.section-body {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+
+.section-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-bullet-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--text-secondary);
+}
+
+.bullet-dash {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: #71717A;
-  margin-bottom: 8px;
-  letter-spacing: 0.06em;
-}
-.cps-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #18181B;
-  margin-bottom: 22px;
-}
-
-.cps-interactive-target {
-  background: #18181B;
-  color: #FFFFFF;
-  border: none;
-  font-family: var(--font-body);
-  font-size: 13.5px;
   font-weight: 700;
-  padding: 12px 24px;
-  border-radius: 6px;
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  transition: transform 120ms ease;
-}
-.cps-interactive-target:hover {
-  transform: scale(1.02);
+  color: var(--text-primary);
 }
 
-/* Bouncing Pin Marker */
-.cps-animated-pin {
+.artifact-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 32px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+  position: relative;
+}
+
+.artifact-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Feature 1: Pin Note Demo */
+.pin-demo-box {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 24px;
+  position: relative;
+}
+
+.pin-marker {
   position: absolute;
-  top: -14px;
-  right: -14px;
-  width: 30px;
-  height: 30px;
+  top: 18px;
+  left: 20px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: var(--accent-red);
-  color: #FFFFFF;
+  background: #FFFFFF;
+  color: #000000;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 0 0 3px #FFFFFF, 0 6px 16px rgba(255, 59, 48, 0.45);
-  animation: pinDropElastic 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-}
-@keyframes pinDropElastic {
-  0% { transform: translateY(-30px) scale(0.5); opacity: 0; }
-  60% { transform: translateY(4px) scale(1.15); opacity: 1; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Client Note Card */
-.cps-note-card {
-  margin-top: 24px;
-  background: #FFFFFF;
-  color: #18181B;
+.pin-popover {
+  margin-left: 36px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
   border-radius: 10px;
-  padding: 20px 22px;
-  box-shadow: 0 16px 36px rgba(0,0,0,0.25);
-  border: 1px solid #E4E4E7;
+  padding: 16px;
 }
-.cnc-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
+
+.pin-client-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
-.cnc-author {
+
+.pin-comment {
   font-size: 14px;
-  font-weight: 700;
-  color: #09090B;
-}
-.cnc-badge {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 800;
-  background: #FEE2E2;
-  color: #991B1B;
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-.cnc-body {
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: #27272A;
+  color: var(--text-secondary);
   margin-bottom: 14px;
 }
-.cnc-telemetry-tag {
-  background: #F4F4F5;
-  border-radius: 6px;
-  padding: 9px 14px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: #52525B;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+
+.pin-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
-/* ─── Artifact 02: The Asymmetric Punchlist ─── */
+.pin-meta-item strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 11.5px;
+}
+
+/* Feature 2: Punchlist Checkbox Demo */
 .punchlist-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 36px 34px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-  transform: rotate(1deg);
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.punchlist-box:hover {
-  transform: rotate(0deg);
-}
-.pl-topbar {
+
+.punch-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 18px;
-}
-.pl-title {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 800;
-  color: #FFFFFF;
-}
-.pl-done-counter {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent-green);
-  background: rgba(16, 185, 129, 0.12);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.pl-items-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.pl-row {
+  padding: 14px 18px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  transition: transform 120ms ease, border-color 120ms ease;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
-.pl-row:hover {
-  transform: translateX(4px);
+
+.punch-item:hover {
   border-color: var(--border-medium);
 }
-.pl-glyph {
-  color: var(--accent-green);
-  font-weight: 800;
-  font-size: 15px;
+
+.punch-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.pl-content {
-  flex: 1;
-  font-size: 14px;
-  color: var(--text-secondary);
+
+.punch-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  font-size: 12px;
+  font-weight: bold;
 }
-.pl-meta-tag {
-  font-family: var(--font-mono);
-  font-size: 11px;
+
+.punch-item.resolved .punch-checkbox {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #000000;
+}
+
+html[data-theme="day"] .punch-item.resolved .punch-checkbox {
+  background: #1A1816;
+  border-color: #1A1816;
+  color: #FFFFFF;
+}
+
+.punch-item.resolved .punch-text {
+  text-decoration: line-through;
   color: var(--text-muted);
 }
 
-/* ─── Artifact 03: The Milestone Seal & Receipt ─── */
-.receipt-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border-medium);
-  border-radius: 16px;
-  padding: 40px 36px;
-  box-shadow: 0 28px 72px rgba(0,0,0,0.6);
-  position: relative;
-  transform: rotate(-1.5deg);
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.receipt-box:hover {
-  transform: rotate(0deg) scale(1.01);
+.punch-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
-/* Physical Embossed Green Stamp at Jaunty Angle */
-.receipt-embossed-stamp {
-  position: absolute;
-  top: 32px;
-  right: 32px;
-  border: 2px solid var(--accent-green);
-  color: var(--accent-green);
+.punch-tag {
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 800;
-  padding: 6px 14px;
-  border-radius: 6px;
-  transform: rotate(8deg);
-  letter-spacing: 0.12em;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--bg-pill);
+  color: var(--text-muted);
 }
 
-.rb-title {
-  font-family: var(--font-display);
-  font-size: 19px;
-  font-weight: 800;
-  color: #FFFFFF;
-  margin-bottom: 24px;
+/* Feature 3: Milestone Approval Certificate */
+.cert-box {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-medium);
+  border-radius: 12px;
+  padding: 24px;
 }
 
-.rb-fields {
+.cert-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.cert-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.cert-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: var(--border-subtle);
+  border-radius: 9999px;
+  color: var(--text-primary);
+}
+
+.cert-rows {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  font-family: var(--font-mono);
+  gap: 10px;
   font-size: 13px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
-.rb-row {
+
+.cert-row {
   display: flex;
   justify-content: space-between;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.rb-key { color: var(--text-muted); }
-.rb-val { color: #FFFFFF; font-weight: 600; }
-
-.rb-security-strip {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 12px 16px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-muted);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   BRUTALLY HONEST COMPARISON
-   ══════════════════════════════════════════════════════════════════ */
-.comparison-section {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 80px 40px 140px;
-}
-.cs-header {
-  max-width: 720px;
-  margin-bottom: 56px;
-}
-.cs-h2 {
-  font-family: var(--font-display);
-  font-size: clamp(34px, 4.2vw, 54px);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-  margin-bottom: 16px;
-}
-.cs-sub {
-  font-size: 18px;
-  color: var(--text-secondary);
-}
-
-.table-container {
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  overflow-x: auto;
-  background: var(--bg-surface);
-}
-table.editorial-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 15px;
-}
-.editorial-table th, .editorial-table td {
-  padding: 20px 28px;
   border-bottom: 1px solid var(--border-subtle);
 }
-.editorial-table th {
-  background: var(--bg-card);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14px;
-  color: #FFFFFF;
+
+.cert-label {
+  color: var(--text-muted);
 }
-.editorial-table td {
-  color: var(--text-secondary);
+
+.cert-val {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-primary);
 }
-.editorial-table tr:last-child td {
-  border-bottom: none;
-}
-.highlighted-cyath {
-  color: #FFFFFF !important;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.03);
+
+.cert-hash {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  word-break: break-all;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 8px 12px;
+  border-radius: 6px;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   PREDICTABLE PRICING
+   COMPARISON TABLE SECTION
+   ══════════════════════════════════════════════════════════════════ */
+.comparison-section {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 100px 32px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.comp-header {
+  max-width: 680px;
+  margin-bottom: 48px;
+}
+
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+
+.comp-table th,
+.comp-table td {
+  padding: 18px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.comp-table th {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.comp-table th.col-cyath,
+.comp-table td.col-cyath {
+  background: var(--bg-surface-elevated);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PRICING SECTION
    ══════════════════════════════════════════════════════════════════ */
 .pricing-section {
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 40px 40px 160px;
+  padding: 100px 32px;
+  border-top: 1px solid var(--border-subtle);
 }
-.pricing-flex-grid {
+
+.pricing-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
-  max-width: 960px;
-  margin-top: 56px;
-}
-@media (max-width: 768px) {
-  .pricing-flex-grid { grid-template-columns: 1fr; }
+  margin-top: 48px;
 }
 
 .price-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  padding: 44px 38px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
-  transition: transform 180ms ease, border-color 180ms ease;
-}
-.price-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--border-medium);
-}
-.price-card.studio-highlight {
-  background: var(--bg-card);
-  border-color: var(--border-medium);
-  box-shadow: 0 20px 54px rgba(0,0,0,0.5);
 }
 
-.pc-name {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  color: #FFFFFF;
+.price-tier-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
-.pc-price {
-  font-family: var(--font-display);
-  font-size: 46px;
-  font-weight: 800;
-  color: #FFFFFF;
+
+.price-figure {
+  font-family: var(--font-serif);
+  font-size: 3.2rem;
+  font-weight: 400;
   line-height: 1;
-  margin-bottom: 14px;
-}
-.pc-period {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-.pc-desc {
-  font-size: 15px;
-  color: var(--text-secondary);
-  margin-bottom: 28px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
-.pc-checklist {
+.price-period {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.price-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.price-features {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin-bottom: 36px;
-  font-size: 14.5px;
-  color: var(--text-secondary);
 }
-.pc-checklist li {
+
+.price-feature-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-.pc-checklist li::before {
-  content: "✓";
-  color: var(--accent-green);
-  font-weight: 800;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--text-secondary);
 }
 
 /* ══════════════════════════════════════════════════════════════════
    FOOTER
    ══════════════════════════════════════════════════════════════════ */
 .site-footer {
-  border-top: 1px solid var(--border-subtle);
-  padding: 56px 40px 72px;
-}
-.footer-wrap {
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
+  padding: 60px 32px;
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 24px;
-  font-size: 14px;
+  gap: 20px;
+  font-size: 13.5px;
   color: var(--text-muted);
 }
-.footer-nav {
+
+.footer-left {
   display: flex;
-  gap: 28px;
+  align-items: center;
+  gap: 12px;
 }
-.footer-nav a {
-  color: var(--text-secondary);
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.footer-link {
+  color: var(--text-muted);
   text-decoration: none;
-  transition: color 140ms ease;
+  transition: color 0.2s ease;
 }
-.footer-nav a:hover {
-  color: #FFFFFF;
+
+.footer-link:hover {
+  color: var(--text-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .section-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 16px;
+  }
+  .pill-segmented {
+    display: none;
+  }
+  .hero-section {
+    padding-top: 100px;
+  }
+  .ascii-canvas-wrap {
+    height: 380px;
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════ NAVIGATION ══════════ -->
+<!-- ══════════════════════════════════════════════════════════════════
+     NAVIGATION: COFOUNDER-STYLE FROSTED GLASS PILLS
+     ══════════════════════════════════════════════════════════════════ -->
 <header class="site-nav">
-  <div class="nav-inner">
-    <a href="/" class="brand-link">
-      <div class="brand-icon">CY</div>
-      <span class="brand-title">cyath</span>
+  <div class="nav-container">
+    <a href="#" class="nav-brand" aria-label="Cyath Home">
+      <svg class="brand-tesseract" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="16,3.5 26.8,9.75 26.8,22.25 16,28.5 5.2,22.25 5.2,9.75" fill="#FFFFFF" stroke="#000000" stroke-width="1.6" stroke-linejoin="round"/>
+        <line x1="16" y1="3.5" x2="16" y2="10.2" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="26.8" y1="9.75" x2="21.2" y2="13" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="26.8" y1="22.25" x2="21.2" y2="19" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="16" y1="28.5" x2="16" y2="21.8" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="5.2" y1="22.25" x2="10.8" y2="19" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="5.2" y1="9.75" x2="10.8" y2="13" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <polygon points="16,10.2 21.2,13 21.2,19 16,21.8 10.8,19 10.8,13" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"/>
+        <line x1="16" y1="16" x2="10.8" y2="13" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="16" y1="16" x2="21.2" y2="13" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="16" y1="16" x2="16" y2="21.8" stroke="#000000" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-wordmark">cyath</span>
     </a>
 
-    <nav class="nav-links">
-      <a href="#how-it-works">How It Works</a>
-      <a href="#compare">Compare</a>
-      <a href="#pricing">Pricing</a>
-    </nav>
+    <nav class="nav-cluster" aria-label="Primary Navigation">
+      <div class="pill-segmented">
+        <a href="#how-it-works" class="pill-segment">How It Works</a>
+        <div class="pill-divider"></div>
+        <a href="#capture" class="pill-segment">Capture</a>
+        <div class="pill-divider"></div>
+        <a href="#punchlist" class="pill-segment">Punchlist</a>
+        <div class="pill-divider"></div>
+        <a href="#approval" class="pill-segment">Approval</a>
+      </div>
 
-    <div class="nav-actions">
-      <a href="/dashboard" class="nav-signin">Sign In</a>
-      <a href="/dashboard" class="btn-primary">Start Free</a>
-    </div>
+      <a href="#compare" class="pill-standalone">Compare</a>
+      <a href="#pricing" class="pill-standalone">Pricing</a>
+
+      <button id="themeToggleBtn" class="pill-theme-toggle" type="button" aria-label="Toggle Day and Night mode">
+        <span id="themeIcon">☽</span> <span id="themeLabel">Night</span>
+      </button>
+
+      <a href="#pricing" class="pill-cta">Start Free</a>
+    </nav>
   </div>
 </header>
 
-<!-- ══════════ HERO SECTION (ASYMMETRIC & BREATHABLE) ══════════ -->
+<!-- ══════════════════════════════════════════════════════════════════
+     HERO SECTION
+     ══════════════════════════════════════════════════════════════════ -->
 <main>
-<section class="hero-stage">
-  <!-- Subtle Email Nightmare Reminders -->
-  <div class="nightmare-pill np-1">"Can we make the logo pop more?"</div>
-  <div class="nightmare-pill np-2">Re: Re: Re: Feedback v3_FINAL.jpg</div>
-
-  <div class="hero-content">
-    <h1 class="hero-main-h1">
-      Stop chasing client feedback across 15 emails.
-    </h1>
-
-    <p class="hero-narrative">
+<section class="hero-section">
+  <div class="hero-copy-wrap">
+    <h1 class="hero-title">Stop chasing client feedback across 15 emails.</h1>
+    <p class="hero-subtitle">
       Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
     </p>
+    <div class="hero-actions">
+      <a href="#pricing" class="hero-btn-primary">Start for Free</a>
+      <a href="#how-it-works" class="hero-btn-secondary">See How It Works</a>
+    </div>
+    <p class="hero-note">No credit card required. No client login needed. One active staging project free forever.</p>
+  </div>
 
-    <div class="hero-ctas">
-      <a href="/dashboard" class="btn-primary">Start for Free →</a>
-      <a href="#how-it-works" class="btn-secondary">How It Works ↓</a>
+  <!-- ══════════════════════════════════════════════════════════════════
+       THE DYNAMIC ASCII ART HERO CANVAS FRAME
+       ══════════════════════════════════════════════════════════════════ -->
+  <div class="ascii-frame">
+    <div class="ascii-frame-bar">
+      <div class="ascii-bar-left">
+        <div class="ascii-bar-dots">
+          <span class="ascii-dot"></span>
+          <span class="ascii-dot"></span>
+          <span class="ascii-dot"></span>
+        </div>
+        <span class="ascii-bar-title">cyath // studio_desk.ascii (interactive engine)</span>
+      </div>
+      <div class="ascii-bar-right">
+        <span id="canvasFps">60 FPS</span>
+        <span id="canvasThemeBadge">☽ Night Mode</span>
+      </div>
     </div>
 
-    <div class="hero-humor-note">
-      <span>No credit card required. One active project free forever.</span>
+    <div class="ascii-canvas-wrap">
+      <canvas id="asciiCanvas" role="img" aria-label="Interactive Dynamic ASCII Art illustration of a designer workspace: open laptop displaying the Cyath tesseract, hot steaming coffee, potted monstera, and crumpled draft revisions."></canvas>
+    </div>
+
+    <div class="ascii-caption-bar">
+      <span>The late-night staging desk: steaming espresso, open staging terminal with Cyath tesseract, and crumpled client email drafts.</span>
+      <span class="ascii-caption-tag">[ hover to disturb particles ]</span>
     </div>
   </div>
 </section>
 
-<!-- ══════════ THE THREE ARTIFACTS (ASYMMETRICAL RHYTHM) ══════════ -->
-<section class="artifacts-container" id="how-it-works">
-  <!-- Artifact 01: The Pin (Left-heavy) -->
-  <div class="artifact-block left-heavy">
-    <div class="artifact-text-group">
-      <span class="artifact-numeral">01 / THE CAPTURE</span>
-      <h2 class="artifact-h2">Exact screen size and browser on every note.</h2>
-      <p class="artifact-desc">
-        Every pin automatically logs your client's exact screen dimensions, browser, operating system, and scroll position. You see exactly what they saw—no more asking "what browser are you using?" or guessing what a blurry phone photo means.
+<!-- ══════════════════════════════════════════════════════════════════
+     FEATURE 1: POINT & CLICK CAPTURE
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="capture" class="section-wrap">
+  <div class="section-grid">
+    <div class="section-text">
+      <div class="section-number">01 / CAPTURE</div>
+      <h2 class="section-heading">Point. Click. Captured.</h2>
+      <p class="section-body">
+        No browser extension for your client to download. No password for them to create. They simply click on any headline, button, or image on your staging link and type what they want changed.
       </p>
+      <ul class="section-bullets">
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Exact viewport resolution and browser version recorded silently.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Direct DOM anchor path attached to every note.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Works seamlessly across mobile Safari, Chrome, and tablet viewports.</li>
+      </ul>
     </div>
 
-    <div class="interactive-crop-card">
-      <div class="crop-tape-sticker">CAPTURED AUTOMATICALLY</div>
-      
-      <div class="crop-preview-surface">
-        <div class="cps-eyebrow">AURA ATELIER · ARCHITECTURE</div>
-        <div class="cps-title">Monolithic forms cast in raw concrete & bronze.</div>
-        <div class="cps-interactive-target" id="demoTargetBtn" title="Click to test interaction">
-          Request Private Catalog
-          <div class="cps-animated-pin">1</div>
-        </div>
+    <div class="artifact-card">
+      <div class="artifact-card-header">
+        <span>LIVE STAGING NOTE PIN</span>
+        <span>NOTE #104</span>
       </div>
-
-      <div class="cps-note-card">
-        <div class="cnc-header">
-          <span class="cnc-author">Jane Cooper (Client)</span>
-          <span class="cnc-badge">OPEN</span>
+      <div class="pin-demo-box">
+        <div class="pin-marker">1</div>
+        <div class="pin-popover">
+          <div class="pin-client-name">Sarah Chen (Client Lead)</div>
+          <p class="pin-comment">"The hero headline wraps into four lines on my MacBook. Can we tighten the font size by 2px?"</p>
+          <div class="pin-meta-grid">
+            <div class="pin-meta-item">
+              <span>TARGET</span>
+              <strong>h1.hero-title</strong>
+            </div>
+            <div class="pin-meta-item">
+              <span>VIEWPORT</span>
+              <strong>1440 × 900</strong>
+            </div>
+            <div class="pin-meta-item">
+              <span>BROWSER</span>
+              <strong>Safari 17.4.1</strong>
+            </div>
+          </div>
         </div>
-        <p class="cnc-body">
-          "Can we change this button label to 'Reserve via Concierge'? Also bump vertical padding to 16px."
-        </p>
-        <div class="cnc-telemetry-tag">
-          <span>1440 × 900</span>
-          <span>Chrome 131</span>
-          <span>macOS 15.1</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Artifact 02: The Unified Punchlist (Right-heavy) -->
-  <div class="artifact-block right-heavy">
-    <div class="punchlist-box">
-      <div class="pl-topbar">
-        <span class="pl-title">Milestone Review Punchlist</span>
-        <span class="pl-done-counter">12 of 12 Completed</span>
-      </div>
-      <div class="pl-items-stack">
-        <div class="pl-row">
-          <span class="pl-glyph">✓</span>
-          <span class="pl-content">Button label updated to "Reserve via Concierge"</span>
-          <span class="pl-meta-tag">1440×900 · Chrome</span>
-        </div>
-        <div class="pl-row">
-          <span class="pl-glyph">✓</span>
-          <span class="pl-content">Mobile navigation tap target expanded to 44px</span>
-          <span class="pl-meta-tag">390×844 · Safari</span>
-        </div>
-        <div class="pl-row">
-          <span class="pl-glyph">✓</span>
-          <span class="pl-content">Product catalog download PDF link verified</span>
-          <span class="pl-meta-tag">1512×982 · Chrome</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="artifact-text-group">
-      <span class="artifact-numeral">02 / THE PUNCHLIST</span>
-      <h2 class="artifact-h2">A single checklist instead of 15 email replies.</h2>
-      <p class="artifact-desc">
-        Stop searching through forwarded email chains to figure out what was already fixed. Every note lives in one clean punchlist that updates in real time for both you and your client.
-      </p>
-    </div>
-  </div>
-
-  <!-- Artifact 03: The Milestone Sign-Off (Left-heavy) -->
-  <div class="artifact-block left-heavy">
-    <div class="artifact-text-group">
-      <span class="artifact-numeral">03 / THE SIGN-OFF</span>
-      <h2 class="artifact-h2">Clear approval when the work is done.</h2>
-      <p class="artifact-desc">
-        Once you finish the fixes, your client approves the build with a single click. Cyath generates a timestamped sign-off receipt so both sides agree the milestone is complete—putting an end to endless "just one more quick change" emails.
-      </p>
-    </div>
-
-    <div class="receipt-box">
-      <div class="receipt-embossed-stamp">APPROVED</div>
-      <div class="rb-title">Milestone Sign-Off Receipt</div>
-      <div class="rb-fields">
-        <div class="rb-row">
-          <span class="rb-key">Project:</span>
-          <span class="rb-val">Aura Atelier v2.4</span>
-        </div>
-        <div class="rb-row">
-          <span class="rb-key">Approved By:</span>
-          <span class="rb-val">Jane Cooper (Client)</span>
-        </div>
-        <div class="rb-row">
-          <span class="rb-key">Status:</span>
-          <span class="rb-val" style="color:var(--accent-green);">12 of 12 Notes Completed</span>
-        </div>
-        <div class="rb-row">
-          <span class="rb-key">Timestamp:</span>
-          <span class="rb-val">Nov 9, 2026 · 13:40 UTC</span>
-        </div>
-      </div>
-      <div class="rb-security-strip">
-        <span>Receipt Verification</span>
-        <span>#844d88e92a4f6103</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════ BRUTALLY HONEST COMPARISON ══════════ -->
-<section class="comparison-section" id="compare">
-  <div class="cs-header">
-    <h2 class="cs-h2">Same job. A fraction of the price.</h2>
-    <p class="cs-sub">
-      Stop paying enterprise seat fees just to get feedback on staging links.
+<!-- ══════════════════════════════════════════════════════════════════
+     FEATURE 2: UNIFIED PUNCHLIST
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="punchlist" class="section-wrap">
+  <div class="section-grid">
+    <div class="artifact-card">
+      <div class="artifact-card-header">
+        <span>PUNCHLIST // AURA-ATELIER</span>
+        <span>2 OF 3 RESOLVED</span>
+      </div>
+      <div class="punchlist-box" id="punchlistBox">
+        <div class="punch-item resolved" onclick="this.classList.toggle('resolved')">
+          <div class="punch-left">
+            <div class="punch-checkbox">✓</div>
+            <span class="punch-text">Fix hero headline wrap on 1440px desktop</span>
+          </div>
+          <span class="punch-tag">Resolved</span>
+        </div>
+        <div class="punch-item resolved" onclick="this.classList.toggle('resolved')">
+          <div class="punch-left">
+            <div class="punch-checkbox">✓</div>
+            <span class="punch-text">Update inquiry button hover contrast</span>
+          </div>
+          <span class="punch-tag">Resolved</span>
+        </div>
+        <div class="punch-item" onclick="this.classList.toggle('resolved')">
+          <div class="punch-left">
+            <div class="punch-checkbox">✓</div>
+            <span class="punch-text">Verify mobile nav hamburger tap target</span>
+          </div>
+          <span class="punch-tag">In Progress</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-text">
+      <div class="section-number">02 / UNIFIED PUNCHLIST</div>
+      <h2 class="section-heading">Turn vague emails into an actionable punchlist.</h2>
+      <p class="section-body">
+        No more parsing sentences like "the second photo looks weird on my iPad". Every client note is consolidated into a prioritized, actionable checklist with exact pixel coordinates and element tags.
+      </p>
+      <ul class="section-bullets">
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Group notes by page, responsive breakpoint, or assignee.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Click to jump directly to the element on your staging preview.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Real-time sync: when you mark an item resolved, the client sees it immediately.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     FEATURE 3: ONE-CLICK MILESTONE APPROVAL
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="approval" class="section-wrap">
+  <div class="section-grid">
+    <div class="section-text">
+      <div class="section-number">03 / SIGN-OFF</div>
+      <h2 class="section-heading">The approval receipt that ends scope creep.</h2>
+      <p class="section-body">
+        Once you check off every item on the punchlist, your client receives a single-click approval screen. When they approve, Cyath generates a timestamped milestone certificate. No more "I never agreed to this" disputes.
+      </p>
+      <ul class="section-bullets">
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Cryptographic SHA-256 build fingerprint locks the approved revision.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Clear digital audit trail with signatory IP, timestamp, and signed scope.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Protects your agency from endless unbilled revisions before final launch.</li>
+      </ul>
+    </div>
+
+    <div class="artifact-card">
+      <div class="cert-box">
+        <div class="cert-header">
+          <div>
+            <div class="cert-title">Certificate of Approval</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Milestone Release Acceptance</div>
+          </div>
+          <span class="cert-badge">LOCKED & ARCHIVED</span>
+        </div>
+        <div class="cert-rows">
+          <div class="cert-row">
+            <span class="cert-label">Project</span>
+            <span class="cert-val">aura-atelier.staging.space</span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Milestone</span>
+            <span class="cert-val">v1.0 Design & Staging Freeze</span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Signatory</span>
+            <span class="cert-val">Elena Vance (Managing Director)</span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Timestamp</span>
+            <span class="cert-val">2026-11-09T14:32:00Z</span>
+          </div>
+        </div>
+        <div class="cert-hash">
+          HASH: 8f92c10b77e4a11f2389d5bc40986e82a39b9c
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     COMPARISON TABLE
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="compare" class="comparison-section">
+  <div class="comp-header">
+    <div class="section-number">04 / COMPARISON</div>
+    <h2 class="section-heading">Why staging with Cyath beats the alternatives.</h2>
+    <p class="section-body">
+      Traditional feedback loops bleed billable hours into administrative chaos. Here is how Cyath compares.
     </p>
   </div>
 
-  <div class="table-container">
-    <table class="editorial-table">
-      <thead>
-        <tr>
-          <th>Capability</th>
-          <th class="highlighted-cyath">Cyath</th>
-          <th>Pastel</th>
-          <th>MarkUp.io</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Client account required</td>
-          <td class="highlighted-cyath">No</td>
-          <td>No</td>
-          <td>Yes (for guests)</td>
-        </tr>
-        <tr>
-          <td>Screen size & browser recorded</td>
-          <td class="highlighted-cyath">Automatic on every pin</td>
-          <td>Basic user agent</td>
-          <td>Basic user agent</td>
-        </tr>
-        <tr>
-          <td>Milestone sign-off approval</td>
-          <td class="highlighted-cyath">Included (Timestamped receipt)</td>
-          <td>Not available</td>
-          <td>Not available</td>
-        </tr>
-        <tr>
-          <td>Free plan</td>
-          <td class="highlighted-cyath">1 active project free forever</td>
-          <td>3-day trial only</td>
-          <td>1 project limit</td>
-        </tr>
-        <tr>
-          <td>Starting price</td>
-          <td class="highlighted-cyath">$15 / month (Unlimited projects)</td>
-          <td>$25 / month (3 links max)</td>
-          <td>$49 / month per user</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>Feedback Workflow</th>
+        <th>Client Setup</th>
+        <th>Device Metadata</th>
+        <th>Final Sign-Off</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Email Threads</strong></td>
+        <td>None</td>
+        <td>Missing ("looks small on my phone")</td>
+        <td>Vague replies ("looks fine")</td>
+      </tr>
+      <tr>
+        <td><strong>Slack / WhatsApp</strong></td>
+        <td>Buried messages</td>
+        <td>Manual screenshots</td>
+        <td>Zero formal record</td>
+      </tr>
+      <tr>
+        <td><strong>Enterprise Jira</strong></td>
+        <td>Requires account creation</td>
+        <td>Manual ticket filling</td>
+        <td>Complex workflow states</td>
+      </tr>
+      <tr>
+        <td class="col-cyath"><strong>Cyath</strong></td>
+        <td class="col-cyath">Zero setup (one link)</td>
+        <td class="col-cyath">Automated viewport & browser tag</td>
+        <td class="col-cyath">Timestamped milestone certificate</td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
-<!-- ══════════ PREDICTABLE PRICING ══════════ -->
-<section class="pricing-section" id="pricing">
-  <div class="cs-header">
-    <h2 class="cs-h2">Simple, predictable pricing.</h2>
-    <p class="cs-sub">
-      Start free on your current project. Upgrade only when you manage multiple active builds.
+<!-- ══════════════════════════════════════════════════════════════════
+     PRICING SECTION
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="pricing" class="pricing-section">
+  <div class="comp-header">
+    <div class="section-number">05 / PRICING</div>
+    <h2 class="section-heading">Fair pricing. Zero lock-in.</h2>
+    <p class="section-body">
+      Start free on your current project. Upgrade to agency tier when you manage multiple concurrent client rollouts.
     </p>
   </div>
 
-  <div class="pricing-flex-grid">
-    <!-- Free Tier -->
+  <div class="pricing-grid">
     <div class="price-card">
       <div>
-        <h3 class="pc-name">Starter</h3>
-        <div class="pc-price">$0</div>
-        <p class="pc-desc">For freelancers running one active build at a time.</p>
-        <ul class="pc-checklist">
-          <li>1 active staging project</li>
-          <li>Unlimited client feedback notes</li>
-          <li>Automatic browser and viewport capture</li>
-          <li>Milestone sign-off receipts</li>
+        <div class="price-tier-name">SOLO FREELANCER</div>
+        <div class="price-figure">$0</div>
+        <div class="price-period">Free forever. No credit card required.</div>
+        <p class="price-desc">Perfect for independent developers and designers delivering one client project at a time.</p>
+        <ul class="price-features">
+          <li class="price-feature-item"><span class="bullet-dash">—</span> 1 active staging project</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Unlimited client pin notes</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Automated browser & screen metadata</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> 1-click milestone approval receipts</li>
         </ul>
       </div>
-      <a href="/dashboard" class="btn-secondary" style="justify-content:center;">Get Started Free</a>
+      <a href="#how-it-works" class="hero-btn-primary" style="text-align: center; justify-content: center;">Start Free</a>
     </div>
 
-    <!-- Pro Tier -->
-    <div class="price-card studio-highlight">
+    <div class="price-card">
       <div>
-        <h3 class="pc-name">Pro Studio</h3>
-        <div class="pc-price">$15 <span class="pc-period">/ month</span></div>
-        <p class="pc-desc">For agencies and studios managing multiple client deliverables.</p>
-        <ul class="pc-checklist">
-          <li>Unlimited active staging projects</li>
-          <li>Unlimited client reviewers (no seat fees)</li>
-          <li>Custom studio domain & branding</li>
-          <li>Milestone sign-off export</li>
-          <li>Priority support</li>
+        <div class="price-tier-name">STUDIO & AGENCY</div>
+        <div class="price-figure">$29</div>
+        <div class="price-period">per month, billed annually or monthly</div>
+        <p class="price-desc">For studios and web agencies managing multiple staging links with client teams.</p>
+        <ul class="price-features">
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Unlimited active staging projects</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Custom staging domain (staging.youragency.com)</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> White-label client portal & branding</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Team member roles & assignments</li>
         </ul>
       </div>
-      <a href="/dashboard" class="btn-primary" style="justify-content:center;">Start Pro Trial</a>
+      <a href="#how-it-works" class="hero-btn-primary" style="text-align: center; justify-content: center;">Upgrade to Agency</a>
     </div>
   </div>
 </section>
 </main>
 
-<!-- ══════════ FOOTER ══════════ -->
+<!-- ══════════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════════ -->
 <footer class="site-footer">
-  <div class="footer-wrap">
-    <div>
-      © 2026 Cyath. Visual staging review & client milestone approval.
-    </div>
-    <div class="footer-nav">
-      <a href="#how-it-works">How It Works</a>
-      <a href="#compare">Compare</a>
-      <a href="#pricing">Pricing</a>
-      <a href="/dashboard">Dashboard</a>
-    </div>
+  <div class="footer-left">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="16,3.5 26.8,9.75 26.8,22.25 16,28.5 5.2,22.25 5.2,9.75" fill="#FFFFFF" stroke="#000000" stroke-width="1.6" stroke-linejoin="round"/>
+      <polygon points="16,10.2 21.2,13 21.2,19 16,21.8 10.8,19 10.8,13" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+    <span style="font-weight: 700; color: var(--text-primary);">cyath</span>
+    <span>— Visual staging review & milestone sign-off for web creators.</span>
+  </div>
+  <div class="footer-links">
+    <a href="#capture" class="footer-link">Capture</a>
+    <a href="#punchlist" class="footer-link">Punchlist</a>
+    <a href="#approval" class="footer-link">Approval</a>
+    <a href="#pricing" class="footer-link">Pricing</a>
+    <span>© 2026 Cyath. All rights reserved.</span>
   </div>
 </footer>
 
+<!-- ══════════════════════════════════════════════════════════════════
+     DYNAMIC ASCII ART ENGINE SCRIPT
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+  const htmlRoot = document.documentElement;
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const themeIcon = document.getElementById('themeIcon');
+  const themeLabel = document.getElementById('themeLabel');
+  const canvasThemeBadge = document.getElementById('canvasThemeBadge');
+  const canvasFps = document.getElementById('canvasFps');
+
+  let currentTheme = 'night';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('theme') === 'day') {
+    setTheme('day');
+  }
+
+  function setTheme(theme) {
+    currentTheme = theme;
+    htmlRoot.setAttribute('data-theme', theme);
+    if (theme === 'day') {
+      themeIcon.textContent = '☼';
+      themeLabel.textContent = 'Day';
+      canvasThemeBadge.textContent = '☼ Day Mode';
+    } else {
+      themeIcon.textContent = '☽';
+      themeLabel.textContent = 'Night';
+      canvasThemeBadge.textContent = '☽ Night Mode';
+    }
+  }
+
+  themeToggleBtn.addEventListener('click', () => {
+    setTheme(currentTheme === 'night' ? 'day' : 'night');
+  });
+
+  // ══════════════════════════════════════════════════════════════════
+  // ASCII ENGINE WITH EXACT MONOSPACE CHARACTER METRICS
+  // ══════════════════════════════════════════════════════════════════
+  const canvas = document.getElementById('asciiCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Interactive Cursor Tracking
+  let mouseGridCol = -1;
+  let mouseGridRow = -1;
+  let mouseHoverActive = false;
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    mouseHoverActive = true;
+    canvas._lastMouseX = x;
+    canvas._lastMouseY = y;
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    mouseHoverActive = false;
+    mouseGridCol = -1;
+    mouseGridRow = -1;
+  });
+
+  // Dynamic Procedural Rising Steam Particles
+  const steamParticles = [];
+  const maxSteamParticles = 36;
+
+  function spawnSteam(baseCol) {
+    return {
+      offsetCol: (Math.random() - 0.5) * 3.5,
+      row: 15.5,
+      vy: -(0.06 + Math.random() * 0.05),
+      swayFreq: 0.06 + Math.random() * 0.04,
+      swayPhase: Math.random() * Math.PI * 2,
+      swayAmp: 0.8 + Math.random() * 0.7,
+      age: 0,
+      maxAge: 160 + Math.random() * 50
+    };
+  }
+
+  for (let i = 0; i < maxSteamParticles; i++) {
+    const p = spawnSteam(0);
+    p.age = Math.random() * p.maxAge;
+    p.row -= (p.age / p.maxAge) * 12;
+    steamParticles.push(p);
+  }
+
+  const palettes = {
+    night: {
+      bg: '#06080D',
+      default: '#475569',
+      desk_top: '#1E293B',
+      desk_edge: '#334155',
+      desk_front: '#1E293B',
+      plant: '#10B981',
+      plant_pot: '#EA580C',
+      mug: '#F8FAFC',
+      mug_accent: '#F59E0B',
+      laptop: '#64748B',
+      laptop_screen: '#38BDF8',
+      screen_tesseract: '#38BDF8',
+      paper: '#94A3B8',
+      steam_base: '#F59E0B',
+      steam_fade: '#38BDF8'
+    },
+    day: {
+      bg: '#F0EDE2',
+      default: '#78716C',
+      desk_top: '#B45309',
+      desk_edge: '#78350F',
+      desk_front: '#92400E',
+      plant: '#166534',
+      plant_pot: '#9A3412',
+      mug: '#1A1816',
+      mug_accent: '#D97706',
+      laptop: '#334155',
+      laptop_screen: '#0F172A',
+      screen_tesseract: '#0284C7',
+      paper: '#57534E',
+      steam_base: '#D97706',
+      steam_fade: '#78716C'
+    }
+  };
+
+  let frameCount = 0;
+  let lastTime = performance.now();
+
+  function render(time) {
+    frameCount++;
+    if (time - lastTime >= 1000) {
+      const fps = Math.round((frameCount * 1000) / (time - lastTime));
+      canvasFps.textContent = fps + ' FPS';
+      frameCount = 0;
+      lastTime = time;
+    }
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const targetW = Math.floor(rect.width * dpr);
+    const targetH = Math.floor(rect.height * dpr);
+
+    if (canvas.width !== targetW || canvas.height !== targetH) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+    }
+
+    ctx.save();
+    ctx.scale(dpr, dpr);
+
+    const W = rect.width;
+    const H = rect.height;
+
+    // Grid sizing based on container height
+    const ROWS = 34;
+    const cellH = Math.max(11, Math.floor(H / ROWS));
+    const fontSize = Math.floor(cellH * 0.94);
+    ctx.font = `600 ${fontSize}px "JetBrains Mono", monospace`;
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'left';
+
+    const metrics = ctx.measureText("M");
+    const cellW = metrics.width || (cellH * 0.60);
+
+    const COLS = Math.floor(W / cellW);
+    const offsetX = Math.floor((W - COLS * cellW) / 2);
+    const offsetY = Math.floor((H - ROWS * cellH) / 2);
+
+    const pal = palettes[currentTheme];
+
+    // Background
+    ctx.fillStyle = pal.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Build the grid for this frame
+    const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(' '));
+    const tags = Array.from({ length: ROWS }, () => Array(COLS).fill('none'));
+
+    function put(r, c, text, tag) {
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (r >= 0 && r < ROWS && c + i >= 0 && c + i < COLS) {
+          if (ch !== ' ') {
+            grid[r][c + i] = ch;
+            tags[r][c + i] = tag;
+          }
+        }
+      }
+    }
+
+    // 1. Desk Horizon & Surface extending across full width
+    for (let c = 0; c < COLS; c++) {
+      grid[22][c] = '_';
+      tags[22][c] = 'desk_top';
+      grid[29][c] = '=';
+      tags[29][c] = 'desk_edge';
+    }
+
+    // Desk perspective edges
+    for (let r = 23; r < 29; r++) {
+      const dr = Math.floor((r - 22) * 1.5);
+      if (dr < COLS) {
+        grid[r][dr] = '/';
+        tags[r][dr] = 'desk_edge';
+      }
+      if (COLS - 1 - dr >= 0) {
+        grid[r][COLS - 1 - dr] = '\\';
+        tags[r][COLS - 1 - dr] = 'desk_edge';
+      }
+    }
+
+    // Desk front legs / shadow
+    for (let r = 30; r < ROWS; r++) {
+      if (8 < COLS) { grid[r][8] = '|'; tags[r][8] = 'desk_front'; }
+      if (COLS - 9 >= 0) { grid[r][COLS - 9] = '|'; tags[r][COLS - 9] = 'desk_front'; }
+    }
+
+    // Center anchor for scene items
+    const centerCol = Math.floor(COLS / 2);
+
+    // 2. Open Laptop in Center
+    const laptopLines = [
+      ".-------------------------------.",
+      "|  .-------------------------.  |",
+      "|  |                         |  |",
+      "|  |           /\\            |  |",
+      "|  |          /  \\           |  |",
+      "|  |        /|    |\\         |  |",
+      "|  |       | | /\\ | |        |  |",
+      "|  |       | | \\/ | |        |  |",
+      "|  |        \\|    |/         |  |",
+      "|  |          \\  /           |  |",
+      "|  |           \\/            |  |",
+      "|  |       staging.space     |  |",
+      "|  '-------------------------'  |",
+      "'-------------------------------'",
+      " /=============================\\ ",
+      "/  [esc][q][w][e][r][t][y][u]   \\",
+      "|  [tab][a][s][d][f][g][h][j]   |",
+      "|  [shift][z][x][c][v][b][n]    |",
+      "\\   [ctrl] [===space===] [cmd]  /",
+      " '-----------------------------' "
+    ];
+    const laptopCol = centerCol - 16;
+    laptopLines.forEach((line, idx) => {
+      const row = 5 + idx;
+      let tag = 'laptop';
+      if (row >= 8 && row <= 15) tag = 'laptop_screen';
+      put(row, laptopCol, line, tag);
+    });
+
+    // 3. Coffee Mug on the Left of Laptop
+    const mugCol = centerCol - 30;
+    const mugLines = [
+      "  .-------.   ",
+      " |         |==)",
+      " |  cyath  |  )",
+      " |  (100%) |==)",
+      "  \\_______/   ",
+      "   '-----'    "
+    ];
+    mugLines.forEach((line, idx) => {
+      put(16 + idx, mugCol, line, 'mug');
+    });
+
+    // 4. Monstera Plant on Far Left
+    const plantCol = centerCol - 48;
+    if (plantCol >= 0) {
+      const plantLines = [
+        "      ,      ",
+        "     /|  __  ",
+        "  _ / |_/  \\ ",
+        " ( \\   /   | ",
+        "  \\ \\ /   /  ",
+        "   \\ V   /   ",
+        "    \\ | /    ",
+        "     \\|/     ",
+        "   .-----.   ",
+        "  /       \\  ",
+        " |  TERRA  | ",
+        " |  [░░░]  | ",
+        "  \\_______/  ",
+        "   '-----'   "
+      ];
+      plantLines.forEach((line, idx) => {
+        put(8 + idx, plantCol, line, 'plant');
+      });
+    }
+
+    // 5. Crumpled Paper Rolls on the Right of Laptop
+    const p1Col = centerCol + 21;
+    const p1 = [
+      "   .---.   ",
+      " .( #@% ). ",
+      "( %*#@#&% )",
+      " '( _.-' )'",
+      "  '-----'  "
+    ];
+    p1.forEach((line, idx) => put(16 + idx, p1Col, line, 'paper'));
+
+    const p2Col = centerCol + 27;
+    const p2 = [
+      "   _..._   ",
+      " .( &%#@ ).",
+      "( @#%*&@% )",
+      " '-(_.-)'  "
+    ];
+    p2.forEach((line, idx) => put(21 + idx, p2Col, line, 'paper'));
+
+    const p3Col = centerCol + 18;
+    const p3 = [
+      " .-=-. ",
+      "( #&% )",
+      " '-=-' "
+    ];
+    p3.forEach((line, idx) => put(25 + idx, p3Col, line, 'paper'));
+
+    // Dynamic Steam Update (rising from mug center)
+    const mugCenterCol = mugCol + 5;
+    const activeSteam = new Map();
+    for (let i = 0; i < steamParticles.length; i++) {
+      const p = steamParticles[i];
+      p.age++;
+      p.row += p.vy;
+
+      const lifeRatio = p.age / p.maxAge;
+      if (lifeRatio >= 1.0 || p.row < 2) {
+        steamParticles[i] = spawnSteam(mugCenterCol);
+        continue;
+      }
+
+      const sway = Math.sin(time * 0.003 * (p.swayFreq * 20) + p.swayPhase + p.row * 0.35) * (p.swayAmp * (1 + (16 - p.row) * 0.12));
+      const curCol = Math.round(mugCenterCol + p.offsetCol + sway);
+      const curRow = Math.round(p.row);
+
+      if (curRow >= 2 && curRow <= 16 && curCol >= 0 && curCol < COLS) {
+        let glyph = '~';
+        if (p.row > 13) {
+          glyph = lifeRatio < 0.25 ? 'o' : '*';
+        } else if (p.row > 9) {
+          glyph = (Math.floor(time * 0.005 + i) % 2 === 0) ? '(' : ')';
+        } else if (p.row > 6) {
+          glyph = '~';
+        } else {
+          glyph = lifeRatio > 0.8 ? '·' : '°';
+        }
+
+        const alpha = Math.max(0.18, 1.0 - lifeRatio);
+        activeSteam.set(`${curRow},${curCol}`, { glyph, alpha });
+      }
+    }
+
+    // Cursor coordinates in grid
+    if (mouseHoverActive && canvas._lastMouseX !== undefined) {
+      mouseGridCol = Math.floor((canvas._lastMouseX - offsetX) / cellW);
+      mouseGridRow = Math.floor((canvas._lastMouseY - offsetY) / cellH);
+    }
+
+    const breath = 0.75 + Math.sin(time * 0.0035) * 0.25;
+
+    // Draw Characters
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        let ch = grid[r][c];
+        const tag = tags[r][c];
+
+        const steamKey = `${r},${c}`;
+        const steamData = activeSteam.get(steamKey);
+        let isSteam = false;
+        let steamAlpha = 1.0;
+
+        if (steamData && tag === 'none') {
+          ch = steamData.glyph;
+          isSteam = true;
+          steamAlpha = steamData.alpha;
+        }
+
+        if (ch === ' ' && !isSteam) {
+          // Day mode subtle sunlight ray motes
+          if (currentTheme === 'day') {
+            const diag = c - r * 2.2;
+            if (diag > 10 && diag < 80 && (r * 13 + c * 29 + Math.floor(time * 0.002)) % 47 === 0 && r < 21) {
+              ctx.fillStyle = 'rgba(217, 119, 6, 0.22)';
+              ctx.fillText('·', offsetX + c * cellW, offsetY + r * cellH);
+            }
+          }
+          // Night mode subtle window dust/stars
+          if (currentTheme === 'night' && r < 8 && c > 2 && c < centerCol - 25) {
+            if ((r * 19 + c * 37) % 53 === 0) {
+              const twinkle = 0.2 + Math.sin(time * 0.003 + r * 2) * 0.15;
+              ctx.fillStyle = `rgba(148, 163, 184, ${twinkle})`;
+              ctx.fillText('·', offsetX + c * cellW, offsetY + r * cellH);
+            }
+          }
+          continue;
+        }
+
+        let color = pal.default;
+        if (isSteam) {
+          color = r > 11 ? pal.steam_base : pal.steam_fade;
+          ctx.globalAlpha = steamAlpha;
+        } else if (tag === 'desk_top') {
+          color = pal.desk_top;
+        } else if (tag === 'desk_edge') {
+          color = pal.desk_edge;
+        } else if (tag === 'desk_front') {
+          color = pal.desk_front;
+        } else if (tag === 'plant') {
+          if (ch === '[' || ch === '░' || ch === ']' || ch === 'T' || ch === 'E' || ch === 'R' || ch === 'A') {
+            color = pal.plant_pot;
+          } else {
+            color = pal.plant;
+          }
+        } else if (tag === 'mug') {
+          color = (ch === 'c' || ch === 'y' || ch === 'a' || ch === 't' || ch === 'h') ? pal.mug_accent : pal.mug;
+        } else if (tag === 'laptop') {
+          color = pal.laptop;
+        } else if (tag === 'laptop_screen') {
+          if (ch === '/' || ch === '\\' || ch === '|' || ch === 'v') {
+            color = pal.screen_tesseract;
+            ctx.globalAlpha = breath;
+          } else if (ch === 's' || ch === 't' || ch === 'a' || ch === 'g' || ch === 'i' || ch === 'n' || ch === 'g') {
+            color = currentTheme === 'night' ? '#7DD3FC' : '#0369A1';
+          } else {
+            color = pal.laptop;
+          }
+        } else if (tag === 'paper') {
+          color = pal.paper;
+        }
+
+        // Mouse hover ripple
+        if (mouseHoverActive) {
+          const dc = c - mouseGridCol;
+          const dr = r - mouseGridRow;
+          const distSq = dc * dc + dr * dr;
+          if (distSq < 26) {
+            const influence = 1.0 - (Math.sqrt(distSq) / 5.1);
+            color = currentTheme === 'night' ? '#FFFFFF' : '#000000';
+            ctx.globalAlpha = Math.min(1.0, 0.7 + influence * 0.3);
+          }
+        }
+
+        ctx.fillStyle = color;
+        ctx.fillText(ch, offsetX + c * cellW, offsetY + r * cellH);
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    ctx.restore();
+    requestAnimationFrame(render);
+  }
+
+  requestAnimationFrame(render);
+})();
+</script>
 </body>
 </html>
