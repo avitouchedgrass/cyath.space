@@ -1423,30 +1423,11 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
-/* Micro Tip Dot — Ultra-precise pointer reference with zero latency */
-.fluid-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  pointer-events: none;
-  z-index: 999999;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  visibility: hidden;
-  mix-blend-mode: difference;
-  transition: opacity 0.2s ease, transform 0.15s ease;
-  will-change: transform;
-}
-
-/* Fluid Invert Bead Positioning Anchor */
+/* Fluid Invert Bead Positioning Anchor (Hidden offscreen by default — no top-left dot) */
 .fluid-cursor {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: -100px;
+  left: -100px;
   width: 0;
   height: 0;
   pointer-events: none;
@@ -1457,17 +1438,14 @@ html.custom-cursor-active * {
   will-change: transform;
 }
 
-.fluid-cursor.active,
-.fluid-dot.active {
+.fluid-cursor.active {
   opacity: 1;
   visibility: visible;
 }
 
 /* Disappear completely when interacting with 01/Capture interactive demo */
 html.over-pin-demo .fluid-cursor,
-html.over-pin-demo .fluid-dot,
-.fluid-cursor.in-demo,
-.fluid-dot.in-demo {
+.fluid-cursor.in-demo {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -1479,90 +1457,82 @@ html.over-pin-demo .fluid-dot,
   top: 0;
   left: 0;
   transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #FFFFFF;
   mix-blend-mode: difference;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.2s ease;
+  transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, width, height;
 }
 
-/* Crisp Label inside the Bead when expanded over interactive targets */
-.fluid-label {
-  display: inline-block;
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #000000;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
-  user-select: none;
-}
-
-/* Interactive Link & Button Hover: Expands to smooth high-contrast circular lens */
-.fluid-cursor.hovering-link .fluid-bead {
-  width: 58px;
-  height: 58px;
+/* On Clickable/Interactive Hover: Purely enlarges without spelling out text */
+.fluid-cursor.hovering-interactive .fluid-bead {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  mix-blend-mode: normal;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-}
-
-.fluid-cursor.hovering-link .fluid-label {
-  opacity: 1;
-  transform: scale(1);
-  color: #000000;
-}
-
-html[data-theme="day"] .fluid-cursor.hovering-link .fluid-bead {
-  background: rgba(28, 26, 24, 0.95);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-html[data-theme="day"] .fluid-cursor.hovering-link .fluid-label {
-  color: #FFFFFF;
-}
-
-/* 3D Atelier Canvas Hover: Expands with studio label */
-.fluid-cursor.hovering-canvas .fluid-bead {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  mix-blend-mode: normal;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-}
-
-.fluid-cursor.hovering-canvas .fluid-label {
-  opacity: 1;
-  transform: scale(1);
-  color: #000000;
-}
-
-html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-bead {
-  background: rgba(28, 26, 24, 0.92);
-}
-
-html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
-  color: #FFFFFF;
 }
 
 /* Click Compression Spring */
 .fluid-cursor.clicking .fluid-bead {
   transform: translate(-50%, -50%) scale(0.72) !important;
+}
+
+/* Extrafazant-Style Interactive Rotating Scroll Badge */
+.scroll-stamp-badge {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 104px;
+  height: 104px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.scroll-stamp-badge:hover {
+  transform: scale(1.08);
+}
+
+.scroll-stamp-badge:active {
+  transform: scale(0.94);
+}
+
+.scroll-stamp-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
+}
+
+.scroll-stamp-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+@media (max-width: 768px) {
+  .scroll-stamp-badge {
+    right: 18px;
+    bottom: 18px;
+    width: 80px;
+    height: 80px;
+  }
 }
 </style>
 </head>
@@ -1727,6 +1697,7 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
       </div>
       <div class="punchlist-box" id="punchlistBox">
         <div class="punch-item resolved" onclick="togglePunchItem(this)">
+          <div class="pixel-loading-bar-bg" aria-hidden="true"></div>
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Fix hero headline wrap on 1440px desktop</span>
@@ -1734,6 +1705,7 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
           <span class="punch-tag">Resolved</span>
         </div>
         <div class="punch-item resolved" onclick="togglePunchItem(this)">
+          <div class="pixel-loading-bar-bg" aria-hidden="true"></div>
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Update inquiry button hover contrast</span>
@@ -1960,17 +1932,22 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
     <a href="#pricing" class="footer-link">Pricing</a>
     <span>© 2026 Cyath. All rights reserved.</span>
   </div>
+
+<!-- Extrafazant-Style Interactive Rotating Scroll Badge -->
+<a href="#howItWorks" id="scrollBadge" class="scroll-stamp-badge" aria-label="Explore the suite — Scroll down">
+  <div class="scroll-stamp-inner">
+    <img src="/scroll-badge.svg" alt="THIS IS HOW WE SCROLL" class="scroll-stamp-img" width="104" height="104" draggable="false">
+  </div>
+</a>
+
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
      OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD
      ══════════════════════════════════════════════════════════════════ -->
 <div id="fluidCursor" class="fluid-cursor" aria-hidden="true">
-  <div id="fluidBead" class="fluid-bead">
-    <span id="fluidLabel" class="fluid-label"></span>
-  </div>
+  <div id="fluidBead" class="fluid-bead"></div>
 </div>
-<div id="fluidDot" class="fluid-dot" aria-hidden="true"></div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      REAL-TIME 3D GPU HALFTONE & BAYER DITHER SHADER ENGINE
@@ -2040,13 +2017,16 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
   window.togglePunchItem = function(item) {
     item.classList.toggle('resolved');
     const tag = item.querySelector('.punch-tag');
+    const isResolved = item.classList.contains('resolved');
     if (tag) {
-      tag.textContent = item.classList.contains('resolved') ? 'Resolved' : 'In Progress';
+      tag.textContent = isResolved ? 'Resolved' : 'In Progress';
     }
     const counter = document.getElementById('punchCounter');
     if (counter) {
-      const isResolved = item.classList.contains('resolved');
-      counter.textContent = isResolved ? '3/3 RESOLVED' : '2/3 RESOLVED';
+      const punchBox = document.getElementById('punchlistBox');
+      const total = punchBox ? punchBox.querySelectorAll('.punch-item').length : 3;
+      const resolved = punchBox ? punchBox.querySelectorAll('.punch-item.resolved').length : 2;
+      counter.textContent = `${resolved}/${total} RESOLVED`;
     }
   };
 
@@ -2318,6 +2298,8 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
   // ARCHITECTURAL 3D STUDIO SCENE (RIGHT-ALIGNED ROOM GROUP)
   // ══════════════════════════════════════════════════════════════════
   const roomGroup = new THREE.Group();
+  roomGroup.rotation.x = -0.04;
+  roomGroup.rotation.y = 0.14;
   scene.add(roomGroup);
 
   const isDay = (currentTheme === 'day');
@@ -2706,7 +2688,7 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
   // ══════════════════════════════════════════════════════════════════
   let isDragging = false;
   let prevMouseX = 0, prevMouseY = 0;
-  let targetRotX = 0, targetRotY = 0;
+  let targetRotX = -0.04, targetRotY = 0.14;
   let mouseX = 0.5, mouseY = 0.5;
   let curMouseUvX = 0.5, curMouseUvY = 0.5;
   let curMouseStrength = 0.0;
@@ -2854,14 +2836,12 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD
+  // OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD (PURE MINIMAL BLOB)
   // ══════════════════════════════════════════════════════════════════
   (function initFluidBeadCursor() {
     const fluidEl = document.getElementById('fluidCursor');
     const beadEl = document.getElementById('fluidBead');
-    const dotEl = document.getElementById('fluidDot');
-    const labelEl = document.getElementById('fluidLabel');
-    if (!fluidEl || !beadEl || !dotEl || !labelEl) return;
+    if (!fluidEl || !beadEl) return;
 
     let mouseX = -100, mouseY = -100;
     let beadX = -100, beadY = -100;
@@ -2892,11 +2872,9 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
         isOverDemo = overDemo;
         if (isOverDemo) {
           fluidEl.classList.add('in-demo');
-          dotEl.classList.add('in-demo');
           document.documentElement.classList.add('over-pin-demo');
         } else {
           fluidEl.classList.remove('in-demo');
-          dotEl.classList.remove('in-demo');
           document.documentElement.classList.remove('over-pin-demo');
         }
       }
@@ -2908,22 +2886,18 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
         prevBeadX = mouseX;
         prevBeadY = mouseY;
         fluidEl.classList.add('active');
-        dotEl.classList.add('active');
       }
-      dotEl.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
     }, { passive: true });
 
     document.addEventListener('mouseleave', () => {
       isVisible = false;
       fluidEl.classList.remove('active');
-      dotEl.classList.remove('active');
     });
 
     document.addEventListener('mouseenter', () => {
       if (!isOverDemo) {
         isVisible = true;
         fluidEl.classList.add('active');
-        dotEl.classList.add('active');
       }
     });
 
@@ -2935,49 +2909,23 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
       fluidEl.classList.remove('clicking');
     });
 
-    const interactiveSelector = 'a, button, input, .nav-brand-pill, .billing-pill, .comp-table tbody tr, .feature-card, #asciiCanvas, .punch-item, .faq-item, .cert-box';
+    const interactiveSelector = 'a, button, input, .nav-brand-pill, .billing-pill, .comp-table tbody tr, .feature-card, .punch-item, .faq-item, .cert-box, .scroll-stamp-badge';
     document.addEventListener('mouseover', (e) => {
       if (e.target.closest('.pin-demo-box')) {
         isHoveringInteractive = false;
-        fluidEl.classList.remove('hovering-link', 'hovering-canvas');
-        labelEl.textContent = '';
+        fluidEl.classList.remove('hovering-interactive');
         return;
       }
 
       const target = e.target.closest(interactiveSelector);
       if (!target) {
         isHoveringInteractive = false;
-        fluidEl.classList.remove('hovering-link', 'hovering-canvas');
-        labelEl.textContent = '';
+        fluidEl.classList.remove('hovering-interactive');
         return;
       }
 
       isHoveringInteractive = true;
-      if (target.id === 'asciiCanvas') {
-        fluidEl.classList.add('hovering-canvas');
-        fluidEl.classList.remove('hovering-link');
-        labelEl.textContent = '3D ATELIER';
-      } else if (target.classList.contains('punch-item')) {
-        fluidEl.classList.add('hovering-link');
-        fluidEl.classList.remove('hovering-canvas');
-        labelEl.textContent = 'RESOLVE';
-      } else if (target.classList.contains('billing-pill')) {
-        fluidEl.classList.add('hovering-link');
-        fluidEl.classList.remove('hovering-canvas');
-        labelEl.textContent = 'SWITCH';
-      } else if (target.classList.contains('cert-box')) {
-        fluidEl.classList.add('hovering-link');
-        fluidEl.classList.remove('hovering-canvas');
-        labelEl.textContent = 'VERIFY';
-      } else if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.classList.contains('nav-brand-pill')) {
-        fluidEl.classList.add('hovering-link');
-        fluidEl.classList.remove('hovering-canvas');
-        labelEl.textContent = 'SELECT';
-      } else {
-        fluidEl.classList.add('hovering-link');
-        fluidEl.classList.remove('hovering-canvas');
-        labelEl.textContent = 'VIEW';
-      }
+      fluidEl.classList.add('hovering-interactive');
     });
 
     function updateCursor() {
@@ -3010,6 +2958,45 @@ html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
     requestAnimationFrame(updateCursor);
   })();
 })();
+
+  // ══════════════════════════════════════════════════════════════════
+  // EXTRAFAZANT ROTATING SCROLL STAMP BADGE CONTROLLER
+  // ══════════════════════════════════════════════════════════════════
+  (function initScrollBadge() {
+    const badge = document.getElementById('scrollBadge');
+    const img = document.querySelector('.scroll-stamp-img');
+    if (!badge || !img) return;
+
+    let angle = 0;
+    let extraVelocity = 0;
+
+    if (window.lenis) {
+      window.lenis.on('scroll', (e) => {
+        extraVelocity = Math.abs(e.velocity || 0) * 1.8;
+      });
+    }
+
+    badge.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector('#howItWorks') || document.querySelector('.section-split');
+      if (target) {
+        if (window.lenis) {
+          window.lenis.scrollTo(target, { duration: 1.2 });
+        } else {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    });
+
+    function renderBadgeSpin() {
+      angle = (angle + 0.35 + extraVelocity) % 360;
+      extraVelocity *= 0.92;
+      img.style.transform = `rotate(${angle}deg)`;
+      requestAnimationFrame(renderBadgeSpin);
+    }
+    requestAnimationFrame(renderBadgeSpin);
+  })();
+
 </script>
 </body>
 </html>

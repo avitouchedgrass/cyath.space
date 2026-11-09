@@ -78,30 +78,11 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
-/* Micro Tip Dot */
-.fluid-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  pointer-events: none;
-  z-index: 999999;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  visibility: hidden;
-  mix-blend-mode: difference;
-  transition: opacity 0.2s ease, transform 0.15s ease;
-  will-change: transform;
-}
-
-/* Fluid Invert Bead Anchor */
+/* Fluid Invert Bead Positioning Anchor (Hidden offscreen by default — no top-left dot) */
 .fluid-cursor {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: -100px;
+  left: -100px;
   width: 0;
   height: 0;
   pointer-events: none;
@@ -112,93 +93,99 @@ html.custom-cursor-active * {
   will-change: transform;
 }
 
-.fluid-cursor.active,
-.fluid-dot.active {
+.fluid-cursor.active {
   opacity: 1;
   visibility: visible;
 }
 
 /* Disappear when hovering interactive demo containers */
 html.over-pin-demo .fluid-cursor,
-html.over-pin-demo .fluid-dot,
-.fluid-cursor.in-demo,
-.fluid-dot.in-demo {
+.fluid-cursor.in-demo {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-/* Organic Invert Bead */
+/* Organic Invert Bead (Clean Extrafazant-style minimal blob) */
 .fluid-bead {
   position: absolute;
   top: 0;
   left: 0;
   transform: translate(-50%, -50%);
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #FFFFFF;
   mix-blend-mode: difference;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.2s ease;
+  transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, width, height;
 }
 
-/* Typography Label */
-.fluid-label {
-  display: inline-block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #000000;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
-  user-select: none;
-}
-
-/* Interactive Hover States */
-.fluid-cursor.hovering-link .fluid-bead {
-  width: 58px;
-  height: 58px;
+/* On Clickable/Interactive Hover: Purely enlarges without spelling out text */
+.fluid-cursor.hovering-interactive .fluid-bead {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  mix-blend-mode: normal;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-}
-
-.fluid-cursor.hovering-link .fluid-label {
-  opacity: 1;
-  transform: scale(1);
-  color: #000000;
-}
-
-/* 3D Atelier / Tesseract Canvas Hover */
-.fluid-cursor.hovering-canvas .fluid-bead {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  mix-blend-mode: normal;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-}
-
-.fluid-cursor.hovering-canvas .fluid-label {
-  opacity: 1;
-  transform: scale(1);
-  color: #000000;
 }
 
 /* Click Compression Spring */
 .fluid-cursor.clicking .fluid-bead {
   transform: translate(-50%, -50%) scale(0.72) !important;
+}
+
+/* Extrafazant-Style Interactive Rotating Scroll Badge */
+.scroll-stamp-badge {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 104px;
+  height: 104px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.scroll-stamp-badge:hover {
+  transform: scale(1.08);
+}
+
+.scroll-stamp-badge:active {
+  transform: scale(0.94);
+}
+
+.scroll-stamp-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
+}
+
+.scroll-stamp-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+@media (max-width: 768px) {
+  .scroll-stamp-badge {
+    right: 18px;
+    bottom: 18px;
+    width: 80px;
+    height: 80px;
+  }
 }

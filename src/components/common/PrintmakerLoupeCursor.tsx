@@ -5,15 +5,11 @@ import React, { useEffect, useRef } from "react";
 export function PrintmakerLoupeCursor() {
   const fluidRef = useRef<HTMLDivElement>(null);
   const beadRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const fluidEl = fluidRef.current;
     const beadEl = beadRef.current;
-    const dotEl = dotRef.current;
-    const labelEl = labelRef.current;
-    if (!fluidEl || !beadEl || !dotEl || !labelEl) return;
+    if (!fluidEl || !beadEl) return;
 
     let mouseX = -100;
     let mouseY = -100;
@@ -47,11 +43,9 @@ export function PrintmakerLoupeCursor() {
         isOverDemo = overDemo;
         if (isOverDemo) {
           fluidEl.classList.add("in-demo");
-          dotEl.classList.add("in-demo");
           document.documentElement.classList.add("over-pin-demo");
         } else {
           fluidEl.classList.remove("in-demo");
-          dotEl.classList.remove("in-demo");
           document.documentElement.classList.remove("over-pin-demo");
         }
       }
@@ -63,22 +57,18 @@ export function PrintmakerLoupeCursor() {
         prevBeadX = mouseX;
         prevBeadY = mouseY;
         fluidEl.classList.add("active");
-        dotEl.classList.add("active");
       }
-      dotEl.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
     };
 
     const onMouseLeave = () => {
       isVisible = false;
       fluidEl.classList.remove("active");
-      dotEl.classList.remove("active");
     };
 
     const onMouseEnter = () => {
       if (!isOverDemo) {
         isVisible = true;
         fluidEl.classList.add("active");
-        dotEl.classList.add("active");
       }
     };
 
@@ -90,37 +80,23 @@ export function PrintmakerLoupeCursor() {
       fluidEl.classList.remove("clicking");
     };
 
-    const interactiveSelector = "a, button, input, [role='button'], canvas";
+    const interactiveSelector = "a, button, input, [role='button'], .scroll-stamp-badge";
     const onMouseOver = (e: MouseEvent) => {
       if ((e.target as HTMLElement)?.closest(".pin-demo-box")) {
         isHoveringInteractive = false;
-        fluidEl.classList.remove("hovering-link", "hovering-canvas");
-        labelEl.textContent = "";
+        fluidEl.classList.remove("hovering-interactive");
         return;
       }
 
       const target = (e.target as HTMLElement)?.closest(interactiveSelector);
       if (!target) {
         isHoveringInteractive = false;
-        fluidEl.classList.remove("hovering-link", "hovering-canvas");
-        labelEl.textContent = "";
+        fluidEl.classList.remove("hovering-interactive");
         return;
       }
 
       isHoveringInteractive = true;
-      if (target.tagName === "CANVAS") {
-        fluidEl.classList.add("hovering-canvas");
-        fluidEl.classList.remove("hovering-link");
-        labelEl.textContent = "4D TESSERACT";
-      } else if (target.tagName === "A" || target.tagName === "BUTTON") {
-        fluidEl.classList.add("hovering-link");
-        fluidEl.classList.remove("hovering-canvas");
-        labelEl.textContent = "SELECT";
-      } else {
-        fluidEl.classList.add("hovering-link");
-        fluidEl.classList.remove("hovering-canvas");
-        labelEl.textContent = "INPUT";
-      }
+      fluidEl.classList.add("hovering-interactive");
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
@@ -171,14 +147,8 @@ export function PrintmakerLoupeCursor() {
   }, []);
 
   return (
-    <>
-      <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true">
-        <div id="fluidBead" ref={beadRef} className="fluid-bead">
-          <span id="fluidLabel" ref={labelRef} className="fluid-label" />
-        </div>
-      </div>
-      <div id="fluidDot" ref={dotRef} className="fluid-dot" aria-hidden="true" />
-    </>
+    <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true">
+      <div id="fluidBead" ref={beadRef} className="fluid-bead" />
+    </div>
   );
 }
-
