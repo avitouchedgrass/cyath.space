@@ -3,32 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyath — Visual Staging Review & Milestone Approval</title>
+<title>Cyath — Stop Chasing Client Feedback Across 15 Emails</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   HIGH-CONTRAST EDITORIAL DESIGN TOKENS (ZERO JARGON / ZERO FLUFF)
+   BESPOKE EDITORIAL DESIGN TOKENS
    ══════════════════════════════════════════════════════════════════ */
 :root {
-  --bg-page: #0A0B0E;
-  --bg-surface: #121418;
-  --bg-card: #16181F;
-  --bg-card-hover: #1C1F27;
+  --bg-deep: #08090C;
+  --bg-surface: #101217;
+  --bg-card: #151821;
+  --bg-card-hover: #1A1E29;
   
   --border-subtle: rgba(255, 255, 255, 0.12);
-  --border-medium: rgba(255, 255, 255, 0.22);
+  --border-medium: rgba(255, 255, 255, 0.24);
   
   --text-primary: #FFFFFF;
   --text-secondary: #D4D4D8;
   --text-muted: #A1A1AA;
   
-  --accent-red: #EF4444;
-  --accent-green: #22C55E;
+  --accent-red: #FF3B30;
+  --accent-green: #10B981;
+  --accent-amber: #F59E0B;
   
-  --font-display: 'Space Grotesk', -apple-system, sans-serif;
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --font-editorial: 'Newsreader', Georgia, serif;
+  --font-body: 'Space Grotesk', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -42,15 +44,17 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--bg-page);
+  background-color: var(--bg-deep);
 }
 
 body {
-  background-color: var(--bg-page);
+  background-color: var(--bg-deep);
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 59, 48, 0.08) 0%, transparent 70%);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -61,32 +65,32 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 68px;
-  background: rgba(10, 11, 14, 0.94);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  height: 72px;
+  background: rgba(8, 9, 12, 0.92);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 100;
 }
 .nav-inner {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   height: 100%;
-  padding: 0 32px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.nav-brand {
+.brand-link {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
   color: var(--text-primary);
 }
-.brand-mark {
-  width: 22px;
-  height: 22px;
+.brand-icon {
+  width: 26px;
+  height: 26px;
   background: #FFFFFF;
   color: #000000;
   display: flex;
@@ -94,20 +98,25 @@ body {
   justify-content: center;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 13px;
-  border-radius: 4px;
+  font-size: 14px;
+  border-radius: 5px;
+  transform: rotate(-3deg);
+  transition: transform 180ms ease;
 }
-.brand-name {
+.brand-link:hover .brand-icon {
+  transform: rotate(0deg) scale(1.08);
+}
+.brand-title {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  font-size: 21px;
+  letter-spacing: -0.04em;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 36px;
 }
 @media (max-width: 768px) {
   .nav-links { display: none; }
@@ -115,7 +124,7 @@ body {
 .nav-links a {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 500;
   transition: color 150ms ease;
 }
@@ -126,7 +135,7 @@ body {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 .nav-signin {
   color: var(--text-secondary);
@@ -143,20 +152,22 @@ body {
   color: #000000;
   font-family: var(--font-body);
   font-size: 14px;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 6px;
+  font-weight: 700;
+  padding: 11px 22px;
+  border-radius: 999px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   border: none;
   cursor: pointer;
-  transition: background 120ms ease, transform 120ms ease;
+  box-shadow: 0 4px 14px rgba(255,255,255,0.15);
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 .btn-primary:hover {
   background: #F4F4F5;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,255,255,0.22);
 }
 
 .btn-secondary {
@@ -166,237 +177,302 @@ body {
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 11px 22px;
+  border-radius: 999px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: all 140ms ease;
 }
 .btn-secondary:hover {
   background: var(--bg-surface);
   border-color: var(--border-medium);
+  transform: translateY(-1px);
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   HERO SECTION (BREATHABLE, MONUMENTAL, ZERO FLUFF)
+   HERO: ASYMMETRIC, MASSIVE, CHARMING
    ══════════════════════════════════════════════════════════════════ */
-.hero-wrap {
-  padding: 150px 32px 100px;
-  max-width: 1200px;
+.hero-stage {
+  padding: 180px 40px 140px;
+  max-width: 1280px;
   margin: 0 auto;
+  position: relative;
 }
 
-.hero-inner {
-  max-width: 960px;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
+/* Playful Background Email Nightmare Floating Tags */
+.nightmare-pill {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.np-1 { top: 120px; right: 80px; transform: rotate(3deg); }
+.np-2 { top: 220px; right: 140px; transform: rotate(-2.5deg); text-decoration: line-through; opacity: 0.6; }
+@media (max-width: 1024px) {
+  .nightmare-pill { display: none; }
 }
 
-.hero-title {
+.hero-content {
+  max-width: 980px;
+}
+
+.hero-main-h1 {
   font-family: var(--font-display);
-  font-size: clamp(40px, 5.8vw, 76px);
+  font-size: clamp(44px, 6.4vw, 84px);
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
   color: #FFFFFF;
+  margin-bottom: 32px;
 }
 
-.hero-description {
-  font-size: 20px;
-  line-height: 1.6;
+.hero-editorial-italic {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 0.92em;
+  display: inline-block;
+}
+
+.hero-narrative {
+  font-size: 21px;
+  line-height: 1.65;
   color: var(--text-secondary);
   font-weight: 400;
-  max-width: 680px;
+  max-width: 660px;
+  margin-bottom: 36px;
 }
 
-.hero-actions {
-  margin-top: 12px;
+.hero-ctas {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  margin-bottom: 24px;
 }
 
-.hero-subtext {
-  font-size: 13.5px;
+.hero-humor-note {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 15px;
   color: var(--text-muted);
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   SECTION DIVIDER & HEADERS
-   ══════════════════════════════════════════════════════════════════ */
-.section-divider {
-  max-width: 1200px;
-  margin: 0 auto;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.editorial-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 120px 32px;
-}
-@media (max-width: 768px) {
-  .editorial-section { padding: 80px 24px; }
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   THE THREE ARTIFACTS (THE THREE MOMENTS OF TRUTH)
-   ══════════════════════════════════════════════════════════════════ */
-.artifact-row {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 64px;
+  display: flex;
   align-items: center;
-  margin-bottom: 140px;
+  gap: 8px;
 }
-.artifact-row:last-child {
-  margin-bottom: 0;
+
+/* ══════════════════════════════════════════════════════════════════
+   ASYMMETRICAL THREE ARTIFACTS
+   ══════════════════════════════════════════════════════════════════ */
+.artifacts-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 60px 40px 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 180px;
 }
-@media (max-width: 900px) {
-  .artifact-row {
+
+.artifact-block {
+  display: grid;
+  align-items: center;
+  gap: 80px;
+}
+.artifact-block.left-heavy {
+  grid-template-columns: 1fr 1.2fr;
+}
+.artifact-block.right-heavy {
+  grid-template-columns: 1.2fr 1fr;
+}
+@media (max-width: 960px) {
+  .artifact-block.left-heavy,
+  .artifact-block.right-heavy {
     grid-template-columns: 1fr;
-    gap: 40px;
-    margin-bottom: 100px;
+    gap: 48px;
   }
 }
 
-.artifact-info {
+.artifact-text-group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
-.artifact-index {
+
+.artifact-numeral {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--text-muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
-.artifact-heading {
+
+.artifact-h2 {
   font-family: var(--font-display);
-  font-size: clamp(28px, 3.4vw, 42px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
+  font-size: clamp(32px, 3.8vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
   color: #FFFFFF;
 }
-.artifact-body {
-  font-size: 17px;
+
+.artifact-desc {
+  font-size: 17.5px;
   line-height: 1.65;
   color: var(--text-secondary);
 }
 
-/* Artifact 01: The Pin & Telemetry Card */
-.artifact-visual-box {
+/* ─── Artifact 01: The Interactive Pin & Popover ─── */
+.interactive-crop-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 36px 32px;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  padding: 44px 38px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  transform: rotate(-1deg);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms ease;
   position: relative;
+}
+.interactive-crop-card:hover {
+  transform: rotate(0deg) scale(1.01);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.65);
 }
 
-/* Staged UI Component Crop */
-.ui-crop-sample {
-  background: #FAF8F5;
-  color: #171614;
-  border-radius: 8px;
-  padding: 32px 28px;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-.sample-kicker {
+/* Jaunty Angled Tape Sticker */
+.crop-tape-sticker {
+  position: absolute;
+  top: -14px;
+  right: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #09090B;
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: #888;
-  margin-bottom: 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 3px;
+  transform: rotate(2.5deg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   letter-spacing: 0.05em;
 }
-.sample-headline {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 18px;
-  color: #111;
+
+.crop-preview-surface {
+  background: #FAF8F5;
+  color: #171614;
+  border-radius: 10px;
+  padding: 36px 32px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
 }
-.sample-button {
-  background: #171614;
-  color: #FFF;
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 4px;
-  display: inline-block;
-  position: relative;
+.cps-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: #71717A;
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+}
+.cps-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #18181B;
+  margin-bottom: 22px;
 }
 
-/* Pin Annotation Marker */
-.sample-pin {
+.cps-interactive-target {
+  background: #18181B;
+  color: #FFFFFF;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 6px;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+.cps-interactive-target:hover {
+  transform: scale(1.02);
+}
+
+/* Bouncing Pin Marker */
+.cps-animated-pin {
   position: absolute;
-  top: -12px;
-  right: -12px;
-  width: 26px;
-  height: 26px;
+  top: -14px;
+  right: -14px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--accent-red);
-  color: #FFF;
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  box-shadow: 0 0 0 2px #FFF, 0 4px 10px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 0 3px #FFFFFF, 0 6px 16px rgba(255, 59, 48, 0.45);
+  animation: pinDropElastic 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+@keyframes pinDropElastic {
+  0% { transform: translateY(-30px) scale(0.5); opacity: 0; }
+  60% { transform: translateY(4px) scale(1.15); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Note Popover Card */
-.telemetry-popover-card {
+/* Client Note Card */
+.cps-note-card {
   margin-top: 24px;
   background: #FFFFFF;
   color: #18181B;
-  border-radius: 8px;
-  padding: 18px 20px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  padding: 20px 22px;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.25);
   border: 1px solid #E4E4E7;
 }
-.tpc-head {
+.cnc-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
-.tpc-author {
-  font-size: 13px;
+.cnc-author {
+  font-size: 14px;
   font-weight: 700;
   color: #09090B;
 }
-.tpc-badge {
+.cnc-badge {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   background: #FEE2E2;
   color: #991B1B;
-  padding: 2px 7px;
-  border-radius: 3px;
-}
-.tpc-note {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #27272A;
-  margin-bottom: 12px;
-}
-.tpc-telemetry-strip {
-  background: #F4F4F5;
+  padding: 3px 8px;
   border-radius: 4px;
-  padding: 8px 12px;
+}
+.cnc-body {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #27272A;
+  margin-bottom: 14px;
+}
+.cnc-telemetry-tag {
+  background: #F4F4F5;
+  border-radius: 6px;
+  padding: 9px 14px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 11.5px;
   color: #52525B;
   display: flex;
   justify-content: space-between;
@@ -404,226 +480,294 @@ body {
   gap: 8px;
 }
 
-/* Artifact 02: The Unified Punchlist */
-.punchlist-card {
+/* ─── Artifact 02: The Asymmetric Punchlist ─── */
+.punchlist-box {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  border-radius: 16px;
+  padding: 36px 34px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  transform: rotate(1deg);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.pl-header {
+.punchlist-box:hover {
+  transform: rotate(0deg);
+}
+.pl-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 16px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 18px;
 }
 .pl-title {
   font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #FFFFFF;
 }
-.pl-counter {
+.pl-done-counter {
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--accent-green);
+  background: rgba(16, 185, 129, 0.12);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
-.pl-list {
+
+.pl-items-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
-.pl-item {
+.pl-row {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 120ms ease, border-color 120ms ease;
+  cursor: pointer;
+}
+.pl-row:hover {
+  transform: translateX(4px);
+  border-color: var(--border-medium);
+}
+.pl-glyph {
+  color: var(--accent-green);
+  font-weight: 800;
+  font-size: 15px;
+}
+.pl-content {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.pl-meta-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ─── Artifact 03: The Milestone Seal & Receipt ─── */
+.receipt-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow: 0 28px 72px rgba(0,0,0,0.6);
+  position: relative;
+  transform: rotate(-1.5deg);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.receipt-box:hover {
+  transform: rotate(0deg) scale(1.01);
+}
+
+/* Physical Embossed Green Stamp at Jaunty Angle */
+.receipt-embossed-stamp {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  border: 2px solid var(--accent-green);
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transform: rotate(8deg);
+  letter-spacing: 0.12em;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+.rb-title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 24px;
+}
+
+.rb-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.rb-row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.rb-key { color: var(--text-muted); }
+.rb-val { color: #FFFFFF; font-weight: 600; }
+
+.rb-security-strip {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 13.5px;
-}
-.pl-check {
-  color: var(--accent-green);
-  font-weight: 700;
-}
-.pl-text {
-  flex: 1;
-  color: var(--text-secondary);
-}
-.pl-meta {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-muted);
-}
-
-/* Artifact 03: The Milestone Sign-Off Receipt */
-.receipt-artifact-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-medium);
-  border-radius: 12px;
-  padding: 36px 32px;
-  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.rac-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.rac-badge {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  background: rgba(34, 197, 94, 0.15);
-  color: #4ADE80;
-  border: 1px solid rgba(34, 197, 94, 0.35);
-  padding: 3px 10px;
-  border-radius: 4px;
-}
-.rac-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-}
-.rac-row {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.rac-label { color: var(--text-muted); }
-.rac-val { color: #FFFFFF; font-weight: 600; }
-.rac-seal {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 10px 14px;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-muted);
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   COMPARISON TABLE SECTION
+   BRUTALLY HONEST COMPARISON
    ══════════════════════════════════════════════════════════════════ */
-.table-wrap {
-  margin-top: 48px;
+.comparison-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 80px 40px 140px;
+}
+.cs-header {
+  max-width: 720px;
+  margin-bottom: 56px;
+}
+.cs-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.2vw, 54px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  margin-bottom: 16px;
+}
+.cs-sub {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.table-container {
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow-x: auto;
   background: var(--bg-surface);
 }
-table.comparison-table {
+table.editorial-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 14.5px;
+  font-size: 15px;
 }
-.comparison-table th, .comparison-table td {
-  padding: 18px 24px;
+.editorial-table th, .editorial-table td {
+  padding: 20px 28px;
   border-bottom: 1px solid var(--border-subtle);
 }
-.comparison-table th {
+.editorial-table th {
   background: var(--bg-card);
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
   color: #FFFFFF;
 }
-.comparison-table td {
+.editorial-table td {
   color: var(--text-secondary);
 }
-.comparison-table tr:last-child td {
+.editorial-table tr:last-child td {
   border-bottom: none;
 }
-.cyath-col {
+.highlighted-cyath {
   color: #FFFFFF !important;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.02);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   PRICING SECTION
+   PREDICTABLE PRICING
    ══════════════════════════════════════════════════════════════════ */
-.pricing-grid {
+.pricing-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 40px 160px;
+}
+.pricing-flex-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 48px;
-  max-width: 880px;
+  gap: 32px;
+  max-width: 960px;
+  margin-top: 56px;
 }
-@media (max-width: 720px) {
-  .pricing-grid { grid-template-columns: 1fr; }
+@media (max-width: 768px) {
+  .pricing-flex-grid { grid-template-columns: 1fr; }
 }
 
-.price-box {
+.price-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 40px 32px;
+  border-radius: 14px;
+  padding: 44px 38px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
+  transition: transform 180ms ease, border-color 180ms ease;
 }
-.price-box.featured {
+.price-card:hover {
+  transform: translateY(-3px);
   border-color: var(--border-medium);
+}
+.price-card.studio-highlight {
   background: var(--bg-card);
+  border-color: var(--border-medium);
+  box-shadow: 0 20px 54px rgba(0,0,0,0.5);
 }
-.pb-top {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-.pb-plan-title {
+
+.pc-name {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-.pb-amount {
-  font-family: var(--font-display);
-  font-size: 42px;
+  font-size: 22px;
   font-weight: 800;
   color: #FFFFFF;
+  margin-bottom: 8px;
 }
-.pb-desc {
-  font-size: 14.5px;
+.pc-price {
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.pc-period {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.pc-desc {
+  font-size: 15px;
   color: var(--text-secondary);
+  margin-bottom: 28px;
 }
-.pb-features {
+
+.pc-checklist {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 32px;
-  font-size: 14px;
+  gap: 14px;
+  margin-bottom: 36px;
+  font-size: 14.5px;
   color: var(--text-secondary);
 }
-.pb-features li {
+.pc-checklist li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
-.pb-features li::before {
+.pc-checklist li::before {
   content: "✓";
   color: var(--accent-green);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -631,29 +775,29 @@ table.comparison-table {
    ══════════════════════════════════════════════════════════════════ */
 .site-footer {
   border-top: 1px solid var(--border-subtle);
-  padding: 48px 32px 64px;
-  margin-top: 60px;
+  padding: 56px 40px 72px;
 }
-.footer-inner {
-  max-width: 1200px;
+.footer-wrap {
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 20px;
-  font-size: 13.5px;
+  gap: 24px;
+  font-size: 14px;
   color: var(--text-muted);
 }
-.footer-links {
+.footer-nav {
   display: flex;
-  gap: 24px;
+  gap: 28px;
 }
-.footer-links a {
+.footer-nav a {
   color: var(--text-secondary);
   text-decoration: none;
+  transition: color 140ms ease;
 }
-.footer-links a:hover {
+.footer-nav a:hover {
   color: #FFFFFF;
 }
 </style>
@@ -663,9 +807,9 @@ table.comparison-table {
 <!-- ══════════ NAVIGATION ══════════ -->
 <header class="site-nav">
   <div class="nav-inner">
-    <a href="/" class="nav-brand">
-      <div class="brand-mark">CY</div>
-      <span class="brand-name">cyath</span>
+    <a href="/" class="brand-link">
+      <div class="brand-icon">CY</div>
+      <span class="brand-title">cyath</span>
     </a>
 
     <nav class="nav-links">
@@ -681,62 +825,66 @@ table.comparison-table {
   </div>
 </header>
 
-<!-- ══════════ HERO SECTION (BREATHABLE, MONUMENTAL) ══════════ -->
+<!-- ══════════ HERO SECTION (ASYMMETRIC & BREATHABLE) ══════════ -->
 <main>
-<section class="hero-wrap">
-  <div class="hero-inner">
-    <h1 class="hero-title">
+<section class="hero-stage">
+  <!-- Subtle Email Nightmare Reminders -->
+  <div class="nightmare-pill np-1">"Can we make the logo pop more?"</div>
+  <div class="nightmare-pill np-2">Re: Re: Re: Feedback v3_FINAL.jpg</div>
+
+  <div class="hero-content">
+    <h1 class="hero-main-h1">
       Stop chasing client feedback across 15 emails.
     </h1>
 
-    <p class="hero-description">
+    <p class="hero-narrative">
       Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
     </p>
 
-    <div class="hero-actions">
+    <div class="hero-ctas">
       <a href="/dashboard" class="btn-primary">Start for Free →</a>
       <a href="#how-it-works" class="btn-secondary">How It Works ↓</a>
     </div>
 
-    <span class="hero-subtext">No credit card required · 1 active project free forever</span>
+    <div class="hero-humor-note">
+      <span>No credit card required. One active project free forever.</span>
+    </div>
   </div>
 </section>
 
-<div class="section-divider"></div>
-
-<!-- ══════════ THE THREE ARTIFACTS (THE THREE MOMENTS OF TRUTH) ══════════ -->
-<section class="editorial-section" id="how-it-works">
-  <!-- Artifact 01: The Capture -->
-  <div class="artifact-row">
-    <div class="artifact-info">
-      <span class="artifact-index">01 / THE CAPTURE</span>
-      <h2 class="artifact-heading">Exact screen size and browser on every note.</h2>
-      <p class="artifact-body">
+<!-- ══════════ THE THREE ARTIFACTS (ASYMMETRICAL RHYTHM) ══════════ -->
+<section class="artifacts-container" id="how-it-works">
+  <!-- Artifact 01: The Pin (Left-heavy) -->
+  <div class="artifact-block left-heavy">
+    <div class="artifact-text-group">
+      <span class="artifact-numeral">01 / THE CAPTURE</span>
+      <h2 class="artifact-h2">Exact screen size and browser on every note.</h2>
+      <p class="artifact-desc">
         Every pin automatically logs your client's exact screen dimensions, browser, operating system, and scroll position. You see exactly what they saw—no more asking "what browser are you using?" or guessing what a blurry phone photo means.
       </p>
     </div>
 
-    <div class="artifact-visual-box">
-      <!-- Staged UI Crop Sample -->
-      <div class="ui-crop-sample">
-        <div class="sample-kicker">AURA ATELIER · ARCHITECTURE</div>
-        <div class="sample-headline">Monolithic forms cast in raw concrete & bronze.</div>
-        <div class="sample-button">
+    <div class="interactive-crop-card">
+      <div class="crop-tape-sticker">CAPTURED AUTOMATICALLY</div>
+      
+      <div class="crop-preview-surface">
+        <div class="cps-eyebrow">AURA ATELIER · ARCHITECTURE</div>
+        <div class="cps-title">Monolithic forms cast in raw concrete & bronze.</div>
+        <div class="cps-interactive-target" id="demoTargetBtn" title="Click to test interaction">
           Request Private Catalog
-          <div class="sample-pin">1</div>
+          <div class="cps-animated-pin">1</div>
         </div>
       </div>
 
-      <!-- Telemetry Popover Note -->
-      <div class="telemetry-popover-card">
-        <div class="tpc-head">
-          <span class="tpc-author">Jane Cooper (Client)</span>
-          <span class="tpc-badge">OPEN</span>
+      <div class="cps-note-card">
+        <div class="cnc-header">
+          <span class="cnc-author">Jane Cooper (Client)</span>
+          <span class="cnc-badge">OPEN</span>
         </div>
-        <p class="tpc-note">
+        <p class="cnc-body">
           "Can we change this button label to 'Reserve via Concierge'? Also bump vertical padding to 16px."
         </p>
-        <div class="tpc-telemetry-strip">
+        <div class="cnc-telemetry-tag">
           <span>1440 × 900</span>
           <span>Chrome 131</span>
           <span>macOS 15.1</span>
@@ -745,100 +893,95 @@ table.comparison-table {
     </div>
   </div>
 
-  <!-- Artifact 02: The Unified Punchlist -->
-  <div class="artifact-row">
-    <div class="artifact-info">
-      <span class="artifact-index">02 / THE PUNCHLIST</span>
-      <h2 class="artifact-heading">A single checklist instead of 15 email replies.</h2>
-      <p class="artifact-body">
+  <!-- Artifact 02: The Unified Punchlist (Right-heavy) -->
+  <div class="artifact-block right-heavy">
+    <div class="punchlist-box">
+      <div class="pl-topbar">
+        <span class="pl-title">Milestone Review Punchlist</span>
+        <span class="pl-done-counter">12 of 12 Completed</span>
+      </div>
+      <div class="pl-items-stack">
+        <div class="pl-row">
+          <span class="pl-glyph">✓</span>
+          <span class="pl-content">Button label updated to "Reserve via Concierge"</span>
+          <span class="pl-meta-tag">1440×900 · Chrome</span>
+        </div>
+        <div class="pl-row">
+          <span class="pl-glyph">✓</span>
+          <span class="pl-content">Mobile navigation tap target expanded to 44px</span>
+          <span class="pl-meta-tag">390×844 · Safari</span>
+        </div>
+        <div class="pl-row">
+          <span class="pl-glyph">✓</span>
+          <span class="pl-content">Product catalog download PDF link verified</span>
+          <span class="pl-meta-tag">1512×982 · Chrome</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="artifact-text-group">
+      <span class="artifact-numeral">02 / THE PUNCHLIST</span>
+      <h2 class="artifact-h2">A single checklist instead of 15 email replies.</h2>
+      <p class="artifact-desc">
         Stop searching through forwarded email chains to figure out what was already fixed. Every note lives in one clean punchlist that updates in real time for both you and your client.
       </p>
     </div>
-
-    <div class="punchlist-card">
-      <div class="pl-header">
-        <span class="pl-title">Milestone Review Notes</span>
-        <span class="pl-counter">12 of 12 Completed</span>
-      </div>
-      <div class="pl-list">
-        <div class="pl-item">
-          <span class="pl-check">✓</span>
-          <span class="pl-text">Button label changed to "Reserve via Concierge"</span>
-          <span class="pl-meta">1440×900 · Chrome</span>
-        </div>
-        <div class="pl-item">
-          <span class="pl-check">✓</span>
-          <span class="pl-text">Mobile navigation tap target expanded to 44px</span>
-          <span class="pl-meta">390×844 · Safari</span>
-        </div>
-        <div class="pl-item">
-          <span class="pl-check">✓</span>
-          <span class="pl-text">Product catalog download link verified</span>
-          <span class="pl-meta">1512×982 · Chrome</span>
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- Artifact 03: The Milestone Sign-Off Receipt -->
-  <div class="artifact-row">
-    <div class="artifact-info">
-      <span class="artifact-index">03 / THE SIGN-OFF</span>
-      <h2 class="artifact-heading">Clear approval when the work is done.</h2>
-      <p class="artifact-body">
+  <!-- Artifact 03: The Milestone Sign-Off (Left-heavy) -->
+  <div class="artifact-block left-heavy">
+    <div class="artifact-text-group">
+      <span class="artifact-numeral">03 / THE SIGN-OFF</span>
+      <h2 class="artifact-h2">Clear approval when the work is done.</h2>
+      <p class="artifact-desc">
         Once you finish the fixes, your client approves the build with a single click. Cyath generates a timestamped sign-off receipt so both sides agree the milestone is complete—putting an end to endless "just one more quick change" emails.
       </p>
     </div>
 
-    <div class="receipt-artifact-card">
-      <div class="rac-top">
-        <span style="font-family:var(--font-display); font-weight:700; font-size:16px;">Milestone Sign-Off</span>
-        <span class="rac-badge">APPROVED</span>
-      </div>
-      <div class="rac-rows">
-        <div class="rac-row">
-          <span class="rac-label">Project:</span>
-          <span class="rac-val">Aura Atelier v2.4</span>
+    <div class="receipt-box">
+      <div class="receipt-embossed-stamp">APPROVED</div>
+      <div class="rb-title">Milestone Sign-Off Receipt</div>
+      <div class="rb-fields">
+        <div class="rb-row">
+          <span class="rb-key">Project:</span>
+          <span class="rb-val">Aura Atelier v2.4</span>
         </div>
-        <div class="rac-row">
-          <span class="rac-label">Approved By:</span>
-          <span class="rac-val">Jane Cooper (Client)</span>
+        <div class="rb-row">
+          <span class="rb-key">Approved By:</span>
+          <span class="rb-val">Jane Cooper (Client)</span>
         </div>
-        <div class="rac-row">
-          <span class="rac-label">Resolved Notes:</span>
-          <span class="rac-val" style="color:var(--accent-green);">12 of 12 Notes Completed</span>
+        <div class="rb-row">
+          <span class="rb-key">Status:</span>
+          <span class="rb-val" style="color:var(--accent-green);">12 of 12 Notes Completed</span>
         </div>
-        <div class="rac-row">
-          <span class="rac-label">Signed Timestamp:</span>
-          <span class="rac-val">Nov 9, 2026 · 13:30 UTC</span>
+        <div class="rb-row">
+          <span class="rb-key">Timestamp:</span>
+          <span class="rb-val">Nov 9, 2026 · 13:40 UTC</span>
         </div>
       </div>
-      <div class="rac-seal">
-        Receipt Verification: #844d88e92a4f6103
+      <div class="rb-security-strip">
+        <span>Receipt Verification</span>
+        <span>#844d88e92a4f6103</span>
       </div>
     </div>
   </div>
 </section>
 
-<div class="section-divider"></div>
-
-<!-- ══════════ COMPARISON TABLE ══════════ -->
-<section class="editorial-section" id="compare">
-  <div style="max-width: 680px; margin-bottom: 40px;">
-    <h2 style="font-family:var(--font-display); font-size:clamp(32px, 3.8vw, 44px); font-weight:700; letter-spacing:-0.03em; margin-bottom:12px;">
-      Same job. A fraction of the price.
-    </h2>
-    <p style="font-size:17px; color:var(--text-secondary);">
+<!-- ══════════ BRUTALLY HONEST COMPARISON ══════════ -->
+<section class="comparison-section" id="compare">
+  <div class="cs-header">
+    <h2 class="cs-h2">Same job. A fraction of the price.</h2>
+    <p class="cs-sub">
       Stop paying enterprise seat fees just to get feedback on staging links.
     </p>
   </div>
 
-  <div class="table-wrap">
-    <table class="comparison-table">
+  <div class="table-container">
+    <table class="editorial-table">
       <thead>
         <tr>
           <th>Capability</th>
-          <th class="cyath-col">Cyath</th>
+          <th class="highlighted-cyath">Cyath</th>
           <th>Pastel</th>
           <th>MarkUp.io</th>
         </tr>
@@ -846,31 +989,31 @@ table.comparison-table {
       <tbody>
         <tr>
           <td>Client account required</td>
-          <td class="cyath-col">No</td>
+          <td class="highlighted-cyath">No</td>
           <td>No</td>
           <td>Yes (for guests)</td>
         </tr>
         <tr>
           <td>Screen size & browser recorded</td>
-          <td class="cyath-col">Automatic on every pin</td>
+          <td class="highlighted-cyath">Automatic on every pin</td>
           <td>Basic user agent</td>
           <td>Basic user agent</td>
         </tr>
         <tr>
           <td>Milestone sign-off approval</td>
-          <td class="cyath-col">Included (Timestamped receipt)</td>
+          <td class="highlighted-cyath">Included (Timestamped receipt)</td>
           <td>Not available</td>
           <td>Not available</td>
         </tr>
         <tr>
           <td>Free plan</td>
-          <td class="cyath-col">1 active project free forever</td>
+          <td class="highlighted-cyath">1 active project free forever</td>
           <td>3-day trial only</td>
           <td>1 project limit</td>
         </tr>
         <tr>
           <td>Starting price</td>
-          <td class="cyath-col">$15 / month (Unlimited projects)</td>
+          <td class="highlighted-cyath">$15 / month (Unlimited projects)</td>
           <td>$25 / month (3 links max)</td>
           <td>$49 / month per user</td>
         </tr>
@@ -879,50 +1022,46 @@ table.comparison-table {
   </div>
 </section>
 
-<div class="section-divider"></div>
-
-<!-- ══════════ PRICING ══════════ -->
-<section class="editorial-section" id="pricing">
-  <div style="max-width: 680px; margin-bottom: 40px;">
-    <h2 style="font-family:var(--font-display); font-size:clamp(32px, 3.8vw, 44px); font-weight:700; letter-spacing:-0.03em; margin-bottom:12px;">
-      Simple, predictable pricing.
-    </h2>
-    <p style="font-size:17px; color:var(--text-secondary);">
+<!-- ══════════ PREDICTABLE PRICING ══════════ -->
+<section class="pricing-section" id="pricing">
+  <div class="cs-header">
+    <h2 class="cs-h2">Simple, predictable pricing.</h2>
+    <p class="cs-sub">
       Start free on your current project. Upgrade only when you manage multiple active builds.
     </p>
   </div>
 
-  <div class="pricing-grid">
+  <div class="pricing-flex-grid">
     <!-- Free Tier -->
-    <div class="price-box">
-      <div class="pb-top">
-        <h3 class="pb-plan-title">Starter</h3>
-        <div class="pb-amount">$0</div>
-        <p class="pb-desc">For freelancers running one active build at a time.</p>
+    <div class="price-card">
+      <div>
+        <h3 class="pc-name">Starter</h3>
+        <div class="pc-price">$0</div>
+        <p class="pc-desc">For freelancers running one active build at a time.</p>
+        <ul class="pc-checklist">
+          <li>1 active staging project</li>
+          <li>Unlimited client feedback notes</li>
+          <li>Automatic browser and viewport capture</li>
+          <li>Milestone sign-off receipts</li>
+        </ul>
       </div>
-      <ul class="pb-features">
-        <li>1 active staging project</li>
-        <li>Unlimited client feedback notes</li>
-        <li>Automatic browser and viewport capture</li>
-        <li>Milestone sign-off receipts</li>
-      </ul>
       <a href="/dashboard" class="btn-secondary" style="justify-content:center;">Get Started Free</a>
     </div>
 
     <!-- Pro Tier -->
-    <div class="price-box featured">
-      <div class="pb-top">
-        <h3 class="pb-plan-title">Pro Studio</h3>
-        <div class="pb-amount">$15 <span style="font-size:16px; font-weight:500; color:var(--text-muted);">/ month</span></div>
-        <p class="pb-desc">For agencies and studios managing multiple client deliverables.</p>
+    <div class="price-card studio-highlight">
+      <div>
+        <h3 class="pc-name">Pro Studio</h3>
+        <div class="pc-price">$15 <span class="pc-period">/ month</span></div>
+        <p class="pc-desc">For agencies and studios managing multiple client deliverables.</p>
+        <ul class="pc-checklist">
+          <li>Unlimited active staging projects</li>
+          <li>Unlimited client reviewers (no seat fees)</li>
+          <li>Custom studio domain & branding</li>
+          <li>Milestone sign-off export</li>
+          <li>Priority support</li>
+        </ul>
       </div>
-      <ul class="pb-features">
-        <li>Unlimited active staging projects</li>
-        <li>Unlimited client reviewers (no seat fees)</li>
-        <li>Custom studio domain & branding</li>
-        <li>Milestone sign-off export</li>
-        <li>Priority support</li>
-      </ul>
       <a href="/dashboard" class="btn-primary" style="justify-content:center;">Start Pro Trial</a>
     </div>
   </div>
@@ -931,11 +1070,11 @@ table.comparison-table {
 
 <!-- ══════════ FOOTER ══════════ -->
 <footer class="site-footer">
-  <div class="footer-inner">
+  <div class="footer-wrap">
     <div>
       © 2026 Cyath. Visual staging review & client milestone approval.
     </div>
-    <div class="footer-links">
+    <div class="footer-nav">
       <a href="#how-it-works">How It Works</a>
       <a href="#compare">Compare</a>
       <a href="#pricing">Pricing</a>
