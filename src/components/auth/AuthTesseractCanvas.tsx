@@ -8,6 +8,10 @@ interface AuthCanvasProps {
   className?: string;
 }
 
+// Persist rotation across theme switches so it continues seamlessly without jumping
+let persistedRotX = 0.22;
+let persistedRotY = 0.45;
+
 export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -282,10 +286,10 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     let isDragging = false;
     let prevMouseX = 0,
       prevMouseY = 0;
-    let targetRotX = 0.28,
-      targetRotY = 0.52;
-    let curRotX = 0.28,
-      curRotY = 0.52;
+    let targetRotX = persistedRotX,
+      targetRotY = persistedRotY;
+    let curRotX = persistedRotX,
+      curRotY = persistedRotY;
     let mouseUvX = 0.5,
       mouseUvY = 0.5;
     let curMouseUvX = 0.5,
@@ -349,25 +353,46 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     };
     window.addEventListener("resize", onResize);
 
+    // Reset lastTime on tab visibility restoration so alt-tabbing never causes a sudden spin
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        lastTime = 0;
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     // 6. Animation Loop
     let lastTime = 0;
     const animate = (time: number) => {
-      const dt = (time - lastTime) * 0.001 || 0.016;
-      lastTime = time;
-
-      if (!isDragging) {
-        targetRotY += dt * 0.28;
-        targetRotX = 0.22 + Math.sin(time * 0.0008) * 0.12;
+      if (lastTime === 0) {
+        lastTime = time;
+        animId = requestAnimationFrame(animate);
+        return;
       }
 
-      curRotX += (targetRotX - curRotX) * 0.08;
-      curRotY += (targetRotY - curRotY) * 0.08;
+      const rawDt = (time - lastTime) * 0.001;
+      lastTime = time;
+
+      // Clamp delta time to maximum 33ms so background tab lag never causes violent acceleration
+      const dt = Math.min(Math.max(rawDt, 0.001), 0.033);
+
+      // Smooth, serene, and slower stately hypercube rotation
+      if (!isDragging) {
+        targetRotY += dt * 0.10;
+        targetRotX = 0.22 + Math.sin(time * 0.0004) * 0.07;
+      }
+
+      curRotX += (targetRotX - curRotX) * 0.05;
+      curRotY += (targetRotY - curRotY) * 0.05;
+      persistedRotX = curRotX;
+      persistedRotY = curRotY;
+
       tesseractGroup.rotation.x = curRotX;
       tesseractGroup.rotation.y = curRotY;
 
       innerGroup.rotation.x = -curRotX * 1.5;
       innerGroup.rotation.y = -curRotY * 1.5;
-      const innerScale = 0.95 + Math.sin(time * 0.002) * 0.15;
+      const innerScale = 0.95 + Math.sin(time * 0.0015) * 0.12;
       innerGroup.scale.set(innerScale, innerScale, innerScale);
 
       curMouseUvX += (mouseUvX - curMouseUvX) * 0.15;
@@ -395,6 +420,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       container.removeEventListener("mousemove", onMouseMove);
       container.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
 
       renderer.dispose();
       renderTarget.dispose();

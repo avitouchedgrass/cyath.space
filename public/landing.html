@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Oranienbaum&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <script src="/vendor/three.min.js"></script>
+<script src="/vendor/lenis.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════════
    ARCHITECTURAL TOKENS: TRUE CARBON GRAPHITE & ARCHIVAL VELLUM
@@ -1398,6 +1399,231 @@ html[data-theme="day"] .animated-dashed-border rect {
     padding-right: 20px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   LENIS FLUID SCROLL STYLES
+   ══════════════════════════════════════════════════════════════════ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
+   ══════════════════════════════════════════════════════════════════ */
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor-active,
+  html.custom-cursor-active body,
+  html.custom-cursor-active a,
+  html.custom-cursor-active button,
+  html.custom-cursor-active input {
+    cursor: none !important;
+  }
+}
+
+.loupe-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease, background-color 0.25s ease;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform;
+}
+
+html[data-theme="day"] .loupe-dot {
+  background: #1C1A18;
+}
+
+.loupe-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999998;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  will-change: transform;
+}
+
+.loupe-cursor.active,
+.loupe-dot.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.loupe-ring {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.25px solid rgba(255, 255, 255, 0.50);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.03);
+  backdrop-filter: invert(0.08);
+  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              background 0.25s ease,
+              transform 0.18s ease;
+}
+
+html[data-theme="day"] .loupe-ring {
+  border: 1.25px solid rgba(28, 26, 24, 0.45);
+  background: rgba(28, 26, 24, 0.02);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 0 10px rgba(0, 0, 0, 0.02);
+  backdrop-filter: invert(0.04);
+}
+
+/* 4 Optical Cardinal Calibration Ticks */
+.loupe-tick {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.65);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+html[data-theme="day"] .loupe-tick {
+  background: rgba(28, 26, 24, 0.60);
+}
+
+.tick-n {
+  top: -5px;
+  left: 50%;
+  width: 1.25px;
+  height: 5px;
+  transform: translateX(-50%);
+}
+
+.tick-s {
+  bottom: -5px;
+  left: 50%;
+  width: 1.25px;
+  height: 5px;
+  transform: translateX(-50%);
+}
+
+.tick-w {
+  left: -5px;
+  top: 50%;
+  height: 1.25px;
+  width: 5px;
+  transform: translateY(-50%);
+}
+
+.tick-e {
+  right: -5px;
+  top: 50%;
+  height: 1.25px;
+  width: 5px;
+  transform: translateY(-50%);
+}
+
+/* 4 Architectural Corner Crop Marks (Appear on Hover) */
+.crop-mark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.crop-tl { top: -3px; left: -3px; border-top: 1.5px solid #38BDF8; border-left: 1.5px solid #38BDF8; }
+.crop-tr { top: -3px; right: -3px; border-top: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
+.crop-bl { bottom: -3px; left: -3px; border-bottom: 1.5px solid #38BDF8; border-left: 1.5px solid #38BDF8; }
+.crop-br { bottom: -3px; right: -3px; border-bottom: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
+
+html[data-theme="day"] .crop-mark {
+  border-color: #0284C7;
+}
+
+/* Micro Tag Badge underneath */
+.loupe-badge {
+  margin-top: 7px;
+  pointer-events: none;
+}
+
+.loupe-badge span {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.80);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+html[data-theme="day"] .loupe-badge span {
+  background: rgba(255, 255, 255, 0.90);
+  color: #1C1A18;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Interactive Hover States */
+.loupe-cursor.hovering-link .loupe-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border-color: rgba(56, 189, 248, 0.7);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.loupe-cursor.hovering-link .loupe-tick {
+  opacity: 0;
+}
+
+.loupe-cursor.hovering-link .crop-mark {
+  opacity: 1;
+}
+
+.loupe-cursor.hovering-link .loupe-badge span {
+  color: #38BDF8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
+  color: #0284C7;
+  border-color: rgba(2, 132, 199, 0.4);
+}
+
+/* Hovering 3D Atelier Canvas */
+.loupe-cursor.hovering-canvas .loupe-ring {
+  width: 52px;
+  height: 52px;
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+/* Clicking spring squeeze */
+.loupe-cursor.clicking .loupe-ring {
+  transform: scale(0.85);
+}
 </style>
 </head>
 <body>
@@ -2645,7 +2871,146 @@ html[data-theme="day"] .animated-dashed-border rect {
   }
 
   requestAnimationFrame(animate);
+
+  // ══════════════════════════════════════════════════════════════════
+  // LENIS FLUID INERTIAL SCROLL ENGINE (SOTD Butter-Smooth Inertia)
+  // ══════════════════════════════════════════════════════════════════
+  let lenisInstance = null;
+  if (typeof Lenis !== 'undefined') {
+    lenisInstance = new Lenis({
+      duration: 1.18,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    function lenisRaf(time) {
+      lenisInstance.raf(time);
+      requestAnimationFrame(lenisRaf);
+    }
+    requestAnimationFrame(lenisRaf);
+
+    // Couple scroll inertia to 3D architectural room perspective
+    lenisInstance.on('scroll', (e) => {
+      if (typeof roomGroup !== 'undefined') {
+        const velTilt = Math.max(-0.06, Math.min(0.06, e.velocity * 0.0008));
+        targetRotX = -0.04 + velTilt;
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
+  // ══════════════════════════════════════════════════════════════════
+  (function initPrintmakerLoupe() {
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+
+    document.documentElement.classList.add('custom-cursor-active');
+
+    const loupeEl = document.getElementById('loupeCursor');
+    const dotEl = document.getElementById('loupeDot');
+    const tagEl = document.getElementById('loupeTag');
+    if (!loupeEl || !dotEl || !tagEl) return;
+
+    let mouseX = -100, mouseY = -100;
+    let loupeX = -100, loupeY = -100;
+    let isVisible = false;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!isVisible) {
+        isVisible = true;
+        loupeX = mouseX;
+        loupeY = mouseY;
+        loupeEl.classList.add('active');
+        dotEl.classList.add('active');
+      }
+      dotEl.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      loupeEl.classList.remove('active');
+      dotEl.classList.remove('active');
+    });
+
+    document.addEventListener('mouseenter', () => {
+      isVisible = true;
+      loupeEl.classList.add('active');
+      dotEl.classList.add('active');
+    });
+
+    window.addEventListener('mousedown', () => {
+      loupeEl.classList.add('clicking');
+    });
+
+    window.addEventListener('mouseup', () => {
+      loupeEl.classList.remove('clicking');
+    });
+
+    const interactiveSelector = 'a, button, input, .punch-item, .billing-pill, .comp-table tbody tr, .feature-card, #asciiCanvas, .faq-item, .cert-box';
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target.closest(interactiveSelector);
+      if (!target) {
+        loupeEl.classList.remove('hovering-link', 'hovering-canvas');
+        tagEl.textContent = '8× LOUPE';
+        return;
+      }
+
+      if (target.id === 'asciiCanvas') {
+        loupeEl.classList.add('hovering-canvas');
+        loupeEl.classList.remove('hovering-link');
+        tagEl.textContent = '3D ATELIER';
+      } else if (target.classList.contains('punch-item')) {
+        loupeEl.classList.add('hovering-link');
+        tagEl.textContent = 'RESOLVE';
+      } else if (target.classList.contains('billing-pill')) {
+        loupeEl.classList.add('hovering-link');
+        tagEl.textContent = 'SWITCH';
+      } else if (target.classList.contains('cert-box')) {
+        loupeEl.classList.add('hovering-link');
+        tagEl.textContent = 'VERIFY';
+      } else if (target.tagName === 'A' || target.tagName === 'BUTTON') {
+        loupeEl.classList.add('hovering-link');
+        tagEl.textContent = 'SELECT';
+      } else {
+        loupeEl.classList.add('hovering-link');
+        tagEl.textContent = 'INSPECT';
+      }
+    });
+
+    function updateLoupe() {
+      if (isVisible) {
+        loupeX += (mouseX - loupeX) * 0.18;
+        loupeY += (mouseY - loupeY) * 0.18;
+        loupeEl.style.transform = `translate3d(${loupeX}px, ${loupeY}px, 0) translate(-50%, -50%)`;
+      }
+      requestAnimationFrame(updateLoupe);
+    }
+    requestAnimationFrame(updateLoupe);
+  })();
 })();
 </script>
+
+<!-- Printmaker's Loupe Cursor DOM Elements -->
+<div id="loupeCursor" class="loupe-cursor" aria-hidden="true">
+  <div class="loupe-ring">
+    <span class="loupe-tick tick-n"></span>
+    <span class="loupe-tick tick-s"></span>
+    <span class="loupe-tick tick-w"></span>
+    <span class="loupe-tick tick-e"></span>
+    <span class="crop-mark crop-tl"></span>
+    <span class="crop-mark crop-tr"></span>
+    <span class="crop-mark crop-bl"></span>
+    <span class="crop-mark crop-br"></span>
+  </div>
+  <div class="loupe-badge">
+    <span id="loupeTag">8× LOUPE</span>
+  </div>
+</div>
+<div id="loupeDot" class="loupe-dot" aria-hidden="true"></div>
 </body>
 </html>

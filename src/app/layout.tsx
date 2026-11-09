@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { PrintmakerLoupeCursor } from "@/components/common/PrintmakerLoupeCursor";
 
 export const metadata: Metadata = {
   title: "Cyath — Stop chasing client feedback across 15 emails",
@@ -22,7 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <PrintmakerLoupeCursor />
+        {children}
+      </body>
     </html>
   );
 }
