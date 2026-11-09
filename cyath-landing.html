@@ -120,6 +120,21 @@ html[data-theme="day"] ::-webkit-scrollbar-thumb:hover {
   display: flex;
   align-items: center;
   pointer-events: none;
+  transition: background-color 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease;
+}
+
+.site-nav.scrolled {
+  background-color: rgba(27, 27, 27, 0.84);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="day"] .site-nav.scrolled {
+  background-color: rgba(245, 243, 236, 0.88);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .nav-container {
@@ -300,28 +315,48 @@ html[data-theme="day"] .nav-cta-filled {
 .hero-title {
   font-family: var(--font-serif);
   font-size: clamp(3.2rem, 5.6vw, 4.8rem);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.05;
-  letter-spacing: -0.04em;
-  color: var(--text-primary);
+  letter-spacing: -0.035em;
   margin-bottom: 22px;
+  transition: color 0.3s ease;
 }
 
-/* Negative text knockout effect matching the hand-drawn sketch */
+/* Negative Inverted Text Effect (Inspired by analog photographic solarization / negative film) */
+html[data-theme="night"] .hero-title {
+  background: linear-gradient(180deg, 
+    #56CCF2 0%, 
+    #70C5F8 20%, 
+    #E0F2FE 45%, 
+    #FFFFFF 55%, 
+    #94A3B8 80%, 
+    #475569 95%,
+    #1E293B 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 28px rgba(86, 204, 242, 0.25));
+}
+
+html[data-theme="day"] .hero-title {
+  background: linear-gradient(180deg, 
+    #0B132B 0%, 
+    #1C2A4A 30%, 
+    #1E3A8A 55%, 
+    #0F172A 80%, 
+    #020617 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 16px rgba(15, 23, 42, 0.12));
+}
+
 .hero-emphasis {
   font-weight: 700;
   font-style: italic;
-  display: inline-block;
-  background-color: var(--text-primary);
-  color: var(--bg-page);
-  padding: 0.02em 0.28em 0.08em 0.22em;
-  border-radius: 6px;
-  margin-right: 0.12em;
-  line-height: 0.98;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  transition: var(--transition-theme);
+  display: inline;
 }
 
 .hero-subtitle {
@@ -474,38 +509,149 @@ html[data-theme="day"] .btn-primary {
   color: var(--text-muted);
 }
 
-/* Feature 1: Live Pin Note */
+/* Feature 1: Live Pin Note (Animated Product Demo) */
 .pin-demo-box {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.28);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  padding: 24px;
+  padding: 22px;
   position: relative;
+  overflow: hidden;
+  min-height: 270px;
+}
+
+.sim-page-preview {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-medium);
+  border-radius: 8px;
+  position: relative;
+}
+
+.sim-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sim-target-element {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--text-primary);
+  display: inline-block;
+  position: relative;
+}
+
+.anim-cursor {
+  position: absolute;
+  top: 36px;
+  left: 20px;
+  width: 20px;
+  height: 20px;
+  z-index: 10;
+  pointer-events: none;
+  animation: cursorGlide 6.5s infinite cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.anim-cursor svg {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+
+.anim-cursor-label {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  background: #38BDF8;
+  color: #000000;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.click-ripple {
+  position: absolute;
+  top: 34px;
+  left: 145px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #38BDF8;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.2);
+  animation: rippleExpand 6.5s infinite;
 }
 
 .pin-marker {
   position: absolute;
-  top: 18px;
-  left: 20px;
-  width: 26px;
-  height: 26px;
+  top: 22px;
+  left: 133px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: #FFFFFF;
   color: #000000;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11.5px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 5;
+  animation: pinDrop 6.5s infinite cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pin-popover {
-  margin-left: 36px;
   background: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: 10px;
   padding: 16px;
+  position: relative;
+  z-index: 4;
+  animation: popoverFadeIn 6.5s infinite ease-out;
+}
+
+@keyframes cursorGlide {
+  0% { top: 120px; left: 10px; opacity: 0; }
+  12% { top: 34px; left: 145px; opacity: 1; transform: scale(1); }
+  18% { top: 34px; left: 145px; transform: scale(0.85); }
+  22% { top: 34px; left: 145px; transform: scale(1); }
+  85% { opacity: 1; }
+  94% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes rippleExpand {
+  0%, 17% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  19% { opacity: 1; }
+  28% { opacity: 0; transform: translate(-50%, -50%) scale(3.5); }
+  100% { opacity: 0; }
+}
+
+@keyframes pinDrop {
+  0%, 18% { opacity: 0; transform: translateY(-16px) scale(0.5); }
+  24% { opacity: 1; transform: translateY(0) scale(1.15); }
+  27% { transform: translateY(0) scale(1.0); }
+  88% { opacity: 1; }
+  95% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes popoverFadeIn {
+  0%, 26% { opacity: 0; transform: translateY(10px); }
+  32% { opacity: 1; transform: translateY(0); }
+  88% { opacity: 1; }
+  95% { opacity: 0; }
+  100% { opacity: 0; }
 }
 
 .pin-client-name {
@@ -553,12 +699,76 @@ html[data-theme="day"] .btn-primary {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .punch-item:hover {
   border-color: var(--border-medium);
+}
+
+/* Pixel Loading Bar (Inspired by User's Reference) */
+.pixel-loading-bar-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pixel-loading-bar-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3px solid transparent;
+  border-image: repeating-linear-gradient(90deg, #FFFFFF 0 4px, #000000 4px 8px) 3;
+  image-rendering: pixelated;
+  opacity: 0.85;
+}
+
+.pixel-loading-bar-bg::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: 60%;
+  background: 
+    radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.95) 1px, transparent 1px) 0 0 / 4px 4px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.22) 65%, rgba(255, 255, 255, 0.0) 100%);
+  image-rendering: pixelated;
+  animation: pixelProgressScan 3.2s infinite ease-in-out;
+}
+
+@keyframes pixelProgressScan {
+  0% { width: 14%; opacity: 0.6; }
+  50% { width: 85%; opacity: 0.98; }
+  100% { width: 14%; opacity: 0.6; }
+}
+
+.punch-item.resolved .pixel-loading-bar-bg {
+  opacity: 0;
+  transform: scaleX(0.96);
+}
+
+html[data-theme="day"] .pixel-loading-bar-bg::before {
+  border-image: repeating-linear-gradient(90deg, #1C1A18 0 4px, #FFFFFF 4px 8px) 3;
+}
+html[data-theme="day"] .pixel-loading-bar-bg::after {
+  background: 
+    radial-gradient(circle at 2px 2px, rgba(28, 26, 24, 0.90) 1px, transparent 1px) 0 0 / 4px 4px,
+    linear-gradient(90deg, rgba(28, 26, 24, 0.28) 0%, rgba(28, 26, 24, 0.15) 65%, rgba(28, 26, 24, 0.0) 100%);
+}
+
+.punch-left,
+.punch-tag {
+  position: relative;
+  z-index: 2;
 }
 
 .punch-left {
@@ -721,6 +931,134 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   background: var(--bg-surface-elevated);
   font-weight: 600;
   color: var(--text-primary);
+}
+
+/* Comparison Table: Faded competitor rows & elevated Cyath highlight */
+.comp-table tbody tr:not(.row-cyath) {
+  opacity: 0.38;
+  filter: grayscale(0.4);
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+.comp-table tbody tr:not(.row-cyath):hover {
+  opacity: 0.70;
+  filter: grayscale(0);
+}
+
+.comp-table tbody tr.row-cyath {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.22), 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+.comp-table tbody tr.row-cyath td {
+  color: #FFFFFF;
+  font-weight: 600;
+  border-bottom: none;
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+.cyath-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  background: #FFFFFF;
+  color: #000000;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+html[data-theme="day"] .comp-table tbody tr.row-cyath {
+  background: #FFFFFF;
+  box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+html[data-theme="day"] .comp-table tbody tr.row-cyath td {
+  color: #1C1A18;
+}
+html[data-theme="day"] .cyath-badge-pill {
+  background: #1C1A18;
+  color: #FFFFFF;
+}
+
+/* Free Option Button (Black with White Text) */
+.btn-free-tier {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 28px;
+  background-color: #000000;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.btn-free-tier:hover {
+  background-color: #141414;
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+html[data-theme="day"] .btn-free-tier {
+  background-color: #000000;
+  color: #FFFFFF;
+  border: 1px solid #000000;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+html[data-theme="day"] .btn-free-tier:hover {
+  background-color: #222222;
+}
+
+/* Billing Frequency Switcher */
+.billing-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: 9999px;
+  margin-top: 24px;
+}
+
+.billing-btn {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.billing-btn.active {
+  background: var(--text-primary);
+  color: var(--bg-page);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.billing-discount-badge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #38BDF8;
+  color: #000000;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -952,9 +1290,32 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
         <span>NOTE #104</span>
       </div>
       <div class="pin-demo-box">
+        <!-- Animated Simulated Page Element -->
+        <div class="sim-page-preview">
+          <div class="sim-page-header">
+            <span>staging.aura-atelier.com/hero</span>
+            <span style="color: #38BDF8;">● LIVE REVIEW</span>
+          </div>
+          <span class="sim-target-element">Design Systems for the Spatial Web</span>
+        </div>
+
+        <!-- Animated Floating Cursor -->
+        <div class="anim-cursor" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M4 3L11 20L14 13L21 10L4 3Z" fill="#FFFFFF" stroke="#000000" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <div class="anim-cursor-label">Sarah Chen (Client)</div>
+        </div>
+
+        <!-- Animated Click Ripple -->
+        <div class="click-ripple" aria-hidden="true"></div>
+
+        <!-- Dropped Pin -->
         <div class="pin-marker">1</div>
+
+        <!-- Popped Note Card -->
         <div class="pin-popover">
-          <div class="pin-client-name">Sarah Chen (Client Lead)</div>
+          <div class="pin-client-name">Sarah Chen (Client Lead) <span style="font-size: 11px; font-weight: 400; color: var(--text-muted); margin-left: 6px;">Just now</span></div>
           <p class="pin-comment">"The hero headline wraps into four lines on my MacBook. Can we tighten the font size by 2px?"</p>
           <div class="pin-meta-grid">
             <div class="pin-meta-item">
@@ -987,21 +1348,22 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
         <span>2 OF 3 RESOLVED</span>
       </div>
       <div class="punchlist-box" id="punchlistBox">
-        <div class="punch-item resolved" onclick="this.classList.toggle('resolved')">
+        <div class="punch-item resolved" onclick="togglePunchItem(this)">
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Fix hero headline wrap on 1440px desktop</span>
           </div>
           <span class="punch-tag">Resolved</span>
         </div>
-        <div class="punch-item resolved" onclick="this.classList.toggle('resolved')">
+        <div class="punch-item resolved" onclick="togglePunchItem(this)">
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Update inquiry button hover contrast</span>
           </div>
           <span class="punch-tag">Resolved</span>
         </div>
-        <div class="punch-item" onclick="this.classList.toggle('resolved')">
+        <div class="punch-item" onclick="togglePunchItem(this)">
+          <div class="pixel-loading-bar-bg" aria-hidden="true"></div>
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Verify mobile nav hamburger tap target</span>
@@ -1117,8 +1479,8 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
         <td>Manual ticket filling</td>
         <td>Complex workflow states</td>
       </tr>
-      <tr>
-        <td class="col-cyath"><strong>Cyath</strong></td>
+      <tr class="row-cyath">
+        <td class="col-cyath"><strong>Cyath</strong> <span class="cyath-badge-pill">ACTIVE</span></td>
         <td class="col-cyath">Zero setup (one link)</td>
         <td class="col-cyath">Automated viewport & browser tag</td>
         <td class="col-cyath">Timestamped milestone certificate</td>
@@ -1137,6 +1499,16 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     Start free on your current project. Upgrade to agency tier when you manage multiple concurrent client rollouts.
   </p>
 
+  <!-- Interactive Billing Frequency Switcher -->
+  <div class="billing-switcher" aria-label="Billing frequency switcher">
+    <button type="button" class="billing-btn active" id="billingAnnualBtn" onclick="setBilling('annual')">
+      Billed Annually <span class="billing-discount-badge">Save 20%</span>
+    </button>
+    <button type="button" class="billing-btn" id="billingMonthlyBtn" onclick="setBilling('monthly')">
+      Billed Monthly ($15)
+    </button>
+  </div>
+
   <div class="pricing-grid">
     <div class="price-card">
       <div>
@@ -1151,14 +1523,14 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
           <li class="price-feature-item"><span class="bullet-dash">—</span> 1-click milestone approval receipts</li>
         </ul>
       </div>
-      <a href="#how-it-works" class="btn-primary" style="text-align: center; justify-content: center;">Start Free</a>
+      <a href="#how-it-works" class="btn-free-tier">Start Free</a>
     </div>
 
     <div class="price-card">
       <div>
         <div class="price-tier-name">STUDIO & AGENCY</div>
-        <div class="price-figure">$29</div>
-        <div class="price-period">per month, billed annually or monthly</div>
+        <div class="price-figure" id="agencyPriceNum">$12</div>
+        <div class="price-period" id="agencyPriceNotice">per seat / month · only when billed annually ($144/year)</div>
         <p class="price-desc">For studios and web agencies managing multiple staging links with client teams.</p>
         <ul class="price-features">
           <li class="price-feature-item"><span class="bullet-dash">—</span> Unlimited active staging projects</li>
@@ -1207,17 +1579,27 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
 
   let currentTheme = 'night';
 
+  // Read saved theme from localStorage, or URL param, or default to night
+  const savedTheme = localStorage.getItem('cyath_theme');
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('theme') === 'day') {
+  const paramTheme = urlParams.get('theme');
+
+  if (paramTheme === 'day' || (!paramTheme && savedTheme === 'day')) {
     currentTheme = 'day';
     htmlRoot.setAttribute('data-theme', 'day');
     themeIcon.textContent = '☼';
     themeLabel.textContent = 'Day';
+  } else {
+    currentTheme = 'night';
+    htmlRoot.setAttribute('data-theme', 'night');
+    themeIcon.textContent = '☽';
+    themeLabel.textContent = 'Night';
   }
 
   function toggleTheme() {
     currentTheme = (currentTheme === 'night') ? 'day' : 'night';
     htmlRoot.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('cyath_theme', currentTheme);
     if (currentTheme === 'day') {
       themeIcon.textContent = '☼';
       themeLabel.textContent = 'Day';
@@ -1229,6 +1611,45 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
     }
   }
   themeToggleBtn.addEventListener('click', toggleTheme);
+
+  // Scrolled nav bar backdrop
+  const siteNav = document.querySelector('.site-nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      siteNav.classList.add('scrolled');
+    } else {
+      siteNav.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // Interactive Punchlist item toggle (diffuses pixel bar on resolve)
+  window.togglePunchItem = function(item) {
+    item.classList.toggle('resolved');
+    const tag = item.querySelector('.punch-tag');
+    if (tag) {
+      tag.textContent = item.classList.contains('resolved') ? 'Resolved' : 'In Progress';
+    }
+  };
+
+  // Interactive Billing switcher ($12 annually, $15 monthly)
+  window.setBilling = function(mode) {
+    const num = document.getElementById('agencyPriceNum');
+    const notice = document.getElementById('agencyPriceNotice');
+    const annualBtn = document.getElementById('billingAnnualBtn');
+    const monthlyBtn = document.getElementById('billingMonthlyBtn');
+
+    if (mode === 'monthly') {
+      if (num) num.textContent = '$15';
+      if (notice) notice.textContent = 'per seat / month · billed monthly ($15/month)';
+      if (annualBtn) annualBtn.classList.remove('active');
+      if (monthlyBtn) monthlyBtn.classList.add('active');
+    } else {
+      if (num) num.textContent = '$12';
+      if (notice) notice.textContent = 'per seat / month · only when billed annually ($144/year)';
+      if (monthlyBtn) monthlyBtn.classList.remove('active');
+      if (annualBtn) annualBtn.classList.add('active');
+    }
+  };
 
   // ══════════════════════════════════════════════════════════════════
   // THREE.JS SCENE SETUP & RENDER TARGETS
@@ -1427,10 +1848,11 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   windowGroup.add(glass);
   roomGroup.add(windowGroup);
 
-  // 2. Architectural Studio Chair (Angled in Foreground to the Right of Table)
+  // 2. Architectural Studio Chair (Back Facing Towards the Viewer)
   const chairGroup = new THREE.Group();
   chairGroup.position.set(2.20, -0.42, 1.45);
-  chairGroup.rotation.y = -0.85; // Angled facing toward desk & camera
+  chairGroup.rotation.y = 2.35; // Back of chair turned towards camera / viewer
+  chairGroup.rotation.x = -0.06;
 
   const seat = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.85), fabricMat);
   chairGroup.add(seat);
@@ -1439,6 +1861,15 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   backrest.position.set(0, 0.58, -0.38);
   backrest.rotation.x = -0.10;
   chairGroup.add(backrest);
+
+  // Architectural spine support on the back of the chair (faces viewer)
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.20, 0.06), darkMetalMat);
+  spine.position.set(0, 0.60, -0.44);
+  chairGroup.add(spine);
+
+  const lumbar = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.10, 0.05), metalMat);
+  lumbar.position.set(0, 0.32, -0.45);
+  chairGroup.add(lumbar);
 
   const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.20, 0.08), fabricMat);
   headrest.position.set(0, 1.20, -0.48);
@@ -1613,21 +2044,21 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   laptopGroup.add(screenHinged);
   roomGroup.add(laptopGroup);
 
-  // 5. Coffee Mug & Dynamic Steam (Positioned to the Right of Laptop - Zero Intersection!)
+  // 5. Coffee Mug & Dynamic Steam (Positioned to the Left of Laptop - Zero Intersection!)
   const mugGroup = new THREE.Group();
-  mugGroup.position.set(2.10, -0.32, 0.70);
+  mugGroup.position.set(-0.02, -0.32, 0.65);
 
   const mugMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xBA4D22 : 0xC2632B, roughness: 0.25, metalness: 0.3 });
-  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 0.36, 16), mugMat);
+  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.12, 0.36, 16), mugMat);
   mugGroup.add(mug);
 
-  const mugCoffee = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.11, 0.08, 16), new THREE.MeshStandardMaterial({ color: 0x1E140E, roughness: 0.9 }));
+  const mugCoffee = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.10, 0.08, 16), new THREE.MeshStandardMaterial({ color: 0x1E140E, roughness: 0.9 }));
   mugCoffee.position.set(0, 0.14, 0);
   mugGroup.add(mugCoffee);
 
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.028, 8, 16, Math.PI), mugMat);
-  handle.position.set(0.14, 0, 0);
-  handle.rotation.z = -Math.PI / 2;
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.026, 8, 16, Math.PI), mugMat);
+  handle.position.set(-0.13, 0, 0);
+  handle.rotation.z = Math.PI / 2;
   mugGroup.add(handle);
   roomGroup.add(mugGroup);
 
@@ -1649,17 +2080,17 @@ html[data-theme="day"] .punch-item.resolved .punch-checkbox {
   const steamParticles = new THREE.Points(steamGeo, new THREE.PointsMaterial({ color: isDay ? 0x92400E : 0xD97706, size: 0.14, transparent: true, opacity: 0.85 }));
   roomGroup.add(steamParticles);
 
-  // 6. Potted Succulent Plant (Left back corner of desk)
+  // 6. Potted Succulent Plant (Positioned on Right Side of Desk between Laptop and Foreground Chair)
   const plantGroup = new THREE.Group();
-  plantGroup.position.set(0.30, -0.30, 0.15);
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.12, 0.28, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
+  plantGroup.position.set(1.70, -0.30, 0.20);
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.13, 0.32, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
   plantGroup.add(pot);
 
   const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x22C55E, roughness: 0.28, metalness: 0.2 });
   for (let i = 0; i < 5; i++) {
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.28, 5), plantMat);
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.34, 5), plantMat);
     const ang = (i / 5) * Math.PI * 2;
-    leaf.position.set(Math.cos(ang) * 0.08, 0.14 + i * 0.02, Math.sin(ang) * 0.08);
+    leaf.position.set(Math.cos(ang) * 0.09, 0.16 + i * 0.02, Math.sin(ang) * 0.09);
     leaf.rotation.x = 0.26 * Math.sin(ang);
     leaf.rotation.z = -0.26 * Math.cos(ang);
     plantGroup.add(leaf);
