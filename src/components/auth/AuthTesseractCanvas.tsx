@@ -67,7 +67,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     // 3. 3D Isometric Tesseract
     const tesseractGroup = new THREE.Group();
     const isDesktop = W >= 1024;
-    tesseractGroup.position.set(isDesktop ? -1.65 : 0, isDesktop ? 0.05 : 0.65, 0);
+    tesseractGroup.position.set(isDesktop ? -1.95 : 0, isDesktop ? 0.05 : 0.65, 0);
     scene.add(tesseractGroup);
 
     // Architectural scale: compact & balanced, crisp presence
@@ -219,7 +219,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
           // Full dither dots on left, dissolving smoothly into solid background before the card
           float fade = 1.0;
           if (uIsDesktop > 0.5) {
-            fade = 1.0 - smoothstep(0.38, 0.54, vUv.x);
+            fade = 1.0 - smoothstep(0.34, 0.48, vUv.x);
           } else {
             fade = 1.0 - smoothstep(0.42, 0.58, 1.0 - vUv.y);
           }
@@ -339,7 +339,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       camera.updateProjectionMatrix();
 
       const desktopNow = W >= 1024;
-      tesseractGroup.position.set(desktopNow ? -1.65 : 0, desktopNow ? 0.05 : 0.65, 0);
+      tesseractGroup.position.set(desktopNow ? -1.95 : 0, desktopNow ? 0.05 : 0.65, 0);
       postMaterial.uniforms.uIsDesktop.value = desktopNow ? 1.0 : 0.0;
 
       renderer.setSize(W, H, false);
