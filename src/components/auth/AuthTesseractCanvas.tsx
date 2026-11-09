@@ -63,23 +63,26 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     rimLight.position.set(-3.5, 2.5, -2.5);
     scene.add(rimLight);
 
-    // 3. 3D Isometric Tesseract (4D Hypercube)
+    // 3. 3D Isometric Tesseract (Smaller, refined proportions)
     const tesseractGroup = new THREE.Group();
-    // Desktop layout: position cube in the left half of the full-width viewport
     const isDesktop = W >= 1024;
-    tesseractGroup.position.set(isDesktop ? -1.65 : 0, isDesktop ? 0 : 0.8, 0);
+    tesseractGroup.position.set(isDesktop ? -1.45 : 0, isDesktop ? 0 : 0.6, 0);
     scene.add(tesseractGroup);
 
-    const edgeRadius = 0.024;
+    // Smaller scale
+    const edgeRadius = 0.016;
+    const sOuter = 0.82;
+    const sInner = 0.41;
+
     const strutMat = new THREE.MeshStandardMaterial({
       color: isDay ? 0x1e2026 : 0xf8fafc,
-      roughness: 0.25,
-      metalness: 0.85,
+      roughness: 0.22,
+      metalness: 0.88,
     });
     const innerStrutMat = new THREE.MeshStandardMaterial({
       color: 0x38bdf8,
-      roughness: 0.2,
-      metalness: 0.9,
+      roughness: 0.18,
+      metalness: 0.92,
     });
     const nodeMat = new THREE.MeshStandardMaterial({
       color: isDay ? 0x0f172a : 0xffffff,
@@ -98,8 +101,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       return mesh;
     }
 
-    // Outer Cube (Size 2.2)
-    const sOuter = 1.15;
+    // Outer Cube Vertices
     const outerVertices: THREE.Vector3[] = [];
     for (let x of [-1, 1]) {
       for (let y of [-1, 1]) {
@@ -109,7 +111,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       }
     }
 
-    // Outer edges
     const outerGroup = new THREE.Group();
     for (let i = 0; i < 8; i++) {
       const sphere = new THREE.Mesh(new THREE.SphereGeometry(edgeRadius * 1.8, 12, 12), nodeMat);
@@ -126,8 +127,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     }
     tesseractGroup.add(outerGroup);
 
-    // Inner Cube (Size 0.62)
-    const sInner = 0.58;
+    // Inner Cube Vertices
     const innerVertices: THREE.Vector3[] = [];
     for (let x of [-1, 1]) {
       for (let y of [-1, 1]) {
@@ -153,19 +153,19 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     }
     tesseractGroup.add(innerGroup);
 
-    // 8 Connecting struts
+    // 8 Connecting Struts
     const connectingGroup = new THREE.Group();
     const connectStrutMat = new THREE.MeshStandardMaterial({
       color: 0x94a3b8,
-      roughness: 0.3,
-      metalness: 0.7,
+      roughness: 0.28,
+      metalness: 0.75,
     });
     for (let i = 0; i < 8; i++) {
       connectingGroup.add(makeCylinderEdge(outerVertices[i], innerVertices[i], connectStrutMat, edgeRadius * 0.75));
     }
     tesseractGroup.add(connectingGroup);
 
-    // 4. Post-processing Halftone Screen Shader with Horizontal Fade to Plain Background
+    // 4. Exact Landing Page GPU Halftone Shader
     const postScene = new THREE.Scene();
     const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
@@ -178,17 +178,28 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
         }
       `,
       fragmentShader: `
+        precision highp float;
+        varying vec2 vUv;
         uniform sampler2D tDiffuse;
         uniform vec2 uResolution;
         uniform float uGridSize;
-        uniform int uMethod;
         uniform vec3 uBgColor;
         uniform vec3 uFgColor;
         uniform float uInvert;
         uniform vec2 uMouse;
         uniform float uMouseStrength;
         uniform float uIsDesktop;
-        varying vec2 vUv;
+
+        const float SCREEN_ANGLE = 0.70710678; // 45 deg rotation
+        const float CORNER_REACH = 1.41421356;
+
+        float halftoneThreshold(vec2 cellCoord) {
+          vec2 screen = vec2(
+            cellCoord.x * SCREEN_ANGLE - cellCoord.y * SCREEN_ANGLE,
+            cellCoord.x * SCREEN_ANGLE + cellCoord.y * SCREEN_ANGLE
+          );
+          return clamp(length(fract(screen) - 0.5) * CORNER_REACH, 0.0, 1.0);
+        }
 
         void main() {
           vec2 fragCoord = vUv * uResolution;
@@ -198,39 +209,59 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
           vec2 mDiff = vUv - uMouse;
           mDiff.x *= uResolution.x / uResolution.y;
           float mDist = length(mDiff);
-          float repelRadius = 0.22;
+          float repelRadius = 0.18;
           if (mDist < repelRadius && uMouseStrength > 0.001) {
             float force = 1.0 - mDist / repelRadius;
             force = force * force * (3.0 - 2.0 * force);
             vec2 repelDir = normalize(mDiff);
-            cellCoord += repelDir * force * 5.5 * uMouseStrength;
+            cellCoord += repelDir * force * 5.0 * uMouseStrength;
           }
 
           vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
           vec4 tex = texture2D(tDiffuse, quantizedUv);
+
+          // Identical to landing page: pure clean background where no 3D meshes exist
+          float bgDist = length(tex.rgb - uBgColor);
+          if (bgDist < 0.02) {
+            gl_FragColor = vec4(uBgColor, 1.0);
+            return;
+          }
+
           float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
+          float th = halftoneThreshold(cellCoord);
+
+          vec3 finalColor;
 
           if (uInvert > 0.5) {
-            lum = 1.0 - lum;
-          }
-
-          vec2 local = fract(cellCoord) - 0.5;
-          float d = length(local);
-          float dotSize = sqrt(lum) * 0.52;
-          float dotMask = smoothstep(dotSize + 0.04, dotSize - 0.04, d);
-
-          // Horizontal Dither Fade:
-          // The dither dots fade smoothly into plain background color as they approach the login card on the right
-          if (uIsDesktop > 0.5) {
-            float fadeRight = smoothstep(0.62, 0.38, vUv.x);
-            dotMask *= fadeRight;
+            // Day mode: archival vellum + charcoal ink dots
+            float inkDensity = clamp((0.94 - lum) / 0.85, 0.0, 1.0);
+            if (inkDensity <= 0.03) {
+              finalColor = uBgColor;
+            } else {
+              bool hasInk = (inkDensity >= th);
+              finalColor = hasInk ? mix(uFgColor, tex.rgb * 0.5, 0.25) : uBgColor;
+            }
           } else {
-            // Mobile: subtle fade towards bottom card
-            float fadeDown = smoothstep(0.55, 0.25, vUv.y);
-            dotMask *= fadeDown;
+            // Night mode: matte neutral graphite (#1b1b1b) + liquid chrome dots
+            float lightDensity = clamp(lum * 1.18, 0.0, 1.0);
+            if (lightDensity <= 0.03) {
+              finalColor = uBgColor;
+            } else {
+              bool lit = lightDensity >= th;
+              finalColor = lit ? mix(uFgColor, tex.rgb * 1.25, 0.38) : uBgColor;
+            }
           }
 
-          vec3 finalColor = mix(uBgColor, uFgColor, dotMask);
+          // Fade away dither quicker towards the center/card:
+          // Dissolves completely by x = 0.44 on desktop
+          if (uIsDesktop > 0.5) {
+            float fadeRight = smoothstep(0.44, 0.24, vUv.x);
+            finalColor = mix(uBgColor, finalColor, fadeRight);
+          } else {
+            float fadeDown = smoothstep(0.50, 0.25, vUv.y);
+            finalColor = mix(uBgColor, finalColor, fadeDown);
+          }
+
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
@@ -238,7 +269,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
         tDiffuse: { value: null },
         uResolution: { value: new THREE.Vector2(W * dpr, H * dpr) },
         uGridSize: { value: 3.2 * dpr },
-        uMethod: { value: 1 },
         uBgColor: { value: bgColor },
         uFgColor: { value: fgColor },
         uInvert: { value: isDay ? 1.0 : 0.0 },
@@ -314,7 +344,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       camera.updateProjectionMatrix();
 
       const desktopNow = W >= 1024;
-      tesseractGroup.position.set(desktopNow ? -1.65 : 0, desktopNow ? 0 : 0.8, 0);
+      tesseractGroup.position.set(desktopNow ? -1.45 : 0, desktopNow ? 0 : 0.6, 0);
       postMaterial.uniforms.uIsDesktop.value = desktopNow ? 1.0 : 0.0;
 
       renderer.setSize(W, H, false);
@@ -330,7 +360,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       const dt = (time - lastTime) * 0.001 || 0.016;
       lastTime = time;
 
-      // Continuous subtle hypercube rotation
       if (!isDragging) {
         targetRotY += dt * 0.28;
         targetRotX = 0.22 + Math.sin(time * 0.0008) * 0.12;
@@ -341,24 +370,20 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       tesseractGroup.rotation.x = curRotX;
       tesseractGroup.rotation.y = curRotY;
 
-      // Internal cube counter-rotation
       innerGroup.rotation.x = -curRotX * 1.5;
       innerGroup.rotation.y = -curRotY * 1.5;
       const innerScale = 0.95 + Math.sin(time * 0.002) * 0.15;
       innerGroup.scale.set(innerScale, innerScale, innerScale);
 
-      // Mouse lerp
       curMouseUvX += (mouseUvX - curMouseUvX) * 0.15;
       curMouseUvY += (1.0 - mouseUvY - curMouseUvY) * 0.15;
       curMouseStrength += (targetMouseActive - curMouseStrength) * 0.08;
       postMaterial.uniforms.uMouse.value.set(curMouseUvX, curMouseUvY);
       postMaterial.uniforms.uMouseStrength.value = curMouseStrength;
 
-      // PASS 1: Render 3D Scene to Target
       renderer.setRenderTarget(renderTarget);
       renderer.render(scene, camera);
 
-      // PASS 2: Halftone Screen-Space Shader with Fade
       renderer.setRenderTarget(null);
       postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
       renderer.render(postScene, postCamera);

@@ -181,10 +181,10 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* 3. Main Body: Card aligned to the right where dither fades away */}
-      <main className="relative z-10 flex-1 flex items-center justify-center lg:justify-end px-6 sm:px-12 lg:pr-24 py-8 pointer-events-none">
+      {/* 3. Main Body: Card aligned to the right where dither fades away, shifted slightly closer to center */}
+      <main className="relative z-10 flex-1 flex items-center justify-center lg:justify-end px-6 sm:px-12 lg:pr-36 xl:pr-48 py-8 pointer-events-none">
         <div
-          className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto ${
+          className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto lg:-translate-x-8 xl:-translate-x-12 ${
             isDay
               ? "bg-[#EBE7DC] border border-black/15 shadow-black/5 text-[#1C1A18]"
               : "bg-[#242424] border border-white/15 shadow-black/80 text-[#FAFAFA]"
