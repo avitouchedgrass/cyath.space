@@ -4,12 +4,10 @@ import React, { useEffect, useRef } from "react";
 
 export function PrintmakerLoupeCursor() {
   const fluidRef = useRef<HTMLDivElement>(null);
-  const beadRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fluidEl = fluidRef.current;
-    const beadEl = beadRef.current;
-    if (!fluidEl || !beadEl) return;
+    if (!fluidEl) return;
 
     let mouseX = -100;
     let mouseY = -100;
@@ -117,16 +115,14 @@ export function PrintmakerLoupeCursor() {
         prevBeadX = beadX;
         prevBeadY = beadY;
 
-        fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0)`;
-
         if (isHoveringInteractive) {
-          beadEl.style.transform = `translate(-50%, -50%)`;
+          fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0) translate(-50%, -50%)`;
         } else {
           const angle = Math.atan2(vy, vx);
           const stretch = Math.min(speed * 0.022, 0.40);
           const scaleX = 1 + stretch;
           const scaleY = 1 / (1 + stretch * 0.65);
-          beadEl.style.transform = `translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
+          fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
         }
       }
       animId = requestAnimationFrame(updateCursor);
@@ -147,8 +143,6 @@ export function PrintmakerLoupeCursor() {
   }, []);
 
   return (
-    <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true">
-      <div id="fluidBead" ref={beadRef} className="fluid-bead" />
-    </div>
+    <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true" />
   );
 }

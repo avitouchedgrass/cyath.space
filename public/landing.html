@@ -1423,24 +1423,27 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
-/* Fluid Invert Bead Positioning Anchor (Positioned at 0,0 for exact mouse alignment) */
+/* Fluid Invert Negative Cursor (Extrafazant pure negative inverting bead) */
 .fluid-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 0;
-  height: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  mix-blend-mode: difference;
   pointer-events: none;
-  z-index: 999998;
+  z-index: 99999999;
   opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
-  will-change: transform;
+  transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+  will-change: transform, width, height;
 }
 
 .fluid-cursor.active {
   opacity: 1;
-  visibility: visible;
 }
 
 /* Disappear completely when interacting with 01/Capture interactive demo */
@@ -1451,33 +1454,10 @@ html.over-pin-demo .fluid-cursor,
   pointer-events: none !important;
 }
 
-/* The Organic Invert Bead (Extrafazant style) */
-.fluid-bead {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  mix-blend-mode: difference;
-  transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, width, height;
-}
-
 /* On Clickable/Interactive Hover: Purely enlarges without spelling out text */
-.fluid-cursor.hovering-interactive .fluid-bead {
+.fluid-cursor.hovering-interactive {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-}
-
-/* Click Compression Spring */
-.fluid-cursor.clicking .fluid-bead {
-  transform: translate(-50%, -50%) scale(0.72) !important;
 }
 </style>
 </head>
@@ -1883,9 +1863,7 @@ html.over-pin-demo .fluid-cursor,
 <!-- ══════════════════════════════════════════════════════════════════
      OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD
      ══════════════════════════════════════════════════════════════════ -->
-<div id="fluidCursor" class="fluid-cursor" aria-hidden="true">
-  <div id="fluidBead" class="fluid-bead"></div>
-</div>
+<div id="fluidCursor" class="fluid-cursor" aria-hidden="true"></div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      REAL-TIME 3D GPU HALFTONE & BAYER DITHER SHADER ENGINE
@@ -2778,8 +2756,7 @@ html.over-pin-demo .fluid-cursor,
   // ══════════════════════════════════════════════════════════════════
   (function initFluidBeadCursor() {
     const fluidEl = document.getElementById('fluidCursor');
-    const beadEl = document.getElementById('fluidBead');
-    if (!fluidEl || !beadEl) return;
+    if (!fluidEl) return;
 
     let mouseX = -100, mouseY = -100;
     let beadX = -100, beadY = -100;
@@ -2879,16 +2856,14 @@ html.over-pin-demo .fluid-cursor,
         prevBeadX = beadX;
         prevBeadY = beadY;
 
-        fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0)`;
-
         if (isHoveringInteractive) {
-          beadEl.style.transform = `translate(-50%, -50%)`;
+          fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0) translate(-50%, -50%)`;
         } else {
           const angle = Math.atan2(vy, vx);
           const stretch = Math.min(speed * 0.022, 0.40);
           const scaleX = 1 + stretch;
           const scaleY = 1 / (1 + stretch * 0.65);
-          beadEl.style.transform = `translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
+          fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
         }
       }
       requestAnimationFrame(updateCursor);
