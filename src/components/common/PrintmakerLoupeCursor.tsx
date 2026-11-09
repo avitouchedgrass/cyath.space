@@ -3,21 +3,27 @@
 import React, { useEffect, useRef } from "react";
 
 export function PrintmakerLoupeCursor() {
-  const loupeRef = useRef<HTMLDivElement>(null);
+  const fluidRef = useRef<HTMLDivElement>(null);
+  const beadRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const tagRef = useRef<HTMLSpanElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const loupeEl = loupeRef.current;
+    const fluidEl = fluidRef.current;
+    const beadEl = beadRef.current;
     const dotEl = dotRef.current;
-    const tagEl = tagRef.current;
-    if (!loupeEl || !dotEl || !tagEl) return;
+    const labelEl = labelRef.current;
+    if (!fluidEl || !beadEl || !dotEl || !labelEl) return;
 
     let mouseX = -100;
     let mouseY = -100;
-    let loupeX = -100;
-    let loupeY = -100;
+    let beadX = -100;
+    let beadY = -100;
+    let prevBeadX = -100;
+    let prevBeadY = -100;
     let isVisible = false;
+    let isOverDemo = false;
+    let isHoveringInteractive = false;
     let animId: number;
 
     const activateCursor = () => {
@@ -35,11 +41,28 @@ export function PrintmakerLoupeCursor() {
       activateCursor();
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (!isVisible) {
+
+      const overDemo = !!(e.target as HTMLElement)?.closest(".pin-demo-box");
+      if (overDemo !== isOverDemo) {
+        isOverDemo = overDemo;
+        if (isOverDemo) {
+          fluidEl.classList.add("in-demo");
+          dotEl.classList.add("in-demo");
+          document.documentElement.classList.add("over-pin-demo");
+        } else {
+          fluidEl.classList.remove("in-demo");
+          dotEl.classList.remove("in-demo");
+          document.documentElement.classList.remove("over-pin-demo");
+        }
+      }
+
+      if (!isVisible && !isOverDemo) {
         isVisible = true;
-        loupeX = mouseX;
-        loupeY = mouseY;
-        loupeEl.classList.add("active");
+        beadX = mouseX;
+        beadY = mouseY;
+        prevBeadX = mouseX;
+        prevBeadY = mouseY;
+        fluidEl.classList.add("active");
         dotEl.classList.add("active");
       }
       dotEl.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
@@ -47,62 +70,92 @@ export function PrintmakerLoupeCursor() {
 
     const onMouseLeave = () => {
       isVisible = false;
-      loupeEl.classList.remove("active");
+      fluidEl.classList.remove("active");
       dotEl.classList.remove("active");
     };
 
     const onMouseEnter = () => {
-      isVisible = true;
-      loupeEl.classList.add("active");
-      dotEl.classList.add("active");
+      if (!isOverDemo) {
+        isVisible = true;
+        fluidEl.classList.add("active");
+        dotEl.classList.add("active");
+      }
     };
 
     const onMouseDown = () => {
-      loupeEl.classList.add("clicking");
+      fluidEl.classList.add("clicking");
     };
 
     const onMouseUp = () => {
-      loupeEl.classList.remove("clicking");
+      fluidEl.classList.remove("clicking");
     };
 
     const interactiveSelector = "a, button, input, [role='button'], canvas";
     const onMouseOver = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement)?.closest(interactiveSelector);
-      if (!target) {
-        loupeEl.classList.remove("hovering-link", "hovering-canvas");
-        tagEl.textContent = "8× LOUPE";
+      if ((e.target as HTMLElement)?.closest(".pin-demo-box")) {
+        isHoveringInteractive = false;
+        fluidEl.classList.remove("hovering-link", "hovering-canvas");
+        labelEl.textContent = "";
         return;
       }
 
+      const target = (e.target as HTMLElement)?.closest(interactiveSelector);
+      if (!target) {
+        isHoveringInteractive = false;
+        fluidEl.classList.remove("hovering-link", "hovering-canvas");
+        labelEl.textContent = "";
+        return;
+      }
+
+      isHoveringInteractive = true;
       if (target.tagName === "CANVAS") {
-        loupeEl.classList.add("hovering-canvas");
-        loupeEl.classList.remove("hovering-link");
-        tagEl.textContent = "4D TESSERACT";
+        fluidEl.classList.add("hovering-canvas");
+        fluidEl.classList.remove("hovering-link");
+        labelEl.textContent = "4D TESSERACT";
       } else if (target.tagName === "A" || target.tagName === "BUTTON") {
-        loupeEl.classList.add("hovering-link");
-        tagEl.textContent = "SELECT";
+        fluidEl.classList.add("hovering-link");
+        fluidEl.classList.remove("hovering-canvas");
+        labelEl.textContent = "SELECT";
       } else {
-        loupeEl.classList.add("hovering-link");
-        tagEl.textContent = "INPUT";
+        fluidEl.classList.add("hovering-link");
+        fluidEl.classList.remove("hovering-canvas");
+        labelEl.textContent = "INPUT";
       }
     };
 
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
     document.addEventListener("mouseenter", onMouseEnter);
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mouseup", onMouseUp);
     document.addEventListener("mouseover", onMouseOver);
 
-    const updateLoupe = () => {
-      if (isVisible) {
-        loupeX += (mouseX - loupeX) * 0.18;
-        loupeY += (mouseY - loupeY) * 0.18;
-        loupeEl.style.transform = `translate3d(${loupeX}px, ${loupeY}px, 0)`;
+    const updateCursor = () => {
+      if (isVisible && !isOverDemo) {
+        beadX += (mouseX - beadX) * 0.20;
+        beadY += (mouseY - beadY) * 0.20;
+
+        const vx = beadX - prevBeadX;
+        const vy = beadY - prevBeadY;
+        const speed = Math.sqrt(vx * vx + vy * vy);
+        prevBeadX = beadX;
+        prevBeadY = beadY;
+
+        fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0)`;
+
+        if (isHoveringInteractive) {
+          beadEl.style.transform = `translate(-50%, -50%)`;
+        } else {
+          const angle = Math.atan2(vy, vx);
+          const stretch = Math.min(speed * 0.022, 0.40);
+          const scaleX = 1 + stretch;
+          const scaleY = 1 / (1 + stretch * 0.65);
+          beadEl.style.transform = `translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
+        }
       }
-      animId = requestAnimationFrame(updateLoupe);
+      animId = requestAnimationFrame(updateCursor);
     };
-    animId = requestAnimationFrame(updateLoupe);
+    animId = requestAnimationFrame(updateCursor);
 
     return () => {
       document.documentElement.classList.remove("custom-cursor-active");
@@ -119,22 +172,12 @@ export function PrintmakerLoupeCursor() {
 
   return (
     <>
-      <div id="loupeCursor" ref={loupeRef} className="loupe-cursor" aria-hidden="true">
-        <div className="loupe-ring">
-          <span className="loupe-tick tick-n" />
-          <span className="loupe-tick tick-s" />
-          <span className="loupe-tick tick-w" />
-          <span className="loupe-tick tick-e" />
-          <span className="crop-mark crop-tl" />
-          <span className="crop-mark crop-tr" />
-          <span className="crop-mark crop-bl" />
-          <span className="crop-mark crop-br" />
-        </div>
-        <div className="loupe-badge">
-          <span ref={tagRef}>8× LOUPE</span>
+      <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true">
+        <div id="fluidBead" ref={beadRef} className="fluid-bead">
+          <span id="fluidLabel" ref={labelRef} className="fluid-label" />
         </div>
       </div>
-      <div id="loupeDot" ref={dotRef} className="loupe-dot" aria-hidden="true" />
+      <div id="fluidDot" ref={dotRef} className="fluid-dot" aria-hidden="true" />
     </>
   );
 }

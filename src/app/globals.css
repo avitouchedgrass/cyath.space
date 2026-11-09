@@ -70,7 +70,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   PRINTMAKER'S HALFTONE LOUPE CURSOR (Next.js Global)
+   OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD (Next.js Global)
    ══════════════════════════════════════════════════════════════════ */
 html.custom-cursor-active,
 html.custom-cursor-active body,
@@ -78,7 +78,8 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
-.loupe-dot {
+/* Micro Tip Dot */
+.fluid-dot {
   position: fixed;
   top: 0;
   left: 0;
@@ -89,13 +90,15 @@ html.custom-cursor-active * {
   pointer-events: none;
   z-index: 999999;
   transform: translate(-50%, -50%);
-  transition: opacity 0.2s ease, background-color 0.25s ease;
   opacity: 0;
   visibility: hidden;
+  mix-blend-mode: difference;
+  transition: opacity 0.2s ease, transform 0.15s ease;
   will-change: transform;
 }
 
-.loupe-cursor {
+/* Fluid Invert Bead Anchor */
+.fluid-cursor {
   position: fixed;
   top: 0;
   left: 0;
@@ -105,149 +108,97 @@ html.custom-cursor-active * {
   z-index: 999998;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
   will-change: transform;
 }
 
-.loupe-cursor.active,
-.loupe-dot.active {
+.fluid-cursor.active,
+.fluid-dot.active {
   opacity: 1;
   visibility: visible;
 }
 
-.loupe-ring {
+/* Disappear when hovering interactive demo containers */
+html.over-pin-demo .fluid-cursor,
+html.over-pin-demo .fluid-dot,
+.fluid-cursor.in-demo,
+.fluid-dot.in-demo {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Organic Invert Bead */
+.fluid-bead {
   position: absolute;
   top: 0;
   left: 0;
   transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 1.25px solid rgba(255, 255, 255, 0.50);
-  background: rgba(255, 255, 255, 0.02);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.03);
-  backdrop-filter: invert(0.08);
-  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease,
-              background 0.25s ease,
-              transform 0.18s ease;
+  background: #FFFFFF;
+  mix-blend-mode: difference;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+  will-change: transform, width, height;
 }
 
-.loupe-tick {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.65);
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.tick-n {
-  top: -5px;
-  left: 50%;
-  width: 1.25px;
-  height: 5px;
-  transform: translateX(-50%);
-}
-
-.tick-s {
-  bottom: -5px;
-  left: 50%;
-  width: 1.25px;
-  height: 5px;
-  transform: translateX(-50%);
-}
-
-.tick-w {
-  left: -5px;
-  top: 50%;
-  height: 1.25px;
-  width: 5px;
-  transform: translateY(-50%);
-}
-
-.tick-e {
-  right: -5px;
-  top: 50%;
-  height: 1.25px;
-  width: 5px;
-  transform: translateY(-50%);
-}
-
-.crop-mark {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.crop-tl { top: -3px; left: -3px; border-top: 1.5px solid #38BDF8; border-left: 1.5px solid #38BDF8; }
-.crop-tr { top: -3px; right: -3px; border-top: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
-.crop-bl { bottom: -3px; left: -3px; border-bottom: 1.5px solid #38BDF8; border-left: 1.5px solid #38BDF8; }
-.crop-br { bottom: -3px; right: -3px; border-bottom: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
-
-.loupe-badge {
-  position: absolute;
-  top: 29px;
-  left: 0;
-  transform: translateX(-50%);
-  pointer-events: none;
-  white-space: nowrap;
-  transition: top 0.25s ease;
-}
-
-.loupe-badge span {
+/* Typography Label */
+.fluid-label {
   display: inline-block;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.80);
-  color: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s ease;
-}
-
-.loupe-cursor.hovering-link .loupe-ring {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
-  border-color: rgba(56, 189, 248, 0.7);
-  background: rgba(56, 189, 248, 0.06);
-}
-
-.loupe-cursor.hovering-link .loupe-badge {
-  top: 36px;
-}
-
-.loupe-cursor.hovering-link .loupe-tick {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #000000;
   opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
 }
 
-.loupe-cursor.hovering-link .crop-mark {
+/* Interactive Hover States */
+.fluid-cursor.hovering-link .fluid-bead {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  mix-blend-mode: normal;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.fluid-cursor.hovering-link .fluid-label {
   opacity: 1;
+  transform: scale(1);
+  color: #000000;
 }
 
-.loupe-cursor.hovering-link .loupe-badge span {
-  color: #38BDF8;
-  border-color: rgba(56, 189, 248, 0.4);
+/* 3D Atelier / Tesseract Canvas Hover */
+.fluid-cursor.hovering-canvas .fluid-bead {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  mix-blend-mode: normal;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
 }
 
-.loupe-cursor.hovering-canvas .loupe-ring {
-  width: 52px;
-  height: 52px;
-  border-color: rgba(255, 255, 255, 0.75);
+.fluid-cursor.hovering-canvas .fluid-label {
+  opacity: 1;
+  transform: scale(1);
+  color: #000000;
 }
 
-.loupe-cursor.hovering-canvas .loupe-badge {
-  top: 34px;
-}
-
-.loupe-cursor.clicking .loupe-ring {
-  transform: translate(-50%, -50%) scale(0.85);
+/* Click Compression Spring */
+.fluid-cursor.clicking .fluid-bead {
+  transform: translate(-50%, -50%) scale(0.72) !important;
 }

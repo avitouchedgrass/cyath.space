@@ -1415,7 +1415,7 @@ html.lenis body {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
+   OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD
    ══════════════════════════════════════════════════════════════════ */
 html.custom-cursor-active,
 html.custom-cursor-active body,
@@ -1423,7 +1423,8 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
-.loupe-dot {
+/* Micro Tip Dot — Ultra-precise pointer reference with zero latency */
+.fluid-dot {
   position: fixed;
   top: 0;
   left: 0;
@@ -1434,17 +1435,15 @@ html.custom-cursor-active * {
   pointer-events: none;
   z-index: 999999;
   transform: translate(-50%, -50%);
-  transition: opacity 0.2s ease, background-color 0.25s ease;
   opacity: 0;
   visibility: hidden;
+  mix-blend-mode: difference;
+  transition: opacity 0.2s ease, transform 0.15s ease;
   will-change: transform;
 }
 
-html[data-theme="day"] .loupe-dot {
-  background: #1C1A18;
-}
-
-.loupe-cursor {
+/* Fluid Invert Bead Positioning Anchor */
+.fluid-cursor {
   position: fixed;
   top: 0;
   left: 0;
@@ -1454,184 +1453,116 @@ html[data-theme="day"] .loupe-dot {
   z-index: 999998;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
   will-change: transform;
 }
 
-.loupe-cursor.active,
-.loupe-dot.active {
+.fluid-cursor.active,
+.fluid-dot.active {
   opacity: 1;
   visibility: visible;
 }
 
-.loupe-ring {
+/* Disappear completely when interacting with 01/Capture interactive demo */
+html.over-pin-demo .fluid-cursor,
+html.over-pin-demo .fluid-dot,
+.fluid-cursor.in-demo,
+.fluid-dot.in-demo {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* The Organic Invert Bead (Extrafazant style) */
+.fluid-bead {
   position: absolute;
   top: 0;
   left: 0;
   transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 1.25px solid rgba(255, 255, 255, 0.50);
-  background: rgba(255, 255, 255, 0.02);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.03);
-  backdrop-filter: invert(0.08);
-  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease,
-              background 0.25s ease,
-              transform 0.18s ease;
+  background: #FFFFFF;
+  mix-blend-mode: difference;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease;
+  will-change: transform, width, height;
 }
 
-html[data-theme="day"] .loupe-ring {
-  border: 1.25px solid rgba(28, 26, 24, 0.45);
-  background: rgba(28, 26, 24, 0.02);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45), inset 0 0 10px rgba(0, 0, 0, 0.02);
-  backdrop-filter: invert(0.04);
-}
-
-/* 4 Optical Cardinal Calibration Ticks */
-.loupe-tick {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.65);
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-html[data-theme="day"] .loupe-tick {
-  background: rgba(28, 26, 24, 0.60);
-}
-
-.tick-n {
-  top: -5px;
-  left: 50%;
-  width: 1.25px;
-  height: 5px;
-  transform: translateX(-50%);
-}
-
-.tick-s {
-  bottom: -5px;
-  left: 50%;
-  width: 1.25px;
-  height: 5px;
-  transform: translateX(-50%);
-}
-
-.tick-w {
-  left: -5px;
-  top: 50%;
-  height: 1.25px;
-  width: 5px;
-  transform: translateY(-50%);
-}
-
-.tick-e {
-  right: -5px;
-  top: 50%;
-  height: 1.25px;
-  width: 5px;
-  transform: translateY(-50%);
-}
-
-/* 4 Architectural Corner Crop Marks (Appear on Hover) */
-.crop-mark {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.crop-tl { top: -3px; left: -3px; border-top: 1.5px solid #38BDF8; border-left: 1.5px solid #38BDF8; }
-.crop-tr { top: -3px; right: -3px; border-top: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
-.crop-bl { bottom: -3px; left: -3px; border-bottom: 1.5px solid #38BDF8; border-left: 1.5px solid #38BDF8; }
-.crop-br { bottom: -3px; right: -3px; border-bottom: 1.5px solid #38BDF8; border-right: 1.5px solid #38BDF8; }
-
-html[data-theme="day"] .crop-mark {
-  border-color: #0284C7;
-}
-
-/* Micro Tag Badge underneath */
-.loupe-badge {
-  position: absolute;
-  top: 29px;
-  left: 0;
-  transform: translateX(-50%);
-  pointer-events: none;
-  white-space: nowrap;
-  transition: top 0.25s ease;
-}
-
-.loupe-badge span {
+/* Crisp Label inside the Bead when expanded over interactive targets */
+.fluid-label {
   display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.80);
-  color: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s ease;
-}
-
-html[data-theme="day"] .loupe-badge span {
-  background: rgba(255, 255, 255, 0.90);
-  color: #1C1A18;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* Interactive Hover States */
-.loupe-cursor.hovering-link .loupe-ring {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
-  border-color: rgba(56, 189, 248, 0.7);
-  background: rgba(56, 189, 248, 0.06);
-}
-
-.loupe-cursor.hovering-link .loupe-badge {
-  top: 36px;
-}
-
-.loupe-cursor.hovering-link .loupe-tick {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #000000;
   opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
 }
 
-.loupe-cursor.hovering-link .crop-mark {
+/* Interactive Link & Button Hover: Expands to smooth high-contrast circular lens */
+.fluid-cursor.hovering-link .fluid-bead {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  mix-blend-mode: normal;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.fluid-cursor.hovering-link .fluid-label {
   opacity: 1;
+  transform: scale(1);
+  color: #000000;
 }
 
-.loupe-cursor.hovering-link .loupe-badge span {
-  color: #38BDF8;
-  border-color: rgba(56, 189, 248, 0.4);
+html[data-theme="day"] .fluid-cursor.hovering-link .fluid-bead {
+  background: rgba(28, 26, 24, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
-  color: #0284C7;
-  border-color: rgba(2, 132, 199, 0.4);
+html[data-theme="day"] .fluid-cursor.hovering-link .fluid-label {
+  color: #FFFFFF;
 }
 
-/* Hovering 3D Atelier Canvas */
-.loupe-cursor.hovering-canvas .loupe-ring {
-  width: 52px;
-  height: 52px;
-  border-color: rgba(255, 255, 255, 0.75);
+/* 3D Atelier Canvas Hover: Expands with studio label */
+.fluid-cursor.hovering-canvas .fluid-bead {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  mix-blend-mode: normal;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
 }
 
-.loupe-cursor.hovering-canvas .loupe-badge {
-  top: 34px;
+.fluid-cursor.hovering-canvas .fluid-label {
+  opacity: 1;
+  transform: scale(1);
+  color: #000000;
 }
 
-/* Clicking spring squeeze */
-.loupe-cursor.clicking .loupe-ring {
-  transform: translate(-50%, -50%) scale(0.85);
+html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-bead {
+  background: rgba(28, 26, 24, 0.92);
+}
+
+html[data-theme="day"] .fluid-cursor.hovering-canvas .fluid-label {
+  color: #FFFFFF;
+}
+
+/* Click Compression Spring */
+.fluid-cursor.clicking .fluid-bead {
+  transform: translate(-50%, -50%) scale(0.72) !important;
 }
 </style>
 </head>
@@ -2032,24 +1963,14 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
+     OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD
      ══════════════════════════════════════════════════════════════════ -->
-<div id="loupeCursor" class="loupe-cursor" aria-hidden="true">
-  <div class="loupe-ring">
-    <span class="loupe-tick tick-n"></span>
-    <span class="loupe-tick tick-s"></span>
-    <span class="loupe-tick tick-w"></span>
-    <span class="loupe-tick tick-e"></span>
-    <span class="crop-mark crop-tl"></span>
-    <span class="crop-mark crop-tr"></span>
-    <span class="crop-mark crop-bl"></span>
-    <span class="crop-mark crop-br"></span>
-  </div>
-  <div class="loupe-badge">
-    <span id="loupeTag">8× LOUPE</span>
+<div id="fluidCursor" class="fluid-cursor" aria-hidden="true">
+  <div id="fluidBead" class="fluid-bead">
+    <span id="fluidLabel" class="fluid-label"></span>
   </div>
 </div>
-<div id="loupeDot" class="loupe-dot" aria-hidden="true"></div>
+<div id="fluidDot" class="fluid-dot" aria-hidden="true"></div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      REAL-TIME 3D GPU HALFTONE & BAYER DITHER SHADER ENGINE
@@ -2164,11 +2085,13 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
     pinDemoBox.addEventListener('mouseenter', () => {
       isHovered = true;
       interactiveCursor.style.opacity = '1';
+      document.documentElement.classList.add('over-pin-demo');
     });
 
     pinDemoBox.addEventListener('mouseleave', () => {
       isHovered = false;
       interactiveCursor.style.opacity = '0';
+      document.documentElement.classList.remove('over-pin-demo');
     });
 
     pinDemoBox.addEventListener('mousemove', (e) => {
@@ -2931,17 +2854,21 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
+  // OPTION 1: EXTRAFAZANT MAGNETIC FLUID INVERT BEAD
   // ══════════════════════════════════════════════════════════════════
-  (function initPrintmakerLoupe() {
-    const loupeEl = document.getElementById('loupeCursor');
-    const dotEl = document.getElementById('loupeDot');
-    const tagEl = document.getElementById('loupeTag');
-    if (!loupeEl || !dotEl || !tagEl) return;
+  (function initFluidBeadCursor() {
+    const fluidEl = document.getElementById('fluidCursor');
+    const beadEl = document.getElementById('fluidBead');
+    const dotEl = document.getElementById('fluidDot');
+    const labelEl = document.getElementById('fluidLabel');
+    if (!fluidEl || !beadEl || !dotEl || !labelEl) return;
 
     let mouseX = -100, mouseY = -100;
-    let loupeX = -100, loupeY = -100;
+    let beadX = -100, beadY = -100;
+    let prevBeadX = -100, prevBeadY = -100;
     let isVisible = false;
+    let isOverDemo = false;
+    let isHoveringInteractive = false;
 
     function activateCursor() {
       if (!document.documentElement.classList.contains('custom-cursor-active')) {
@@ -2952,18 +2879,35 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
       }
     }
 
-    // Activate immediately on desktop / mouse environments
     activateCursor();
 
     window.addEventListener('mousemove', (e) => {
       activateCursor();
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (!isVisible) {
+
+      // Check if pointer is over the 01/Capture interactive demo box
+      const overDemo = !!e.target.closest('.pin-demo-box');
+      if (overDemo !== isOverDemo) {
+        isOverDemo = overDemo;
+        if (isOverDemo) {
+          fluidEl.classList.add('in-demo');
+          dotEl.classList.add('in-demo');
+          document.documentElement.classList.add('over-pin-demo');
+        } else {
+          fluidEl.classList.remove('in-demo');
+          dotEl.classList.remove('in-demo');
+          document.documentElement.classList.remove('over-pin-demo');
+        }
+      }
+
+      if (!isVisible && !isOverDemo) {
         isVisible = true;
-        loupeX = mouseX;
-        loupeY = mouseY;
-        loupeEl.classList.add('active');
+        beadX = mouseX;
+        beadY = mouseY;
+        prevBeadX = mouseX;
+        prevBeadY = mouseY;
+        fluidEl.classList.add('active');
         dotEl.classList.add('active');
       }
       dotEl.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
@@ -2971,64 +2915,99 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
 
     document.addEventListener('mouseleave', () => {
       isVisible = false;
-      loupeEl.classList.remove('active');
+      fluidEl.classList.remove('active');
       dotEl.classList.remove('active');
     });
 
     document.addEventListener('mouseenter', () => {
-      isVisible = true;
-      loupeEl.classList.add('active');
-      dotEl.classList.add('active');
+      if (!isOverDemo) {
+        isVisible = true;
+        fluidEl.classList.add('active');
+        dotEl.classList.add('active');
+      }
     });
 
     window.addEventListener('mousedown', () => {
-      loupeEl.classList.add('clicking');
+      fluidEl.classList.add('clicking');
     });
 
     window.addEventListener('mouseup', () => {
-      loupeEl.classList.remove('clicking');
+      fluidEl.classList.remove('clicking');
     });
 
-    const interactiveSelector = 'a, button, input, .punch-item, .billing-pill, .comp-table tbody tr, .feature-card, #asciiCanvas, .faq-item, .cert-box';
+    const interactiveSelector = 'a, button, input, .nav-brand-pill, .billing-pill, .comp-table tbody tr, .feature-card, #asciiCanvas, .punch-item, .faq-item, .cert-box';
     document.addEventListener('mouseover', (e) => {
-      const target = e.target.closest(interactiveSelector);
-      if (!target) {
-        loupeEl.classList.remove('hovering-link', 'hovering-canvas');
-        tagEl.textContent = '8× LOUPE';
+      if (e.target.closest('.pin-demo-box')) {
+        isHoveringInteractive = false;
+        fluidEl.classList.remove('hovering-link', 'hovering-canvas');
+        labelEl.textContent = '';
         return;
       }
 
+      const target = e.target.closest(interactiveSelector);
+      if (!target) {
+        isHoveringInteractive = false;
+        fluidEl.classList.remove('hovering-link', 'hovering-canvas');
+        labelEl.textContent = '';
+        return;
+      }
+
+      isHoveringInteractive = true;
       if (target.id === 'asciiCanvas') {
-        loupeEl.classList.add('hovering-canvas');
-        loupeEl.classList.remove('hovering-link');
-        tagEl.textContent = '3D ATELIER';
+        fluidEl.classList.add('hovering-canvas');
+        fluidEl.classList.remove('hovering-link');
+        labelEl.textContent = '3D ATELIER';
       } else if (target.classList.contains('punch-item')) {
-        loupeEl.classList.add('hovering-link');
-        tagEl.textContent = 'RESOLVE';
+        fluidEl.classList.add('hovering-link');
+        fluidEl.classList.remove('hovering-canvas');
+        labelEl.textContent = 'RESOLVE';
       } else if (target.classList.contains('billing-pill')) {
-        loupeEl.classList.add('hovering-link');
-        tagEl.textContent = 'SWITCH';
+        fluidEl.classList.add('hovering-link');
+        fluidEl.classList.remove('hovering-canvas');
+        labelEl.textContent = 'SWITCH';
       } else if (target.classList.contains('cert-box')) {
-        loupeEl.classList.add('hovering-link');
-        tagEl.textContent = 'VERIFY';
-      } else if (target.tagName === 'A' || target.tagName === 'BUTTON') {
-        loupeEl.classList.add('hovering-link');
-        tagEl.textContent = 'SELECT';
+        fluidEl.classList.add('hovering-link');
+        fluidEl.classList.remove('hovering-canvas');
+        labelEl.textContent = 'VERIFY';
+      } else if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.classList.contains('nav-brand-pill')) {
+        fluidEl.classList.add('hovering-link');
+        fluidEl.classList.remove('hovering-canvas');
+        labelEl.textContent = 'SELECT';
       } else {
-        loupeEl.classList.add('hovering-link');
-        tagEl.textContent = 'INSPECT';
+        fluidEl.classList.add('hovering-link');
+        fluidEl.classList.remove('hovering-canvas');
+        labelEl.textContent = 'VIEW';
       }
     });
 
-    function updateLoupe() {
-      if (isVisible) {
-        loupeX += (mouseX - loupeX) * 0.18;
-        loupeY += (mouseY - loupeY) * 0.18;
-        loupeEl.style.transform = `translate3d(${loupeX}px, ${loupeY}px, 0)`;
+    function updateCursor() {
+      if (isVisible && !isOverDemo) {
+        // Fluid spring physics
+        beadX += (mouseX - beadX) * 0.20;
+        beadY += (mouseY - beadY) * 0.20;
+
+        // Velocity & momentum stretch
+        const vx = beadX - prevBeadX;
+        const vy = beadY - prevBeadY;
+        const speed = Math.sqrt(vx * vx + vy * vy);
+        prevBeadX = beadX;
+        prevBeadY = beadY;
+
+        fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0)`;
+
+        if (isHoveringInteractive) {
+          beadEl.style.transform = `translate(-50%, -50%)`;
+        } else {
+          const angle = Math.atan2(vy, vx);
+          const stretch = Math.min(speed * 0.022, 0.40);
+          const scaleX = 1 + stretch;
+          const scaleY = 1 / (1 + stretch * 0.65);
+          beadEl.style.transform = `translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
+        }
       }
-      requestAnimationFrame(updateLoupe);
+      requestAnimationFrame(updateCursor);
     }
-    requestAnimationFrame(updateLoupe);
+    requestAnimationFrame(updateCursor);
   })();
 })();
 </script>
