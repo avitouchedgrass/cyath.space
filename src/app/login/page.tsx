@@ -224,7 +224,10 @@ export default function LoginPage() {
         >
           {/* Terminal Title (No eyebrows, no screws) */}
           <div className="mb-6">
-            <h1 className="text-2xl font-bold tracking-tight mb-1.5">
+            <h1
+              className="text-[28px] sm:text-[30px] font-normal tracking-[-0.02em] leading-tight mb-2"
+              style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
+            >
               {mode === "signin" ? "Sign In to Cyath" : "Create Studio Account"}
             </h1>
             <p className={`text-xs ${isDay ? "text-zinc-600" : "text-zinc-400"}`}>

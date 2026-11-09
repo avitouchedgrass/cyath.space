@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  --font-serif: 'Oranienbaum', Georgia, serif;
+
   /* Surfaces — Graphite / Archival */
   --surface-canvas: #1b1b1b;
   --surface-panel: #242424;
