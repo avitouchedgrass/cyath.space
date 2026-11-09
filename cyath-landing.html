@@ -3,26 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyath® · Visual Staging & Milestone Approval</title>
+<title>Cyath — Visual Staging Review & Milestone Approval</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   LOCOMOTIVE AESTHETIC SYSTEM TOKENS
+   HIGH-CONTRAST EDITORIAL DESIGN TOKENS (ZERO JARGON / ZERO FLUFF)
    ══════════════════════════════════════════════════════════════════ */
 :root {
-  --loco-ochre: #C88A58;
-  --loco-ochre-light: #DF9F6D;
-  --loco-ochre-dim: rgba(200, 138, 88, 0.35);
-  --loco-ochre-glow: rgba(200, 138, 88, 0.15);
+  --bg-page: #0A0B0E;
+  --bg-surface: #121418;
+  --bg-card: #16181F;
+  --bg-card-hover: #1C1F27;
   
-  --loco-bg-dark: #0D1015;
-  --loco-bg-surface: #141820;
-  --loco-border: rgba(255, 255, 255, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-medium: rgba(255, 255, 255, 0.22);
   
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Space Grotesk', -apple-system, sans-serif;
+  --text-primary: #FFFFFF;
+  --text-secondary: #D4D4D8;
+  --text-muted: #A1A1AA;
+  
+  --accent-red: #EF4444;
+  --accent-green: #22C55E;
+  
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -34,1146 +40,909 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body {
-  width: 100%;
-  min-height: 100vh;
-  background-color: var(--loco-bg-dark);
-  color: #FFFFFF;
-  font-family: var(--font-sans);
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-page);
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
   overflow-x: hidden;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   FULLSCREEN INTERACTIVE PIXEL-MOSAIC CANVAS
+   NAVIGATION
    ══════════════════════════════════════════════════════════════════ */
-.mosaic-canvas-wrap {
+.site-nav {
   position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background: rgba(10, 11, 14, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 100;
 }
-#mosaicCanvas {
-  width: 100%;
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
   height: 100%;
-  display: block;
-}
-
-/* Subtle Vignette Overlay */
-.mosaic-vignette {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(13, 16, 21, 0.45) 100%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   PERIMETER INTERFACE LAYOUT (EXACT LOCOMOTIVE COMPOSITION)
-   ══════════════════════════════════════════════════════════════════ */
-.loco-hero-stage {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 28px 36px 40px;
-  z-index: 10;
-}
-@media (max-width: 768px) {
-  .loco-hero-stage { padding: 20px 20px 32px; }
-}
-
-/* Top Perimeter Bar */
-.loco-topbar {
+  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  position: relative;
-  z-index: 20;
 }
-
-/* Top-Left: Brand Mark with Interactive Cursor Glyph */
-.loco-brand {
+.nav-brand {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  color: var(--loco-ochre);
-  font-family: var(--font-serif);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transition: opacity 150ms ease;
+  color: var(--text-primary);
 }
-.loco-brand:hover {
-  opacity: 0.85;
-}
-.loco-cursor-mark {
-  display: inline-block;
-  color: var(--loco-ochre);
-  font-size: 18px;
-  line-height: 1;
-  transform: rotate(25deg);
-}
-
-/* Top-Center: Clean Editorial Nav */
-.loco-nav {
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  background: #FFFFFF;
+  color: #000000;
   display: flex;
   align-items: center;
-  gap: 28px;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-@media (max-width: 860px) {
-  .loco-nav { display: none; }
-}
-.loco-nav a {
-  color: #E2DFD7;
-  text-decoration: none;
-  transition: color 140ms ease;
-}
-.loco-nav a:hover {
-  color: #FFFFFF;
-}
-.loco-nav a.highlight {
-  color: var(--loco-ochre);
-}
-
-/* Top-Right: Direct Action Callout */
-.loco-top-action {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 500;
-  color: var(--loco-ochre);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: transform 140ms ease, opacity 140ms ease;
-}
-.loco-top-action:hover {
-  transform: translateX(3px);
-  opacity: 0.9;
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   BOTTOM PERIMETER: MONUMENTAL MANIFESTO HEADLINE
-   ══════════════════════════════════════════════════════════════════ */
-.loco-bottom-manifesto {
-  position: relative;
-  z-index: 20;
-  max-width: 1100px;
-  margin-top: auto;
-}
-
-/* Technical Bracketed Badges [OPS | DES | DEV] */
-.loco-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.loco-box-stamp {
-  border: 1px solid var(--loco-ochre);
-  color: var(--loco-ochre);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 8px;
-  letter-spacing: 0.08em;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.loco-stamp-sep {
-  opacity: 0.5;
-}
-
-.loco-brand-sub {
-  font-family: var(--font-serif);
-  font-size: 32px;
-  font-weight: 600;
-  color: var(--loco-ochre);
-  letter-spacing: -0.01em;
-}
-
-/* Monumental Editorial Serif Title */
-.loco-monumental-h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(38px, 6.4vw, 84px);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  color: var(--loco-ochre);
-  text-shadow: 0 4px 24px rgba(0,0,0,0.4);
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 14px 18px;
-}
-
-.loco-symbol {
-  font-family: var(--font-serif);
-  font-size: clamp(34px, 5.5vw, 76px);
-  color: var(--loco-ochre);
-  display: inline-block;
-  line-height: 0.8;
-  vertical-align: middle;
-}
-
-.loco-outlined-pill {
-  border: 1.5px solid var(--loco-ochre);
-  padding: 2px 14px;
-  font-family: var(--font-mono);
-  font-size: clamp(14px, 2.2vw, 26px);
+  justify-content: center;
+  font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--loco-ochre);
-  vertical-align: middle;
-  display: inline-block;
+  font-size: 13px;
+  border-radius: 4px;
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.03em;
 }
 
-/* Value Explanation Subtext (Zero Buzzwords) */
-.loco-plain-sub {
-  margin-top: 18px;
-  font-family: var(--font-sans);
-  font-size: 17px;
-  line-height: 1.6;
-  color: #E2DFD7;
-  max-width: 680px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-}
-
-.loco-cta-row {
-  margin-top: 26px;
+.nav-links {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.loco-btn-primary {
-  background: var(--loco-ochre);
-  color: #0E1116;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 700;
-  padding: 13px 28px;
-  border-radius: 4px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 16px rgba(200, 138, 88, 0.35);
-  transition: transform 140ms ease, background 140ms ease;
-}
-.loco-btn-primary:hover {
-  background: var(--loco-ochre-light);
-  transform: translateY(-2px);
-}
-.loco-btn-ghost {
-  border: 1px solid var(--loco-ochre);
-  color: var(--loco-ochre);
-  background: rgba(13, 16, 21, 0.45);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 600;
-  padding: 13px 24px;
-  border-radius: 4px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 140ms ease;
-}
-.loco-btn-ghost:hover {
-  background: rgba(200, 138, 88, 0.15);
-  transform: translateY(-2px);
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   THE STAGING RUNWAY (FULL-WIDTH PRODUCT SHOWCASE ON SCROLL)
-   ══════════════════════════════════════════════════════════════════ */
-.loco-studio-section {
-  position: relative;
-  z-index: 20;
-  max-width: 1320px;
-  margin: 40px auto 100px;
-  padding: 0 36px;
+  gap: 32px;
 }
 @media (max-width: 768px) {
-  .loco-studio-section { padding: 0 20px; }
+  .nav-links { display: none; }
+}
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 150ms ease;
+}
+.nav-links a:hover {
+  color: var(--text-primary);
 }
 
-.studio-frame-box {
-  background: #11141B;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7);
-  overflow: hidden;
-}
-
-/* Studio Header Ribbon */
-.studio-ribbon {
-  background: #161A23;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 20px;
+.nav-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
+}
+.nav-signin {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+.nav-signin:hover {
+  color: var(--text-primary);
+}
+
+.btn-primary {
+  background: #FFFFFF;
+  color: #000000;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease;
+}
+.btn-primary:hover {
+  background: #F4F4F5;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.btn-secondary:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-medium);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO SECTION (BREATHABLE, MONUMENTAL, ZERO FLUFF)
+   ══════════════════════════════════════════════════════════════════ */
+.hero-wrap {
+  padding: 150px 32px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-inner {
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.8vw, 76px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: #FFFFFF;
+}
+
+.hero-description {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-weight: 400;
+  max-width: 680px;
+}
+
+.hero-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
 
-.studio-target-url {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--loco-ochre);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.studio-note-count {
-  background: rgba(239, 68, 68, 0.18);
-  color: #FCA5A5;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  padding: 2px 7px;
-  border-radius: 3px;
-  font-size: 10.5px;
-  font-weight: 700;
+.hero-subtext {
+  font-size: 13.5px;
+  color: var(--text-muted);
 }
 
-.studio-vp-selector {
-  display: flex;
-  background: #0E1116;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-  padding: 2px;
-}
-.vp-tab-btn {
-  background: transparent;
-  border: none;
-  color: #AAA;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 120ms ease;
-}
-.vp-tab-btn:hover {
-  color: #FFF;
-}
-.vp-tab-btn.active {
-  background: var(--loco-ochre);
-  color: #0E1116;
-  font-weight: 800;
+/* ══════════════════════════════════════════════════════════════════
+   SECTION DIVIDER & HEADERS
+   ══════════════════════════════════════════════════════════════════ */
+.section-divider {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border-subtle);
 }
 
-.btn-signoff-trigger {
-  background: #16A34A;
-  color: #FFFFFF;
-  border: 1px solid #22C55E;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 7px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 120ms ease;
+.editorial-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 32px;
 }
-.btn-signoff-trigger:hover {
-  background: #22C55E;
+@media (max-width: 768px) {
+  .editorial-section { padding: 80px 24px; }
 }
 
-/* Viewport Staging Canvas */
-.studio-canvas-stage {
-  padding: 28px;
-  background: #0A0D12;
-  display: flex;
-  justify-content: center;
-  min-height: 480px;
-}
-
-.staged-site-window {
-  width: 100%;
-  max-width: 100%;
-  background: #FAF8F5;
-  color: #171614;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-  transition: max-width 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-}
-
-/* Staged Aura Atelier Site */
-.staged-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 28px;
-  border-bottom: 1px solid #EBE7DF;
-  font-size: 13px;
-}
-.staged-brand-logo {
-  font-family: var(--font-serif);
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.staged-links {
-  display: flex;
-  gap: 20px;
-  color: #555;
-  font-weight: 500;
-}
-.staged-inquire-btn {
-  background: #171614;
-  color: #FFF;
-  padding: 6px 14px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.staged-hero-content {
-  padding: 44px 28px;
+/* ══════════════════════════════════════════════════════════════════
+   THE THREE ARTIFACTS (THE THREE MOMENTS OF TRUTH)
+   ══════════════════════════════════════════════════════════════════ */
+.artifact-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 64px;
   align-items: center;
+  margin-bottom: 140px;
 }
-@media (max-width: 720px) {
-  .staged-hero-content { grid-template-columns: 1fr; padding: 24px 16px; }
-  .staged-links { display: none; }
+.artifact-row:last-child {
+  margin-bottom: 0;
 }
-
-.staged-h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(26px, 3.4vw, 40px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin-bottom: 12px;
-}
-.staged-body {
-  font-size: 14px;
-  line-height: 1.55;
-  color: #5A574E;
-  margin-bottom: 20px;
-}
-.staged-cta-button {
-  background: #EF4444;
-  color: #FFFFFF;
-  border: none;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
+@media (max-width: 900px) {
+  .artifact-row {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 100px;
+  }
 }
 
-.staged-monolith-box {
-  height: 220px;
-  background: #E8E4DA;
-  border-radius: 6px;
-  border: 1px solid #D4CEBF;
+.artifact-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  color: #6C685E;
+  gap: 16px;
+}
+.artifact-index {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+.artifact-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #FFFFFF;
+}
+.artifact-body {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text-secondary);
 }
 
-/* Staged Pins (Surgical & Functional) */
-.pin-marker {
+/* Artifact 01: The Pin & Telemetry Card */
+.artifact-visual-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 36px 32px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+/* Staged UI Component Crop */
+.ui-crop-sample {
+  background: #FAF8F5;
+  color: #171614;
+  border-radius: 8px;
+  padding: 32px 28px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.sample-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #888;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.sample-headline {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #111;
+}
+.sample-button {
+  background: #171614;
+  color: #FFF;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+}
+
+/* Pin Annotation Marker */
+.sample-pin {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  top: -12px;
+  right: -12px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: #EF4444;
-  color: #FFFFFF;
+  background: var(--accent-red);
+  color: #FFF;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 800;
-  box-shadow: 0 0 0 2px #FFFFFF, 0 4px 12px rgba(0,0,0,0.3);
-  cursor: pointer;
-  z-index: 10;
-  transition: transform 140ms ease;
-}
-.pin-marker:hover {
-  transform: scale(1.2);
-}
-.pin-marker.resolved {
-  background: #10B981;
+  box-shadow: 0 0 0 2px #FFF, 0 4px 10px rgba(239, 68, 68, 0.4);
 }
 
 /* Note Popover Card */
-.note-popover {
-  position: absolute;
+.telemetry-popover-card {
+  margin-top: 24px;
   background: #FFFFFF;
-  color: #000000;
-  border: 1px solid #18181B;
-  border-radius: 6px;
-  padding: 14px 16px;
-  width: 310px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-  z-index: 30;
-  display: none;
+  color: #18181B;
+  border-radius: 8px;
+  padding: 18px 20px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  border: 1px solid #E4E4E7;
 }
-.note-popover.active {
-  display: block;
-}
-.np-top {
+.tpc-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #E4E4E7;
 }
-.np-title {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 800;
-}
-.np-badge {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
+.tpc-author {
+  font-size: 13px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
+  color: #09090B;
 }
-.np-badge.open {
+.tpc-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
   background: #FEE2E2;
   color: #991B1B;
+  padding: 2px 7px;
+  border-radius: 3px;
 }
-.np-badge.resolved {
-  background: #DCFCE7;
-  color: #166534;
-}
-.np-body {
-  font-size: 13px;
+.tpc-note {
+  font-size: 14px;
   line-height: 1.5;
   color: #27272A;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
-.np-meta {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: #71717A;
+.tpc-telemetry-strip {
   background: #F4F4F5;
-  padding: 4px 8px;
   border-radius: 4px;
-}
-
-/* Approval Modal / Receipt Overlay */
-.receipt-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.receipt-modal.active {
-  display: flex;
-}
-.receipt-dialog {
-  background: #141820;
-  border: 1px solid var(--loco-ochre);
-  border-radius: 8px;
-  max-width: 480px;
-  width: 100%;
-  padding: 28px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.8);
-}
-.receipt-dialog-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.receipt-dialog-h2 {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--loco-ochre);
-}
-.receipt-close {
-  background: transparent;
-  border: none;
-  color: #AAA;
-  font-size: 22px;
-  cursor: pointer;
-}
-.receipt-close:hover {
-  color: #FFF;
-}
-.receipt-meta-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-.rm-row {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  padding-bottom: 6px;
-}
-.rm-label { color: #888; }
-.rm-val { color: #FFF; font-weight: 600; }
-.receipt-hash-code {
-  background: #0A0D12;
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 10px 14px;
-  border-radius: 4px;
+  padding: 8px 12px;
   font-family: var(--font-mono);
   font-size: 11px;
-  color: #A1A1AA;
-  word-break: break-all;
+  color: #52525B;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Artifact 02: The Unified Punchlist */
+.punchlist-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pl-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+.pl-counter {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent-green);
+}
+.pl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pl-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13.5px;
+}
+.pl-check {
+  color: var(--accent-green);
+  font-weight: 700;
+}
+.pl-text {
+  flex: 1;
+  color: var(--text-secondary);
+}
+.pl-meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+/* Artifact 03: The Milestone Sign-Off Receipt */
+.receipt-artifact-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 12px;
+  padding: 36px 32px;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.rac-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.rac-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+.rac-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.rac-row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.rac-label { color: var(--text-muted); }
+.rac-val { color: #FFFFFF; font-weight: 600; }
+.rac-seal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   HOW IT WORKS & CAPABILITIES
+   COMPARISON TABLE SECTION
    ══════════════════════════════════════════════════════════════════ */
-.loco-section {
-  max-width: 1320px;
-  margin: 100px auto 0;
-  padding: 0 36px;
-  position: relative;
-  z-index: 20;
+.table-wrap {
+  margin-top: 48px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow-x: auto;
+  background: var(--bg-surface);
 }
-@media (max-width: 768px) {
-  .loco-section { padding: 0 20px; }
+table.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14.5px;
+}
+.comparison-table th, .comparison-table td {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.comparison-table th {
+  background: var(--bg-card);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: #FFFFFF;
+}
+.comparison-table td {
+  color: var(--text-secondary);
+}
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+.cyath-col {
+  color: #FFFFFF !important;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.loco-section-h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(34px, 4.5vw, 56px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--loco-ochre);
-  margin-bottom: 16px;
-}
-.loco-section-p {
-  font-size: 17px;
-  line-height: 1.6;
-  color: #C8C5BD;
-  max-width: 620px;
-}
-
-.loco-grid-3 {
+/* ══════════════════════════════════════════════════════════════════
+   PRICING SECTION
+   ══════════════════════════════════════════════════════════════════ */
+.pricing-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
   margin-top: 48px;
+  max-width: 880px;
 }
-@media (max-width: 860px) {
-  .loco-grid-3 { grid-template-columns: 1fr; }
+@media (max-width: 720px) {
+  .pricing-grid { grid-template-columns: 1fr; }
 }
 
-.loco-card {
-  background: rgba(20, 24, 32, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  padding: 32px 28px;
+.price-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  justify-content: space-between;
 }
-.loco-card-index {
-  font-family: var(--font-mono);
-  font-size: 12px;
+.price-box.featured {
+  border-color: var(--border-medium);
+  background: var(--bg-card);
+}
+.pb-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.pb-plan-title {
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 700;
-  color: var(--loco-ochre);
-}
-.loco-card-title {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 600;
   color: #FFFFFF;
-  letter-spacing: -0.01em;
 }
-.loco-card-body {
+.pb-amount {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+.pb-desc {
   font-size: 14.5px;
-  line-height: 1.6;
-  color: #C8C5BD;
+  color: var(--text-secondary);
+}
+.pb-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.pb-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pb-features li::before {
+  content: "✓";
+  color: var(--accent-green);
+  font-weight: 700;
 }
 
 /* ══════════════════════════════════════════════════════════════════
    FOOTER
    ══════════════════════════════════════════════════════════════════ */
-.loco-footer {
-  margin-top: 120px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 40px 36px 60px;
-  position: relative;
-  z-index: 20;
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 48px 32px 64px;
+  margin-top: 60px;
 }
-.loco-footer-inner {
-  max-width: 1320px;
+.footer-inner {
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 20px;
-  font-size: 13px;
-  color: #888;
+  font-size: 13.5px;
+  color: var(--text-muted);
 }
-.loco-footer-links {
+.footer-links {
   display: flex;
   gap: 24px;
 }
-.loco-footer-links a {
-  color: var(--loco-ochre);
+.footer-links a {
+  color: var(--text-secondary);
   text-decoration: none;
 }
-.loco-footer-links a:hover {
-  text-decoration: underline;
+.footer-links a:hover {
+  color: #FFFFFF;
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════ FULLSCREEN INTERACTIVE PIXEL-MOSAIC CANVAS ══════════ -->
-<div class="mosaic-canvas-wrap">
-  <canvas id="mosaicCanvas"></canvas>
-</div>
-<div class="mosaic-vignette"></div>
-
-<!-- ══════════ HERO STAGE (LOCOMOTIVE COMPOSITION) ══════════ -->
-<div class="loco-hero-stage">
-  <!-- Top Perimeter Bar -->
-  <header class="loco-topbar">
-    <a href="/" class="loco-brand">
-      <span>Cyath®</span>
-      <span class="loco-cursor-mark">↗</span>
+<!-- ══════════ NAVIGATION ══════════ -->
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">
+      <div class="brand-mark">CY</div>
+      <span class="brand-name">cyath</span>
     </a>
 
-    <nav class="loco-nav">
-      <a href="#studio">Workspace</a>
-      <a href="#capabilities">Capabilities</a>
+    <nav class="nav-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#compare">Compare</a>
       <a href="#pricing">Pricing</a>
-      <a href="/dashboard" class="highlight">Sign In</a>
     </nav>
 
-    <a href="/dashboard" class="loco-top-action">
-      <span>Start free</span>
-      <span>→</span>
-    </a>
-  </header>
-
-  <!-- Bottom Perimeter: Monumental Headline & Stamped Badges -->
-  <div class="loco-bottom-manifesto">
-    <div class="loco-badge-row">
-      <div class="loco-box-stamp">
-        <span>STG</span><span class="loco-stamp-sep">|</span>
-        <span>REV</span><span class="loco-stamp-sep">|</span>
-        <span>SIGN</span>
-      </div>
-      <span class="loco-brand-sub">Cyath®</span>
+    <div class="nav-actions">
+      <a href="/dashboard" class="nav-signin">Sign In</a>
+      <a href="/dashboard" class="btn-primary">Start Free</a>
     </div>
+  </div>
+</header>
 
-    <h1 class="loco-monumental-h1">
-      <span>Visual Staging & Milestone Approval</span>
-      <span class="loco-symbol">✳</span>
-      <span class="loco-outlined-pill">CYATH</span>
+<!-- ══════════ HERO SECTION (BREATHABLE, MONUMENTAL) ══════════ -->
+<main>
+<section class="hero-wrap">
+  <div class="hero-inner">
+    <h1 class="hero-title">
+      Stop chasing client feedback across 15 emails.
     </h1>
 
-    <p class="loco-plain-sub">
+    <p class="hero-description">
       Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
     </p>
 
-    <div class="loco-cta-row">
-      <a href="/dashboard" class="loco-btn-primary">
-        <span>Start for Free</span>
-        <span>→</span>
-      </a>
-      <a href="#studio" class="loco-btn-ghost">
-        <span>Open Staging Studio</span>
-      </a>
+    <div class="hero-actions">
+      <a href="/dashboard" class="btn-primary">Start for Free →</a>
+      <a href="#how-it-works" class="btn-secondary">How It Works ↓</a>
+    </div>
+
+    <span class="hero-subtext">No credit card required · 1 active project free forever</span>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════ THE THREE ARTIFACTS (THE THREE MOMENTS OF TRUTH) ══════════ -->
+<section class="editorial-section" id="how-it-works">
+  <!-- Artifact 01: The Capture -->
+  <div class="artifact-row">
+    <div class="artifact-info">
+      <span class="artifact-index">01 / THE CAPTURE</span>
+      <h2 class="artifact-heading">Exact screen size and browser on every note.</h2>
+      <p class="artifact-body">
+        Every pin automatically logs your client's exact screen dimensions, browser, operating system, and scroll position. You see exactly what they saw—no more asking "what browser are you using?" or guessing what a blurry phone photo means.
+      </p>
+    </div>
+
+    <div class="artifact-visual-box">
+      <!-- Staged UI Crop Sample -->
+      <div class="ui-crop-sample">
+        <div class="sample-kicker">AURA ATELIER · ARCHITECTURE</div>
+        <div class="sample-headline">Monolithic forms cast in raw concrete & bronze.</div>
+        <div class="sample-button">
+          Request Private Catalog
+          <div class="sample-pin">1</div>
+        </div>
+      </div>
+
+      <!-- Telemetry Popover Note -->
+      <div class="telemetry-popover-card">
+        <div class="tpc-head">
+          <span class="tpc-author">Jane Cooper (Client)</span>
+          <span class="tpc-badge">OPEN</span>
+        </div>
+        <p class="tpc-note">
+          "Can we change this button label to 'Reserve via Concierge'? Also bump vertical padding to 16px."
+        </p>
+        <div class="tpc-telemetry-strip">
+          <span>1440 × 900</span>
+          <span>Chrome 131</span>
+          <span>macOS 15.1</span>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ══════════ THE STAGING RUNWAY WORKSPACE ══════════ -->
-<section class="loco-studio-section" id="studio">
-  <div class="studio-frame-box">
-    <!-- Studio Header Ribbon -->
-    <div class="studio-ribbon">
-      <div class="studio-target-url">
-        <span>aura-atelier.staging.cyath.space</span>
-        <span class="studio-note-count">2 Open Notes</span>
-      </div>
-
-      <!-- Viewport Tabs -->
-      <div class="studio-vp-selector">
-        <button class="vp-tab-btn active" id="btnVpDesktop" data-vp="100%">1440 Desktop</button>
-        <button class="vp-tab-btn" id="btnVpTablet" data-vp="768px">768 Tablet</button>
-        <button class="vp-tab-btn" id="btnVpMobile" data-vp="390px">390 Mobile</button>
-      </div>
-
-      <button class="btn-signoff-trigger" id="btnOpenReceipt">Approve Milestone</button>
+  <!-- Artifact 02: The Unified Punchlist -->
+  <div class="artifact-row">
+    <div class="artifact-info">
+      <span class="artifact-index">02 / THE PUNCHLIST</span>
+      <h2 class="artifact-heading">A single checklist instead of 15 email replies.</h2>
+      <p class="artifact-body">
+        Stop searching through forwarded email chains to figure out what was already fixed. Every note lives in one clean punchlist that updates in real time for both you and your client.
+      </p>
     </div>
 
-    <!-- Viewport Stage -->
-    <div class="studio-canvas-stage">
-      <div class="staged-site-window" id="stagedCanvas" style="max-width: 100%;">
-        <!-- Staged Site Nav -->
-        <div class="staged-nav">
-          <div class="staged-brand-logo">AURA ATELIER</div>
-          <div class="staged-links">
-            <span>Spaces</span>
-            <span>Objects</span>
-            <span>Materials</span>
-            <span>Monographs</span>
-          </div>
-          <div class="staged-inquire-btn">Inquire</div>
+    <div class="punchlist-card">
+      <div class="pl-header">
+        <span class="pl-title">Milestone Review Notes</span>
+        <span class="pl-counter">12 of 12 Completed</span>
+      </div>
+      <div class="pl-list">
+        <div class="pl-item">
+          <span class="pl-check">✓</span>
+          <span class="pl-text">Button label changed to "Reserve via Concierge"</span>
+          <span class="pl-meta">1440×900 · Chrome</span>
         </div>
-
-        <!-- Staged Site Hero -->
-        <div class="staged-hero-content">
-          <div>
-            <h2 class="staged-h2">Monolithic forms cast in raw concrete & bronze.</h2>
-            <p class="staged-body">
-              Spatial architecture and bespoke interior monoliths designed for permanence and acoustic stillness.
-            </p>
-            <button class="staged-cta-button" id="stagedCta">
-              Request Private Catalog
-            </button>
-          </div>
-          <div class="staged-monolith-box">
-            <span>[ MONOLITH 04 ]</span>
-            <span>CAST BRONZE TABLE</span>
-          </div>
+        <div class="pl-item">
+          <span class="pl-check">✓</span>
+          <span class="pl-text">Mobile navigation tap target expanded to 44px</span>
+          <span class="pl-meta">390×844 · Safari</span>
         </div>
-
-        <!-- Pin #1: Open Pin -->
-        <div class="pin-marker" id="pin1" style="top: 140px; left: 200px;" title="Click to view note">1</div>
-
-        <!-- Pin #2: Resolved Pin -->
-        <div class="pin-marker resolved" id="pin2" style="top: 240px; right: 190px;" title="Click to view note">✓</div>
-
-        <!-- Note Popover Card -->
-        <div class="note-popover" id="notePopover">
-          <div class="np-top">
-            <span class="np-title" id="npTitle">PIN #1</span>
-            <span class="np-badge open" id="npBadge">OPEN</span>
-          </div>
-          <p class="np-body" id="npBody">
-            "Can we change this button label to 'Reserve via Concierge'? Also bump vertical padding to 16px."
-          </p>
-          <div class="np-meta" id="npMeta">
-            1440×900 · Chrome 131 · Jane Cooper (Client)
-          </div>
+        <div class="pl-item">
+          <span class="pl-check">✓</span>
+          <span class="pl-text">Product catalog download link verified</span>
+          <span class="pl-meta">1512×982 · Chrome</span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Artifact 03: The Milestone Sign-Off Receipt -->
+  <div class="artifact-row">
+    <div class="artifact-info">
+      <span class="artifact-index">03 / THE SIGN-OFF</span>
+      <h2 class="artifact-heading">Clear approval when the work is done.</h2>
+      <p class="artifact-body">
+        Once you finish the fixes, your client approves the build with a single click. Cyath generates a timestamped sign-off receipt so both sides agree the milestone is complete—putting an end to endless "just one more quick change" emails.
+      </p>
+    </div>
+
+    <div class="receipt-artifact-card">
+      <div class="rac-top">
+        <span style="font-family:var(--font-display); font-weight:700; font-size:16px;">Milestone Sign-Off</span>
+        <span class="rac-badge">APPROVED</span>
+      </div>
+      <div class="rac-rows">
+        <div class="rac-row">
+          <span class="rac-label">Project:</span>
+          <span class="rac-val">Aura Atelier v2.4</span>
+        </div>
+        <div class="rac-row">
+          <span class="rac-label">Approved By:</span>
+          <span class="rac-val">Jane Cooper (Client)</span>
+        </div>
+        <div class="rac-row">
+          <span class="rac-label">Resolved Notes:</span>
+          <span class="rac-val" style="color:var(--accent-green);">12 of 12 Notes Completed</span>
+        </div>
+        <div class="rac-row">
+          <span class="rac-label">Signed Timestamp:</span>
+          <span class="rac-val">Nov 9, 2026 · 13:30 UTC</span>
+        </div>
+      </div>
+      <div class="rac-seal">
+        Receipt Verification: #844d88e92a4f6103
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════ CAPABILITIES ══════════ -->
-<section class="loco-section" id="capabilities">
-  <h2 class="loco-section-h2">Everything email threads were missing.</h2>
-  <p class="loco-section-p">
-    Send one link to your client. They open it on any device and leave notes right on the page—no accounts, no passwords, and zero setup.
-  </p>
+<div class="section-divider"></div>
 
-  <div class="loco-grid-3">
-    <div class="loco-card">
-      <span class="loco-card-index">01 / FRICTIONLESS</span>
-      <h3 class="loco-card-title">No client accounts or downloads</h3>
-      <p class="loco-card-body">
-        Send a link directly to your client. They open it on their phone or laptop and leave feedback right on the page—nothing to install.
-      </p>
-    </div>
+<!-- ══════════ COMPARISON TABLE ══════════ -->
+<section class="editorial-section" id="compare">
+  <div style="max-width: 680px; margin-bottom: 40px;">
+    <h2 style="font-family:var(--font-display); font-size:clamp(32px, 3.8vw, 44px); font-weight:700; letter-spacing:-0.03em; margin-bottom:12px;">
+      Same job. A fraction of the price.
+    </h2>
+    <p style="font-size:17px; color:var(--text-secondary);">
+      Stop paying enterprise seat fees just to get feedback on staging links.
+    </p>
+  </div>
 
-    <div class="loco-card">
-      <span class="loco-card-index">02 / TELEMETRY</span>
-      <h3 class="loco-card-title">Exact screen size and browser on every note</h3>
-      <p class="loco-card-body">
-        Every pin automatically records your client's screen size, browser, operating system, and scroll position. Never guess what browser they are on.
-      </p>
-    </div>
-
-    <div class="loco-card">
-      <span class="loco-card-index">03 / SIGN-OFF</span>
-      <h3 class="loco-card-title">Clear sign-off when the work is done</h3>
-      <p class="loco-card-body">
-        Once you fix the feedback, your client approves the site with a single click. Cyath generates a timestamped sign-off receipt.
-      </p>
-    </div>
+  <div class="table-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th class="cyath-col">Cyath</th>
+          <th>Pastel</th>
+          <th>MarkUp.io</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Client account required</td>
+          <td class="cyath-col">No</td>
+          <td>No</td>
+          <td>Yes (for guests)</td>
+        </tr>
+        <tr>
+          <td>Screen size & browser recorded</td>
+          <td class="cyath-col">Automatic on every pin</td>
+          <td>Basic user agent</td>
+          <td>Basic user agent</td>
+        </tr>
+        <tr>
+          <td>Milestone sign-off approval</td>
+          <td class="cyath-col">Included (Timestamped receipt)</td>
+          <td>Not available</td>
+          <td>Not available</td>
+        </tr>
+        <tr>
+          <td>Free plan</td>
+          <td class="cyath-col">1 active project free forever</td>
+          <td>3-day trial only</td>
+          <td>1 project limit</td>
+        </tr>
+        <tr>
+          <td>Starting price</td>
+          <td class="cyath-col">$15 / month (Unlimited projects)</td>
+          <td>$25 / month (3 links max)</td>
+          <td>$49 / month per user</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
-<!-- ══════════ APPROVAL RECEIPT MODAL ══════════ -->
-<div class="receipt-modal" id="receiptModal">
-  <div class="receipt-dialog">
-    <div class="receipt-dialog-head">
-      <h3 class="receipt-dialog-h2">Milestone Approval Receipt</h3>
-      <button class="receipt-close" id="btnCloseReceipt">×</button>
+<div class="section-divider"></div>
+
+<!-- ══════════ PRICING ══════════ -->
+<section class="editorial-section" id="pricing">
+  <div style="max-width: 680px; margin-bottom: 40px;">
+    <h2 style="font-family:var(--font-display); font-size:clamp(32px, 3.8vw, 44px); font-weight:700; letter-spacing:-0.03em; margin-bottom:12px;">
+      Simple, predictable pricing.
+    </h2>
+    <p style="font-size:17px; color:var(--text-secondary);">
+      Start free on your current project. Upgrade only when you manage multiple active builds.
+    </p>
+  </div>
+
+  <div class="pricing-grid">
+    <!-- Free Tier -->
+    <div class="price-box">
+      <div class="pb-top">
+        <h3 class="pb-plan-title">Starter</h3>
+        <div class="pb-amount">$0</div>
+        <p class="pb-desc">For freelancers running one active build at a time.</p>
+      </div>
+      <ul class="pb-features">
+        <li>1 active staging project</li>
+        <li>Unlimited client feedback notes</li>
+        <li>Automatic browser and viewport capture</li>
+        <li>Milestone sign-off receipts</li>
+      </ul>
+      <a href="/dashboard" class="btn-secondary" style="justify-content:center;">Get Started Free</a>
     </div>
-    <div class="receipt-meta-list">
-      <div class="rm-row">
-        <span class="rm-label">Project:</span>
-        <span class="rm-val">Aura Atelier v2.4</span>
+
+    <!-- Pro Tier -->
+    <div class="price-box featured">
+      <div class="pb-top">
+        <h3 class="pb-plan-title">Pro Studio</h3>
+        <div class="pb-amount">$15 <span style="font-size:16px; font-weight:500; color:var(--text-muted);">/ month</span></div>
+        <p class="pb-desc">For agencies and studios managing multiple client deliverables.</p>
       </div>
-      <div class="rm-row">
-        <span class="rm-label">Approved By:</span>
-        <span class="rm-val">Jane Cooper (Client)</span>
-      </div>
-      <div class="rm-row">
-        <span class="rm-label">Status:</span>
-        <span class="rm-val" style="color:#22C55E;">12 of 12 Feedback Notes Completed</span>
-      </div>
-      <div class="rm-row">
-        <span class="rm-label">Signed Timestamp:</span>
-        <span class="rm-val">Nov 9, 2026 · 13:20 UTC</span>
-      </div>
-    </div>
-    <div class="receipt-hash-code">
-      Verification Hash: 844d88e92a4f6103b417c992d31f
+      <ul class="pb-features">
+        <li>Unlimited active staging projects</li>
+        <li>Unlimited client reviewers (no seat fees)</li>
+        <li>Custom studio domain & branding</li>
+        <li>Milestone sign-off export</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="/dashboard" class="btn-primary" style="justify-content:center;">Start Pro Trial</a>
     </div>
   </div>
-</div>
+</section>
+</main>
 
 <!-- ══════════ FOOTER ══════════ -->
-<footer class="loco-footer">
-  <div class="loco-footer-inner">
+<footer class="site-footer">
+  <div class="footer-inner">
     <div>
-      © 2026 Cyath®. Visual staging review & client milestone sign-off.
+      © 2026 Cyath. Visual staging review & client milestone approval.
     </div>
-    <div class="loco-footer-links">
-      <a href="#studio">Workspace</a>
-      <a href="#capabilities">Capabilities</a>
+    <div class="footer-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#compare">Compare</a>
+      <a href="#pricing">Pricing</a>
       <a href="/dashboard">Dashboard</a>
     </div>
   </div>
 </footer>
 
-<!-- ══════════════════════════════════════════════════════════════════
-   INTERACTIVE PIXEL-MOSAIC SHADER & WORKSPACE SCRIPT
-   ══════════════════════════════════════════════════════════════════ */
-<script>
-(function() {
-  /* ══════════ FLUID PIXEL-MOSAIC CANVAS (LOCOMOTIVE ENGINE) ══════════ */
-  var canvas = document.getElementById('mosaicCanvas');
-  var ctx = canvas.getContext('2d');
-  var width, height;
-  var cellSize = 44; // Size of each mosaic block
-  var cols, rows;
-  var mouseX = -1000, mouseY = -1000;
-  var targetMouseX = -1000, targetMouseY = -1000;
-
-  // Atmospheric Palette from Locomotive's Hero Image
-  var palette = [
-    { r: 76,  g: 130, b: 175 }, // Sky Blue
-    { r: 95,  g: 145, b: 188 }, // Mid Blue
-    { r: 120, g: 165, b: 200 }, // Light Atmospheric Blue
-    { r: 52,  g: 90,  b: 125 }, // Slate Navy
-    { r: 35,  g: 58,  b: 82  }, // Deep Marine
-    { r: 24,  g: 40,  b: 58  }, // Shadow Navy
-    { r: 42,  g: 50,  b: 46  }, // Muted Moss
-    { r: 28,  g: 34,  b: 36  }, // Charcoal Tint
-    { r: 16,  g: 22,  b: 28  }  // Dark Base
-  ];
-
-  var grid = [];
-
-  function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-    cols = Math.ceil(width / cellSize) + 1;
-    rows = Math.ceil(height / cellSize) + 1;
-
-    grid = [];
-    for (var y = 0; y < rows; y++) {
-      grid[y] = [];
-      for (var x = 0; x < cols; x++) {
-        // Spatial color clustering based on coordinates
-        var normX = x / cols;
-        var normY = y / rows;
-        var pIdx = 0;
-
-        if (normY < 0.35) {
-          pIdx = (x % 3 === 0) ? 0 : (x % 3 === 1) ? 1 : 2; // Sky upper
-        } else if (normY < 0.7) {
-          // Central figure silhouette
-          var distCenter = Math.hypot(normX - 0.45, normY - 0.45);
-          if (distCenter < 0.22) {
-            pIdx = (distCenter < 0.12) ? 8 : 6; // Dark figure
-          } else {
-            pIdx = ((x + y) % 2 === 0) ? 3 : 4;
-          }
-        } else {
-          // Lower darker base
-          pIdx = (x % 2 === 0) ? 5 : 7;
-        }
-
-        var col = palette[pIdx % palette.length];
-        grid[y][x] = {
-          baseR: col.r,
-          baseG: col.g,
-          baseB: col.b,
-          r: col.r,
-          g: col.g,
-          b: col.b,
-          offsetX: 0,
-          offsetY: 0,
-          scale: 1
-        };
-      }
-    }
-  }
-
-  window.addEventListener('resize', resize);
-  resize();
-
-  window.addEventListener('mousemove', function(e) {
-    targetMouseX = e.clientX;
-    targetMouseY = e.clientY;
-  });
-
-  // Animation Loop with Spring Lerp
-  function render() {
-    // Smooth mouse lerp
-    mouseX += (targetMouseX - mouseX) * 0.12;
-    mouseY += (targetMouseY - mouseY) * 0.12;
-
-    ctx.fillStyle = '#0D1015';
-    ctx.fillRect(0, 0, width, height);
-
-    var time = Date.now() * 0.001;
-
-    for (var y = 0; y < rows; y++) {
-      for (var x = 0; x < cols; x++) {
-        var cell = grid[y][x];
-        var posX = x * cellSize;
-        var posY = y * cellSize;
-
-        // Distance to mouse
-        var dx = (posX + cellSize / 2) - mouseX;
-        var dy = (posY + cellSize / 2) - mouseY;
-        var dist = Math.hypot(dx, dy);
-        var influence = Math.max(0, 1 - dist / 280);
-
-        // Subtle ambient wave oscillation
-        var wave = Math.sin(time * 1.5 + x * 0.2 + y * 0.3) * 6;
-
-        var curR = Math.min(255, cell.baseR + (influence * 45) + wave);
-        var curG = Math.min(255, cell.baseG + (influence * 40) + wave);
-        var curB = Math.min(255, cell.baseB + (influence * 50) + wave);
-
-        ctx.fillStyle = 'rgb(' + Math.round(curR) + ',' + Math.round(curG) + ',' + Math.round(curB) + ')';
-        
-        // Draw mosaic pixel block
-        var drawSize = cellSize + 0.5;
-        ctx.fillRect(posX, posY, drawSize, drawSize);
-      }
-    }
-
-    requestAnimationFrame(render);
-  }
-  requestAnimationFrame(render);
-
-  /* ══════════ STAGING STUDIO INTERACTIONS ══════════ */
-  var stagedCanvas = document.getElementById('stagedCanvas');
-  var btnDesktop = document.getElementById('btnVpDesktop');
-  var btnTablet = document.getElementById('btnVpTablet');
-  var btnMobile = document.getElementById('btnVpMobile');
-  var vpBtns = [btnDesktop, btnTablet, btnMobile];
-
-  function setVp(btn, width) {
-    vpBtns.forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    stagedCanvas.style.maxWidth = width;
-  }
-
-  btnDesktop.addEventListener('click', function() { setVp(btnDesktop, '100%'); });
-  btnTablet.addEventListener('click', function() { setVp(btnTablet, '768px'); });
-  btnMobile.addEventListener('click', function() { setVp(btnMobile, '390px'); });
-
-  /* Pin Popovers */
-  var popover = document.getElementById('notePopover');
-  var npTitle = document.getElementById('npTitle');
-  var npBadge = document.getElementById('npBadge');
-  var npBody = document.getElementById('npBody');
-  var npMeta = document.getElementById('npMeta');
-  var pin1 = document.getElementById('pin1');
-  var pin2 = document.getElementById('pin2');
-
-  function showPin(pin, title, status, body, meta) {
-    var rect = pin.getBoundingClientRect();
-    var parentRect = stagedCanvas.getBoundingClientRect();
-    npTitle.textContent = title;
-    npBadge.textContent = status.toUpperCase();
-    npBadge.className = 'np-badge ' + status;
-    npBody.textContent = body;
-    npMeta.textContent = meta;
-
-    var leftPos = rect.left - parentRect.left + 34;
-    var topPos = rect.top - parentRect.top - 10;
-    if (leftPos + 320 > parentRect.width) {
-      leftPos = leftPos - 350;
-    }
-    popover.style.left = leftPos + 'px';
-    popover.style.top = topPos + 'px';
-    popover.classList.add('active');
-  }
-
-  pin1.addEventListener('click', function(e) {
-    e.stopPropagation();
-    showPin(pin1, 'PIN #1', 'open', '"Can we change this button label to \'Reserve via Concierge\'? Also bump vertical padding to 16px."', '1440×900 · Chrome 131 · Jane Cooper');
-  });
-
-  pin2.addEventListener('click', function(e) {
-    e.stopPropagation();
-    showPin(pin2, 'PIN #2', 'resolved', '"Mobile hamburger menu tap target expanded to 44px."', '390×844 · iPhone 15 · Safari');
-  });
-
-  document.addEventListener('click', function(e) {
-    if (!popover.contains(e.target) && e.target !== pin1 && e.target !== pin2) {
-      popover.classList.remove('active');
-    }
-  });
-
-  /* Approval Modal */
-  var modal = document.getElementById('receiptModal');
-  var btnOpen = document.getElementById('btnOpenReceipt');
-  var btnClose = document.getElementById('btnCloseReceipt');
-
-  btnOpen.addEventListener('click', function() { modal.classList.add('active'); });
-  btnClose.addEventListener('click', function() { modal.classList.remove('active'); });
-  modal.addEventListener('click', function(e) { if (e.target === modal) modal.classList.remove('active'); });
-
-})();
-</script>
 </body>
 </html>
