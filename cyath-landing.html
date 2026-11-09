@@ -71,10 +71,14 @@ html[data-theme="day"] {
 }
 
 html {
-  scroll-behavior: smooth;
   background-color: var(--bg-page);
   color: var(--text-primary);
   transition: var(--transition-theme);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-instant="true"]) {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -319,38 +323,20 @@ html[data-theme="day"] .nav-cta-filled {
   line-height: 1.05;
   letter-spacing: -0.035em;
   margin-bottom: 22px;
-  transition: color 0.3s ease;
+  color: #FFFFFF;
+  mix-blend-mode: difference;
+  transition: opacity 0.3s ease;
 }
 
-/* Negative Inverted Text Effect (Inspired by analog photographic solarization / negative film) */
+/* Dynamic Negative Inversion: Inverts over underlying colors (Black over White, White over Black, Yellow over Blue) */
 html[data-theme="night"] .hero-title {
-  background: linear-gradient(180deg, 
-    #56CCF2 0%, 
-    #70C5F8 20%, 
-    #E0F2FE 45%, 
-    #FFFFFF 55%, 
-    #94A3B8 80%, 
-    #475569 95%,
-    #1E293B 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 28px rgba(86, 204, 242, 0.25));
+  color: #FFFFFF;
+  mix-blend-mode: difference;
 }
 
 html[data-theme="day"] .hero-title {
-  background: linear-gradient(180deg, 
-    #0B132B 0%, 
-    #1C2A4A 30%, 
-    #1E3A8A 55%, 
-    #0F172A 80%, 
-    #020617 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 16px rgba(15, 23, 42, 0.12));
+  color: #1C1A18;
+  mix-blend-mode: normal;
 }
 
 .hero-emphasis {
@@ -737,12 +723,29 @@ html[data-theme="day"] .btn-primary {
   top: 3px;
   bottom: 3px;
   left: 3px;
-  width: 60%;
+  width: 65%;
   background: 
-    radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.95) 1px, transparent 1px) 0 0 / 4px 4px,
-    linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.22) 65%, rgba(255, 255, 255, 0.0) 100%);
+    radial-gradient(circle at 3px 3px, #FFFFFF 1.4px, transparent 1.5px) 0 0 / 6px 6px,
+    radial-gradient(circle at 1px 1px, #FFFFFF 1.0px, transparent 1.1px) 3px 3px / 6px 6px,
+    linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 52%, rgba(255, 255, 255, 0.85) 75%, transparent 100%);
   image-rendering: pixelated;
-  animation: pixelProgressScan 3.2s infinite ease-in-out;
+  -webkit-mask-image: linear-gradient(90deg, 
+    #000000 0%, 
+    #000000 55%, 
+    rgba(0,0,0,0.85) 70%, 
+    rgba(0,0,0,0.45) 84%, 
+    rgba(0,0,0,0.12) 94%, 
+    transparent 100%
+  );
+  mask-image: linear-gradient(90deg, 
+    #000000 0%, 
+    #000000 55%, 
+    rgba(0,0,0,0.85) 70%, 
+    rgba(0,0,0,0.45) 84%, 
+    rgba(0,0,0,0.12) 94%, 
+    transparent 100%
+  );
+  animation: pixelProgressScan 3.4s infinite ease-in-out;
 }
 
 @keyframes pixelProgressScan {
@@ -761,8 +764,9 @@ html[data-theme="day"] .pixel-loading-bar-bg::before {
 }
 html[data-theme="day"] .pixel-loading-bar-bg::after {
   background: 
-    radial-gradient(circle at 2px 2px, rgba(28, 26, 24, 0.90) 1px, transparent 1px) 0 0 / 4px 4px,
-    linear-gradient(90deg, rgba(28, 26, 24, 0.28) 0%, rgba(28, 26, 24, 0.15) 65%, rgba(28, 26, 24, 0.0) 100%);
+    radial-gradient(circle at 3px 3px, #1C1A18 1.4px, transparent 1.5px) 0 0 / 6px 6px,
+    radial-gradient(circle at 1px 1px, #1C1A18 1.0px, transparent 1.1px) 3px 3px / 6px 6px,
+    linear-gradient(90deg, #1C1A18 0%, #1C1A18 52%, rgba(28, 26, 24, 0.85) 75%, transparent 100%);
 }
 
 .punch-left,
@@ -771,23 +775,28 @@ html[data-theme="day"] .pixel-loading-bar-bg::after {
   z-index: 2;
 }
 
+/* Negative Inverted Text Effect on Punchlist Row (Inverts over white loading bar & dark card) */
 .punch-left {
   display: flex;
   align-items: center;
   gap: 12px;
+  mix-blend-mode: difference;
+  color: #FFFFFF;
 }
 
 .punch-checkbox {
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  border: 1.5px solid var(--border-medium);
+  border: 1.5px solid #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   color: transparent;
   font-size: 12px;
   font-weight: bold;
+  background: transparent;
+  transition: all 0.25s ease;
 }
 
 .punch-item.resolved .punch-checkbox {
@@ -797,20 +806,21 @@ html[data-theme="day"] .pixel-loading-bar-bg::after {
 }
 
 html[data-theme="day"] .punch-item.resolved .punch-checkbox {
-  background: #1C1A18;
-  border-color: #1C1A18;
-  color: #FFFFFF;
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #000000;
 }
 
 .punch-item.resolved .punch-text {
   text-decoration: line-through;
-  color: var(--text-muted);
+  opacity: 0.55;
 }
 
 .punch-text {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #FFFFFF;
+  transition: all 0.25s ease;
 }
 
 .punch-tag {
@@ -1008,13 +1018,50 @@ html[data-theme="day"] .cyath-badge-pill {
 }
 
 html[data-theme="day"] .btn-free-tier {
-  background-color: #000000;
-  color: #FFFFFF;
-  border: 1px solid #000000;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 html[data-theme="day"] .btn-free-tier:hover {
-  background-color: #222222;
+  background-color: #F8F8F8;
+  border-color: rgba(0, 0, 0, 0.50);
+}
+
+/* Animated Marching Dashed Border for Paid Pricing Tier */
+.price-card.price-card-paid {
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.animated-dashed-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border-radius: 16px;
+  overflow: visible;
+  z-index: 1;
+}
+
+.animated-dashed-border rect {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.70);
+  stroke-width: 1.5;
+  stroke-dasharray: 8 6;
+  animation: marchingAnts 18s linear infinite;
+  vector-effect: non-scaling-stroke;
+}
+
+html[data-theme="day"] .animated-dashed-border rect {
+  stroke: rgba(0, 0, 0, 0.60);
+}
+
+@keyframes marchingAnts {
+  to {
+    stroke-dashoffset: -280;
+  }
 }
 
 /* Billing Frequency Switcher */
@@ -1345,7 +1392,7 @@ html[data-theme="day"] .btn-free-tier:hover {
     <div class="artifact-card">
       <div class="artifact-card-header">
         <span>PUNCHLIST // AURA-ATELIER</span>
-        <span>2 OF 3 RESOLVED</span>
+        <span id="punchCounter">2/3 RESOLVED</span>
       </div>
       <div class="punchlist-box" id="punchlistBox">
         <div class="punch-item resolved" onclick="togglePunchItem(this)">
@@ -1526,7 +1573,10 @@ html[data-theme="day"] .btn-free-tier:hover {
       <a href="#how-it-works" class="btn-free-tier">Start Free</a>
     </div>
 
-    <div class="price-card">
+    <div class="price-card price-card-paid">
+      <svg class="animated-dashed-border" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="16" />
+      </svg>
       <div>
         <div class="price-tier-name">STUDIO & AGENCY</div>
         <div class="price-figure" id="agencyPriceNum">$12</div>
@@ -1583,6 +1633,14 @@ html[data-theme="day"] .btn-free-tier:hover {
   const savedTheme = localStorage.getItem('cyath_theme');
   const urlParams = new URLSearchParams(window.location.search);
   const paramTheme = urlParams.get('theme');
+  if (urlParams.has('instant') || urlParams.has('scroll')) {
+    htmlRoot.setAttribute('data-instant', 'true');
+  }
+  const scrollTarget = urlParams.get('scroll');
+  if (scrollTarget) {
+    const el = document.getElementById(scrollTarget);
+    if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
 
   if (paramTheme === 'day' || (!paramTheme && savedTheme === 'day')) {
     currentTheme = 'day';
@@ -1622,12 +1680,17 @@ html[data-theme="day"] .btn-free-tier:hover {
     }
   }, { passive: true });
 
-  // Interactive Punchlist item toggle (diffuses pixel bar on resolve)
+  // Interactive Punchlist item toggle (diffuses pixel bar on resolve & updates counter)
   window.togglePunchItem = function(item) {
     item.classList.toggle('resolved');
     const tag = item.querySelector('.punch-tag');
     if (tag) {
       tag.textContent = item.classList.contains('resolved') ? 'Resolved' : 'In Progress';
+    }
+    const counter = document.getElementById('punchCounter');
+    if (counter) {
+      const isResolved = item.classList.contains('resolved');
+      counter.textContent = isResolved ? '3/3 RESOLVED' : '2/3 RESOLVED';
     }
   };
 
@@ -1817,6 +1880,12 @@ html[data-theme="day"] .btn-free-tier:hover {
   const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xA07855 : 0x484E5E, roughness: 0.32, metalness: 0.25 });
   const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x726B62 : 0x4B5262, roughness: 0.45, metalness: 0.20 });
 
+  // Bright architectural steel materials for high contrast silhouettes against dark background
+  const tableLegMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x3E424C : 0x8E9CB2, roughness: 0.25, metalness: 0.90 });
+  const footGlideMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x1E2026 : 0xE2E8F0, roughness: 0.12, metalness: 0.98 });
+  const chairBaseMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x3A3E48 : 0x94A3B8, roughness: 0.22, metalness: 0.92 });
+  const casterWheelMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x181A20 : 0xE2E8F0, roughness: 0.15, metalness: 0.95 });
+
   // 1. Studio Window (Positioned on the Right Wall)
   const windowGroup = new THREE.Group();
   windowGroup.position.set(2.4, 1.85, -2.2);
@@ -1848,11 +1917,12 @@ html[data-theme="day"] .btn-free-tier:hover {
   windowGroup.add(glass);
   roomGroup.add(windowGroup);
 
-  // 2. Architectural Studio Chair (Back Facing Towards the Viewer)
+  // 2. Architectural Studio Chair (Facing Towards Laptop, Level Feet with Table, Generous Distance)
   const chairGroup = new THREE.Group();
-  chairGroup.position.set(2.20, -0.42, 1.45);
-  chairGroup.rotation.y = 2.35; // Back of chair turned towards camera / viewer
-  chairGroup.rotation.x = -0.06;
+  chairGroup.position.set(2.32, -0.48, 1.62);
+  chairGroup.scale.set(1.22, 1.22, 1.22);
+  chairGroup.rotation.y = -2.42; // Turned inward facing towards the laptop!
+  chairGroup.rotation.x = -0.04;
 
   const seat = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.85), fabricMat);
   chairGroup.add(seat);
@@ -1862,8 +1932,8 @@ html[data-theme="day"] .btn-free-tier:hover {
   backrest.rotation.x = -0.10;
   chairGroup.add(backrest);
 
-  // Architectural spine support on the back of the chair (faces viewer)
-  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.20, 0.06), darkMetalMat);
+  // Architectural spine support on the back of the chair
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.20, 0.06), chairBaseMat);
   spine.position.set(0, 0.60, -0.44);
   chairGroup.add(spine);
 
@@ -1878,7 +1948,7 @@ html[data-theme="day"] .btn-free-tier:hover {
   function makeArmrest(side) {
     const arm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 0.58), metalMat);
     arm.position.set(side * 0.44, 0.26, -0.05);
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.26), darkMetalMat);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.26), chairBaseMat);
     post.position.set(side * 0.44, 0.13, 0);
     chairGroup.add(arm);
     chairGroup.add(post);
@@ -1886,16 +1956,24 @@ html[data-theme="day"] .btn-free-tier:hover {
   makeArmrest(1);
   makeArmrest(-1);
 
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.45), darkMetalMat);
-  stem.position.set(0, -0.24, 0);
+  // Pneumatic stem extending down to caster base level
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.90), chairBaseMat);
+  stem.position.set(0, -0.48, 0);
   chairGroup.add(stem);
 
+  // 5-Star Caster Base sitting exactly level with the table feet
   for (let a = 0; a < 5; a++) {
     const ang = (a / 5) * Math.PI * 2;
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.045, 0.055), darkMetalMat);
-    leg.position.set(Math.cos(ang) * 0.22, -0.44, Math.sin(ang) * 0.22);
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.045, 0.055), chairBaseMat);
+    leg.position.set(Math.cos(ang) * 0.23, -0.93, Math.sin(ang) * 0.23);
     leg.rotation.y = -ang;
     chairGroup.add(leg);
+
+    // High-contrast chrome caster wheels that pop off dark background
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.04, 8), casterWheelMat);
+    wheel.rotation.z = Math.PI / 2;
+    wheel.position.set(Math.cos(ang) * 0.46, -0.955, Math.sin(ang) * 0.46);
+    chairGroup.add(wheel);
   }
   roomGroup.add(chairGroup);
 
@@ -1908,10 +1986,34 @@ html[data-theme="day"] .btn-free-tier:hover {
   deskGroup.add(deskTop);
 
   function makeDeskLeg(x, z) {
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.08), darkMetalMat);
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.08), tableLegMat);
     leg.position.set(x, -0.62, z);
     deskGroup.add(leg);
+
+    // Polished foot glides that prevent legs blending into dark background
+    const glide = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.05, 0.10), footGlideMat);
+    glide.position.set(x, -1.17, z);
+    deskGroup.add(glide);
   }
+  makeDeskLeg(-deskW/2 + 0.18, -deskD/2 + 0.18);
+  makeDeskLeg(-deskW/2 + 0.18, deskD/2 - 0.18);
+  makeDeskLeg(deskW/2 - 0.18, -deskD/2 + 0.18);
+  makeDeskLeg(deskW/2 - 0.18, deskD/2 - 0.18);
+  roomGroup.add(deskGroup);
+
+  // Volumetric blue atmospheric beam from laptop screen extending behind heading
+  const beamGeo = new THREE.PlaneGeometry(4.2, 2.6);
+  const beamMat = new THREE.MeshBasicMaterial({
+    color: 0x2563EB,
+    transparent: true,
+    opacity: isDay ? 0.05 : 0.22,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const ambientBeam = new THREE.Mesh(beamGeo, beamMat);
+  ambientBeam.position.set(-0.55, 0.35, 0.15);
+  ambientBeam.rotation.y = 0.22;
+  roomGroup.add(ambientBeam);
   makeDeskLeg(-deskW/2 + 0.18, -deskD/2 + 0.18);
   makeDeskLeg(-deskW/2 + 0.18, deskD/2 - 0.18);
   makeDeskLeg(deskW/2 - 0.18, -deskD/2 + 0.18);
@@ -2080,24 +2182,25 @@ html[data-theme="day"] .btn-free-tier:hover {
   const steamParticles = new THREE.Points(steamGeo, new THREE.PointsMaterial({ color: isDay ? 0x92400E : 0xD97706, size: 0.14, transparent: true, opacity: 0.85 }));
   roomGroup.add(steamParticles);
 
-  // 6. Potted Succulent Plant (Positioned on Right Side of Desk between Laptop and Foreground Chair)
+  // 6. Potted Succulent Plant (Positioned on Far Right of Desk - 100% Free of Laptop & Chair!)
   const plantGroup = new THREE.Group();
-  plantGroup.position.set(1.70, -0.30, 0.20);
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.13, 0.32, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
+  plantGroup.position.set(2.26, -0.405, 0.28);
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.12, 0.28, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
+  pot.position.set(0, 0.14, 0);
   plantGroup.add(pot);
 
   const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x22C55E, roughness: 0.28, metalness: 0.2 });
   for (let i = 0; i < 5; i++) {
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.34, 5), plantMat);
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.32, 5), plantMat);
     const ang = (i / 5) * Math.PI * 2;
-    leaf.position.set(Math.cos(ang) * 0.09, 0.16 + i * 0.02, Math.sin(ang) * 0.09);
+    leaf.position.set(Math.cos(ang) * 0.08, 0.28 + i * 0.02, Math.sin(ang) * 0.08);
     leaf.rotation.x = 0.26 * Math.sin(ang);
     leaf.rotation.z = -0.26 * Math.cos(ang);
     plantGroup.add(leaf);
   }
   roomGroup.add(plantGroup);
 
-  // 7. Studio Lighting (Directional Key + Rim + Ambient)
+  // 7. Studio Lighting (Directional Key + Rim + Ambient + Floor Contact Light)
   const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x4B5563, isDay ? 2.2 : 2.6);
   scene.add(ambLight);
 
@@ -2112,6 +2215,11 @@ html[data-theme="day"] .btn-free-tier:hover {
   const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 2.2, 4.0);
   screenLight.position.set(1.25, 0.1, 0.75);
   scene.add(screenLight);
+
+  // Dedicated Floor Contact Light to catch table legs and chair feet with specular brilliance
+  const floorRimLight = new THREE.DirectionalLight(isDay ? 0x8A7A68 : 0x60A5FA, isDay ? 0.8 : 2.4);
+  floorRimLight.position.set(1.5, -2.8, 3.5);
+  scene.add(floorRimLight);
 
   function update3DTheme(theme) {
     drawLogoScreen(theme);
@@ -2129,23 +2237,37 @@ html[data-theme="day"] .btn-free-tier:hover {
       ambLight.intensity = 2.0;
       dirLight.color.setHex(0xFFFBEB);
       dirLight.intensity = 2.8;
+      floorRimLight.color.setHex(0x8A7A68);
+      floorRimLight.intensity = 0.8;
       glassMat.color.setHex(0xFAF7F0);
       woodMat.color.setHex(0x8C6847);
       frameMat.color.setHex(0x685D52);
       metalMat.color.setHex(0x6E7482);
       darkMetalMat.color.setHex(0x4B505C);
       fabricMat.color.setHex(0x48423B);
+      tableLegMat.color.setHex(0x3E424C);
+      footGlideMat.color.setHex(0x1E2026);
+      chairBaseMat.color.setHex(0x3A3E48);
+      casterWheelMat.color.setHex(0x181A20);
+      if (typeof ambientBeam !== 'undefined' && ambientBeam.material) ambientBeam.material.opacity = 0.05;
     } else {
       ambLight.color.setHex(0x4B5563);
       ambLight.intensity = 2.6;
       dirLight.color.setHex(0xF8FAFC);
       dirLight.intensity = 3.4;
+      floorRimLight.color.setHex(0x60A5FA);
+      floorRimLight.intensity = 2.4;
       glassMat.color.setHex(0x222735);
       woodMat.color.setHex(0x484E5E);
       frameMat.color.setHex(0x545B6C);
       metalMat.color.setHex(0x8C96A8);
       darkMetalMat.color.setHex(0x363B48);
       fabricMat.color.setHex(0x4B5262);
+      tableLegMat.color.setHex(0x8E9CB2);
+      footGlideMat.color.setHex(0xE2E8F0);
+      chairBaseMat.color.setHex(0x94A3B8);
+      casterWheelMat.color.setHex(0xE2E8F0);
+      if (typeof ambientBeam !== 'undefined' && ambientBeam.material) ambientBeam.material.opacity = 0.22;
     }
   }
 
