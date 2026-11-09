@@ -1417,14 +1417,10 @@ html.lenis body {
 /* ══════════════════════════════════════════════════════════════════
    OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
    ══════════════════════════════════════════════════════════════════ */
-@media (hover: hover) and (pointer: fine) {
-  html.custom-cursor-active,
-  html.custom-cursor-active body,
-  html.custom-cursor-active a,
-  html.custom-cursor-active button,
-  html.custom-cursor-active input {
-    cursor: none !important;
-  }
+html.custom-cursor-active,
+html.custom-cursor-active body,
+html.custom-cursor-active * {
+  cursor: none !important;
 }
 
 .loupe-dot {
@@ -2021,6 +2017,26 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
     <span>© 2026 Cyath. All rights reserved.</span>
   </div>
 </footer>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
+     ══════════════════════════════════════════════════════════════════ -->
+<div id="loupeCursor" class="loupe-cursor" aria-hidden="true">
+  <div class="loupe-ring">
+    <span class="loupe-tick tick-n"></span>
+    <span class="loupe-tick tick-s"></span>
+    <span class="loupe-tick tick-w"></span>
+    <span class="loupe-tick tick-e"></span>
+    <span class="crop-mark crop-tl"></span>
+    <span class="crop-mark crop-tr"></span>
+    <span class="crop-mark crop-bl"></span>
+    <span class="crop-mark crop-br"></span>
+  </div>
+  <div class="loupe-badge">
+    <span id="loupeTag">8× LOUPE</span>
+  </div>
+</div>
+<div id="loupeDot" class="loupe-dot" aria-hidden="true"></div>
 
 <!-- ══════════════════════════════════════════════════════════════════
      REAL-TIME 3D GPU HALFTONE & BAYER DITHER SHADER ENGINE
@@ -2905,10 +2921,6 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
   // OPTION 3: PRINTMAKER'S HALFTONE LOUPE (Custom Optical Reticle Cursor)
   // ══════════════════════════════════════════════════════════════════
   (function initPrintmakerLoupe() {
-    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
-
-    document.documentElement.classList.add('custom-cursor-active');
-
     const loupeEl = document.getElementById('loupeCursor');
     const dotEl = document.getElementById('loupeDot');
     const tagEl = document.getElementById('loupeTag');
@@ -2918,7 +2930,20 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
     let loupeX = -100, loupeY = -100;
     let isVisible = false;
 
+    function activateCursor() {
+      if (!document.documentElement.classList.contains('custom-cursor-active')) {
+        document.documentElement.classList.add('custom-cursor-active');
+      }
+      if (!document.body.classList.contains('custom-cursor-active')) {
+        document.body.classList.add('custom-cursor-active');
+      }
+    }
+
+    // Activate immediately on desktop / mouse environments
+    activateCursor();
+
     window.addEventListener('mousemove', (e) => {
+      activateCursor();
       mouseX = e.clientX;
       mouseY = e.clientY;
       if (!isVisible) {
@@ -2929,7 +2954,7 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
         dotEl.classList.add('active');
       }
       dotEl.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseleave', () => {
       isVisible = false;
@@ -2994,23 +3019,5 @@ html[data-theme="day"] .loupe-cursor.hovering-link .loupe-badge span {
   })();
 })();
 </script>
-
-<!-- Printmaker's Loupe Cursor DOM Elements -->
-<div id="loupeCursor" class="loupe-cursor" aria-hidden="true">
-  <div class="loupe-ring">
-    <span class="loupe-tick tick-n"></span>
-    <span class="loupe-tick tick-s"></span>
-    <span class="loupe-tick tick-w"></span>
-    <span class="loupe-tick tick-e"></span>
-    <span class="crop-mark crop-tl"></span>
-    <span class="crop-mark crop-tr"></span>
-    <span class="crop-mark crop-bl"></span>
-    <span class="crop-mark crop-br"></span>
-  </div>
-  <div class="loupe-badge">
-    <span id="loupeTag">8× LOUPE</span>
-  </div>
-</div>
-<div id="loupeDot" class="loupe-dot" aria-hidden="true"></div>
 </body>
 </html>

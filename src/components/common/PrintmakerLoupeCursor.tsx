@@ -8,11 +8,6 @@ export function PrintmakerLoupeCursor() {
   const tagRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // Only enable on desktop pointer devices with fine cursor
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
-
-    document.documentElement.classList.add("custom-cursor-active");
-
     const loupeEl = loupeRef.current;
     const dotEl = dotRef.current;
     const tagEl = tagRef.current;
@@ -25,7 +20,19 @@ export function PrintmakerLoupeCursor() {
     let isVisible = false;
     let animId: number;
 
+    const activateCursor = () => {
+      if (!document.documentElement.classList.contains("custom-cursor-active")) {
+        document.documentElement.classList.add("custom-cursor-active");
+      }
+      if (!document.body.classList.contains("custom-cursor-active")) {
+        document.body.classList.add("custom-cursor-active");
+      }
+    };
+
+    activateCursor();
+
     const onMouseMove = (e: MouseEvent) => {
+      activateCursor();
       mouseX = e.clientX;
       mouseY = e.clientY;
       if (!isVisible) {
@@ -99,6 +106,7 @@ export function PrintmakerLoupeCursor() {
 
     return () => {
       document.documentElement.classList.remove("custom-cursor-active");
+      document.body.classList.remove("custom-cursor-active");
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("mouseenter", onMouseEnter);
@@ -130,3 +138,4 @@ export function PrintmakerLoupeCursor() {
     </>
   );
 }
+

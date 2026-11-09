@@ -72,14 +72,10 @@ body {
 /* ══════════════════════════════════════════════════════════════════
    PRINTMAKER'S HALFTONE LOUPE CURSOR (Next.js Global)
    ══════════════════════════════════════════════════════════════════ */
-@media (hover: hover) and (pointer: fine) {
-  html.custom-cursor-active,
-  html.custom-cursor-active body,
-  html.custom-cursor-active a,
-  html.custom-cursor-active button,
-  html.custom-cursor-active input {
-    cursor: none !important;
-  }
+html.custom-cursor-active,
+html.custom-cursor-active body,
+html.custom-cursor-active * {
+  cursor: none !important;
 }
 
 .loupe-dot {
