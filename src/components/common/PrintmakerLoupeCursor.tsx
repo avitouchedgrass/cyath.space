@@ -80,7 +80,7 @@ export function PrintmakerLoupeCursor() {
       fluidEl.classList.remove("clicking");
     };
 
-    const interactiveSelector = "a, button, input, [role='button'], .scroll-stamp-badge";
+    const interactiveSelector = "a, button, input, [role='button']";
     const onMouseOver = (e: MouseEvent) => {
       if ((e.target as HTMLElement)?.closest(".pin-demo-box")) {
         isHoveringInteractive = false;
@@ -108,8 +108,8 @@ export function PrintmakerLoupeCursor() {
 
     const updateCursor = () => {
       if (isVisible && !isOverDemo) {
-        beadX += (mouseX - beadX) * 0.20;
-        beadY += (mouseY - beadY) * 0.20;
+        beadX += (mouseX - beadX) * 0.38;
+        beadY += (mouseY - beadY) * 0.38;
 
         const vx = beadX - prevBeadX;
         const vy = beadY - prevBeadY;

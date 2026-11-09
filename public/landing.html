@@ -1423,11 +1423,11 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
-/* Fluid Invert Bead Positioning Anchor (Hidden offscreen by default — no top-left dot) */
+/* Fluid Invert Bead Positioning Anchor (Positioned at 0,0 for exact mouse alignment) */
 .fluid-cursor {
   position: fixed;
-  top: -100px;
-  left: -100px;
+  top: 0;
+  left: 0;
   width: 0;
   height: 0;
   pointer-events: none;
@@ -1478,61 +1478,6 @@ html.over-pin-demo .fluid-cursor,
 /* Click Compression Spring */
 .fluid-cursor.clicking .fluid-bead {
   transform: translate(-50%, -50%) scale(0.72) !important;
-}
-
-/* Extrafazant-Style Interactive Rotating Scroll Badge */
-.scroll-stamp-badge {
-  position: fixed;
-  right: 32px;
-  bottom: 32px;
-  width: 104px;
-  height: 104px;
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-  user-select: none;
-  touch-action: manipulation;
-}
-
-.scroll-stamp-badge:hover {
-  transform: scale(1.08);
-}
-
-.scroll-stamp-badge:active {
-  transform: scale(0.94);
-}
-
-.scroll-stamp-inner {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
-}
-
-.scroll-stamp-img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-  border-radius: 50%;
-  will-change: transform;
-}
-
-@media (max-width: 768px) {
-  .scroll-stamp-badge {
-    right: 18px;
-    bottom: 18px;
-    width: 80px;
-    height: 80px;
-  }
 }
 </style>
 </head>
@@ -1932,13 +1877,6 @@ html.over-pin-demo .fluid-cursor,
     <a href="#pricing" class="footer-link">Pricing</a>
     <span>© 2026 Cyath. All rights reserved.</span>
   </div>
-
-<!-- Extrafazant-Style Interactive Rotating Scroll Badge -->
-<a href="#howItWorks" id="scrollBadge" class="scroll-stamp-badge" aria-label="Explore the suite — Scroll down">
-  <div class="scroll-stamp-inner">
-    <img src="/scroll-badge.svg" alt="THIS IS HOW WE SCROLL" class="scroll-stamp-img" width="104" height="104" draggable="false">
-  </div>
-</a>
 
 </footer>
 
@@ -2909,7 +2847,7 @@ html.over-pin-demo .fluid-cursor,
       fluidEl.classList.remove('clicking');
     });
 
-    const interactiveSelector = 'a, button, input, .nav-brand-pill, .billing-pill, .comp-table tbody tr, .feature-card, .punch-item, .faq-item, .cert-box, .scroll-stamp-badge';
+    const interactiveSelector = 'a, button, input, .nav-brand-pill, .billing-pill, .comp-table tbody tr, .feature-card, .punch-item, .faq-item, .cert-box';
     document.addEventListener('mouseover', (e) => {
       if (e.target.closest('.pin-demo-box')) {
         isHoveringInteractive = false;
@@ -2930,9 +2868,9 @@ html.over-pin-demo .fluid-cursor,
 
     function updateCursor() {
       if (isVisible && !isOverDemo) {
-        // Fluid spring physics
-        beadX += (mouseX - beadX) * 0.20;
-        beadY += (mouseY - beadY) * 0.20;
+        // Snappy, highly responsive fluid spring physics
+        beadX += (mouseX - beadX) * 0.38;
+        beadY += (mouseY - beadY) * 0.38;
 
         // Velocity & momentum stretch
         const vx = beadX - prevBeadX;
@@ -2958,45 +2896,6 @@ html.over-pin-demo .fluid-cursor,
     requestAnimationFrame(updateCursor);
   })();
 })();
-
-  // ══════════════════════════════════════════════════════════════════
-  // EXTRAFAZANT ROTATING SCROLL STAMP BADGE CONTROLLER
-  // ══════════════════════════════════════════════════════════════════
-  (function initScrollBadge() {
-    const badge = document.getElementById('scrollBadge');
-    const img = document.querySelector('.scroll-stamp-img');
-    if (!badge || !img) return;
-
-    let angle = 0;
-    let extraVelocity = 0;
-
-    if (window.lenis) {
-      window.lenis.on('scroll', (e) => {
-        extraVelocity = Math.abs(e.velocity || 0) * 1.8;
-      });
-    }
-
-    badge.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = document.querySelector('#howItWorks') || document.querySelector('.section-split');
-      if (target) {
-        if (window.lenis) {
-          window.lenis.scrollTo(target, { duration: 1.2 });
-        } else {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    });
-
-    function renderBadgeSpin() {
-      angle = (angle + 0.35 + extraVelocity) % 360;
-      extraVelocity *= 0.92;
-      img.style.transform = `rotate(${angle}deg)`;
-      requestAnimationFrame(renderBadgeSpin);
-    }
-    requestAnimationFrame(renderBadgeSpin);
-  })();
-
 </script>
 </body>
 </html>
