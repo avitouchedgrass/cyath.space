@@ -219,7 +219,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
           // Full dither dots on left, dissolving smoothly into solid background before the card
           float fade = 1.0;
           if (uIsDesktop > 0.5) {
-            fade = 1.0 - smoothstep(0.34, 0.48, vUv.x);
+            fade = 1.0 - smoothstep(0.30, 0.44, vUv.x);
           } else {
             fade = 1.0 - smoothstep(0.42, 0.58, 1.0 - vUv.y);
           }

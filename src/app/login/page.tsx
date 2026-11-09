@@ -189,8 +189,8 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* 3. Main Body: Card placed gracefully in the clean solid-background zone, slightly pushed to the left */}
-      <main className="relative z-10 flex-1 flex items-center justify-center lg:justify-end px-6 sm:px-12 lg:pr-44 xl:pr-56 py-8 pointer-events-none">
+      {/* 3. Main Body: Card placed gracefully in the clean solid-background zone, pushed more to the left */}
+      <main className="relative z-10 flex-1 flex items-center justify-center lg:justify-end px-6 sm:px-12 lg:pr-60 xl:pr-72 py-8 pointer-events-none">
         <div
           className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto ${
             isDay
