@@ -2179,43 +2179,42 @@ html.over-pin-demo .fluid-cursor,
         vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
         vec4 tex = texture2D(tDiffuse, quantizedUv);
 
-        // Check if sample is empty background
-        float bgDist = length(tex.rgb - uBgColor);
-        if (tex.a < 0.05 || bgDist < 0.02) {
+        // Empty space: transparent so background PatternWaves canvas shows through
+        if (tex.a < 0.1) {
           gl_FragColor = vec4(0.0);
           return;
         }
 
-        // Perceptual luminance
+        // 3D Model is present (tex.a >= 0.1): solid physical occlusion over background waves
         float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
         float th = thresholdAt(cellCoord);
 
         if (uInvert > 0.5) {
-          // ☼ DAY MODE: Warm archival vellum (#F5F3EC) + charcoal ink halftone dots
+          // ☼ DAY MODE: Warm archival vellum (#F5F3EC) solid backing + charcoal ink halftone dots
           float inkDensity = clamp((0.94 - lum) / 0.85, 0.0, 1.0);
           if (inkDensity <= 0.03) {
-            gl_FragColor = vec4(0.0);
+            gl_FragColor = vec4(uBgColor, 1.0);
           } else {
             bool hasInk = (inkDensity >= th);
             if (hasInk) {
               vec3 inkColor = mix(uFgColor, tex.rgb * 0.5, 0.25);
               gl_FragColor = vec4(inkColor, 1.0);
             } else {
-              gl_FragColor = vec4(0.0);
+              gl_FragColor = vec4(uBgColor, 1.0);
             }
           }
         } else {
-          // ☽ NIGHT MODE: Pure black background (#000000) + liquid chrome halftone dots
-          float lightDensity = clamp(lum * 1.18, 0.0, 1.0);
+          // ☽ NIGHT MODE: Pure black (#000000) solid backing + liquid chrome halftone dots
+          float lightDensity = clamp(lum * 1.05, 0.0, 1.0);
           if (lightDensity <= 0.03) {
-            gl_FragColor = vec4(0.0);
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
           } else {
             bool lit = lightDensity >= th;
             if (lit) {
-              vec3 dotColor = mix(uFgColor, tex.rgb * 1.25, 0.38);
+              vec3 dotColor = mix(uFgColor, tex.rgb * 1.15, 0.35);
               gl_FragColor = vec4(dotColor, 1.0);
             } else {
-              gl_FragColor = vec4(0.0);
+              gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
             }
           }
         }
@@ -2249,7 +2248,8 @@ html.over-pin-demo .fluid-cursor,
   // High-specular, low-roughness materials (creates glistening metallic liquid halftone dots)
   const metalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x8A92A2 : 0x8C96A8, roughness: 0.18, metalness: 0.85 });
   const darkMetalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x6E7482 : 0x363B48, roughness: 0.22, metalness: 0.90 });
-  const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xA07855 : 0x484E5E, roughness: 0.32, metalness: 0.25 });
+  // Matte architectural workstation surface (toned down in night mode so it does not compete with CTA button)
+  const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xA07855 : 0x14161C, roughness: isDay ? 0.45 : 0.85, metalness: isDay ? 0.15 : 0.05 });
   const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x726B62 : 0x4B5262, roughness: 0.45, metalness: 0.20 });
 
   // Bright architectural steel materials for high contrast silhouettes against dark background
@@ -2283,16 +2283,7 @@ html.over-pin-demo .fluid-cursor,
   makeBar(frameT * 0.8, frameH, 0.08, frameW/6, 0);
   makeBar(frameW, frameT * 0.8, 0.08, 0, 0);
 
-  // Window Panes Glass (Atmospheric backdrop softly faded into background)
-  const glassGeo = new THREE.PlaneGeometry(frameW - 0.08, frameH - 0.08);
-  const glassMat = new THREE.MeshBasicMaterial({
-    color: isDay ? 0xFAF7F0 : 0x08090D,
-    transparent: true,
-    opacity: isDay ? 0.6 : 0.35
-  });
-  const glass = new THREE.Mesh(glassGeo, glassMat);
-  glass.position.set(0, 0, -0.02);
-  windowGroup.add(glass);
+  // Open architectural window panes (allows background waves to flow seamlessly through the window)
   roomGroup.add(windowGroup);
 
   // 2. Drafting Desk (Clean solid architectural surfaces)
@@ -2500,23 +2491,23 @@ html.over-pin-demo .fluid-cursor,
   roomGroup.add(plantGroup);
 
   // 7. Studio Lighting (Directional Key + Rim + Ambient + Floor Contact Light)
-  const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x4B5563, isDay ? 2.2 : 2.6);
+  const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x333742, isDay ? 1.8 : 1.3);
   scene.add(ambLight);
 
-  const dirLight = new THREE.DirectionalLight(isDay ? 0xFFFBEB : 0xF8FAFC, isDay ? 3.0 : 3.4);
+  const dirLight = new THREE.DirectionalLight(isDay ? 0xFFFBEB : 0xF1F5F9, isDay ? 2.5 : 1.8);
   dirLight.position.set(4.0, 5.5, 4.5);
   scene.add(dirLight);
 
-  const rimLight = new THREE.DirectionalLight(0x38BDF8, isDay ? 1.2 : 2.0);
+  const rimLight = new THREE.DirectionalLight(0x38BDF8, isDay ? 1.0 : 1.5);
   rimLight.position.set(-3.5, 3.0, -2.0);
   scene.add(rimLight);
 
-  const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 2.2, 4.0);
+  const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 0.8 : 1.2, 4.0);
   screenLight.position.set(1.25, 0.1, 0.75);
   scene.add(screenLight);
 
   // Dedicated Floor Contact Light to catch table legs and chair feet with specular brilliance
-  const floorRimLight = new THREE.DirectionalLight(isDay ? 0x8A7A68 : 0x60A5FA, isDay ? 0.8 : 2.4);
+  const floorRimLight = new THREE.DirectionalLight(isDay ? 0x8A7A68 : 0x60A5FA, isDay ? 0.8 : 1.8);
   floorRimLight.position.set(1.5, -2.8, 3.5);
   scene.add(floorRimLight);
 
@@ -2533,14 +2524,14 @@ html.over-pin-demo .fluid-cursor,
 
     if (isD) {
       ambLight.color.setHex(0xE8E4D8);
-      ambLight.intensity = 2.0;
+      ambLight.intensity = 1.8;
       dirLight.color.setHex(0xFFFBEB);
-      dirLight.intensity = 2.8;
+      dirLight.intensity = 2.5;
       floorRimLight.color.setHex(0x8A7A68);
       floorRimLight.intensity = 0.8;
-      glassMat.color.setHex(0xFAF7F0);
-      glassMat.opacity = 0.6;
       woodMat.color.setHex(0x8C6847);
+      woodMat.roughness = 0.45;
+      woodMat.metalness = 0.15;
       frameMat.color.setHex(0xC5BDB0);
       metalMat.color.setHex(0x6E7482);
       darkMetalMat.color.setHex(0x4B505C);
@@ -2548,15 +2539,15 @@ html.over-pin-demo .fluid-cursor,
       tableLegMat.color.setHex(0x3E424C);
       footGlideMat.color.setHex(0x1E2026);
     } else {
-      ambLight.color.setHex(0x4B5563);
-      ambLight.intensity = 2.6;
-      dirLight.color.setHex(0xF8FAFC);
-      dirLight.intensity = 3.4;
+      ambLight.color.setHex(0x333742);
+      ambLight.intensity = 1.3;
+      dirLight.color.setHex(0xF1F5F9);
+      dirLight.intensity = 1.8;
       floorRimLight.color.setHex(0x60A5FA);
-      floorRimLight.intensity = 2.4;
-      glassMat.color.setHex(0x08090D);
-      glassMat.opacity = 0.35;
-      woodMat.color.setHex(0x484E5E);
+      floorRimLight.intensity = 1.8;
+      woodMat.color.setHex(0x14161C);
+      woodMat.roughness = 0.85;
+      woodMat.metalness = 0.05;
       frameMat.color.setHex(0x14161E);
       metalMat.color.setHex(0x8C96A8);
       darkMetalMat.color.setHex(0x363B48);
