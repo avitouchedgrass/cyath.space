@@ -20,9 +20,10 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <script src="/vendor/three.min.js"></script>
 <script src="/vendor/lenis.min.js"></script>
+<script src="/vendor/pattern-waves.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   ARCHITECTURAL TOKENS: TRUE CARBON GRAPHITE & ARCHIVAL VELLUM
+   ARCHITECTURAL TOKENS: PURE PITCH BLACK & ARCHIVAL VELLUM
    ══════════════════════════════════════════════════════════════════ */
 :root {
   --font-serif: 'Oranienbaum', Georgia, serif;
@@ -31,25 +32,25 @@
   --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
-/* ☽ NIGHT MODE (TRUE NEUTRAL MATTE GRAPHITE #1b1b1b) */
+/* ☽ NIGHT MODE (PURE OBSIDIAN BLACK #000000) */
 html[data-theme="night"] {
-  --bg-page: #1b1b1b;
-  --bg-surface: #242424;
-  --bg-surface-elevated: #2d2d2d;
+  --bg-page: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-surface-elevated: #141414;
   
   --bg-pill: rgba(255, 255, 255, 0.08);
   --bg-pill-hover: rgba(255, 255, 255, 0.14);
   
-  --border-subtle: rgba(255, 255, 255, 0.11);
-  --border-medium: rgba(255, 255, 255, 0.22);
-  --border-pill: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.18);
+  --border-pill: rgba(255, 255, 255, 0.14);
   
   --text-primary: #FFFFFF;
   --text-secondary: #D1D5DB;
   --text-muted: #8E929B;
   
-  --card-bg: #222222;
-  --card-border: rgba(255, 255, 255, 0.10);
+  --card-bg: #0b0b0b;
+  --card-border: rgba(255, 255, 255, 0.08);
 }
 
 /* ☼ DAY MODE (CLEAN WARM ARCHITECTURAL VELLUM) */
@@ -163,27 +164,25 @@ html[data-theme="day"] .site-nav.scrolled {
   pointer-events: auto;
 }
 
-/* Left Brand Pill */
+/* Left Brand Logo (Clean, No Pill) */
 .nav-brand-pill {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 18px 8px 12px;
-  background: var(--bg-pill);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  border: 1px solid var(--border-pill);
-  border-radius: 9999px;
+  gap: 10px;
+  padding: 4px 0;
+  background: transparent;
   text-decoration: none;
   color: var(--text-primary);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
-  transition: all 0.25s ease;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  transition: opacity 0.2s ease;
 }
 
 .nav-brand-pill:hover {
-  background: var(--bg-pill-hover);
-  border-color: var(--border-medium);
-  transform: translateY(-1px);
+  background: transparent;
+  opacity: 0.82;
+  transform: none;
 }
 
 .brand-tesseract {
@@ -241,11 +240,10 @@ html[data-theme="day"] .site-nav.scrolled {
 .nav-theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 13px;
-  font-size: 12.5px;
-  font-weight: 600;
-  font-family: var(--font-mono);
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   color: var(--text-secondary);
   background: transparent;
   border: none;
@@ -257,6 +255,12 @@ html[data-theme="day"] .site-nav.scrolled {
 .nav-theme-toggle:hover {
   color: var(--text-primary);
   background: var(--bg-pill-hover);
+}
+
+.nav-theme-toggle svg {
+  width: 15px;
+  height: 15px;
+  display: block;
 }
 
 .nav-cta-filled {
@@ -297,6 +301,17 @@ html[data-theme="day"] .nav-cta-filled {
   overflow: hidden;
   display: flex;
   align-items: center;
+}
+
+/* React Bits PatternWaves Interactive Flowing Mesh */
+.hero-pattern-waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: auto;
+  overflow: hidden;
 }
 
 /* Full-Screen 3D ASCII Canvas */
@@ -1498,9 +1513,7 @@ html.over-pin-demo .fluid-cursor,
 
     <!-- Right Unified Bar: Segmented Navigation ending in Solid CTA -->
     <nav class="nav-unified-bar" aria-label="Main Navigation">
-      <button id="themeToggleBtn" class="nav-theme-toggle" type="button" aria-label="Toggle Day and Night mode">
-        <span id="themeIcon">☽</span> <span id="themeLabel">Night</span>
-      </button>
+      <button id="themeToggleBtn" class="nav-theme-toggle" type="button" aria-label="Toggle theme"></button>
       <div class="nav-divider"></div>
       <a href="#how-it-works" class="nav-segment">How It Works</a>
       <div class="nav-divider"></div>
@@ -1520,6 +1533,9 @@ html.over-pin-demo .fluid-cursor,
      ══════════════════════════════════════════════════════════════════ -->
 <main>
 <section class="hero-viewport">
+  <!-- React Bits PatternWaves Component Canvas Background -->
+  <div id="patternWavesContainer" class="hero-pattern-waves"></div>
+
   <!-- The Real-Time 3D ASCII Engine Canvas -->
   <canvas id="asciiCanvas" role="img" aria-label="Real-time 3D ASCII Art scene: 3D desk with angled laptop displaying rotating tesseract, steaming coffee mug, and crumpled revisions."></canvas>
 
@@ -1531,7 +1547,7 @@ html.over-pin-demo .fluid-cursor,
       across 15 emails.
     </h1>
     <p class="hero-subtitle">
-      Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
+      Send one link to your client. They click anywhere to leave notes—their screen size and browser are captured automatically.
     </p>
     <div class="hero-actions">
       <a href="/login" target="_top" class="btn-primary">Start for Free</a>
@@ -1883,8 +1899,9 @@ html.over-pin-demo .fluid-cursor,
 (function() {
   const htmlRoot = document.documentElement;
   const themeToggleBtn = document.getElementById('themeToggleBtn');
-  const themeIcon = document.getElementById('themeIcon');
-  const themeLabel = document.getElementById('themeLabel');
+
+  const SUN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+  const MOON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
 
   let currentTheme = 'night';
 
@@ -1904,13 +1921,11 @@ html.over-pin-demo .fluid-cursor,
   if (paramTheme === 'day' || (!paramTheme && savedTheme === 'day')) {
     currentTheme = 'day';
     htmlRoot.setAttribute('data-theme', 'day');
-    themeIcon.textContent = '☼';
-    themeLabel.textContent = 'Day';
+    if (themeToggleBtn) themeToggleBtn.innerHTML = SUN_SVG;
   } else {
     currentTheme = 'night';
     htmlRoot.setAttribute('data-theme', 'night');
-    themeIcon.textContent = '☽';
-    themeLabel.textContent = 'Night';
+    if (themeToggleBtn) themeToggleBtn.innerHTML = MOON_SVG;
   }
 
   function toggleTheme() {
@@ -1918,16 +1933,20 @@ html.over-pin-demo .fluid-cursor,
     htmlRoot.setAttribute('data-theme', currentTheme);
     localStorage.setItem('cyath_theme', currentTheme);
     if (currentTheme === 'day') {
-      themeIcon.textContent = '☼';
-      themeLabel.textContent = 'Day';
-      update3DTheme('day');
+      if (themeToggleBtn) themeToggleBtn.innerHTML = SUN_SVG;
+      if (typeof update3DTheme === 'function') update3DTheme('day');
+      if (window.patternWavesInstance) {
+        window.patternWavesInstance.update({ color: "#cfcab8", backgroundColor: "#F5F3EC" });
+      }
     } else {
-      themeIcon.textContent = '☽';
-      themeLabel.textContent = 'Night';
-      update3DTheme('night');
+      if (themeToggleBtn) themeToggleBtn.innerHTML = MOON_SVG;
+      if (typeof update3DTheme === 'function') update3DTheme('night');
+      if (window.patternWavesInstance) {
+        window.patternWavesInstance.update({ color: "#2f2f2f", backgroundColor: "#000000" });
+      }
     }
   }
-  themeToggleBtn.addEventListener('click', toggleTheme);
+  if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
 
   // Scrolled nav bar backdrop
   const siteNav = document.querySelector('.site-nav');
@@ -2062,14 +2081,15 @@ html.over-pin-demo .fluid-cursor,
   const renderer = new THREE.WebGLRenderer({
     canvas: displayCanvas,
     antialias: true,
-    alpha: false,
+    alpha: true,
     powerPreference: "high-performance"
   });
   renderer.setPixelRatio(dpr);
   renderer.setSize(W, H, false);
+  renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b);
+  scene.background = null;
 
   const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
   camera.position.set(0, 1.9, 7.2);
@@ -2090,6 +2110,7 @@ html.over-pin-demo .fluid-cursor,
   const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
   const postMaterial = new THREE.ShaderMaterial({
+    transparent: true,
     vertexShader: `
       varying vec2 vUv;
       void main() {
@@ -2158,10 +2179,10 @@ html.over-pin-demo .fluid-cursor,
         vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
         vec4 tex = texture2D(tDiffuse, quantizedUv);
 
-        // Check if sample is the empty scene background
+        // Check if sample is empty background
         float bgDist = length(tex.rgb - uBgColor);
-        if (bgDist < 0.02) {
-          gl_FragColor = vec4(uBgColor, 1.0);
+        if (tex.a < 0.05 || bgDist < 0.02) {
+          gl_FragColor = vec4(0.0);
           return;
         }
 
@@ -2169,39 +2190,35 @@ html.over-pin-demo .fluid-cursor,
         float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
         float th = thresholdAt(cellCoord);
 
-        vec3 finalColor;
-
         if (uInvert > 0.5) {
           // ☼ DAY MODE: Warm archival vellum (#F5F3EC) + charcoal ink halftone dots
           float inkDensity = clamp((0.94 - lum) / 0.85, 0.0, 1.0);
           if (inkDensity <= 0.03) {
-            finalColor = uBgColor;
+            gl_FragColor = vec4(0.0);
           } else {
             bool hasInk = (inkDensity >= th);
             if (hasInk) {
               vec3 inkColor = mix(uFgColor, tex.rgb * 0.5, 0.25);
-              finalColor = inkColor;
+              gl_FragColor = vec4(inkColor, 1.0);
             } else {
-              finalColor = uBgColor;
+              gl_FragColor = vec4(0.0);
             }
           }
         } else {
-          // ☽ NIGHT MODE: Matte neutral graphite (#1b1b1b) + gleaming liquid chrome halftone dots
+          // ☽ NIGHT MODE: Pure black background (#000000) + liquid chrome halftone dots
           float lightDensity = clamp(lum * 1.18, 0.0, 1.0);
           if (lightDensity <= 0.03) {
-            finalColor = uBgColor;
+            gl_FragColor = vec4(0.0);
           } else {
             bool lit = lightDensity >= th;
             if (lit) {
               vec3 dotColor = mix(uFgColor, tex.rgb * 1.25, 0.38);
-              finalColor = dotColor;
+              gl_FragColor = vec4(dotColor, 1.0);
             } else {
-              finalColor = uBgColor;
+              gl_FragColor = vec4(0.0);
             }
           }
         }
-
-        gl_FragColor = vec4(finalColor, 1.0);
       }
     `,
     uniforms: {
@@ -2209,7 +2226,7 @@ html.over-pin-demo .fluid-cursor,
       uResolution: { value: new THREE.Vector2(W * dpr, H * dpr) },
       uGridSize: { value: 3.2 * dpr }, // 3.2px dense micro-halftone screen
       uMethod: { value: 1 }, // 1 = Halftone Dot Screen (as on caelangray.com)
-      uBgColor: { value: new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b) },
+      uBgColor: { value: new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x000000) },
       uFgColor: { value: new THREE.Color(currentTheme === 'day' ? 0x1c1a18 : 0xffffff) },
       uInvert: { value: (currentTheme === 'day' ? 1.0 : 0.0) },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) },
@@ -2238,15 +2255,17 @@ html.over-pin-demo .fluid-cursor,
   // Bright architectural steel materials for high contrast silhouettes against dark background
   const tableLegMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x3E424C : 0x8E9CB2, roughness: 0.25, metalness: 0.90 });
   const footGlideMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x1E2026 : 0xE2E8F0, roughness: 0.12, metalness: 0.98 });
-  const chairBaseMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x3A3E48 : 0x94A3B8, roughness: 0.22, metalness: 0.92 });
-  const casterWheelMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x181A20 : 0xE2E8F0, roughness: 0.15, metalness: 0.95 });
 
-  // 1. Studio Window (Positioned on the Right Wall)
+  // 1. Studio Window (Positioned on the Right Wall - Softly Faded into Background)
   const windowGroup = new THREE.Group();
   windowGroup.position.set(2.4, 1.85, -2.2);
   windowGroup.rotation.y = -0.15;
 
-  const frameMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x685D52 : 0x545B6C, roughness: 0.3, metalness: 0.6 });
+  const frameMat = new THREE.MeshStandardMaterial({
+    color: isDay ? 0xC5BDB0 : 0x14161E,
+    roughness: 0.8,
+    metalness: 0.1
+  });
   const frameW = 2.6, frameH = 2.2, frameT = 0.08;
 
   function makeBar(w, h, d, x, y) {
@@ -2264,75 +2283,19 @@ html.over-pin-demo .fluid-cursor,
   makeBar(frameT * 0.8, frameH, 0.08, frameW/6, 0);
   makeBar(frameW, frameT * 0.8, 0.08, 0, 0);
 
-  // Window Panes Glass (Atmospheric backdrop)
+  // Window Panes Glass (Atmospheric backdrop softly faded into background)
   const glassGeo = new THREE.PlaneGeometry(frameW - 0.08, frameH - 0.08);
-  const glassMat = new THREE.MeshBasicMaterial({ color: isDay ? 0xFAF7F0 : 0x222735 });
+  const glassMat = new THREE.MeshBasicMaterial({
+    color: isDay ? 0xFAF7F0 : 0x08090D,
+    transparent: true,
+    opacity: isDay ? 0.6 : 0.35
+  });
   const glass = new THREE.Mesh(glassGeo, glassMat);
   glass.position.set(0, 0, -0.02);
   windowGroup.add(glass);
   roomGroup.add(windowGroup);
 
-  // 2. Architectural Studio Chair (Facing Towards Laptop, Level Feet with Table, Generous Distance)
-  const chairGroup = new THREE.Group();
-  chairGroup.position.set(2.32, -0.48, 1.62);
-  chairGroup.scale.set(1.22, 1.22, 1.22);
-  chairGroup.rotation.y = -2.42; // Turned inward facing towards the laptop!
-  chairGroup.rotation.x = -0.04;
-
-  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.85), fabricMat);
-  chairGroup.add(seat);
-
-  const backrest = new THREE.Mesh(new THREE.BoxGeometry(0.80, 1.05, 0.08), fabricMat);
-  backrest.position.set(0, 0.58, -0.38);
-  backrest.rotation.x = -0.10;
-  chairGroup.add(backrest);
-
-  // Architectural spine support on the back of the chair
-  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.20, 0.06), chairBaseMat);
-  spine.position.set(0, 0.60, -0.44);
-  chairGroup.add(spine);
-
-  const lumbar = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.10, 0.05), metalMat);
-  lumbar.position.set(0, 0.32, -0.45);
-  chairGroup.add(lumbar);
-
-  const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.20, 0.08), fabricMat);
-  headrest.position.set(0, 1.20, -0.48);
-  chairGroup.add(headrest);
-
-  function makeArmrest(side) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 0.58), metalMat);
-    arm.position.set(side * 0.44, 0.26, -0.05);
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.26), chairBaseMat);
-    post.position.set(side * 0.44, 0.13, 0);
-    chairGroup.add(arm);
-    chairGroup.add(post);
-  }
-  makeArmrest(1);
-  makeArmrest(-1);
-
-  // Pneumatic stem extending down to caster base level
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.90), chairBaseMat);
-  stem.position.set(0, -0.48, 0);
-  chairGroup.add(stem);
-
-  // 5-Star Caster Base sitting exactly level with the table feet
-  for (let a = 0; a < 5; a++) {
-    const ang = (a / 5) * Math.PI * 2;
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.045, 0.055), chairBaseMat);
-    leg.position.set(Math.cos(ang) * 0.23, -0.93, Math.sin(ang) * 0.23);
-    leg.rotation.y = -ang;
-    chairGroup.add(leg);
-
-    // High-contrast chrome caster wheels that pop off dark background
-    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.04, 8), casterWheelMat);
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(Math.cos(ang) * 0.46, -0.955, Math.sin(ang) * 0.46);
-    chairGroup.add(wheel);
-  }
-  roomGroup.add(chairGroup);
-
-  // 3. Drafting Desk (Clean solid architectural surfaces)
+  // 2. Drafting Desk (Clean solid architectural surfaces)
   const deskGroup = new THREE.Group();
   deskGroup.position.set(1.20, -0.45, 0.45);
 
@@ -2560,10 +2523,10 @@ html.over-pin-demo .fluid-cursor,
   function update3DTheme(theme) {
     drawLogoScreen(theme);
     const isD = (theme === 'day');
-    const bgCol = isD ? 0xF5F3EC : 0x1b1b1b;
+    const bgCol = isD ? 0xF5F3EC : 0x000000;
     const fgCol = isD ? 0x1c1a18 : 0xffffff;
 
-    scene.background.setHex(bgCol);
+    if (scene.background) scene.background.setHex(bgCol);
     postMaterial.uniforms.uBgColor.value.setHex(bgCol);
     postMaterial.uniforms.uFgColor.value.setHex(fgCol);
     postMaterial.uniforms.uInvert.value = isD ? 1.0 : 0.0;
@@ -2576,15 +2539,14 @@ html.over-pin-demo .fluid-cursor,
       floorRimLight.color.setHex(0x8A7A68);
       floorRimLight.intensity = 0.8;
       glassMat.color.setHex(0xFAF7F0);
+      glassMat.opacity = 0.6;
       woodMat.color.setHex(0x8C6847);
-      frameMat.color.setHex(0x685D52);
+      frameMat.color.setHex(0xC5BDB0);
       metalMat.color.setHex(0x6E7482);
       darkMetalMat.color.setHex(0x4B505C);
       fabricMat.color.setHex(0x48423B);
       tableLegMat.color.setHex(0x3E424C);
       footGlideMat.color.setHex(0x1E2026);
-      chairBaseMat.color.setHex(0x3A3E48);
-      casterWheelMat.color.setHex(0x181A20);
     } else {
       ambLight.color.setHex(0x4B5563);
       ambLight.intensity = 2.6;
@@ -2592,17 +2554,41 @@ html.over-pin-demo .fluid-cursor,
       dirLight.intensity = 3.4;
       floorRimLight.color.setHex(0x60A5FA);
       floorRimLight.intensity = 2.4;
-      glassMat.color.setHex(0x222735);
+      glassMat.color.setHex(0x08090D);
+      glassMat.opacity = 0.35;
       woodMat.color.setHex(0x484E5E);
-      frameMat.color.setHex(0x545B6C);
+      frameMat.color.setHex(0x14161E);
       metalMat.color.setHex(0x8C96A8);
       darkMetalMat.color.setHex(0x363B48);
       fabricMat.color.setHex(0x4B5262);
       tableLegMat.color.setHex(0x8E9CB2);
       footGlideMat.color.setHex(0xE2E8F0);
-      chairBaseMat.color.setHex(0x94A3B8);
-      casterWheelMat.color.setHex(0xE2E8F0);
     }
+  }
+
+  // React Bits PatternWaves Integration
+  const pwContainer = document.getElementById('patternWavesContainer');
+  if (pwContainer && window.PatternWavesVanilla) {
+    window.patternWavesInstance = window.PatternWavesVanilla.initPatternWaves(pwContainer, {
+      preset: "mesh",
+      color: currentTheme === 'day' ? "#cfcab8" : "#2f2f2f",
+      backgroundColor: currentTheme === 'day' ? "#F5F3EC" : "#000000",
+      fade: "edges",
+      interactive: true,
+      cursorSize: 10,
+      cursorStrength: 0,
+      pattern: "line",
+      spacing: 14,
+      markSize: 0.85,
+      light: 27,
+      shine: 1,
+      contrast: 2.5,
+      speed: 0.4,
+      scale: 0.3,
+      direction: 325,
+      opacity: 0.45,
+      fadeSize: 0.7
+    });
   }
 
   if (currentTheme === 'day') {

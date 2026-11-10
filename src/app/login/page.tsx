@@ -332,7 +332,7 @@ export default function LoginPage() {
   return (
     <div
       className={`min-h-screen relative flex flex-col justify-between selection:bg-[#F59E0B] selection:text-[#09090B] overflow-x-hidden ${
-        isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-[#1b1b1b] text-[#FAFAFA]"
+        isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-black text-[#FAFAFA]"
       }`}
       style={{
         fontFamily: "'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -386,7 +386,7 @@ export default function LoginPage() {
           className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto ${
             isDay
               ? "bg-[#EBE7DC] border border-black/15 shadow-black/5 text-[#1C1A18]"
-              : "bg-[#242424] border border-white/15 shadow-black/80 text-[#FAFAFA]"
+              : "bg-[#0a0a0a] border border-white/10 shadow-black/90 text-[#FAFAFA]"
           }`}
         >
           {awaitingEmail ? (
@@ -518,7 +518,7 @@ export default function LoginPage() {
               {/* Segmented Mode Selector */}
               <div
                 className={`grid grid-cols-2 p-1 rounded-xl border mb-5 text-xs font-medium ${
-                  isDay ? "bg-[#DFD9CB] border-black/10" : "bg-[#1b1b1b] border-white/10"
+                  isDay ? "bg-[#DFD9CB] border-black/10" : "bg-black border-white/10"
                 }`}
               >
                 <button
@@ -532,7 +532,7 @@ export default function LoginPage() {
                     mode === "signin"
                       ? isDay
                         ? "bg-white text-black shadow-sm font-bold"
-                        : "bg-[#2d2d2d] text-white shadow-sm font-bold"
+                        : "bg-[#181818] border border-white/10 text-white shadow-sm font-bold"
                       : isDay
                       ? "text-zinc-600 hover:text-black"
                       : "text-zinc-400 hover:text-white"
@@ -551,7 +551,7 @@ export default function LoginPage() {
                     mode === "signup"
                       ? isDay
                         ? "bg-white text-black shadow-sm font-bold"
-                        : "bg-[#2d2d2d] text-white shadow-sm font-bold"
+                        : "bg-[#181818] border border-white/10 text-white shadow-sm font-bold"
                       : isDay
                       ? "text-zinc-600 hover:text-black"
                       : "text-zinc-400 hover:text-white"
@@ -568,7 +568,7 @@ export default function LoginPage() {
                 className={`w-full py-2.5 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2.5 border cursor-pointer mb-4 ${
                   isDay
                     ? "bg-white hover:bg-zinc-50 border-black/15 text-black shadow-sm"
-                    : "bg-[#1b1b1b] hover:bg-[#222222] border-white/10 text-white shadow-sm"
+                    : "bg-black hover:bg-[#141414] border-white/10 text-white shadow-sm"
                 }`}
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -597,7 +597,7 @@ export default function LoginPage() {
                 <div className={`w-full border-t ${isDay ? "border-black/10" : "border-white/10"}`} />
                 <span
                   className={`absolute px-2 text-[10px] font-mono uppercase tracking-widest ${
-                    isDay ? "bg-[#EBE7DC] text-zinc-500" : "bg-[#242424] text-zinc-400"
+                    isDay ? "bg-[#EBE7DC] text-zinc-500" : "bg-[#0a0a0a] text-zinc-400"
                   }`}
                 >
                   OR
@@ -637,7 +637,7 @@ export default function LoginPage() {
                         className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${
                           isDay
                             ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
-                            : "bg-[#1b1b1b] border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
+                            : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
                         }`}
                       />
                     </div>
@@ -659,7 +659,7 @@ export default function LoginPage() {
                       className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${
                         isDay
                           ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
-                          : "bg-[#1b1b1b] border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
+                          : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
                       }`}
                     />
                   </div>
@@ -681,7 +681,7 @@ export default function LoginPage() {
                       className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${
                         isDay
                           ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
-                          : "bg-[#1b1b1b] border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
+                          : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
                       }`}
                     />
                   </div>

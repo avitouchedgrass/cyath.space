@@ -27,7 +27,7 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const isDay = theme === "day";
-    const bgVec = isDay ? new THREE.Vector3(245 / 255, 243 / 255, 236 / 255) : new THREE.Vector3(27 / 255, 27 / 255, 27 / 255);
+    const bgVec = isDay ? new THREE.Vector3(245 / 255, 243 / 255, 236 / 255) : new THREE.Vector3(0.0, 0.0, 0.0);
     const fgVec = isDay ? new THREE.Vector3(28 / 255, 26 / 255, 24 / 255) : new THREE.Vector3(1.0, 1.0, 1.0);
     const bgColor = new THREE.Color().setRGB(bgVec.x, bgVec.y, bgVec.z, THREE.LinearSRGBColorSpace);
 
