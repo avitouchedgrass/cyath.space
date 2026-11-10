@@ -29,6 +29,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   onAddComment,
   onToggleResolve,
 }) => {
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
   const [stageCursor, setStageCursor] = useState<{ x: number; y: number } | null>(null);
@@ -97,84 +98,91 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
         {/* Viewport Frame Container with Scroll Anchoring */}
         <div
-          ref={containerRef}
-          onClick={handleStageClick}
+          ref={scrollViewportRef}
           onMouseMove={(e) => {
             if (interactionMode === "comment") {
               setStageCursor({ x: e.clientX, y: e.clientY });
             }
           }}
           onMouseLeave={() => setStageCursor(null)}
-          className={`relative w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] min-h-[750px] bg-white ${
+          className={`w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] min-h-[750px] bg-white ${
             interactionMode === "comment" ? "!cursor-none" : "cursor-default"
           }`}
         >
-          {/* Content renderer based on assetType */}
-          {project.assetType === "image" ? (
-            <img
-              src={project.targetUrl}
-              alt={project.title}
-              className="w-full h-auto block select-none pointer-events-none"
-            />
-          ) : project.assetType === "pdf" ? (
-            <iframe
-              src={project.targetUrl}
-              title={project.title}
-              className="w-full min-h-[850px] border-none select-none"
-            />
-          ) : (
-            <iframe
-              src={project.targetUrl}
-              title={project.title}
-              className="w-full h-[750px] border-none select-none"
-              sandbox="allow-scripts allow-same-origin allow-forms"
-            />
-          )}
-
-          {/* Annotation Overlay Layer */}
+          {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
           <div
-            className={`absolute inset-0 z-10 ${
-              interactionMode === "comment" ? "pointer-events-auto" : "pointer-events-none"
-            }`}
-          />
+            ref={containerRef}
+            onClick={handleStageClick}
+            className="relative w-full min-h-[750px]"
+          >
+            {/* Content renderer based on assetType */}
+            {project.assetType === "image" ? (
+              <img
+                src={project.targetUrl}
+                alt={project.title}
+                className="w-full h-auto block select-none pointer-events-none"
+              />
+            ) : project.assetType === "pdf" ? (
+              <iframe
+                src={project.targetUrl}
+                title={project.title}
+                className="w-full min-h-[850px] border-none select-none"
+              />
+            ) : (
+              <iframe
+                src={project.targetUrl}
+                title={project.title}
+                className="w-full h-[750px] border-none select-none"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+              />
+            )}
 
-          {/* Active Pins (Strictly scoped to current device viewport) */}
-          {activeDevicePins.map((pin) => (
-            <PinMarker
-              key={pin.id}
-              pin={pin}
-              isActive={pin.id === activePinId}
-              onClick={(pinId) => {
-                setPendingPinCoords(null);
-                onSelectPin(pinId);
-              }}
+            {/* Annotation Overlay Layer */}
+            <div
+              className={`absolute inset-0 z-10 ${
+                interactionMode === "comment" ? "pointer-events-auto" : "pointer-events-none"
+              }`}
             />
-          ))}
 
-          {/* Pending New Pin Popover */}
-          {pendingPinCoords && (
-            <PinPopover
-              isNew
-              xPercent={pendingPinCoords.xPercent}
-              yPercent={pendingPinCoords.yPercent}
-              authorName={clientAuthorName}
-              onSaveNewPin={handleSaveNewPin}
-              onClose={() => setPendingPinCoords(null)}
-            />
-          )}
+            {/* Active Pins (Strictly scoped to current device viewport and sticky to content pixels) */}
+            {activeDevicePins.map((pin) => (
+              <PinMarker
+                key={pin.id}
+                pin={pin}
+                isActive={pin.id === activePinId}
+                onClick={(pinId) => {
+                  setPendingPinCoords(null);
+                  onSelectPin(pinId);
+                }}
+              />
+            ))}
 
-          {/* Active Existing Pin Thread Popover */}
-          {activePin && (
-            <PinPopover
-              pin={activePin}
-              xPercent={activePin.xPercent}
-              yPercent={activePin.yPercent}
-              authorName={clientAuthorName}
-              onAddComment={onAddComment}
-              onToggleResolve={onToggleResolve}
-              onClose={() => onSelectPin(null)}
-            />
-          )}
+            {/* Pending New Pin Popover */}
+            {pendingPinCoords && (
+              <PinPopover
+                isNew
+                xPercent={pendingPinCoords.xPercent}
+                yPercent={pendingPinCoords.yPercent}
+                authorName={clientAuthorName}
+                onSaveNewPin={handleSaveNewPin}
+                onClose={() => setPendingPinCoords(null)}
+              />
+            )}
+
+            {/* Active Existing Pin Thread Popover */}
+            {activePin && (
+              <PinPopover
+                pin={activePin}
+                xPercent={activePin.xPercent}
+                yPercent={activePin.yPercent}
+                authorName={clientAuthorName}
+                onAddComment={onAddComment}
+                onToggleResolve={onToggleResolve}
+                onClose={() => onSelectPin(null)}
+              />
+            )}
+          </div>
+        </div>
 
           {/* 01/Capture Precision Drafting Pointer (Active exclusively inside canvas in Comment mode) */}
           {interactionMode === "comment" && stageCursor && (
@@ -203,6 +211,5 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           )}
         </div>
       </div>
-    </div>
   );
 };

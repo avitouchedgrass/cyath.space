@@ -337,7 +337,7 @@ export default function DashboardPage() {
                   {agencyInput || "Cyath Atelier"}
                 </div>
                 <div className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
-                  <span>Free Atelier</span>
+                  <span>Free Tier</span>
                   <span className="text-zinc-700">·</span>
                   <span className="text-emerald-400">Active</span>
                 </div>

@@ -3,20 +3,15 @@ export function calculateNormalizedCoords(
   container: HTMLElement
 ): { xPercent: number; yPercent: number } {
   const rect = container.getBoundingClientRect();
-  const scrollLeft = container.scrollLeft || 0;
-  const scrollTop = container.scrollTop || 0;
-  const scrollWidth = container.scrollWidth || rect.width;
-  const scrollHeight = container.scrollHeight || rect.height;
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
 
-  const clickX = e.clientX - rect.left + scrollLeft;
-  const clickY = e.clientY - rect.top + scrollTop;
+  const rawX = (clickX / (rect.width || 1)) * 100;
+  const rawY = (clickY / (rect.height || 1)) * 100;
 
-  const rawX = (clickX / scrollWidth) * 100;
-  const rawY = (clickY / scrollHeight) * 100;
-
-  // Strict boundary clamping so pins never bleed off edges on mobile/tablet
-  const xPercent = Math.max(3.5, Math.min(96.5, rawX));
-  const yPercent = Math.max(2.5, Math.min(97.5, rawY));
+  // Clamped within 2.5% - 97.5% so pin markers never bleed off boundary edges
+  const xPercent = Math.max(2.5, Math.min(97.5, rawX));
+  const yPercent = Math.max(1.5, Math.min(98.5, rawY));
 
   return {
     xPercent: Math.round(xPercent * 10) / 10,

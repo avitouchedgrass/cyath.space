@@ -18,10 +18,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Oranienbaum&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<script src="/vendor/three.min.js"></script>
+<script src="/vendor/lenis.min.js"></script>
+<script src="/vendor/shape-grid.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   ARCHITECTURAL TOKENS: TRUE CARBON GRAPHITE & ARCHIVAL VELLUM
+   ARCHITECTURAL TOKENS: PURE PITCH BLACK & ARCHIVAL VELLUM
    ══════════════════════════════════════════════════════════════════ */
 :root {
   --font-serif: 'Oranienbaum', Georgia, serif;
@@ -30,25 +31,25 @@
   --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
-/* ☽ NIGHT MODE (TRUE NEUTRAL MATTE GRAPHITE #1b1b1b) */
+/* ☽ NIGHT MODE (PURE OBSIDIAN BLACK #000000) */
 html[data-theme="night"] {
-  --bg-page: #1b1b1b;
-  --bg-surface: #242424;
-  --bg-surface-elevated: #2d2d2d;
+  --bg-page: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-surface-elevated: #141414;
   
   --bg-pill: rgba(255, 255, 255, 0.08);
   --bg-pill-hover: rgba(255, 255, 255, 0.14);
   
-  --border-subtle: rgba(255, 255, 255, 0.11);
-  --border-medium: rgba(255, 255, 255, 0.22);
-  --border-pill: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.18);
+  --border-pill: rgba(255, 255, 255, 0.14);
   
   --text-primary: #FFFFFF;
   --text-secondary: #D1D5DB;
   --text-muted: #8E929B;
   
-  --card-bg: #222222;
-  --card-border: rgba(255, 255, 255, 0.10);
+  --card-bg: #0b0b0b;
+  --card-border: rgba(255, 255, 255, 0.08);
 }
 
 /* ☼ DAY MODE (CLEAN WARM ARCHITECTURAL VELLUM) */
@@ -162,27 +163,25 @@ html[data-theme="day"] .site-nav.scrolled {
   pointer-events: auto;
 }
 
-/* Left Brand Pill */
+/* Left Brand Logo (Clean, No Pill) */
 .nav-brand-pill {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 18px 8px 12px;
-  background: var(--bg-pill);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  border: 1px solid var(--border-pill);
-  border-radius: 9999px;
+  gap: 10px;
+  padding: 4px 0;
+  background: transparent;
   text-decoration: none;
   color: var(--text-primary);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
-  transition: all 0.25s ease;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  transition: opacity 0.2s ease;
 }
 
 .nav-brand-pill:hover {
-  background: var(--bg-pill-hover);
-  border-color: var(--border-medium);
-  transform: translateY(-1px);
+  background: transparent;
+  opacity: 0.82;
+  transform: none;
 }
 
 .brand-tesseract {
@@ -240,11 +239,10 @@ html[data-theme="day"] .site-nav.scrolled {
 .nav-theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 13px;
-  font-size: 12.5px;
-  font-weight: 600;
-  font-family: var(--font-mono);
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   color: var(--text-secondary);
   background: transparent;
   border: none;
@@ -256,6 +254,12 @@ html[data-theme="day"] .site-nav.scrolled {
 .nav-theme-toggle:hover {
   color: var(--text-primary);
   background: var(--bg-pill-hover);
+}
+
+.nav-theme-toggle svg {
+  width: 15px;
+  height: 15px;
+  display: block;
 }
 
 .nav-cta-filled {
@@ -298,19 +302,15 @@ html[data-theme="day"] .nav-cta-filled {
   align-items: center;
 }
 
-/* Full-Screen 3D ASCII Canvas */
-#asciiCanvas {
+/* React Bits PatternWaves Interactive Flowing Mesh */
+.hero-pattern-waves {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 0;
   pointer-events: auto;
-  cursor: grab;
-}
-
-#asciiCanvas:active {
-  cursor: grabbing;
+  overflow: hidden;
 }
 
 /* Left Hero Content (Matches Sketch) */
@@ -1408,6 +1408,21 @@ html[data-theme="day"] .animated-dashed-border rect {
     padding-right: 20px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   LENIS FLUID SCROLL STYLES
+   ══════════════════════════════════════════════════════════════════ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
 </style>
 </head>
 <body>
@@ -1437,9 +1452,7 @@ html[data-theme="day"] .animated-dashed-border rect {
 
     <!-- Right Unified Bar: Segmented Navigation ending in Solid CTA -->
     <nav class="nav-unified-bar" aria-label="Main Navigation">
-      <button id="themeToggleBtn" class="nav-theme-toggle" type="button" aria-label="Toggle Day and Night mode">
-        <span id="themeIcon">☽</span> <span id="themeLabel">Night</span>
-      </button>
+      <button id="themeToggleBtn" class="nav-theme-toggle" type="button" aria-label="Toggle theme"></button>
       <div class="nav-divider"></div>
       <a href="#how-it-works" class="nav-segment">How It Works</a>
       <div class="nav-divider"></div>
@@ -1459,8 +1472,8 @@ html[data-theme="day"] .animated-dashed-border rect {
      ══════════════════════════════════════════════════════════════════ -->
 <main>
 <section class="hero-viewport">
-  <!-- The Real-Time 3D ASCII Engine Canvas -->
-  <canvas id="asciiCanvas" role="img" aria-label="Real-time 3D ASCII Art scene: 3D desk with angled laptop displaying rotating tesseract, steaming coffee mug, and crumpled revisions."></canvas>
+  <!-- React Bits ShapeGrid Component Background (Triangle Grid) -->
+  <div id="shapeGridContainer" class="hero-shape-grid pointer-events-none" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
 
   <!-- Left Hero Content (Positioned exactly as in the user's sketch) -->
   <div class="hero-content-left">
@@ -1470,7 +1483,7 @@ html[data-theme="day"] .animated-dashed-border rect {
       across 15 emails.
     </h1>
     <p class="hero-subtitle">
-      Send one link to your client. They click anywhere on the page to leave notes—their screen size and browser are captured automatically. When you finish the fixes, they approve the site in one click.
+      Send one link to your client. They click anywhere to leave notes—their screen size and browser are captured automatically.
     </p>
     <div class="hero-actions">
       <a href="/login" target="_top" class="btn-primary">Start for Free</a>
@@ -1571,6 +1584,7 @@ html[data-theme="day"] .animated-dashed-border rect {
       </div>
       <div class="punchlist-box" id="punchlistBox">
         <div class="punch-item resolved" onclick="togglePunchItem(this)">
+          <div class="pixel-loading-bar-bg" aria-hidden="true"></div>
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Fix hero headline wrap on 1440px desktop</span>
@@ -1578,6 +1592,7 @@ html[data-theme="day"] .animated-dashed-border rect {
           <span class="punch-tag">Resolved</span>
         </div>
         <div class="punch-item resolved" onclick="togglePunchItem(this)">
+          <div class="pixel-loading-bar-bg" aria-hidden="true"></div>
           <div class="punch-left">
             <div class="punch-checkbox">✓</div>
             <span class="punch-text">Update inquiry button hover contrast</span>
@@ -1804,6 +1819,7 @@ html[data-theme="day"] .animated-dashed-border rect {
     <a href="#pricing" class="footer-link">Pricing</a>
     <span>© 2026 Cyath. All rights reserved.</span>
   </div>
+
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════
@@ -1814,8 +1830,9 @@ html[data-theme="day"] .animated-dashed-border rect {
 (function() {
   const htmlRoot = document.documentElement;
   const themeToggleBtn = document.getElementById('themeToggleBtn');
-  const themeIcon = document.getElementById('themeIcon');
-  const themeLabel = document.getElementById('themeLabel');
+
+  const SUN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+  const MOON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
 
   let currentTheme = 'night';
 
@@ -1835,30 +1852,42 @@ html[data-theme="day"] .animated-dashed-border rect {
   if (paramTheme === 'day' || (!paramTheme && savedTheme === 'day')) {
     currentTheme = 'day';
     htmlRoot.setAttribute('data-theme', 'day');
-    themeIcon.textContent = '☼';
-    themeLabel.textContent = 'Day';
+    if (themeToggleBtn) themeToggleBtn.innerHTML = SUN_SVG;
   } else {
     currentTheme = 'night';
     htmlRoot.setAttribute('data-theme', 'night');
-    themeIcon.textContent = '☽';
-    themeLabel.textContent = 'Night';
+    if (themeToggleBtn) themeToggleBtn.innerHTML = MOON_SVG;
   }
 
   function toggleTheme() {
     currentTheme = (currentTheme === 'night') ? 'day' : 'night';
     htmlRoot.setAttribute('data-theme', currentTheme);
     localStorage.setItem('cyath_theme', currentTheme);
-    if (currentTheme === 'day') {
-      themeIcon.textContent = '☼';
-      themeLabel.textContent = 'Day';
-      update3DTheme('day');
-    } else {
-      themeIcon.textContent = '☽';
-      themeLabel.textContent = 'Night';
-      update3DTheme('night');
+    if (themeToggleBtn) themeToggleBtn.innerHTML = (currentTheme === 'day') ? SUN_SVG : MOON_SVG;
+    const container = document.getElementById('shapeGridContainer');
+    if (container && window.shapeGridInstance && window.ShapeGridVanilla) {
+      window.shapeGridInstance.destroy();
+      window.shapeGridInstance = window.ShapeGridVanilla.initShapeGrid(container, {
+        shape: "triangle",
+        direction: "none",
+        lineColor: currentTheme === 'day' ? "#dcd7cc" : "#1b1920",
+        hoverColor: "#ffffff",
+        hoverFillColor: "#ffffff",
+        fillOpacity: 0.15,
+        cellSize: 40,
+        speed: 0.5,
+        tiltX: 0,
+        tiltY: 0,
+        rainbow: false,
+        trail: 0.1,
+        glow: 0.55,
+        twinkle: 0.3,
+        fade: 0,
+        clickCascade: false
+      });
     }
   }
-  themeToggleBtn.addEventListener('click', toggleTheme);
+  if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
 
   // Scrolled nav bar backdrop
   const siteNav = document.querySelector('.site-nav');
@@ -1874,13 +1903,16 @@ html[data-theme="day"] .animated-dashed-border rect {
   window.togglePunchItem = function(item) {
     item.classList.toggle('resolved');
     const tag = item.querySelector('.punch-tag');
+    const isResolved = item.classList.contains('resolved');
     if (tag) {
-      tag.textContent = item.classList.contains('resolved') ? 'Resolved' : 'In Progress';
+      tag.textContent = isResolved ? 'Resolved' : 'In Progress';
     }
     const counter = document.getElementById('punchCounter');
     if (counter) {
-      const isResolved = item.classList.contains('resolved');
-      counter.textContent = isResolved ? '3/3 RESOLVED' : '2/3 RESOLVED';
+      const punchBox = document.getElementById('punchlistBox');
+      const total = punchBox ? punchBox.querySelectorAll('.punch-item').length : 3;
+      const resolved = punchBox ? punchBox.querySelectorAll('.punch-item.resolved').length : 2;
+      counter.textContent = `${resolved}/${total} RESOLVED`;
     }
   };
 
@@ -1919,11 +1951,13 @@ html[data-theme="day"] .animated-dashed-border rect {
     pinDemoBox.addEventListener('mouseenter', () => {
       isHovered = true;
       interactiveCursor.style.opacity = '1';
+      document.documentElement.classList.add('over-pin-demo');
     });
 
     pinDemoBox.addEventListener('mouseleave', () => {
       isHovered = false;
       interactiveCursor.style.opacity = '0';
+      document.documentElement.classList.remove('over-pin-demo');
     });
 
     pinDemoBox.addEventListener('mousemove', (e) => {
@@ -1978,683 +2012,50 @@ html[data-theme="day"] .animated-dashed-border rect {
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // THREE.JS SCENE SETUP & RENDER TARGETS
+  // REACT BITS SHAPEGRID INTEGRATION (TRIANGLE BACKGROUND)
   // ══════════════════════════════════════════════════════════════════
-  const displayCanvas = document.getElementById('asciiCanvas');
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let W = window.innerWidth;
-  let H = window.innerHeight;
-
-  const renderer = new THREE.WebGLRenderer({
-    canvas: displayCanvas,
-    antialias: true,
-    alpha: false,
-    powerPreference: "high-performance"
-  });
-  renderer.setPixelRatio(dpr);
-  renderer.setSize(W, H, false);
-
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b);
-
-  const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
-  camera.position.set(0, 1.9, 7.2);
-  camera.lookAt(0, 0, 0);
-
-  // Offscreen Render Target for the 3D scene before post-processing
-  const renderTarget = new THREE.WebGLRenderTarget(W * dpr, H * dpr, {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    format: THREE.RGBAFormat,
-    type: THREE.UnsignedByteType
-  });
-
-  // ══════════════════════════════════════════════════════════════════
-  // GPU POST-PROCESSING SHADER (Bayer Matrix & Halftone Dot Screening)
-  // ══════════════════════════════════════════════════════════════════
-  const postScene = new THREE.Scene();
-  const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-  const postMaterial = new THREE.ShaderMaterial({
-    vertexShader: `
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        gl_Position = vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
-      precision highp float;
-      varying vec2 vUv;
-      uniform sampler2D tDiffuse;
-      uniform vec2 uResolution;
-      uniform float uGridSize;
-      uniform int uMethod; // 1 = Halftone Dot Screen (caelangray.com), 0 = Bayer Matrix
-      uniform vec3 uBgColor;
-      uniform vec3 uFgColor;
-      uniform float uInvert;
-      uniform vec2 uMouse;
-      uniform float uMouseStrength;
-
-      const mat4 THRESHOLDS = mat4(
-        0.94118, 0.29412, 0.76471, 0.05882,
-        0.47059, 0.70588, 0.23529, 0.52941,
-        0.82353, 0.11765, 0.88235, 0.17647,
-        0.35294, 0.58824, 0.41176, 0.64706
-      );
-
-      const float SCREEN_ANGLE = 0.70710678; // 45 deg rotation
-      const float CORNER_REACH = 1.41421356;
-
-      float bayerThreshold(vec2 cellCoord) {
-        ivec2 p = ivec2(mod(cellCoord, 4.0));
-        return THRESHOLDS[p.x][p.y];
-      }
-
-      float halftoneThreshold(vec2 cellCoord) {
-        vec2 screen = vec2(
-          cellCoord.x * SCREEN_ANGLE - cellCoord.y * SCREEN_ANGLE,
-          cellCoord.x * SCREEN_ANGLE + cellCoord.y * SCREEN_ANGLE
-        );
-        return clamp(length(fract(screen) - 0.5) * CORNER_REACH, 0.0, 1.0);
-      }
-
-      float thresholdAt(vec2 cellCoord) {
-        if (uMethod == 1) return halftoneThreshold(cellCoord);
-        return bayerThreshold(cellCoord);
-      }
-
-      void main() {
-        vec2 fragCoord = vUv * uResolution;
-        vec2 cellCoord = fragCoord / uGridSize;
-        
-        // Magnetic ASCII / Halftone Repel displacement
-        vec2 mDiff = vUv - uMouse;
-        mDiff.x *= uResolution.x / uResolution.y;
-        float mDist = length(mDiff);
-        float repelRadius = 0.16;
-        if (mDist < repelRadius && uMouseStrength > 0.001) {
-          float force = 1.0 - mDist / repelRadius;
-          force = force * force * (3.0 - 2.0 * force);
-          vec2 repelDir = normalize(mDiff);
-          cellCoord += repelDir * force * 5.0 * uMouseStrength;
-        }
-
-        // Sample 3D texture at the center of the quantized cell
-        vec2 quantizedUv = (floor(cellCoord) * uGridSize + uGridSize * 0.5) / uResolution;
-        vec4 tex = texture2D(tDiffuse, quantizedUv);
-
-        // Check if sample is the empty scene background
-        float bgDist = length(tex.rgb - uBgColor);
-        if (bgDist < 0.02) {
-          gl_FragColor = vec4(uBgColor, 1.0);
-          return;
-        }
-
-        // Perceptual luminance
-        float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
-        float th = thresholdAt(cellCoord);
-
-        vec3 finalColor;
-
-        if (uInvert > 0.5) {
-          // ☼ DAY MODE: Warm archival vellum (#F5F3EC) + charcoal ink halftone dots
-          float inkDensity = clamp((0.94 - lum) / 0.85, 0.0, 1.0);
-          if (inkDensity <= 0.03) {
-            finalColor = uBgColor;
-          } else {
-            bool hasInk = (inkDensity >= th);
-            if (hasInk) {
-              vec3 inkColor = mix(uFgColor, tex.rgb * 0.5, 0.25);
-              finalColor = inkColor;
-            } else {
-              finalColor = uBgColor;
-            }
-          }
-        } else {
-          // ☽ NIGHT MODE: Matte neutral graphite (#1b1b1b) + gleaming liquid chrome halftone dots
-          float lightDensity = clamp(lum * 1.18, 0.0, 1.0);
-          if (lightDensity <= 0.03) {
-            finalColor = uBgColor;
-          } else {
-            bool lit = lightDensity >= th;
-            if (lit) {
-              vec3 dotColor = mix(uFgColor, tex.rgb * 1.25, 0.38);
-              finalColor = dotColor;
-            } else {
-              finalColor = uBgColor;
-            }
-          }
-        }
-
-        gl_FragColor = vec4(finalColor, 1.0);
-      }
-    `,
-    uniforms: {
-      tDiffuse: { value: null },
-      uResolution: { value: new THREE.Vector2(W * dpr, H * dpr) },
-      uGridSize: { value: 3.2 * dpr }, // 3.2px dense micro-halftone screen
-      uMethod: { value: 1 }, // 1 = Halftone Dot Screen (as on caelangray.com)
-      uBgColor: { value: new THREE.Color(currentTheme === 'day' ? 0xF5F3EC : 0x1b1b1b) },
-      uFgColor: { value: new THREE.Color(currentTheme === 'day' ? 0x1c1a18 : 0xffffff) },
-      uInvert: { value: (currentTheme === 'day' ? 1.0 : 0.0) },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-      uMouseStrength: { value: 0.0 }
-    }
-  });
-
-  const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
-  postScene.add(postQuad);
-
-  // ══════════════════════════════════════════════════════════════════
-  // ARCHITECTURAL 3D STUDIO SCENE (RIGHT-ALIGNED ROOM GROUP)
-  // ══════════════════════════════════════════════════════════════════
-  const roomGroup = new THREE.Group();
-  scene.add(roomGroup);
-
-  const isDay = (currentTheme === 'day');
-  // High-specular, low-roughness materials (creates glistening metallic liquid halftone dots)
-  const metalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x8A92A2 : 0x8C96A8, roughness: 0.18, metalness: 0.85 });
-  const darkMetalMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x6E7482 : 0x363B48, roughness: 0.22, metalness: 0.90 });
-  const woodMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xA07855 : 0x484E5E, roughness: 0.32, metalness: 0.25 });
-  const fabricMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x726B62 : 0x4B5262, roughness: 0.45, metalness: 0.20 });
-
-  // Bright architectural steel materials for high contrast silhouettes against dark background
-  const tableLegMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x3E424C : 0x8E9CB2, roughness: 0.25, metalness: 0.90 });
-  const footGlideMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x1E2026 : 0xE2E8F0, roughness: 0.12, metalness: 0.98 });
-  const chairBaseMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x3A3E48 : 0x94A3B8, roughness: 0.22, metalness: 0.92 });
-  const casterWheelMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x181A20 : 0xE2E8F0, roughness: 0.15, metalness: 0.95 });
-
-  // 1. Studio Window (Positioned on the Right Wall)
-  const windowGroup = new THREE.Group();
-  windowGroup.position.set(2.4, 1.85, -2.2);
-  windowGroup.rotation.y = -0.15;
-
-  const frameMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x685D52 : 0x545B6C, roughness: 0.3, metalness: 0.6 });
-  const frameW = 2.6, frameH = 2.2, frameT = 0.08;
-
-  function makeBar(w, h, d, x, y) {
-    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), frameMat);
-    b.position.set(x, y, 0);
-    windowGroup.add(b);
-  }
-  // Outer frame
-  makeBar(frameW, frameT, 0.11, 0, frameH/2);
-  makeBar(frameW, frameT, 0.11, 0, -frameH/2);
-  makeBar(frameT, frameH, 0.11, -frameW/2, 0);
-  makeBar(frameT, frameH, 0.11, frameW/2, 0);
-  // Mullions (6 panes: 2 vertical, 1 horizontal)
-  makeBar(frameT * 0.8, frameH, 0.08, -frameW/6, 0);
-  makeBar(frameT * 0.8, frameH, 0.08, frameW/6, 0);
-  makeBar(frameW, frameT * 0.8, 0.08, 0, 0);
-
-  // Window Panes Glass (Atmospheric backdrop)
-  const glassGeo = new THREE.PlaneGeometry(frameW - 0.08, frameH - 0.08);
-  const glassMat = new THREE.MeshBasicMaterial({ color: isDay ? 0xFAF7F0 : 0x222735 });
-  const glass = new THREE.Mesh(glassGeo, glassMat);
-  glass.position.set(0, 0, -0.02);
-  windowGroup.add(glass);
-  roomGroup.add(windowGroup);
-
-  // 2. Architectural Studio Chair (Facing Towards Laptop, Level Feet with Table, Generous Distance)
-  const chairGroup = new THREE.Group();
-  chairGroup.position.set(2.32, -0.48, 1.62);
-  chairGroup.scale.set(1.22, 1.22, 1.22);
-  chairGroup.rotation.y = -2.42; // Turned inward facing towards the laptop!
-  chairGroup.rotation.x = -0.04;
-
-  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.85), fabricMat);
-  chairGroup.add(seat);
-
-  const backrest = new THREE.Mesh(new THREE.BoxGeometry(0.80, 1.05, 0.08), fabricMat);
-  backrest.position.set(0, 0.58, -0.38);
-  backrest.rotation.x = -0.10;
-  chairGroup.add(backrest);
-
-  // Architectural spine support on the back of the chair
-  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.20, 0.06), chairBaseMat);
-  spine.position.set(0, 0.60, -0.44);
-  chairGroup.add(spine);
-
-  const lumbar = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.10, 0.05), metalMat);
-  lumbar.position.set(0, 0.32, -0.45);
-  chairGroup.add(lumbar);
-
-  const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.20, 0.08), fabricMat);
-  headrest.position.set(0, 1.20, -0.48);
-  chairGroup.add(headrest);
-
-  function makeArmrest(side) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 0.58), metalMat);
-    arm.position.set(side * 0.44, 0.26, -0.05);
-    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.26), chairBaseMat);
-    post.position.set(side * 0.44, 0.13, 0);
-    chairGroup.add(arm);
-    chairGroup.add(post);
-  }
-  makeArmrest(1);
-  makeArmrest(-1);
-
-  // Pneumatic stem extending down to caster base level
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.90), chairBaseMat);
-  stem.position.set(0, -0.48, 0);
-  chairGroup.add(stem);
-
-  // 5-Star Caster Base sitting exactly level with the table feet
-  for (let a = 0; a < 5; a++) {
-    const ang = (a / 5) * Math.PI * 2;
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.045, 0.055), chairBaseMat);
-    leg.position.set(Math.cos(ang) * 0.23, -0.93, Math.sin(ang) * 0.23);
-    leg.rotation.y = -ang;
-    chairGroup.add(leg);
-
-    // High-contrast chrome caster wheels that pop off dark background
-    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.04, 8), casterWheelMat);
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(Math.cos(ang) * 0.46, -0.955, Math.sin(ang) * 0.46);
-    chairGroup.add(wheel);
-  }
-  roomGroup.add(chairGroup);
-
-  // 3. Drafting Desk (Clean solid architectural surfaces)
-  const deskGroup = new THREE.Group();
-  deskGroup.position.set(1.20, -0.45, 0.45);
-
-  const deskW = 2.8, deskD = 1.70, deskH = 0.09;
-  const deskTop = new THREE.Mesh(new THREE.BoxGeometry(deskW, deskH, deskD), woodMat);
-  deskGroup.add(deskTop);
-
-  function makeDeskLeg(x, z) {
-    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.08), tableLegMat);
-    leg.position.set(x, -0.62, z);
-    deskGroup.add(leg);
-
-    // Polished foot glides that prevent legs blending into dark background
-    const glide = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.05, 0.10), footGlideMat);
-    glide.position.set(x, -1.17, z);
-    deskGroup.add(glide);
-  }
-  makeDeskLeg(-deskW/2 + 0.18, -deskD/2 + 0.18);
-  makeDeskLeg(-deskW/2 + 0.18, deskD/2 - 0.18);
-  makeDeskLeg(deskW/2 - 0.18, -deskD/2 + 0.18);
-  makeDeskLeg(deskW/2 - 0.18, deskD/2 - 0.18);
-  roomGroup.add(deskGroup);
-
-  // 4. Laptop With Official Cyath Tesseract Logo Screen (Sleek, Proportional Notebook)
-  const laptopGroup = new THREE.Group();
-  laptopGroup.position.set(1.05, -0.395, 0.55);
-  laptopGroup.rotation.y = -0.14;
-
-  const lapW = 1.62, lapD = 1.12, lapH = 0.035;
-  const lapBase = new THREE.Mesh(new THREE.BoxGeometry(lapW, lapH, lapD), metalMat);
-  laptopGroup.add(lapBase);
-
-  const lapKb = new THREE.Mesh(new THREE.PlaneGeometry(1.42, 0.62), new THREE.MeshStandardMaterial({ color: isDay ? 0x222428 : 0x1A1D24, roughness: 0.9 }));
-  lapKb.rotation.x = -Math.PI / 2;
-  lapKb.position.set(0, lapH/2 + 0.003, -0.14);
-  laptopGroup.add(lapKb);
-
-  const lapTp = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.30), new THREE.MeshStandardMaterial({ color: isDay ? 0x363942 : 0x2E323C, roughness: 0.7 }));
-  lapTp.rotation.x = -Math.PI / 2;
-  lapTp.position.set(0, lapH/2 + 0.003, 0.32);
-  laptopGroup.add(lapTp);
-
-  const screenHinged = new THREE.Group();
-  screenHinged.position.set(0, lapH/2, -lapD/2);
-  screenHinged.rotation.x = -0.32; // Tilted back so screen faces UP and forward to camera!
-
-  const lapLid = new THREE.Mesh(new THREE.BoxGeometry(lapW, 1.12, 0.03), metalMat);
-  lapLid.position.set(0, 0.56, 0);
-  screenHinged.add(lapLid);
-
-  // Cyath Tesseract Logo Screen Canvas (High-Definition Texture)
-  const logoCanvas = document.createElement('canvas');
-  logoCanvas.width = 1024;
-  logoCanvas.height = 680;
-  const lctx = logoCanvas.getContext('2d');
-  const logoTex = new THREE.CanvasTexture(logoCanvas);
-  logoTex.needsUpdate = true;
-
-  function drawLogoScreen(theme) {
-    const isD = (theme === 'day');
-    lctx.clearRect(0, 0, 1024, 680);
-    lctx.fillStyle = isD ? '#FAF8F2' : '#0B0D12';
-    lctx.fillRect(0, 0, 1024, 680);
-
-    // Bezel outline
-    lctx.strokeStyle = isD ? '#1C1A18' : '#8E9CB2';
-    lctx.lineWidth = 14;
-    lctx.strokeRect(7, 7, 1010, 666);
-
-    // Top header bar
-    lctx.fillStyle = isD ? '#ECE7DC' : '#161922';
-    lctx.fillRect(14, 14, 996, 52);
-    lctx.fillStyle = isD ? '#8A8278' : '#64748B';
-    lctx.beginPath();
-    lctx.arc(44, 40, 8, 0, Math.PI * 2);
-    lctx.arc(74, 40, 8, 0, Math.PI * 2);
-    lctx.arc(104, 40, 8, 0, Math.PI * 2);
-    lctx.fill();
-
-    // Draw Official Cyath 4D Tesseract Logo
-    const cx = 512, cy = 290;
-    const rOut = 150;
-    const outPts = [];
-    for (let p = 0; p < 6; p++) {
-      const ang = (Math.PI / 3) * p - Math.PI / 6;
-      outPts.push({ x: cx + Math.cos(ang) * rOut, y: cy + Math.sin(ang) * rOut });
-    }
-
-    const rIn = 75;
-    const inPts = [];
-    for (let p = 0; p < 6; p++) {
-      const ang = (Math.PI / 3) * p - Math.PI / 6;
-      inPts.push({ x: cx + Math.cos(ang) * rIn, y: cy + Math.sin(ang) * rIn });
-    }
-
-    // Outer Hexagon
-    lctx.fillStyle = isD ? '#F0ECE1' : '#FFFFFF';
-    lctx.strokeStyle = isD ? '#1C1A18' : '#000000';
-    lctx.lineWidth = 14;
-    lctx.lineJoin = 'round';
-
-    lctx.beginPath();
-    lctx.moveTo(outPts[0].x, outPts[0].y);
-    for (let p = 1; p < 6; p++) lctx.lineTo(outPts[p].x, outPts[p].y);
-    lctx.closePath();
-    lctx.fill();
-    lctx.stroke();
-
-    // Outer to Inner spokes
-    lctx.beginPath();
-    for (let p = 0; p < 6; p++) {
-      lctx.moveTo(outPts[p].x, outPts[p].y);
-      lctx.lineTo(inPts[p].x, inPts[p].y);
-    }
-    lctx.stroke();
-
-    // Inner Hexagon
-    lctx.beginPath();
-    lctx.moveTo(inPts[0].x, inPts[0].y);
-    for (let p = 1; p < 6; p++) lctx.lineTo(inPts[p].x, inPts[p].y);
-    lctx.closePath();
-    lctx.fill();
-    lctx.stroke();
-
-    // Inner Y spokes
-    lctx.beginPath();
-    lctx.moveTo(cx, cy); lctx.lineTo(inPts[0].x, inPts[0].y);
-    lctx.moveTo(cx, cy); lctx.lineTo(inPts[2].x, inPts[2].y);
-    lctx.moveTo(cx, cy); lctx.lineTo(inPts[4].x, inPts[4].y);
-    lctx.stroke();
-
-    // Wordmark underneath
-    lctx.fillStyle = isD ? '#1C1A18' : '#FFFFFF';
-    lctx.font = '700 82px "Space Grotesk", sans-serif';
-    lctx.textAlign = 'center';
-    lctx.fillText('cyath', cx, 545);
-
-    logoTex.needsUpdate = true;
-  }
-  drawLogoScreen(currentTheme);
-
-  const screenMat = new THREE.MeshBasicMaterial({ map: logoTex, side: THREE.DoubleSide });
-  const screenDisplay = new THREE.Mesh(new THREE.PlaneGeometry(1.54, 1.04), screenMat);
-  screenDisplay.position.set(0, 0.56, 0.022);
-  screenHinged.add(screenDisplay);
-
-  laptopGroup.add(screenHinged);
-  roomGroup.add(laptopGroup);
-
-  // 5. Coffee Mug & Dynamic Steam (Positioned to the Left of Laptop - Zero Intersection!)
-  const mugGroup = new THREE.Group();
-  mugGroup.position.set(-0.02, -0.32, 0.65);
-
-  const mugMat = new THREE.MeshStandardMaterial({ color: isDay ? 0xBA4D22 : 0xC2632B, roughness: 0.25, metalness: 0.3 });
-  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.12, 0.36, 16), mugMat);
-  mugGroup.add(mug);
-
-  const mugCoffee = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.10, 0.08, 16), new THREE.MeshStandardMaterial({ color: 0x1E140E, roughness: 0.9 }));
-  mugCoffee.position.set(0, 0.14, 0);
-  mugGroup.add(mugCoffee);
-
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.026, 8, 16, Math.PI), mugMat);
-  handle.position.set(-0.13, 0, 0);
-  handle.rotation.z = Math.PI / 2;
-  mugGroup.add(handle);
-  roomGroup.add(mugGroup);
-
-  const steamCount = 28;
-  const steamGeo = new THREE.BufferGeometry();
-  const steamPos = new Float32Array(steamCount * 3);
-  const steamVel = [];
-  for (let s = 0; s < steamCount; s++) {
-    steamPos[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.06;
-    steamPos[s*3 + 1] = mugGroup.position.y + 0.16 + Math.random() * 0.5;
-    steamPos[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.06;
-    steamVel.push({
-      vy: 0.008 + Math.random() * 0.008,
-      phase: Math.random() * Math.PI * 2,
-      sway: 0.003 + Math.random() * 0.003
+  const sgContainer = document.getElementById('shapeGridContainer');
+  if (sgContainer && window.ShapeGridVanilla) {
+    window.shapeGridInstance = window.ShapeGridVanilla.initShapeGrid(sgContainer, {
+      shape: "triangle",
+      direction: "none",
+      lineColor: currentTheme === 'day' ? "#dcd7cc" : "#1b1920",
+      hoverColor: "#ffffff",
+      hoverFillColor: "#ffffff",
+      fillOpacity: 0.15,
+      cellSize: 40,
+      speed: 0.5,
+      tiltX: 0,
+      tiltY: 0,
+      rainbow: false,
+      trail: 0.1,
+      glow: 0.55,
+      twinkle: 0.3,
+      fade: 0,
+      clickCascade: false
     });
   }
-  steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPos, 3));
-  const steamParticles = new THREE.Points(steamGeo, new THREE.PointsMaterial({ color: isDay ? 0x92400E : 0xD97706, size: 0.14, transparent: true, opacity: 0.85 }));
-  roomGroup.add(steamParticles);
-
-  // 6. Potted Succulent Plant (Positioned on Far Right of Desk - 100% Free of Laptop & Chair!)
-  const plantGroup = new THREE.Group();
-  plantGroup.position.set(2.26, -0.405, 0.28);
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.12, 0.28, 12), new THREE.MeshStandardMaterial({ color: isDay ? 0x8A3414 : 0x8C3A1A, roughness: 0.5, metalness: 0.2 }));
-  pot.position.set(0, 0.14, 0);
-  plantGroup.add(pot);
-
-  const plantMat = new THREE.MeshStandardMaterial({ color: isDay ? 0x22543D : 0x22C55E, roughness: 0.28, metalness: 0.2 });
-  for (let i = 0; i < 5; i++) {
-    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.32, 5), plantMat);
-    const ang = (i / 5) * Math.PI * 2;
-    leaf.position.set(Math.cos(ang) * 0.08, 0.28 + i * 0.02, Math.sin(ang) * 0.08);
-    leaf.rotation.x = 0.26 * Math.sin(ang);
-    leaf.rotation.z = -0.26 * Math.cos(ang);
-    plantGroup.add(leaf);
-  }
-  roomGroup.add(plantGroup);
-
-  // 7. Studio Lighting (Directional Key + Rim + Ambient + Floor Contact Light)
-  const ambLight = new THREE.AmbientLight(isDay ? 0xE8E4D8 : 0x4B5563, isDay ? 2.2 : 2.6);
-  scene.add(ambLight);
-
-  const dirLight = new THREE.DirectionalLight(isDay ? 0xFFFBEB : 0xF8FAFC, isDay ? 3.0 : 3.4);
-  dirLight.position.set(4.0, 5.5, 4.5);
-  scene.add(dirLight);
-
-  const rimLight = new THREE.DirectionalLight(0x38BDF8, isDay ? 1.2 : 2.0);
-  rimLight.position.set(-3.5, 3.0, -2.0);
-  scene.add(rimLight);
-
-  const screenLight = new THREE.PointLight(0x38BDF8, isDay ? 1.2 : 2.2, 4.0);
-  screenLight.position.set(1.25, 0.1, 0.75);
-  scene.add(screenLight);
-
-  // Dedicated Floor Contact Light to catch table legs and chair feet with specular brilliance
-  const floorRimLight = new THREE.DirectionalLight(isDay ? 0x8A7A68 : 0x60A5FA, isDay ? 0.8 : 2.4);
-  floorRimLight.position.set(1.5, -2.8, 3.5);
-  scene.add(floorRimLight);
-
-  function update3DTheme(theme) {
-    drawLogoScreen(theme);
-    const isD = (theme === 'day');
-    const bgCol = isD ? 0xF5F3EC : 0x1b1b1b;
-    const fgCol = isD ? 0x1c1a18 : 0xffffff;
-
-    scene.background.setHex(bgCol);
-    postMaterial.uniforms.uBgColor.value.setHex(bgCol);
-    postMaterial.uniforms.uFgColor.value.setHex(fgCol);
-    postMaterial.uniforms.uInvert.value = isD ? 1.0 : 0.0;
-
-    if (isD) {
-      ambLight.color.setHex(0xE8E4D8);
-      ambLight.intensity = 2.0;
-      dirLight.color.setHex(0xFFFBEB);
-      dirLight.intensity = 2.8;
-      floorRimLight.color.setHex(0x8A7A68);
-      floorRimLight.intensity = 0.8;
-      glassMat.color.setHex(0xFAF7F0);
-      woodMat.color.setHex(0x8C6847);
-      frameMat.color.setHex(0x685D52);
-      metalMat.color.setHex(0x6E7482);
-      darkMetalMat.color.setHex(0x4B505C);
-      fabricMat.color.setHex(0x48423B);
-      tableLegMat.color.setHex(0x3E424C);
-      footGlideMat.color.setHex(0x1E2026);
-      chairBaseMat.color.setHex(0x3A3E48);
-      casterWheelMat.color.setHex(0x181A20);
-    } else {
-      ambLight.color.setHex(0x4B5563);
-      ambLight.intensity = 2.6;
-      dirLight.color.setHex(0xF8FAFC);
-      dirLight.intensity = 3.4;
-      floorRimLight.color.setHex(0x60A5FA);
-      floorRimLight.intensity = 2.4;
-      glassMat.color.setHex(0x222735);
-      woodMat.color.setHex(0x484E5E);
-      frameMat.color.setHex(0x545B6C);
-      metalMat.color.setHex(0x8C96A8);
-      darkMetalMat.color.setHex(0x363B48);
-      fabricMat.color.setHex(0x4B5262);
-      tableLegMat.color.setHex(0x8E9CB2);
-      footGlideMat.color.setHex(0xE2E8F0);
-      chairBaseMat.color.setHex(0x94A3B8);
-      casterWheelMat.color.setHex(0xE2E8F0);
-    }
-  }
-
-  if (currentTheme === 'day') {
-    update3DTheme('day');
-  }
 
   // ══════════════════════════════════════════════════════════════════
-  // INTERACTIVE 3D ORBIT / DRAG ROTATION & PARALLAX (caelangray.com style)
+  // LENIS FLUID INERTIAL SCROLL ENGINE
   // ══════════════════════════════════════════════════════════════════
-  let isDragging = false;
-  let prevMouseX = 0, prevMouseY = 0;
-  let targetRotX = 0, targetRotY = 0;
-  let mouseX = 0.5, mouseY = 0.5;
-  let curMouseUvX = 0.5, curMouseUvY = 0.5;
-  let curMouseStrength = 0.0;
-  let targetMouseActive = 0.0;
+  let lenisInstance = null;
+  if (typeof Lenis !== 'undefined') {
+    lenisInstance = new Lenis({
+      duration: 1.18,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
 
-  displayCanvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
-  });
-
-  window.addEventListener('mouseup', () => { isDragging = false; });
-  window.addEventListener('mouseleave', () => { 
-    isDragging = false; 
-    targetMouseActive = 0.0;
-  });
-
-  window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX / window.innerWidth;
-    mouseY = e.clientY / window.innerHeight;
-    targetMouseActive = (e.clientY <= window.innerHeight * 1.05) ? 1.0 : 0.0;
-    if (isDragging) {
-      const dx = e.clientX - prevMouseX;
-      const dy = e.clientY - prevMouseY;
-      targetRotY += dx * 0.005;
-      targetRotX += dy * 0.003;
-      targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
+    function lenisRaf(time) {
+      lenisInstance.raf(time);
+      requestAnimationFrame(lenisRaf);
     }
-  });
-
-  // Touch support for mobile/trackpads
-  displayCanvas.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      isDragging = true;
-      prevMouseX = e.touches[0].clientX;
-      prevMouseY = e.touches[0].clientY;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', () => { isDragging = false; });
-  window.addEventListener('touchmove', (e) => {
-    if (isDragging && e.touches.length === 1) {
-      const dx = e.touches[0].clientX - prevMouseX;
-      const dy = e.touches[0].clientY - prevMouseY;
-      targetRotY += dx * 0.005;
-      targetRotX += dy * 0.003;
-      targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
-      prevMouseX = e.touches[0].clientX;
-      prevMouseY = e.touches[0].clientY;
-    }
-  }, { passive: true });
-
-  // Window Resize Listener
-  window.addEventListener('resize', () => {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(W, H, false);
-    renderTarget.setSize(W * dpr, H * dpr);
-
-    postMaterial.uniforms.uResolution.value.set(W * dpr, H * dpr);
-    postMaterial.uniforms.uGridSize.value = 3.2 * dpr;
-  });
-
-  // ══════════════════════════════════════════════════════════════════
-  // ANIMATION LOOP (LOCKED 60-120 FPS GPU RENDERING)
-  // ══════════════════════════════════════════════════════════════════
-  function animate(time) {
-    // 1. Steam particle animation
-    const posArr = steamGeo.attributes.position.array;
-    for (let s = 0; s < steamCount; s++) {
-      posArr[s*3 + 1] += steamVel[s].vy;
-      posArr[s*3] += Math.sin(time * 0.003 + steamVel[s].phase) * steamVel[s].sway;
-      if (posArr[s*3 + 1] > mugGroup.position.y + 0.9) {
-        posArr[s*3 + 1] = mugGroup.position.y + 0.16;
-        posArr[s*3] = mugGroup.position.x + (Math.random() - 0.5) * 0.06;
-        posArr[s*3 + 2] = mugGroup.position.z + (Math.random() - 0.5) * 0.06;
-      }
-    }
-    steamGeo.attributes.position.needsUpdate = true;
-
-    // 2. Smooth drag rotation & subtle idle breathing
-    roomGroup.rotation.y += (targetRotY - roomGroup.rotation.y) * 0.08;
-    roomGroup.rotation.x += (targetRotX - roomGroup.rotation.x) * 0.08;
-
-    // Magnetic ASCII / Halftone Repel displacement physics
-    curMouseUvX += (mouseX - curMouseUvX) * 0.14;
-    curMouseUvY += ((1.0 - mouseY) - curMouseUvY) * 0.14;
-    curMouseStrength += (targetMouseActive - curMouseStrength) * 0.08;
-    postMaterial.uniforms.uMouse.value.set(curMouseUvX, curMouseUvY);
-    postMaterial.uniforms.uMouseStrength.value = curMouseStrength;
-
-    // Gentle camera parallax lerp
-    const targetCamX = (mouseX - 0.5) * 0.35;
-    const targetCamY = 1.9 - (mouseY - 0.5) * 0.25;
-    camera.position.x += (targetCamX - camera.position.x) * 0.05;
-    camera.position.y += (targetCamY - camera.position.y) * 0.05;
-    camera.lookAt(0, 0, 0);
-
-    // 3. PASS 1: Render 3D Scene into High-Precision Render Target
-    renderer.setRenderTarget(renderTarget);
-    renderer.render(scene, camera);
-
-    // 4. PASS 2: Render GPU Halftone Screen-Space Shader Directly to Canvas
-    renderer.setRenderTarget(null);
-    postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
-    renderer.render(postScene, postCamera);
-
-    requestAnimationFrame(animate);
+    requestAnimationFrame(lenisRaf);
   }
-
-  requestAnimationFrame(animate);
 })();
 </script>
 </body>

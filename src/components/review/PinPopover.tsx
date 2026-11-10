@@ -72,15 +72,15 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
       onClick={(e) => e.stopPropagation()}
       style={
         isSmallScreen
-          ? { left: "16px", right: "16px", bottom: "16px", maxWidth: "calc(100vw - 32px)" }
+          ? { left: "16px", right: "16px", bottom: "16px", maxWidth: "calc(100vw - 32px)", zIndex: 50 }
           : {
-              left: isNearRightEdge
-                ? `${Math.max(6, xPercent - 28)}%`
-                : `${Math.min(72, Math.max(6, xPercent))}%`,
-              top: isNearBottomEdge
-                ? `${Math.max(8, yPercent - 26)}%`
-                : `${Math.min(74, Math.max(6, yPercent))}%`,
-              maxWidth: "320px",
+              ...(xPercent > 50
+                ? { right: `${Math.max(2, 100 - xPercent + 2)}%`, left: "auto" }
+                : { left: `${Math.max(2, xPercent + 2)}%`, right: "auto" }),
+              ...(yPercent > 50
+                ? { bottom: `${Math.max(2, 100 - yPercent + 2)}%`, top: "auto" }
+                : { top: `${Math.max(2, yPercent + 2)}%`, bottom: "auto" }),
+              maxWidth: "min(320px, calc(100% - 16px))",
             }
       }
       className="fixed sm:absolute z-40 w-full sm:w-80 bg-[#0a0a0a] border border-white/20 rounded-xl shadow-2xl p-4 text-white text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl selection:bg-white selection:text-black"
