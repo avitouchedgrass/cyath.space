@@ -142,18 +142,19 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
               <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
               <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
             </div>
-            <span className="text-xs font-semibold text-white tracking-wide">
-              Cyath Studio Walkthrough
+            <span className="font-serif text-sm font-medium text-white tracking-wide">
+              Cyath Atelier Operational Guide
             </span>
             <span className="text-zinc-600">·</span>
-            <span className="text-[11px] font-mono text-zinc-400">
-              Interactive Video Guide
+            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+              INTERACTIVE REEL
             </span>
           </div>
 
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close walkthrough guide"
           >
             <X className="w-4 h-4" />
           </button>

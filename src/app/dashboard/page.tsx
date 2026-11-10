@@ -293,15 +293,12 @@ export default function DashboardPage() {
 
   return (
     <div
-      className={`min-h-screen flex transition-colors duration-200 ${
+      className={`min-h-screen flex transition-colors duration-200 relative ${
         isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-black text-[#FAFAFA]"
       }`}
-      style={{
-        fontFamily: "'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
     >
       {/* ══════════════════════════════════════════════════════════════════
-           LEFT SIDEBAR (Workflow.design Inspired Navigation)
+           LEFT SIDEBAR (Atelier Navigation)
            ══════════════════════════════════════════════════════════════════ */}
       <aside
         className={`w-64 border-r flex flex-col justify-between shrink-0 select-none z-30 transition-colors ${
@@ -313,25 +310,22 @@ export default function DashboardPage() {
           {/* Workspace / Studio Header */}
           <div
             onClick={() => setShowAccountModal(true)}
-            className={`p-2 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
+            className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
               isDay
                 ? "bg-white/80 border-black/10 hover:border-black/20"
-                : "bg-white/[0.04] border-white/10 hover:border-white/20"
+                : "bg-white/[0.03] border-white/10 hover:border-white/20 hover:bg-white/[0.05]"
             }`}
             title="Studio Account & Profile"
           >
             <div className="flex items-center gap-2.5 truncate">
-              <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center font-bold font-mono text-xs text-white shrink-0">
-                {agencyInput.charAt(0).toUpperCase() || "C"}
-              </div>
+              <TesseractMark size={26} className="shrink-0" />
               <div className="truncate">
-                <div className="text-xs font-semibold truncate leading-tight">
+                <div className="text-xs font-serif font-medium tracking-wide truncate leading-tight text-white">
                   {agencyInput || "Cyath Atelier"}
                 </div>
-                <div className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
-                  <span>Free Tier</span>
-                  <span className="text-zinc-700">·</span>
-                  <span className="text-emerald-400">Active</span>
+                <div className="text-[9px] font-mono tracking-widest text-zinc-400 flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>ATELIER · ACTIVE</span>
                 </div>
               </div>
             </div>
@@ -339,38 +333,39 @@ export default function DashboardPage() {
           </div>
 
           {/* Primary Nav Links */}
-          <nav className="space-y-1 text-xs font-medium">
+          <nav className="space-y-1.5 text-xs font-medium">
             <button
               onClick={() => setActiveNav("overview")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors cursor-pointer text-left ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all cursor-pointer text-left ${
                 activeNav === "overview"
                   ? isDay
-                    ? "bg-black text-white font-semibold"
-                    : "bg-white text-black font-semibold"
+                    ? "bg-black/10 text-black border border-black/20 font-medium"
+                    : "bg-white/[0.08] text-white border border-white/15 backdrop-blur-md shadow-xs font-medium"
                   : isDay
                   ? "text-zinc-600 hover:bg-black/5"
                   : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
               }`}
             >
-              <Columns3 className="w-4 h-4" />
-              <span>Overview</span>
+              <Columns3 className="w-4 h-4 text-zinc-300" />
+              <span className="font-sans">Overview</span>
+              <span className="ml-auto font-mono text-[9px] text-zinc-500">01</span>
             </button>
 
             <button
               onClick={() => setActiveNav("canvases")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors cursor-pointer text-left ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all cursor-pointer text-left ${
                 activeNav === "canvases"
                   ? isDay
-                    ? "bg-black text-white font-semibold"
-                    : "bg-white text-black font-semibold"
+                    ? "bg-black/10 text-black border border-black/20 font-medium"
+                    : "bg-white/[0.08] text-white border border-white/15 backdrop-blur-md shadow-xs font-medium"
                   : isDay
                   ? "text-zinc-600 hover:bg-black/5"
                   : "text-zinc-400 hover:bg-white/[0.04] hover:text-white"
               }`}
             >
-              <LayoutGrid className="w-4 h-4" />
-              <span>All Canvases</span>
-              <span className="ml-auto font-mono text-[10px] text-zinc-500">
+              <LayoutGrid className="w-4 h-4 text-zinc-300" />
+              <span className="font-sans">All Canvases</span>
+              <span className="ml-auto font-mono text-[10px] text-zinc-400 px-1.5 py-0.5 rounded border border-white/10 bg-white/5">
                 {projects.length}
               </span>
             </button>
@@ -392,6 +387,7 @@ export default function DashboardPage() {
                 }}
                 className={`p-1 rounded hover:bg-white/10 transition-colors text-zinc-400 hover:text-white cursor-pointer`}
                 title="Create new canvas"
+                aria-label="Create new canvas"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
@@ -418,11 +414,11 @@ export default function DashboardPage() {
                         p.isApproved
                           ? "bg-emerald-400"
                           : p.pins.length > 0
-                          ? "bg-amber-400"
-                          : "bg-zinc-500"
+                          ? "bg-zinc-200"
+                          : "bg-zinc-600"
                       }`}
                     />
-                    <span className="truncate">{p.title}</span>
+                    <span className="truncate font-sans">{p.title}</span>
                   </Link>
                 ))
               )}
@@ -434,28 +430,28 @@ export default function DashboardPage() {
         <div className="p-4 space-y-3 border-t border-white/[0.08]">
           {/* Plan Meter */}
           <div
-            className={`p-3 rounded-xl border ${
-              isDay ? "bg-white/60 border-black/10" : "bg-white/[0.03] border-white/10"
+            className={`p-3.5 rounded-xl border ${
+              isDay ? "bg-white/60 border-black/10" : "bg-white/[0.02] border-white/10"
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-mono mb-1.5">
-              <span className="text-zinc-400">Canvases</span>
-              <span className="font-semibold text-zinc-300">
+            <div className="flex items-center justify-between text-[10px] font-mono tracking-wider mb-2">
+              <span className="text-zinc-400 uppercase">Studio Capacity</span>
+              <span className="text-zinc-300 font-semibold">
                 {projects.length} / 1
               </span>
             </div>
-            <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mb-2.5">
+            <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden mb-3">
               <div
                 className={`h-full transition-all duration-300 ${
-                  projects.length >= 1 ? "bg-amber-400 w-full" : "bg-white w-0"
+                  projects.length >= 1 ? "bg-white w-full" : "bg-white/40 w-0"
                 }`}
               />
             </div>
             <button
               onClick={() => setShowUpgradeModal(true)}
-              className="w-full py-1.5 rounded-lg text-[11px] font-semibold bg-white hover:bg-zinc-200 text-black transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer"
+              className="w-full py-1.5 px-3 rounded-lg text-[10px] font-mono tracking-wider uppercase bg-white hover:bg-zinc-200 text-black font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
             >
-              <span>Upgrade to Pro ($15/mo)</span>
+              <span>Studio Pro Access</span>
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
@@ -464,25 +460,28 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
             <button
               onClick={() => setShowWalkthrough(true)}
-              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer py-1 px-1.5 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
               title="Studio Guide"
+              aria-label="Studio Guide"
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Guide</span>
+              <span className="font-mono text-[11px]">Guide</span>
             </button>
 
             <button
               onClick={toggleTheme}
-              className="hover:text-white transition-colors p-1 cursor-pointer"
+              className="hover:text-white transition-colors p-1.5 rounded cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
               title="Toggle theme"
+              aria-label="Toggle theme"
             >
               {isDay ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
             </button>
 
             <button
               onClick={handleSignOut}
-              className="hover:text-red-400 transition-colors flex items-center gap-1 cursor-pointer"
+              className="hover:text-red-400 transition-colors p-1.5 rounded cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-400/40"
               title="Sign Out"
+              aria-label="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -493,7 +492,7 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════════════════════════
            MAIN CONTENT AREA (Workflow.design Board & Grid)
            ══════════════════════════════════════════════════════════════════ */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto relative bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px]">
         {/* Top Header */}
         <header
           className={`h-16 border-b px-8 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md transition-colors ${
@@ -502,17 +501,17 @@ export default function DashboardPage() {
         >
           {/* Title */}
           <div className="flex items-center gap-3">
-            <h1 className="font-sans text-lg font-semibold tracking-tight">
+            <h1 className="font-serif text-2xl font-normal tracking-tight text-white">
               {activeNav === "overview" ? "Overview" : "All Canvases"}
             </h1>
             <span
-              className={`text-[11px] font-sans px-2 py-0.5 rounded-full border ${
+              className={`text-[10px] font-mono tracking-widest px-2.5 py-0.5 rounded-full border ${
                 isDay
                   ? "bg-black/5 border-black/10 text-zinc-600"
                   : "bg-white/5 border-white/10 text-zinc-400"
               }`}
             >
-              {projects.length} {projects.length === 1 ? "project" : "projects"}
+              [ 0{projects.length} {projects.length === 1 ? "CANVAS ACTIVE" : "CANVASES ACTIVE"} ]
             </span>
           </div>
 
@@ -523,10 +522,10 @@ export default function DashboardPage() {
               <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Filter canvases..."
+                placeholder="Filter staging canvases..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-48 sm:w-64 pl-8 pr-3 py-1.5 rounded-lg border text-xs font-sans transition-all outline-none ${
+                className={`w-48 sm:w-64 pl-8 pr-3 py-1.5 rounded-xl border text-xs font-mono transition-all outline-none ${
                   isDay
                     ? "bg-white border-black/15 focus:border-black text-[#1C1A18]"
                     : "bg-white/[0.03] border-white/10 focus:border-white/30 text-white placeholder-zinc-500"
@@ -536,33 +535,35 @@ export default function DashboardPage() {
 
             {/* View Toggle */}
             <div
-              className={`p-0.5 rounded-lg border flex items-center ${
+              className={`p-0.5 rounded-xl border flex items-center ${
                 isDay ? "bg-white border-black/15" : "bg-white/[0.03] border-white/10"
               }`}
             >
               <button
                 onClick={() => setViewMode("board")}
-                className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                   viewMode === "board"
                     ? isDay
-                      ? "bg-black text-white"
-                      : "bg-white text-black"
+                      ? "bg-black/10 text-black font-semibold"
+                      : "bg-white/15 text-white shadow-xs"
                     : "text-zinc-500 hover:text-white"
                 }`}
                 title="Kanban Board view"
+                aria-label="Kanban Board view"
               >
                 <Columns3 className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                   viewMode === "list"
                     ? isDay
-                      ? "bg-black text-white"
-                      : "bg-white text-black"
+                      ? "bg-black/10 text-black font-semibold"
+                      : "bg-white/15 text-white shadow-xs"
                     : "text-zinc-500 hover:text-white"
                 }`}
                 title="Grid / List view"
+                aria-label="Grid / List view"
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
               </button>
@@ -577,76 +578,92 @@ export default function DashboardPage() {
                   setShowCreateModal(true);
                 }
               }}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-mono tracking-wide font-medium transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
                 isDay
                   ? "bg-[#1C1A18] text-white hover:bg-black"
                   : "bg-white text-black hover:bg-zinc-200"
               }`}
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>New Canvas</span>
+              <Plus className="w-3.5 h-3.5 stroke-[2.2]" />
+              <span>NEW CANVAS</span>
             </button>
           </div>
         </header>
 
         {/* Content Body */}
         <div className="p-8 space-y-8 flex-1">
-          {/* ── Quick Creation Bar (URL + File Upload) ── */}
+          {/* ── Staging Intake Console (Architectural Terminal) ── */}
           <div
-            className={`p-4 rounded-2xl border transition-all ${
+            className={`p-5 rounded-2xl border transition-all relative overflow-hidden ${
               isDay
                 ? "bg-white/80 border-black/10 shadow-xs"
-                : "bg-[#09090b] border-white/[0.08] shadow-md"
+                : "bg-[#09090c] border-white/[0.1] shadow-lg"
             }`}
           >
+            {/* Terminal Header */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 font-semibold">
+                  // STAGING INTAKE TERMINAL
+                </span>
+              </div>
+              <span className="font-mono text-[10px] text-zinc-500 tracking-wider">
+                DEPLOYMENT MATRIX · V2.4
+              </span>
+            </div>
+
             <div className="flex flex-col md:flex-row items-center gap-3">
               {/* Quick URL Input */}
               <form onSubmit={handleQuickUrlSubmit} className="flex-1 flex items-center gap-2 w-full">
                 <div className="relative flex-1">
-                  <Globe className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Globe className="w-3.5 h-3.5 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     placeholder="Enter staging site URL (e.g. https://staging.client.com)"
                     value={quickUrl}
                     onChange={(e) => setQuickUrl(e.target.value)}
-                    className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs font-sans transition-all outline-none ${
+                    className={`w-full pl-10 pr-28 py-2.5 rounded-xl border text-xs font-mono transition-all outline-none ${
                       isDay
                         ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
-                        : "bg-black border-white/10 focus:border-white/30 text-white placeholder-zinc-500"
+                        : "bg-black/60 border-white/10 focus:border-white/30 text-white placeholder-zinc-500 shadow-inner"
                     }`}
                   />
+                  <span className="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[9px] text-zinc-500 pointer-events-none">
+                    ↵ RETURN
+                  </span>
                 </div>
                 <button
                   type="submit"
                   disabled={!quickUrl.trim()}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer disabled:opacity-30 ${
+                  className={`px-4 py-2.5 rounded-xl text-xs font-mono font-semibold tracking-wide transition-all whitespace-nowrap cursor-pointer disabled:opacity-30 ${
                     isDay
                       ? "bg-black text-white hover:bg-zinc-800"
                       : "bg-white text-black hover:bg-zinc-200"
                   }`}
                 >
-                  Create Canvas
+                  INITIALIZE CANVAS
                 </button>
               </form>
 
-              <div className="hidden md:block w-px h-6 bg-white/10" />
+              <div className="hidden md:block w-px h-7 bg-white/10" />
 
               {/* Upload Image/PDF File */}
               <label
-                className={`w-full md:w-auto px-4 py-2 rounded-xl border text-xs font-sans flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`w-full md:w-auto px-4 py-2.5 rounded-xl border text-xs font-mono flex items-center justify-center gap-2 transition-all cursor-pointer focus-within:ring-2 focus-within:ring-white/40 focus-within:border-white/40 ${
                   isDay
                     ? "border-black/15 bg-black/[0.02] hover:bg-black/5 text-[#1C1A18]"
-                    : "border-white/10 bg-black hover:bg-white/5 text-zinc-300 hover:text-white"
+                    : "border-white/10 bg-black/60 hover:bg-white/5 text-zinc-300 hover:text-white"
                 }`}
                 title="Drop image or PDF to review"
               >
                 <UploadCloud className="w-3.5 h-3.5 text-zinc-400" />
-                <span>Upload PDF / Image</span>
+                <span>UPLOAD ASSET</span>
                 <input
                   type="file"
                   accept="image/*,application/pdf"
                   onChange={handleFileUpload}
-                  className="hidden"
+                  className="sr-only"
                 />
               </label>
             </div>
@@ -807,20 +824,20 @@ export default function DashboardPage() {
               isDay ? "bg-white border-black/15 text-[#1C1A18]" : "bg-[#09090b] border-white/15 text-white"
             }`}
           >
-            <h3 className="font-sans text-base font-semibold mb-1">New Review Canvas</h3>
-            <p className="text-xs text-zinc-400 font-sans mb-5">
+            <h3 className="font-serif text-xl font-normal text-white mb-1">New Review Canvas</h3>
+            <p className="text-xs text-zinc-400 font-mono tracking-wider mb-5">
               Mount any live site URL or upload an asset to generate an instant zero-login client review link.
             </p>
 
-            <form onSubmit={handleCreate} className="space-y-4 font-sans">
+            <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">Canvas Title</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-1.5">Canvas Title</label>
                 <input
                   type="text"
                   placeholder="e.g. Acme Studio Landing Page"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className={`w-full px-3 py-2 rounded-xl border text-xs font-sans transition-all outline-none ${
+                  className={`w-full px-3 py-2.5 rounded-xl border text-xs font-mono transition-all outline-none ${
                     isDay
                       ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
                       : "bg-black border-white/15 focus:border-white text-white"
@@ -830,13 +847,13 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1.5">Staging URL</label>
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-1.5">Staging URL</label>
                 <input
                   type="text"
                   placeholder="e.g. https://staging.acmestudio.com"
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
-                  className={`w-full px-3 py-2 rounded-xl border text-xs font-sans transition-all outline-none ${
+                  className={`w-full px-3 py-2.5 rounded-xl border text-xs font-mono transition-all outline-none ${
                     isDay
                       ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
                       : "bg-black border-white/15 focus:border-white text-white"
@@ -849,18 +866,18 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-xs font-sans text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors cursor-pointer"
                 >
-                  Cancel
+                  CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={!title.trim() || !targetUrl.trim()}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer disabled:opacity-30 ${
+                  className={`px-4 py-2 rounded-xl text-xs font-mono font-semibold tracking-wider transition-all cursor-pointer disabled:opacity-30 ${
                     isDay ? "bg-black text-white hover:bg-zinc-800" : "bg-white text-black hover:bg-zinc-200"
                   }`}
                 >
-                  Create Canvas
+                  CREATE CANVAS
                 </button>
               </div>
             </form>
@@ -931,48 +948,57 @@ function ProjectCard({
 
   return (
     <div
-      className={`group rounded-2xl border transition-all duration-200 flex flex-col overflow-hidden ${
+      className={`group rounded-2xl border transition-all duration-200 flex flex-col overflow-hidden relative ${
         isDay
           ? "bg-white border-black/10 hover:border-black/25 shadow-xs"
-          : "bg-[#0c0c0e] border-white/[0.08] hover:border-white/20 shadow-md"
+          : "bg-[#0a0a0d] border-white/[0.08] hover:border-white/25 shadow-md"
       }`}
     >
-      {/* ── Visual Thumbnail Preview (Workflow.design Style) ── */}
-      <Link href={getCanvasHref(project)} className="block relative w-full h-36 bg-[#000000] overflow-hidden border-b border-white/[0.08]">
+      {/* ── Visual Blueprint Thumbnail Preview ── */}
+      <Link href={getCanvasHref(project)} className="block relative w-full h-36 bg-[#000000] overflow-hidden border-b border-white/[0.08] group-hover:border-white/20 transition-colors">
         {project.assetType === "image" ? (
           <img
             src={project.targetUrl}
             alt={project.title}
-            className="w-full h-full object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-300"
+            className="w-full h-full object-cover object-top opacity-85 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-300"
           />
         ) : project.assetType === "pdf" ? (
-          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-zinc-900 to-black text-center">
-            <FileText className="w-8 h-8 text-zinc-400 mb-2 stroke-[1.5]" />
-            <span className="text-xs font-mono text-zinc-300 truncate max-w-[90%]">
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-zinc-950 to-black text-center relative">
+            <FileText className="w-7 h-7 text-zinc-400 mb-2 stroke-[1.5]" />
+            <span className="text-xs font-serif font-medium text-zinc-200 truncate max-w-[90%]">
               {project.title}.pdf
             </span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase mt-1">PDF Document Canvas</span>
+            <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase mt-1">
+              ARCHIVAL PDF CANVAS
+            </span>
           </div>
         ) : (
-          <div className="w-full h-full flex flex-col bg-[#050505]">
-            {/* Mock browser header */}
-            <div className="h-6 bg-[#09090b] border-b border-white/[0.06] px-3 flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-                <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+          <div className="w-full h-full flex flex-col bg-[#050507] relative">
+            {/* Blueprint grid lines */}
+            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+            
+            {/* Mock drafting top bar */}
+            <div className="h-6 bg-[#08080a] border-b border-white/[0.06] px-3 flex items-center justify-between z-10">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
+                <span className="text-[9px] font-mono tracking-wider text-zinc-500 uppercase">
+                  VIEWPORT 1440×900
+                </span>
               </div>
               <span className="text-[9px] font-mono text-zinc-500 truncate max-w-[140px]">
                 {project.targetUrl.replace(/^https?:\/\//, "")}
               </span>
             </div>
-            {/* Mock website viewport */}
-            <div className="flex-1 flex flex-col items-center justify-center p-4 text-center group-hover:bg-white/[0.02] transition-colors">
-              <Globe className="w-6 h-6 text-zinc-500 mb-2 stroke-[1.5]" />
-              <span className="text-xs font-sans font-medium text-zinc-300 truncate max-w-[90%]">
+
+            {/* Viewport content */}
+            <div className="flex-1 flex flex-col items-center justify-center p-4 text-center z-10 group-hover:bg-white/[0.02] transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                <TesseractMark size={16} />
+              </div>
+              <span className="text-xs font-serif font-medium text-zinc-200 tracking-wide truncate max-w-[90%]">
                 {project.title}
               </span>
-              <span className="text-[10px] font-sans text-zinc-500 truncate max-w-[160px] mt-0.5">
+              <span className="text-[9px] font-mono text-zinc-500 tracking-wider truncate max-w-[180px] mt-0.5">
                 {project.targetUrl}
               </span>
             </div>
@@ -982,18 +1008,18 @@ function ProjectCard({
         {/* Status Pill Badge floating in thumbnail */}
         <div className="absolute top-2.5 right-2.5 z-10">
           {project.isApproved ? (
-            <span className="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center gap-1 backdrop-blur-md">
+            <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center gap-1.5 backdrop-blur-md">
               <CheckCircle2 className="w-3 h-3" />
-              Approved
+              APPROVED
             </span>
           ) : pinCount > 0 ? (
-            <span className="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-1 backdrop-blur-md">
-              <MessageSquare className="w-3 h-3" />
-              {openCount} notes
+            <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-zinc-200 flex items-center gap-1.5 backdrop-blur-md">
+              <MessageSquare className="w-3 h-3 text-zinc-400" />
+              {openCount} {openCount === 1 ? "NOTE" : "NOTES"}
             </span>
           ) : (
-            <span className="text-[10px] font-sans px-2 py-0.5 rounded-full bg-white/10 border border-white/15 text-zinc-300 backdrop-blur-md">
-              In Progress
+            <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-400 backdrop-blur-md">
+              IN PROGRESS
             </span>
           )}
         </div>
@@ -1004,21 +1030,21 @@ function ProjectCard({
         <div>
           {/* Studio Tag & Asset Type */}
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">
+            <span className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-zinc-300">
               {project.assetType ? project.assetType.toUpperCase() : "WEB"}
             </span>
-            <span className="text-[10px] font-sans uppercase tracking-wider text-zinc-400 truncate max-w-[140px]">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 truncate max-w-[140px]">
               {project.agencyName}
             </span>
           </div>
 
           {/* Title */}
-          <h3 className="font-sans text-sm font-semibold truncate text-white leading-snug" title={project.title}>
+          <h3 className="font-serif text-base font-normal tracking-wide truncate text-white leading-snug" title={project.title}>
             {project.title}
           </h3>
 
           {/* URL or Asset Subtext */}
-          <p className="text-[11px] font-sans text-zinc-400 truncate mt-0.5" title={project.targetUrl}>
+          <p className="text-[11px] font-mono text-zinc-500 truncate mt-0.5" title={project.targetUrl}>
             {project.assetType === "image" || project.assetType === "pdf"
               ? `Uploaded ${project.assetType.toUpperCase()} Canvas`
               : project.targetUrl}
@@ -1030,31 +1056,32 @@ function ProjectCard({
           {/* Direct Open Canvas Link */}
           <Link
             href={getCanvasHref(project)}
-            className="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-center flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 transition-all cursor-pointer shadow-xs"
+            className="flex-1 py-1.5 px-3 rounded-xl text-xs font-mono font-medium tracking-wide text-center flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 transition-all cursor-pointer shadow-xs"
           >
-            <span>Open Canvas</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <span>OPEN CANVAS</span>
+            <ExternalLink className="w-3 h-3" />
           </Link>
 
           {/* Copy Share Link */}
           <button
             onClick={() => onCopyLink(project.shareId)}
-            className={`py-1.5 px-2.5 rounded-lg border text-xs font-sans transition-colors flex items-center gap-1 cursor-pointer ${
+            className={`py-1.5 px-2.5 rounded-xl border text-xs font-mono transition-colors flex items-center gap-1 cursor-pointer ${
               copiedId === project.shareId
                 ? "border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
                 : "border-white/10 hover:border-white/20 text-zinc-300 hover:text-white bg-white/[0.02]"
             }`}
             title="Copy client share link"
+            aria-label="Copy client share link"
           >
             {copiedId === project.shareId ? (
               <>
                 <Check className="w-3 h-3 text-emerald-400" />
-                <span className="text-[10px]">Copied</span>
+                <span className="text-[10px]">COPIED</span>
               </>
             ) : (
               <>
                 <Share2 className="w-3 h-3 text-zinc-400" />
-                <span className="text-[10px]">Share</span>
+                <span className="text-[10px]">SHARE</span>
               </>
             )}
           </button>
@@ -1062,8 +1089,9 @@ function ProjectCard({
           {/* Notes Drawer */}
           <button
             onClick={() => onSelectPunchlist(project)}
-            className="p-1.5 rounded-lg border border-white/10 hover:border-white/20 text-zinc-400 hover:text-white transition-colors cursor-pointer bg-white/[0.02]"
+            className="p-2 rounded-xl border border-white/10 hover:border-white/20 text-zinc-400 hover:text-white transition-colors cursor-pointer bg-white/[0.02]"
             title="Inspect feedback notes"
+            aria-label="Inspect feedback notes"
           >
             <MessageSquare className="w-3.5 h-3.5" />
           </button>
@@ -1071,8 +1099,9 @@ function ProjectCard({
           {/* Delete */}
           <button
             onClick={() => onDelete(project.id, project.title)}
-            className="p-1.5 rounded-lg border border-white/10 hover:border-red-500/40 text-zinc-500 hover:text-red-400 transition-colors cursor-pointer bg-white/[0.02]"
+            className="p-2 rounded-xl border border-white/10 hover:border-red-500/40 text-zinc-500 hover:text-red-400 transition-colors cursor-pointer bg-white/[0.02]"
             title="Delete canvas"
+            aria-label="Delete canvas"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>

@@ -101,7 +101,7 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
                 </span>
               )}
             </div>
-            <h2 className="text-lg font-semibold tracking-tight truncate max-w-md font-sans">
+            <h2 className="text-xl font-serif font-normal tracking-wide truncate max-w-md text-white">
               {project.title}
             </h2>
             <div className="flex items-center gap-1.5 text-xs font-mono opacity-70 truncate">
@@ -117,6 +117,7 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
                 ? "border-black/15 bg-white/70 hover:bg-white text-black"
                 : "border-white/15 bg-white/5 hover:bg-white/10 text-white"
             }`}
+            aria-label="Close punchlist drawer"
           >
             <X className="w-4 h-4" />
           </button>
