@@ -1,11 +1,19 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 export function PrintmakerLoupeCursor() {
+  const pathname = usePathname();
   const fluidRef = useRef<HTMLDivElement>(null);
 
+  // When on the home landing page ("/"), the embedded landing iframe manages its own cursor.
+  // Rendering the top-level cursor on "/" leaves a frozen duplicate blob behind after navigating back from /login.
+  const isLandingPage = pathname === "/";
+
   useEffect(() => {
+    if (isLandingPage) return;
+
     const fluidEl = fluidRef.current;
     if (!fluidEl) return;
 
@@ -63,6 +71,11 @@ export function PrintmakerLoupeCursor() {
       fluidEl.classList.remove("active");
     };
 
+    const onBlur = () => {
+      isVisible = false;
+      fluidEl.classList.remove("active");
+    };
+
     const onMouseEnter = () => {
       if (!isOverDemo) {
         isVisible = true;
@@ -100,6 +113,7 @@ export function PrintmakerLoupeCursor() {
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
     document.addEventListener("mouseenter", onMouseEnter);
+    window.addEventListener("blur", onBlur);
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mouseup", onMouseUp);
     document.addEventListener("mouseover", onMouseOver);
@@ -135,12 +149,17 @@ export function PrintmakerLoupeCursor() {
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("mouseenter", onMouseEnter);
+      window.removeEventListener("blur", onBlur);
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("mouseover", onMouseOver);
       cancelAnimationFrame(animId);
     };
-  }, []);
+  }, [isLandingPage]);
+
+  if (isLandingPage) {
+    return null;
+  }
 
   return (
     <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true" />

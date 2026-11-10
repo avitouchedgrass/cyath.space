@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { PrintmakerLoupeCursor } from "@/components/common/PrintmakerLoupeCursor";
 
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
-        <PrintmakerLoupeCursor />
+        <Suspense fallback={null}>
+          <PrintmakerLoupeCursor />
+        </Suspense>
       </body>
     </html>
   );

@@ -2809,6 +2809,11 @@ html.over-pin-demo .fluid-cursor,
       fluidEl.classList.remove('active');
     });
 
+    window.addEventListener('blur', () => {
+      isVisible = false;
+      fluidEl.classList.remove('active');
+    });
+
     document.addEventListener('mouseenter', () => {
       if (!isOverDemo) {
         isVisible = true;
