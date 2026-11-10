@@ -94,7 +94,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
         <div className="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] mb-6 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="font-mono text-xs font-semibold text-white">Free Atelier Tier</span>
+              <span className="font-mono text-xs font-semibold text-white">Free Tier</span>
               <span className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">1 Canvas Max</span>
             </div>
             <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
