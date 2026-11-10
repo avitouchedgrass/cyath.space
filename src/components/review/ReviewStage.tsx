@@ -34,7 +34,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
-  const [stageCursor, setStageCursor] = useState<{ x: number; y: number } | null>(null);
   const [frameHeight, setFrameHeight] = useState<number>(1000);
 
   // Listen to height and scroll messages from proxy iframe bridge
@@ -114,14 +113,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         {/* Viewport Frame Container with Scroll Anchoring */}
         <div
           ref={scrollViewportRef}
-          onMouseMove={(e) => {
-            if (interactionMode === "comment") {
-              setStageCursor({ x: e.clientX, y: e.clientY });
-            }
-          }}
-          onMouseLeave={() => setStageCursor(null)}
           className={`w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] bg-white relative ${
-            interactionMode === "comment" ? "!cursor-none" : "cursor-default"
+            interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
           }`}
         >
           {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
@@ -162,7 +155,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             {/* Annotation Overlay Layer */}
             <div
               className={`absolute inset-0 z-10 ${
-                interactionMode === "comment" ? "pointer-events-auto" : "pointer-events-none"
+                interactionMode === "comment" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none"
               }`}
             />
 
@@ -206,17 +199,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Hover Crosshair Preview when in comment mode */}
-            {interactionMode === "comment" && stageCursor && !pendingPinCoords && (
-              <div
-                style={{ left: stageCursor.x, top: stageCursor.y }}
-                className="fixed pointer-events-none -translate-x-1/2 -translate-y-1/2 z-50 flex items-center justify-center"
-              >
-                <div className="w-5 h-5 rounded-full border border-white bg-black/60 shadow-lg flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       </div>

@@ -64,10 +64,11 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
             </div>
 
             {/* Visual Artifact: Miniature Certificate Stamp */}
-            <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] space-y-2.5 relative z-10 transition-all duration-300 group">
+            <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05] space-y-2.5 relative z-10 transition-all duration-300 group overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full border border-white/5 pointer-events-none group-hover:scale-125 transition-transform duration-700 ease-out" />
               <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
                 <span className="tracking-wider">SPECIFICATION</span>
-                <span className="text-white px-2 py-0.5 rounded-full border border-white/10 bg-white/5 font-semibold">
+                <span className="text-white px-2 py-0.5 rounded-full border border-white/10 bg-white/5 font-semibold group-hover:border-white/30 transition-colors">
                   UNLIMITED
                 </span>
               </div>
@@ -143,9 +144,9 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
 
               {/* Feature Specifications with Hover Transitions */}
               <div className="space-y-3">
-                <div className="flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-white/[0.03] transition-colors duration-150 group">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white/50 group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
+                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
+                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
                   </div>
                   <div>
                     <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
@@ -157,9 +158,9 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-white/[0.03] transition-colors duration-150 group">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white/50 group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
+                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
+                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
                   </div>
                   <div>
                     <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
@@ -171,9 +172,9 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-white/[0.03] transition-colors duration-150 group">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white/50 group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
+                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
+                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
                   </div>
                   <div>
                     <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
@@ -185,9 +186,9 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-white/[0.03] transition-colors duration-150 group">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white/50 group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
+                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
+                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
                   </div>
                   <div>
                     <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
@@ -211,10 +212,11 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
               ) : (
                 <button
                   onClick={handleUpgrade}
-                  className="group w-full py-3.5 px-5 bg-white hover:bg-zinc-200 text-black font-sans font-semibold text-xs tracking-tight rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  className="group relative overflow-hidden w-full py-3.5 px-5 bg-white hover:bg-zinc-100 text-black font-sans font-semibold text-xs tracking-tight rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(255,255,255,0.18)] hover:shadow-[0_0_35px_rgba(255,255,255,0.35)] hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                 >
-                  <span>Activate Studio Pro (${price}/mo)</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
+                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full duration-1000 bg-gradient-to-r from-transparent via-black/10 to-transparent transition-transform ease-out pointer-events-none" />
+                  <span className="relative z-10">Activate Studio Pro (${price}/mo)</span>
+                  <ArrowRight className="relative z-10 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
                 </button>
               )}
 
