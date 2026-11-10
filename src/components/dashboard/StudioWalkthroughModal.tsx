@@ -130,17 +130,17 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme }: StudioWalkthr
         className={`w-full max-w-3xl rounded-2xl border shadow-2xl overflow-hidden transition-all flex flex-col max-h-[90vh] ${
           isDay
             ? "bg-[#FAF8F2] border-black/15 text-[#1C1A18] shadow-black/10"
-            : "bg-[#1B1A18] border-white/15 text-[#F3F1EC] shadow-black/80"
+            : "bg-[#0a0a0a] border-white/10 text-white shadow-black/80"
         }`}
       >
         {/* Header Bar */}
         <div
           className={`px-6 py-4 border-b flex items-center justify-between ${
-            isDay ? "border-black/10 bg-[#F5F3EC]" : "border-white/10 bg-[#141312]"
+            isDay ? "border-black/10 bg-[#F5F3EC]" : "border-white/10 bg-black"
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-2 py-0.5 rounded border border-[#38BDF8]/40 text-[#38BDF8] bg-[#38BDF8]/5">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-2 py-0.5 rounded border border-white/20 text-white bg-white/5">
               STUDIO WALKTHROUGH
             </span>
             <span className={`text-xs font-mono ${isDay ? "text-black/40" : "text-white/40"}`}>/</span>
@@ -165,7 +165,7 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme }: StudioWalkthr
         {/* Step Navigation Pill Strip */}
         <div
           className={`px-6 py-3 border-b grid grid-cols-4 gap-2 text-xs font-mono ${
-            isDay ? "border-black/10 bg-[#FAF8F2]" : "border-white/10 bg-[#181716]"
+            isDay ? "border-black/10 bg-[#FAF8F2]" : "border-white/10 bg-[#0a0a0a]"
           }`}
         >
           {STEPS.map((s, idx) => {

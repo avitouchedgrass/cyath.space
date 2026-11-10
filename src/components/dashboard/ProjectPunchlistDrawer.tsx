@@ -75,13 +75,13 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
         className={`w-full max-w-xl h-full border-l shadow-2xl flex flex-col transition-all ${
-          isDay ? "bg-[#FAF8F2] border-black/15 text-[#1C1A18]" : "bg-[#181716] border-white/15 text-[#F3F1EC]"
+          isDay ? "bg-[#FAF8F2] border-black/15 text-[#1C1A18]" : "bg-[#0a0a0a] border-white/10 text-[#FAFAFA]"
         }`}
       >
         {/* Header */}
         <div
           className={`px-6 py-5 border-b flex items-center justify-between ${
-            isDay ? "border-black/10 bg-[#F5F3EC]" : "border-white/10 bg-[#141312]"
+            isDay ? "border-black/10 bg-[#F5F3EC]" : "border-white/10 bg-black"
           }`}
         >
           <div className="space-y-1">
