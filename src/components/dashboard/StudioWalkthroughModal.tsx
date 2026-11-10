@@ -328,3 +328,4 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme }: StudioWalkthr
     </div>
   );
 }
+

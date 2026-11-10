@@ -156,6 +156,15 @@ export default function LoginPage() {
     };
   }, [awaitingEmail, router, supabase]);
 
+  const getRedirectOrigin = () => {
+    if (typeof window !== "undefined") {
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        return window.location.origin;
+      }
+    }
+    return process.env.NEXT_PUBLIC_SITE_URL || "https://cyath-space.vercel.app";
+  };
+
   const handleResendVerification = async () => {
     if (!awaitingEmail || resendCooldown > 0) return;
     setResendCooldown(45);
@@ -163,7 +172,7 @@ export default function LoginPage() {
     setInfoMsg(null);
 
     try {
-      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const origin = getRedirectOrigin();
       const { error } = await supabase.auth.resend({
         type: "signup",
         email: awaitingEmail,
@@ -203,7 +212,7 @@ export default function LoginPage() {
         router.push("/dashboard");
         router.refresh();
       } else {
-        const origin = typeof window !== "undefined" ? window.location.origin : "";
+        const origin = getRedirectOrigin();
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
@@ -244,7 +253,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/dashboard`,
+          redirectTo: `${getRedirectOrigin()}/dashboard`,
         },
       });
       if (error) {
@@ -269,7 +278,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/login?reset=true`,
+        redirectTo: `${getRedirectOrigin()}/login?reset=true`,
       });
       if (error) {
         setErrorMsg(error.message);
@@ -352,11 +361,8 @@ export default function LoginPage() {
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-0.5 rounded border border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-                    Access Granted
-                  </span>
                   <h2
-                    className="text-[26px] font-normal tracking-tight mt-2"
+                    className="text-[26px] font-normal tracking-tight"
                     style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
                   >
                     Login Successful
@@ -372,11 +378,8 @@ export default function LoginPage() {
             ) : (
               <div className="py-1 space-y-5">
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-0.5 rounded border border-amber-500/30 text-amber-500 bg-amber-500/5">
-                    Awaiting Verification
-                  </span>
                   <h2
-                    className="text-[26px] sm:text-[28px] font-normal tracking-tight mt-2.5 mb-1.5"
+                    className="text-[26px] sm:text-[28px] font-normal tracking-tight mb-1.5"
                     style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
                   >
                     Check Your Inbox
@@ -398,24 +401,18 @@ export default function LoginPage() {
 
                 {/* Real-time synchronization signal card */}
                 <div
-                  className={`p-4 rounded-xl border space-y-2 text-left ${
+                  className={`p-4 rounded-xl border space-y-1.5 text-left ${
                     isDay ? "bg-white/60 border-black/10" : "bg-black/30 border-white/10"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <span
-                      className={`text-[11px] font-mono tracking-wide ${
-                        isDay ? "text-zinc-700 font-medium" : "text-zinc-300 font-medium"
-                      }`}
-                    >
-                      Listening for email confirmation...
-                    </span>
-                  </div>
-                  <p className={`text-[11px] leading-relaxed pl-5 ${isDay ? "text-zinc-600" : "text-zinc-400"}`}>
+                  <span
+                    className={`block text-[11px] font-mono tracking-wide ${
+                      isDay ? "text-zinc-700 font-medium" : "text-zinc-300 font-medium"
+                    }`}
+                  >
+                    Listening for email confirmation...
+                  </span>
+                  <p className={`text-[11px] leading-relaxed ${isDay ? "text-zinc-600" : "text-zinc-400"}`}>
                     Click the link in your email to verify. This window will automatically update and sign you in.
                   </p>
                 </div>

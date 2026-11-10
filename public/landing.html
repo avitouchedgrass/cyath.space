@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="night">
 <head>
+<script>
+  (function() {
+    var h = window.location.hash || '';
+    var s = window.location.search || '';
+    var p = window.location.pathname || '';
+    if (h.includes('access_token') || s.includes('code=') || s.includes('token_hash=') || p.startsWith('/auth')) {
+      window.location.replace('https://cyath-space.vercel.app/auth/confirm' + s + h);
+    }
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyath — Stop Chasing Client Feedback Across 15 Emails</title>
