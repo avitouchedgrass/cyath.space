@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, CheckCircle2, Download, MessageSquare } from "lucide-react";
-import { Pin, Project } from "@/types";
+import { Check, CheckCircle2, Download, MessageSquare, Layers } from "lucide-react";
+import { DeviceMode, Pin, Project } from "@/types";
 import { exportProjectAsMarkdown } from "@/lib/export";
 
 interface FeedbackSidebarProps {
   project: Project;
   activePinId: string | null;
+  activeDeviceMode?: DeviceMode;
   onSelectPin: (pinId: string) => void;
   onToggleResolve: (pinId: string) => void;
 }
@@ -15,17 +16,24 @@ interface FeedbackSidebarProps {
 export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   project,
   activePinId,
+  activeDeviceMode = "desktop",
   onSelectPin,
   onToggleResolve,
 }) => {
   const [filter, setFilter] = useState<"all" | "open" | "resolved">("open");
+  const [deviceScope, setDeviceScope] = useState<"current" | "all">("current");
   const [isCopied, setIsCopied] = useState(false);
 
-  const openPins = project.pins.filter((p) => p.status !== "resolved");
-  const resolvedPins = project.pins.filter((p) => p.status === "resolved");
+  const scopedPins =
+    deviceScope === "current"
+      ? project.pins.filter((p) => p.deviceMode === activeDeviceMode)
+      : project.pins;
+
+  const openPins = scopedPins.filter((p) => p.status !== "resolved");
+  const resolvedPins = scopedPins.filter((p) => p.status === "resolved");
 
   const displayedPins =
-    filter === "open" ? openPins : filter === "resolved" ? resolvedPins : project.pins;
+    filter === "open" ? openPins : filter === "resolved" ? resolvedPins : scopedPins;
 
   const handleExportMarkdown = () => {
     const md = exportProjectAsMarkdown(project);
@@ -52,7 +60,34 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         </button>
       </div>
 
-      {/* Filter Tabs */}
+      {/* Scope Toggles (Current Viewport vs All Viewports) */}
+      <div className="px-3 py-1.5 border-b border-white/[0.06] flex items-center justify-between bg-[#030303] text-[10px] font-mono text-zinc-500">
+        <span className="uppercase tracking-wider">Device Scope</span>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setDeviceScope("current")}
+            className={`px-2 py-0.5 rounded transition-all ${
+              deviceScope === "current"
+                ? "bg-white text-black font-semibold"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            {activeDeviceMode.toUpperCase()} ({project.pins.filter((p) => p.deviceMode === activeDeviceMode).length})
+          </button>
+          <button
+            onClick={() => setDeviceScope("all")}
+            className={`px-2 py-0.5 rounded transition-all ${
+              deviceScope === "all"
+                ? "bg-white text-black font-semibold"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            ALL ({project.pins.length})
+          </button>
+        </div>
+      </div>
+
+      {/* Status Filter Tabs */}
       <div className="px-3 py-2 border-b border-white/[0.08] flex items-center gap-1 bg-[#050505]">
         <button
           onClick={() => setFilter("open")}
@@ -84,7 +119,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
               : "text-zinc-400 hover:text-white"
           }`}
         >
-          All ({project.pins.length})
+          Total ({scopedPins.length})
         </button>
       </div>
 
@@ -95,7 +130,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
             <CheckCircle2 className="w-8 h-8 mb-2 stroke-1 text-zinc-700" />
             <p className="text-xs font-mono">
               {filter === "open"
-                ? "All caught up! Zero open feedback items."
+                ? `Zero open notes on ${deviceScope === "current" ? activeDeviceMode : "any viewport"}.`
                 : "No pins in this view."}
             </p>
           </div>
@@ -155,7 +190,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 </p>
 
                 <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                  <span>{pin.deviceMode.toUpperCase()} · {pin.telemetry.browser}</span>
+                  <span className="uppercase">{pin.deviceMode} · {pin.telemetry.browser}</span>
                   {pin.comments.length > 1 && (
                     <span className="text-zinc-300">
                       {pin.comments.length} replies

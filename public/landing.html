@@ -20,7 +20,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <script src="/vendor/three.min.js"></script>
 <script src="/vendor/lenis.min.js"></script>
-<script src="/vendor/pattern-waves.min.js"></script>
+<script src="/vendor/shape-grid.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════════
    ARCHITECTURAL TOKENS: PURE PITCH BLACK & ARCHIVAL VELLUM
@@ -1533,8 +1533,8 @@ html.over-pin-demo .fluid-cursor,
      ══════════════════════════════════════════════════════════════════ -->
 <main>
 <section class="hero-viewport">
-  <!-- React Bits PatternWaves Component Canvas Background -->
-  <div id="patternWavesContainer" class="hero-pattern-waves"></div>
+  <!-- React Bits ShapeGrid Component Background (Triangle Grid) -->
+  <div id="shapeGridContainer" class="hero-shape-grid pointer-events-none" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
 
   <!-- The Real-Time 3D ASCII Engine Canvas -->
   <canvas id="asciiCanvas" role="img" aria-label="Real-time 3D ASCII Art scene: 3D desk with angled laptop displaying rotating tesseract, steaming coffee mug, and crumpled revisions."></canvas>
@@ -1935,15 +1935,9 @@ html.over-pin-demo .fluid-cursor,
     if (currentTheme === 'day') {
       if (themeToggleBtn) themeToggleBtn.innerHTML = SUN_SVG;
       if (typeof update3DTheme === 'function') update3DTheme('day');
-      if (window.patternWavesInstance) {
-        window.patternWavesInstance.update({ color: "#cfcab8", backgroundColor: "#F5F3EC" });
-      }
     } else {
       if (themeToggleBtn) themeToggleBtn.innerHTML = MOON_SVG;
       if (typeof update3DTheme === 'function') update3DTheme('night');
-      if (window.patternWavesInstance) {
-        window.patternWavesInstance.update({ color: "#2f2f2f", backgroundColor: "#000000" });
-      }
     }
   }
   if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
@@ -2557,28 +2551,26 @@ html.over-pin-demo .fluid-cursor,
     }
   }
 
-  // React Bits PatternWaves Integration
-  const pwContainer = document.getElementById('patternWavesContainer');
-  if (pwContainer && window.PatternWavesVanilla) {
-    window.patternWavesInstance = window.PatternWavesVanilla.initPatternWaves(pwContainer, {
-      preset: "mesh",
-      color: currentTheme === 'day' ? "#cfcab8" : "#2f2f2f",
-      backgroundColor: currentTheme === 'day' ? "#F5F3EC" : "#000000",
-      fade: "edges",
-      interactive: true,
-      cursorSize: 10,
-      cursorStrength: 0,
-      pattern: "line",
-      spacing: 14,
-      markSize: 0.85,
-      light: 27,
-      shine: 1,
-      contrast: 2.5,
-      speed: 0.4,
-      scale: 0.3,
-      direction: 325,
-      opacity: 0.45,
-      fadeSize: 0.7
+  // React Bits ShapeGrid Integration (Triangle Grid)
+  const sgContainer = document.getElementById('shapeGridContainer');
+  if (sgContainer && window.ShapeGridVanilla) {
+    window.shapeGridInstance = window.ShapeGridVanilla.initShapeGrid(sgContainer, {
+      shape: "triangle",
+      direction: "none",
+      lineColor: currentTheme === 'day' ? "#dcd7cc" : "#1b1920",
+      hoverColor: "#ffffff",
+      hoverFillColor: "#ffffff",
+      fillOpacity: 0.15,
+      cellSize: 40,
+      speed: 0.5,
+      tiltX: 0,
+      tiltY: 0,
+      rainbow: false,
+      trail: 0.1,
+      glow: 0.55,
+      twinkle: 0.3,
+      fade: 0,
+      clickCascade: false
     });
   }
 

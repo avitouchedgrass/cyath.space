@@ -35,11 +35,19 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
     setName(initialAuthorName);
   }, [initialAuthorName]);
 
-  // Adjust placement so it doesn't clip outside viewport edges
-  const positionClass =
-    xPercent > 65
-      ? "right-4 sm:-translate-x-full sm:left-auto"
-      : "left-4 sm:left-auto";
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isSmallScreen = windowWidth < 640;
+  const isNearRightEdge = xPercent > 62;
+  const isNearBottomEdge = yPercent > 70;
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,11 +70,20 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      style={{
-        left: `${Math.min(85, Math.max(15, xPercent))}%`,
-        top: `${Math.min(80, Math.max(10, yPercent))}%`,
-      }}
-      className={`absolute z-30 w-80 bg-[#0a0a0a] border border-white/15 rounded-xl shadow-2xl p-4 text-white text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl selection:bg-white selection:text-black ${positionClass}`}
+      style={
+        isSmallScreen
+          ? { left: "16px", right: "16px", bottom: "16px", maxWidth: "calc(100vw - 32px)" }
+          : {
+              left: isNearRightEdge
+                ? `${Math.max(6, xPercent - 28)}%`
+                : `${Math.min(72, Math.max(6, xPercent))}%`,
+              top: isNearBottomEdge
+                ? `${Math.max(8, yPercent - 26)}%`
+                : `${Math.min(74, Math.max(6, yPercent))}%`,
+              maxWidth: "320px",
+            }
+      }
+      className="fixed sm:absolute z-40 w-full sm:w-80 bg-[#0a0a0a] border border-white/20 rounded-xl shadow-2xl p-4 text-white text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl selection:bg-white selection:text-black"
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5 mb-3">

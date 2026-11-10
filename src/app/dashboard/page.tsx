@@ -20,6 +20,9 @@ import {
   BookOpen,
   ArrowUpRight,
   ShieldCheck,
+  UploadCloud,
+  FileText,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { CyathLogo } from "@/components/common/Logo";
@@ -28,6 +31,8 @@ import type { User } from "@supabase/supabase-js";
 import { Project } from "@/types";
 import { StudioWalkthroughModal } from "@/components/dashboard/StudioWalkthroughModal";
 import { ProjectPunchlistDrawer } from "@/components/dashboard/ProjectPunchlistDrawer";
+import { AccountSettingsModal } from "@/components/dashboard/AccountSettingsModal";
+import { StudioUpgradeModal } from "@/components/dashboard/StudioUpgradeModal";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -40,11 +45,14 @@ export default function DashboardPage() {
   // Modals & Drawers
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedPunchlistProject, setSelectedPunchlistProject] = useState<Project | null>(null);
 
   // Form State
   const [title, setTitle] = useState("");
   const [targetUrl, setTargetUrl] = useState("");
+  const [quickUrl, setQuickUrl] = useState("");
   const [agencyInput, setAgencyInput] = useState("");
 
   // Filtering & Search
@@ -121,16 +129,95 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!title.trim() || !targetUrl.trim()) return;
 
+    if (projects.length >= 1) {
+      setShowCreateModal(false);
+      setShowUpgradeModal(true);
+      return;
+    }
+
     let formattedUrl = targetUrl.trim();
     if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
       formattedUrl = "https://" + formattedUrl;
     }
 
     const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "Cyath Atelier";
-    createProject(title.trim(), formattedUrl, agency);
+    createProject(title.trim(), formattedUrl, agency, "url");
     setTitle("");
     setTargetUrl("");
     setShowCreateModal(false);
+  };
+
+  const handleQuickUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickUrl.trim()) return;
+
+    if (projects.length >= 1) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    let formattedUrl = quickUrl.trim();
+    if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
+      formattedUrl = "https://" + formattedUrl;
+    }
+
+    let parsedTitle = "Staging Review";
+    try {
+      const hostname = new URL(formattedUrl).hostname.replace(/^www\./, "");
+      parsedTitle = hostname.charAt(0).toUpperCase() + hostname.slice(1);
+    } catch {
+      parsedTitle = "Web Review";
+    }
+
+    const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "Cyath Atelier";
+    const shareId = createProject(parsedTitle, formattedUrl, agency, "url");
+    setQuickUrl("");
+    router.push(`/r/${shareId}?u=${encodeURIComponent(formattedUrl)}&t=${encodeURIComponent(parsedTitle)}&a=${encodeURIComponent(agency)}`);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (projects.length >= 1) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
+    const assetType = isPdf ? "pdf" : "image";
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const title = file.name.replace(/\.[^/.]+$/, "");
+      const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "Cyath Atelier";
+      const shareId = createProject(title, dataUrl, agency, assetType);
+      router.push(`/r/${shareId}`);
+    };
+
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleUpdateAgencyName = async (newName: string) => {
+    setAgencyInput(newName);
+    if (currentUser) {
+      setCurrentUser({
+        ...currentUser,
+        user_metadata: {
+          ...currentUser.user_metadata,
+          agency_name: newName,
+        },
+      });
+      try {
+        await supabase.auth.updateUser({
+          data: { agency_name: newName },
+        });
+      } catch {
+        // Fallback
+      }
+    }
   };
 
   const handleCopyLink = (shareId: string) => {
@@ -266,28 +353,22 @@ export default function DashboardPage() {
             {isDay ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          {/* User Email */}
-          {currentUser && (
-            <span
-              className={`hidden lg:inline-block text-xs font-mono truncate max-w-[180px] ${
-                isDay ? "text-zinc-500" : "text-zinc-400"
-              }`}
-            >
-              {currentUser.email}
-            </span>
-          )}
-
-          {/* Sign Out */}
+          {/* Studio Account Pill */}
           <button
-            onClick={handleSignOut}
-            title="Sign out"
-            className={`p-2 rounded-full border transition-colors cursor-pointer ${
+            onClick={() => setShowAccountModal(true)}
+            className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition-all flex items-center gap-2 cursor-pointer ${
               isDay
-                ? "border-black/15 text-zinc-500 hover:text-red-600 hover:border-red-400/40"
-                : "border-white/15 text-zinc-400 hover:text-red-400 hover:border-red-500/40"
+                ? "bg-white text-zinc-700 border-black/10 hover:border-black/25 shadow-xs"
+                : "bg-white/[0.04] text-zinc-300 border-white/10 hover:border-white/25 hover:text-white"
             }`}
+            title="Studio Account & Subscription"
           >
-            <LogOut className="w-4 h-4" />
+            <div className="w-4 h-4 rounded-full bg-white text-black font-mono font-bold text-[9px] flex items-center justify-center">
+              {currentUser?.email?.[0].toUpperCase() || "A"}
+            </div>
+            <span className="truncate max-w-[130px] hidden sm:inline">
+              {(currentUser?.user_metadata?.agency_name as string) || "Studio"}
+            </span>
           </button>
         </div>
       </header>
@@ -309,43 +390,84 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Metric Strip ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div
-            className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
-              isDay ? "bg-white border-black/10 shadow-xs" : "bg-[#0a0a0a] border-white/[0.08]"
-            }`}
-          >
-            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">Total Canvases</span>
-            <div className="text-2xl sm:text-3xl font-mono font-medium mt-1.5">{totalCanvases}</div>
-          </div>
+        {/* ── Dual Creation Bar / Free Tier Limit ── */}
+        <div className="space-y-3">
+          {projects.length >= 1 ? (
+            <div
+              className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${
+                isDay ? "bg-white border-black/10 shadow-xs" : "bg-[#0a0a0a] border-white/10"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center font-mono text-xs font-semibold">
+                  1/1
+                </div>
+                <div>
+                  <h4 className="font-serif text-sm font-medium">Free Atelier Limit Reached</h4>
+                  <p className="text-xs text-zinc-400 font-mono">
+                    Free accounts include 1 active review canvas. Upgrade to Studio Pro for unlimited review viewports.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap shadow-sm cursor-pointer transition-all ${
+                  isDay ? "bg-black text-white hover:bg-zinc-800" : "bg-white text-black hover:bg-zinc-200"
+                }`}
+              >
+                Upgrade to Pro ($29/mo)
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+              {/* URL Input Capsule */}
+              <form
+                onSubmit={handleQuickUrlSubmit}
+                className={`flex-1 w-full flex items-center rounded-xl p-1.5 border transition-all ${
+                  isDay
+                    ? "bg-white border-black/10 focus-within:border-black/30 shadow-xs"
+                    : "bg-[#0a0a0a] border-white/10 focus-within:border-white/30"
+                }`}
+              >
+                <input
+                  type="text"
+                  value={quickUrl}
+                  onChange={(e) => setQuickUrl(e.target.value)}
+                  placeholder="Enter a staging or live URL here (e.g. yoursite.com)"
+                  className="flex-1 bg-transparent px-3 py-2 text-xs placeholder:text-zinc-500 focus:outline-none font-mono"
+                />
+                <button
+                  type="submit"
+                  disabled={!quickUrl.trim()}
+                  className={`px-4 py-2 rounded-lg font-semibold text-xs transition-all shadow-sm cursor-pointer disabled:opacity-30 ${
+                    isDay ? "bg-black text-white hover:bg-zinc-800" : "bg-white text-black hover:bg-zinc-200"
+                  }`}
+                >
+                  Go
+                </button>
+              </form>
 
-          <div
-            className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
-              isDay ? "bg-white border-black/10 shadow-xs" : "bg-[#0a0a0a] border-white/[0.08]"
-            }`}
-          >
-            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">Open Notes</span>
-            <div className="text-2xl sm:text-3xl font-mono font-medium text-amber-500 mt-1.5">{totalOpen}</div>
-          </div>
+              <span className="text-xs text-zinc-500 font-mono uppercase tracking-widest px-1">Or</span>
 
-          <div
-            className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
-              isDay ? "bg-white border-black/10 shadow-xs" : "bg-[#0a0a0a] border-white/[0.08]"
-            }`}
-          >
-            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">Resolved</span>
-            <div className="text-2xl sm:text-3xl font-mono font-medium text-zinc-300 mt-1.5">{totalResolved}</div>
-          </div>
-
-          <div
-            className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
-              isDay ? "bg-white border-black/10 shadow-xs" : "bg-[#0a0a0a] border-white/[0.08]"
-            }`}
-          >
-            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">Client Sign-Offs</span>
-            <div className="text-2xl sm:text-3xl font-mono font-medium text-emerald-500 mt-1.5">{totalApproved}</div>
-          </div>
+              {/* Upload PDF/Image Button */}
+              <label
+                className={`cursor-pointer px-4 py-3 rounded-xl border text-xs font-mono flex items-center gap-2 transition-all shadow-xs ${
+                  isDay
+                    ? "bg-white border-black/10 hover:border-black/25 text-zinc-700 hover:text-black"
+                    : "bg-[#0a0a0a] border-white/10 hover:border-white/25 text-zinc-300 hover:text-white"
+                }`}
+              >
+                <UploadCloud className="w-4 h-4 text-zinc-400" />
+                <span>Upload (PDF, PNG, JPG)</span>
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </label>
+            </div>
+          )}
         </div>
 
         {/* ── Filter Tabs & Search Bar ── */}
@@ -476,9 +598,14 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     {/* Badge Row */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 truncate max-w-[180px]">
-                        {project.agencyName}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">
+                          {project.assetType ? project.assetType.toUpperCase() : "URL"}
+                        </span>
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 truncate max-w-[140px]">
+                          {project.agencyName}
+                        </span>
+                      </div>
 
                       {project.isApproved ? (
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center gap-1">
@@ -504,19 +631,26 @@ export default function DashboardPage() {
                         {project.title}
                       </h3>
 
-                      <a
-                        href={project.targetUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={`mt-1 inline-flex items-center gap-1.5 text-xs font-mono truncate max-w-full transition-colors ${
-                          isDay ? "text-zinc-500 hover:text-black" : "text-zinc-400 hover:text-white"
-                        }`}
-                        title={project.targetUrl}
-                      >
-                        <Globe className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">{project.targetUrl.replace(/^https?:\/\//, "")}</span>
-                        <ArrowUpRight className="w-3 h-3 flex-shrink-0 opacity-60" />
-                      </a>
+                      {project.assetType === "image" || project.assetType === "pdf" ? (
+                        <div className="mt-1 inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400">
+                          {project.assetType === "pdf" ? <FileText className="w-3 h-3 flex-shrink-0" /> : <ImageIcon className="w-3 h-3 flex-shrink-0" />}
+                          <span className="truncate">Uploaded {project.assetType.toUpperCase()} Canvas</span>
+                        </div>
+                      ) : (
+                        <a
+                          href={project.targetUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`mt-1 inline-flex items-center gap-1.5 text-xs font-mono truncate max-w-full transition-colors ${
+                            isDay ? "text-zinc-500 hover:text-black" : "text-zinc-400 hover:text-white"
+                          }`}
+                          title={project.targetUrl}
+                        >
+                          <Globe className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">{project.targetUrl.replace(/^https?:\/\//, "")}</span>
+                          <ArrowUpRight className="w-3 h-3 flex-shrink-0 opacity-60" />
+                        </a>
+                      )}
                     </div>
 
                     {/* Minimal Progress Bar */}
@@ -728,6 +862,22 @@ export default function DashboardPage() {
             </form>
           </div>
         </div>
+      )}
+      {/* ── Studio Account & Settings Modal ── */}
+      {showAccountModal && (
+        <AccountSettingsModal
+          user={currentUser}
+          agencyName={agencyInput}
+          onUpdateAgencyName={handleUpdateAgencyName}
+          onSignOut={handleSignOut}
+          onOpenUpgrade={() => setShowUpgradeModal(true)}
+          onClose={() => setShowAccountModal(false)}
+        />
+      )}
+
+      {/* ── Studio Pro Upgrade Modal ── */}
+      {showUpgradeModal && (
+        <StudioUpgradeModal onClose={() => setShowUpgradeModal(false)} />
       )}
     </div>
   );

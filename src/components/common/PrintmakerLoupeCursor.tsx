@@ -1,31 +1,30 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useReviewStore } from "@/store/useReviewStore";
 
 export function PrintmakerLoupeCursor() {
   const pathname = usePathname();
-  const fluidRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const clientAuthorName = useReviewStore((s) => s.clientAuthorName) || "Reviewer";
+  const [isClient, setIsClient] = useState(false);
 
   // When on the home landing page ("/"), the embedded landing iframe manages its own cursor.
-  // Rendering the top-level cursor on "/" leaves a frozen duplicate blob behind after navigating back from /login.
   const isLandingPage = pathname === "/";
 
   useEffect(() => {
+    setIsClient(true);
     if (isLandingPage) return;
 
-    const fluidEl = fluidRef.current;
-    if (!fluidEl) return;
+    const cursorEl = cursorRef.current;
+    if (!cursorEl) return;
 
     let mouseX = -100;
     let mouseY = -100;
-    let beadX = -100;
-    let beadY = -100;
-    let prevBeadX = -100;
-    let prevBeadY = -100;
+    let posX = -100;
+    let posY = -100;
     let isVisible = false;
-    let isOverDemo = false;
-    let isHoveringInteractive = false;
     let animId: number;
 
     const activateCursor = () => {
@@ -44,100 +43,34 @@ export function PrintmakerLoupeCursor() {
       mouseX = e.clientX;
       mouseY = e.clientY;
 
-      const overDemo = !!(e.target as HTMLElement)?.closest(".pin-demo-box");
-      if (overDemo !== isOverDemo) {
-        isOverDemo = overDemo;
-        if (isOverDemo) {
-          fluidEl.classList.add("in-demo");
-          document.documentElement.classList.add("over-pin-demo");
-        } else {
-          fluidEl.classList.remove("in-demo");
-          document.documentElement.classList.remove("over-pin-demo");
-        }
-      }
-
-      if (!isVisible && !isOverDemo) {
+      if (!isVisible) {
         isVisible = true;
-        beadX = mouseX;
-        beadY = mouseY;
-        prevBeadX = mouseX;
-        prevBeadY = mouseY;
-        fluidEl.classList.add("active");
+        posX = mouseX;
+        posY = mouseY;
+        cursorEl.style.opacity = "1";
       }
     };
 
     const onMouseLeave = () => {
       isVisible = false;
-      fluidEl.classList.remove("active");
-    };
-
-    const onBlur = () => {
-      isVisible = false;
-      fluidEl.classList.remove("active");
+      cursorEl.style.opacity = "0";
     };
 
     const onMouseEnter = () => {
-      if (!isOverDemo) {
-        isVisible = true;
-        fluidEl.classList.add("active");
-      }
-    };
-
-    const onMouseDown = () => {
-      fluidEl.classList.add("clicking");
-    };
-
-    const onMouseUp = () => {
-      fluidEl.classList.remove("clicking");
-    };
-
-    const interactiveSelector = "a, button, input, [role='button']";
-    const onMouseOver = (e: MouseEvent) => {
-      if ((e.target as HTMLElement)?.closest(".pin-demo-box")) {
-        isHoveringInteractive = false;
-        fluidEl.classList.remove("hovering-interactive");
-        return;
-      }
-
-      const target = (e.target as HTMLElement)?.closest(interactiveSelector);
-      if (!target) {
-        isHoveringInteractive = false;
-        fluidEl.classList.remove("hovering-interactive");
-        return;
-      }
-
-      isHoveringInteractive = true;
-      fluidEl.classList.add("hovering-interactive");
+      isVisible = true;
+      cursorEl.style.opacity = "1";
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
     document.addEventListener("mouseenter", onMouseEnter);
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mouseup", onMouseUp);
-    document.addEventListener("mouseover", onMouseOver);
 
     const updateCursor = () => {
-      if (isVisible && !isOverDemo) {
-        beadX += (mouseX - beadX) * 0.38;
-        beadY += (mouseY - beadY) * 0.38;
-
-        const vx = beadX - prevBeadX;
-        const vy = beadY - prevBeadY;
-        const speed = Math.sqrt(vx * vx + vy * vy);
-        prevBeadX = beadX;
-        prevBeadY = beadY;
-
-        if (isHoveringInteractive) {
-          fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0) translate(-50%, -50%)`;
-        } else {
-          const angle = Math.atan2(vy, vx);
-          const stretch = Math.min(speed * 0.022, 0.40);
-          const scaleX = 1 + stretch;
-          const scaleY = 1 / (1 + stretch * 0.65);
-          fluidEl.style.transform = `translate3d(${beadX}px, ${beadY}px, 0) translate(-50%, -50%) rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
-        }
+      if (isVisible) {
+        // High-precision snappy spring physics
+        posX += (mouseX - posX) * 0.45;
+        posY += (mouseY - posY) * 0.45;
+        cursorEl.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
       }
       animId = requestAnimationFrame(updateCursor);
     };
@@ -149,19 +82,34 @@ export function PrintmakerLoupeCursor() {
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("mouseenter", onMouseEnter);
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mouseup", onMouseUp);
-      document.removeEventListener("mouseover", onMouseOver);
       cancelAnimationFrame(animId);
     };
   }, [isLandingPage]);
 
-  if (isLandingPage) {
+  if (!isClient || isLandingPage) {
     return null;
   }
 
   return (
-    <div id="fluidCursor" ref={fluidRef} className="fluid-cursor" aria-hidden="true" />
+    <div
+      ref={cursorRef}
+      className="fixed top-0 left-0 pointer-events-none z-[99999999] opacity-0 will-change-transform flex items-start"
+      aria-hidden="true"
+    >
+      {/* 01/Capture Architectural Drafting Arrow */}
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+        <path
+          d="M4 3L11 20L14 13L21 10L4 3Z"
+          fill="#FFFFFF"
+          stroke="#000000"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        />
+      </svg>
+      {/* Label Pill */}
+      <div className="absolute left-[13px] top-[9px] bg-white text-black font-mono font-bold text-[9px] px-1.5 py-0.5 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] whitespace-nowrap select-none">
+        {clientAuthorName}
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 export type DeviceMode = "desktop" | "tablet" | "mobile";
 export type PinStatus = "open" | "in_progress" | "resolved";
 export type InteractionMode = "browse" | "comment";
+export type AssetType = "url" | "image" | "pdf";
 
 export interface ClientTelemetry {
   viewportWidth: number;
@@ -44,6 +45,7 @@ export interface Project {
   title: string;
   targetUrl: string;
   agencyName: string;
+  assetType?: AssetType;
   isApproved: boolean;
   approvedAt?: string;
   approvedBy?: string;
@@ -51,4 +53,3 @@ export interface Project {
   createdAt: string;
   pins: Pin[];
 }
-

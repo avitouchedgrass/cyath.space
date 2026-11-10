@@ -49,8 +49,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     if (interactionMode !== "comment") return;
     if (!containerRef.current) return;
 
-    const rect = containerRef.current.getBoundingClientRect();
-    const coords = calculateNormalizedCoords(e, rect);
+    const coords = calculateNormalizedCoords(e, containerRef.current);
 
     setPendingPinCoords(coords);
     onSelectPin(null);
@@ -62,7 +61,9 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     setPendingPinCoords(null);
   };
 
-  const activePin = project.pins.find((p) => p.id === activePinId);
+  // Strictly filter pins for the active device viewport
+  const activeDevicePins = project.pins.filter((p) => p.deviceMode === deviceMode);
+  const activePin = activeDevicePins.find((p) => p.id === activePinId);
 
   return (
     <div className="flex-1 bg-[#000000] overflow-auto p-4 sm:p-8 flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black">
@@ -81,31 +82,47 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           {/* Staging URL Capsule */}
           <div className="flex-1 max-w-sm mx-4">
             <div className="bg-[#000000] border border-white/[0.08] rounded-md px-3 py-1 text-center font-mono text-[11px] text-zinc-400 truncate">
-              {project.targetUrl}
+              {project.targetUrl.startsWith("data:") ? "Uploaded Document (" + (project.assetType || "asset").toUpperCase() + ")" : project.targetUrl}
             </div>
           </div>
 
           {/* Viewport Meta Indicator */}
-          <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-            {deviceMode}
+          <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
+            <span>{deviceMode}</span>
+            <span className="text-zinc-700">·</span>
+            <span>{activeDevicePins.length} pins</span>
           </div>
         </div>
 
-        {/* Viewport Frame Container */}
+        {/* Viewport Frame Container with Scroll Anchoring */}
         <div
           ref={containerRef}
           onClick={handleStageClick}
-          className={`relative w-full min-h-[750px] bg-white overflow-hidden ${
+          className={`relative w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] min-h-[750px] bg-white ${
             interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
           }`}
         >
-          {/* Staging Website Iframe */}
-          <iframe
-            src={project.targetUrl}
-            title={project.title}
-            className="w-full h-[750px] border-none select-none"
-            sandbox="allow-scripts allow-same-origin allow-forms"
-          />
+          {/* Content renderer based on assetType */}
+          {project.assetType === "image" ? (
+            <img
+              src={project.targetUrl}
+              alt={project.title}
+              className="w-full h-auto block select-none pointer-events-none"
+            />
+          ) : project.assetType === "pdf" ? (
+            <iframe
+              src={project.targetUrl}
+              title={project.title}
+              className="w-full min-h-[850px] border-none select-none"
+            />
+          ) : (
+            <iframe
+              src={project.targetUrl}
+              title={project.title}
+              className="w-full h-[750px] border-none select-none"
+              sandbox="allow-scripts allow-same-origin allow-forms"
+            />
+          )}
 
           {/* Annotation Overlay Layer */}
           <div
@@ -114,8 +131,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             }`}
           />
 
-          {/* Active Pins */}
-          {project.pins.map((pin) => (
+          {/* Active Pins (Strictly scoped to current device viewport) */}
+          {activeDevicePins.map((pin) => (
             <PinMarker
               key={pin.id}
               pin={pin}

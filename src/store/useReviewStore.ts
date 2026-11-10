@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { nanoid } from "nanoid";
-import { Project, Pin, DeviceMode, InteractionMode, ClientTelemetry } from "@/types";
+import { Project, Pin, DeviceMode, InteractionMode, ClientTelemetry, AssetType } from "@/types";
 
 interface ReviewState {
   projects: Project[];
@@ -11,7 +11,7 @@ interface ReviewState {
   clientAuthorName: string;
 
   // Actions
-  createProject: (title: string, targetUrl: string, agencyName?: string) => string;
+  createProject: (title: string, targetUrl: string, agencyName?: string, assetType?: AssetType) => string;
   hydrateProject: (project: Project) => void;
   deleteProject: (projectId: string) => void;
   getProject: (shareId: string) => Project | undefined;
@@ -41,87 +41,13 @@ interface ReviewState {
 export const useReviewStore = create<ReviewState>()(
   persist(
     (set, get) => ({
-      projects: [
-        {
-          id: "demo-project-1",
-          shareId: "demo",
-          title: "Apex Logistics Landing - Staging",
-          targetUrl: "https://example.com",
-          agencyName: "North Creative",
-          isApproved: false,
-          createdAt: new Date().toISOString(),
-          pins: [
-            {
-              id: "pin-1",
-              projectId: "demo-project-1",
-              number: 1,
-              xPercent: 48,
-              yPercent: 18,
-              status: "open",
-              deviceMode: "desktop",
-              pageUrl: "https://example.com",
-              telemetry: {
-                viewportWidth: 1440,
-                viewportHeight: 900,
-                devicePixelRatio: 2,
-                deviceType: "desktop",
-                browser: "Chrome 131.0",
-                os: "macOS Sonoma",
-                scrollDepthPercent: 12,
-                timestamp: new Date().toISOString(),
-              },
-              comments: [
-                {
-                  id: "comment-1",
-                  pinId: "pin-1",
-                  authorName: "Sarah (Client)",
-                  authorRole: "client",
-                  content: "Can we increase the contrast on this headline? Hard to read over the dark hero image.",
-                  createdAt: new Date().toISOString(),
-                },
-              ],
-              createdAt: new Date().toISOString(),
-            },
-            {
-              id: "pin-2",
-              projectId: "demo-project-1",
-              number: 2,
-              xPercent: 82,
-              yPercent: 42,
-              status: "open",
-              deviceMode: "desktop",
-              pageUrl: "https://example.com",
-              telemetry: {
-                viewportWidth: 1440,
-                viewportHeight: 900,
-                devicePixelRatio: 2,
-                deviceType: "desktop",
-                browser: "Safari 18.0",
-                os: "macOS Sonoma",
-                scrollDepthPercent: 38,
-                timestamp: new Date().toISOString(),
-              },
-              comments: [
-                {
-                  id: "comment-2",
-                  pinId: "pin-2",
-                  authorName: "Marcus (Client)",
-                  authorRole: "client",
-                  content: "The CTA button should redirect to our booking portal, currently points to contact form.",
-                  createdAt: new Date().toISOString(),
-                },
-              ],
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        },
-      ],
+      projects: [],
       activePinId: null,
       activeDeviceMode: "desktop",
       interactionMode: "comment",
       clientAuthorName: "Guest Reviewer",
 
-      createProject: (title, targetUrl, agencyName = "Independent Studio") => {
+      createProject: (title, targetUrl, agencyName = "Independent Studio", assetType = "url") => {
         const shareId = nanoid(8);
         const newProject: Project = {
           id: nanoid(),
@@ -129,6 +55,7 @@ export const useReviewStore = create<ReviewState>()(
           title,
           targetUrl,
           agencyName,
+          assetType,
           isApproved: false,
           createdAt: new Date().toISOString(),
           pins: [],

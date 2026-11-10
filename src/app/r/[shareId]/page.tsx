@@ -288,6 +288,7 @@ function ReviewCanvasInner() {
         <FeedbackSidebar
           project={project}
           activePinId={activePinId}
+          activeDeviceMode={activeDeviceMode}
           onSelectPin={setActivePinId}
           onToggleResolve={handleToggleResolve}
         />
