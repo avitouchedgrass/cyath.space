@@ -157,12 +157,10 @@ export default function LoginPage() {
   }, [awaitingEmail, router, supabase]);
 
   const getRedirectOrigin = () => {
-    if (typeof window !== "undefined") {
-      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-        return window.location.origin;
-      }
+    if (typeof window !== "undefined" && window.location?.origin) {
+      return window.location.origin;
     }
-    return process.env.NEXT_PUBLIC_SITE_URL || "https://cyath-space.vercel.app";
+    return (process.env.NEXT_PUBLIC_SITE_URL || "https://cyath-space.vercel.app").trim();
   };
 
   const handleResendVerification = async () => {
