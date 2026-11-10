@@ -136,3 +136,4 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
     </div>
   );
 };
+

@@ -31,6 +31,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
+  const [stageCursor, setStageCursor] = useState<{ x: number; y: number } | null>(null);
 
   // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
@@ -98,8 +99,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         <div
           ref={containerRef}
           onClick={handleStageClick}
+          onMouseMove={(e) => {
+            if (interactionMode === "comment") {
+              setStageCursor({ x: e.clientX, y: e.clientY });
+            }
+          }}
+          onMouseLeave={() => setStageCursor(null)}
           className={`relative w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] min-h-[750px] bg-white ${
-            interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
+            interactionMode === "comment" ? "!cursor-none" : "cursor-default"
           }`}
         >
           {/* Content renderer based on assetType */}
@@ -167,6 +174,32 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               onToggleResolve={onToggleResolve}
               onClose={() => onSelectPin(null)}
             />
+          )}
+
+          {/* 01/Capture Precision Drafting Pointer (Active exclusively inside canvas in Comment mode) */}
+          {interactionMode === "comment" && stageCursor && (
+            <div
+              className="fixed pointer-events-none z-[999999] will-change-transform flex items-start"
+              style={{
+                left: `${stageCursor.x}px`,
+                top: `${stageCursor.y}px`,
+                transform: "translate(-1px, -1px)",
+              }}
+              aria-hidden="true"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
+                <path
+                  d="M4 3L11 20L14 13L21 10L4 3Z"
+                  fill="#FFFFFF"
+                  stroke="#000000"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <div className="absolute left-[13px] top-[9px] bg-white text-black font-mono font-bold text-[9px] px-1.5 py-0.5 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] whitespace-nowrap select-none">
+                {clientAuthorName || "Reviewer"}
+              </div>
+            </div>
           )}
         </div>
       </div>

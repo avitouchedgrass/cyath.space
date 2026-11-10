@@ -30,8 +30,8 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
 
         <div className="p-4 rounded-xl border border-white/10 bg-white/[0.03] mb-5">
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-serif text-3xl font-medium text-white">$29</span>
-            <span className="text-xs text-zinc-400 font-mono">/ studio / month</span>
+            <span className="font-serif text-3xl font-medium text-white">$15</span>
+            <span className="text-xs text-zinc-400 font-mono">/ seat / month · $12 billed annually</span>
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed">
             Eliminate client email chaos across every project and client contract with unlimited review staging viewports.
@@ -64,10 +64,11 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
           }}
           className="w-full py-2.5 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
         >
-          <span>Activate Studio Pro ($29/mo)</span>
+          <span>Activate Studio Pro ($15/mo)</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
   );
 };
+
