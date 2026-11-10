@@ -225,6 +225,41 @@ export default function LoginPage() {
         });
 
         if (error) {
+          // If Supabase free tier email rate limit is hit, fallback to admin auto-confirm route
+          if (
+            error.message.toLowerCase().includes("rate limit") ||
+            error.message.toLowerCase().includes("over_email_send_rate_limit")
+          ) {
+            try {
+              const res = await fetch("/api/auth/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  email: email.trim(),
+                  password,
+                  agencyName: agencyName.trim() || "Independent Studio",
+                }),
+              });
+
+              const resData = await res.json();
+              if (res.ok && resData.success) {
+                // Auto-confirmed! Sign in immediately
+                const { error: signInErr } = await supabase.auth.signInWithPassword({
+                  email: email.trim(),
+                  password,
+                });
+
+                if (!signInErr) {
+                  router.push("/dashboard");
+                  router.refresh();
+                  return;
+                }
+              }
+            } catch {
+              // Ignore and display original error below
+            }
+          }
+
           setErrorMsg(error.message);
           return;
         }
