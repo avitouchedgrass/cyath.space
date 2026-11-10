@@ -12,6 +12,7 @@ interface ReviewState {
 
   // Actions
   createProject: (title: string, targetUrl: string, agencyName?: string) => string;
+  deleteProject: (projectId: string) => void;
   getProject: (shareId: string) => Project | undefined;
   addPin: (
     projectId: string,
@@ -133,6 +134,12 @@ export const useReviewStore = create<ReviewState>()(
         };
         set((state) => ({ projects: [newProject, ...state.projects] }));
         return shareId;
+      },
+
+      deleteProject: (projectId: string) => {
+        set((state) => ({
+          projects: state.projects.filter((p) => p.id !== projectId),
+        }));
       },
 
       getProject: (shareId) => {
