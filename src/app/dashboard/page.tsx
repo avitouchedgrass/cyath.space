@@ -399,7 +399,7 @@ export default function DashboardPage() {
           </div>
 
           <div
-            className={`p-3 sm:p-3.5 rounded-2xl border transition-all shadow-xl ${
+            className={`p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 shadow-xl focus-within:border-white/40 focus-within:shadow-[0_0_35px_rgba(255,255,255,0.07)] ${
               isDay
                 ? "bg-white border-black/10 shadow-black/5"
                 : "bg-[#0a0a0d] border-white/15"
@@ -407,7 +407,7 @@ export default function DashboardPage() {
           >
             <form onSubmit={handleQuickUrlSubmit} className="flex flex-col md:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
-                <Globe className="w-4 h-4 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Globe className="w-4 h-4 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors group-focus-within:text-white" />
                 <input
                   type="text"
                   placeholder="Enter website URL (e.g. https://yoursite.com)"
@@ -427,10 +427,10 @@ export default function DashboardPage() {
 
               <div className="flex items-center gap-2 w-full md:w-auto">
                 <label
-                  className={`flex-1 md:flex-initial px-4 py-3 rounded-xl border text-xs font-mono flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  className={`flex-1 md:flex-initial px-4 py-3 rounded-xl border text-xs font-mono flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
                     isDay
                       ? "border-black/15 bg-black/[0.02] hover:bg-black/5 text-[#1C1A18]"
-                      : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300 hover:text-white"
+                      : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/25 text-zinc-300 hover:text-white"
                   }`}
                   title="Upload image or PDF"
                 >
@@ -447,10 +447,10 @@ export default function DashboardPage() {
                 <button
                   type="submit"
                   disabled={!quickUrl.trim()}
-                  className={`flex-1 md:flex-initial px-5 py-3 rounded-xl text-xs font-mono font-semibold tracking-wider transition-all whitespace-nowrap cursor-pointer disabled:opacity-30 ${
+                  className={`flex-1 md:flex-initial px-5 py-3 rounded-xl text-xs font-mono font-semibold tracking-wider transition-all duration-200 whitespace-nowrap cursor-pointer disabled:opacity-30 hover:scale-[1.02] active:scale-[0.98] ${
                     isDay
                       ? "bg-black text-white hover:bg-zinc-800"
-                      : "bg-white text-black hover:bg-zinc-200"
+                      : "bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)]"
                   }`}
                 >
                   Review URL →

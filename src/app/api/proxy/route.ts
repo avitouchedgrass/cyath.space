@@ -49,12 +49,55 @@ export async function GET(req: NextRequest) {
 
     // 1. Inject <base href="..."> so relative paths (CSS, images, fonts, JS) load from target origin
     const baseTag = `<base href="${fullBase}">`;
+    const bridgeScript = `<script id="cyath-staging-bridge">
+(function() {
+  function sendHeight() {
+    try {
+      var body = document.body;
+      var doc = document.documentElement;
+      var height = Math.max(
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0,
+        doc ? doc.clientHeight : 0,
+        doc ? doc.scrollHeight : 0,
+        doc ? doc.offsetHeight : 0
+      );
+      if (height > 200 && window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'CYATH_STAGE_RESIZE', height: height }, '*');
+      }
+    } catch(e) {}
+  }
+  function sendScroll() {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'CYATH_STAGE_SCROLL',
+          scrollY: window.scrollY || window.pageYOffset || 0
+        }, '*');
+      }
+    } catch(e) {}
+  }
+  window.addEventListener('DOMContentLoaded', sendHeight);
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  window.addEventListener('scroll', sendScroll, { passive: true });
+  if (typeof MutationObserver !== 'undefined' && document.body) {
+    try {
+      new MutationObserver(sendHeight).observe(document.body, { childList: true, subtree: true, attributes: true });
+    } catch(e) {}
+  }
+  [200, 600, 1200, 2500, 5000].forEach(function(t) { setTimeout(sendHeight, t); });
+})();
+</script>`;
+
+    const injectedTags = `${baseTag}\n  ${bridgeScript}`;
+
     if (/<head[^>]*>/i.test(html)) {
-      html = html.replace(/(<head[^>]*>)/i, `$1\n  ${baseTag}`);
+      html = html.replace(/(<head[^>]*>)/i, `$1\n  ${injectedTags}`);
     } else if (/<html[^>]*>/i.test(html)) {
-      html = html.replace(/(<html[^>]*>)/i, `$1\n  <head>${baseTag}</head>`);
+      html = html.replace(/(<html[^>]*>)/i, `$1\n  <head>${injectedTags}</head>`);
     } else {
-      html = `${baseTag}\n${html}`;
+      html = `${injectedTags}\n${html}`;
     }
 
     // 2. Neutralize classic frame-busting scripts

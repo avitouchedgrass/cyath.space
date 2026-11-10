@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { DeviceMode, InteractionMode, Pin, Project } from "@/types";
 import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
@@ -31,8 +31,23 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 }) => {
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
   const [stageCursor, setStageCursor] = useState<{ x: number; y: number } | null>(null);
+  const [frameHeight, setFrameHeight] = useState<number>(1000);
+
+  // Listen to height and scroll messages from proxy iframe bridge
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === "CYATH_STAGE_RESIZE" && typeof event.data.height === "number") {
+        setFrameHeight(Math.max(800, event.data.height));
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
@@ -67,28 +82,28 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const activeDevicePins = project.pins.filter((p) => p.deviceMode === deviceMode);
   const activePin = activeDevicePins.find((p) => p.id === activePinId);
 
+  const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl.startsWith("http"));
+  const stageMinHeight = isWebUrl ? `${frameHeight}px` : project.assetType === "pdf" ? "850px" : "auto";
+
   return (
     <div className="flex-1 bg-[#000000] overflow-auto p-4 sm:p-8 flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black">
       <div
         className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col rounded-xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] shadow-2xl relative`}
       >
         {/* Architectural Browser Chrome */}
-        <div className="h-10 bg-[#050505] border-b border-white/[0.08] px-4 flex items-center justify-between select-none">
-          {/* Subtle Window Notch Dots */}
+        <div className="h-10 bg-[#050505] border-b border-white/[0.08] px-4 flex items-center justify-between select-none shrink-0">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-white/20" />
             <div className="w-2 h-2 rounded-full bg-white/10" />
             <div className="w-2 h-2 rounded-full bg-white/10" />
           </div>
 
-          {/* Staging URL Capsule */}
           <div className="flex-1 max-w-sm mx-4">
             <div className="bg-[#000000] border border-white/[0.08] rounded-md px-3 py-1 text-center font-mono text-[11px] text-zinc-400 truncate">
               {project.targetUrl.startsWith("data:") ? "Uploaded Document (" + (project.assetType || "asset").toUpperCase() + ")" : project.targetUrl}
             </div>
           </div>
 
-          {/* Viewport Meta Indicator */}
           <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
             <span>{deviceMode}</span>
             <span className="text-zinc-700">·</span>
@@ -105,7 +120,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             }
           }}
           onMouseLeave={() => setStageCursor(null)}
-          className={`w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] min-h-[750px] bg-white ${
+          className={`w-full overflow-y-auto max-h-[calc(100vh-9.5rem)] bg-white relative ${
             interactionMode === "comment" ? "!cursor-none" : "cursor-default"
           }`}
         >
@@ -113,7 +128,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           <div
             ref={containerRef}
             onClick={handleStageClick}
-            className="relative w-full min-h-[750px]"
+            className="relative w-full"
+            style={{ minHeight: stageMinHeight }}
           >
             {/* Content renderer based on assetType */}
             {project.assetType === "image" ? (
@@ -130,13 +146,15 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             ) : (
               <iframe
+                ref={iframeRef}
                 src={
                   project.targetUrl.startsWith("http://") || project.targetUrl.startsWith("https://")
                     ? `/api/proxy?url=${encodeURIComponent(project.targetUrl)}`
                     : project.targetUrl
                 }
                 title={project.title}
-                className="w-full h-[750px] border-none select-none"
+                className="w-full border-none select-none block"
+                style={{ height: `${frameHeight}px`, minHeight: "800px" }}
                 sandbox="allow-scripts allow-same-origin allow-forms"
               />
             )}
@@ -174,7 +192,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Active Existing Pin Thread Popover */}
+            {/* Active Pin Popover Thread */}
             {activePin && (
               <PinPopover
                 pin={activePin}
@@ -187,35 +205,21 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 onClose={() => onSelectPin(null)}
               />
             )}
+
+            {/* Hover Crosshair Preview when in comment mode */}
+            {interactionMode === "comment" && stageCursor && !pendingPinCoords && (
+              <div
+                style={{ left: stageCursor.x, top: stageCursor.y }}
+                className="fixed pointer-events-none -translate-x-1/2 -translate-y-1/2 z-50 flex items-center justify-center"
+              >
+                <div className="w-5 h-5 rounded-full border border-white bg-black/60 shadow-lg flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-          {/* 01/Capture Precision Drafting Pointer (Active exclusively inside canvas in Comment mode) */}
-          {interactionMode === "comment" && stageCursor && (
-            <div
-              className="fixed pointer-events-none z-[999999] will-change-transform flex items-start"
-              style={{
-                left: `${stageCursor.x}px`,
-                top: `${stageCursor.y}px`,
-                transform: "translate(-1px, -1px)",
-              }}
-              aria-hidden="true"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-                <path
-                  d="M4 3L11 20L14 13L21 10L4 3Z"
-                  fill="#FFFFFF"
-                  stroke="#000000"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <div className="absolute left-[13px] top-[9px] bg-white text-black font-mono font-bold text-[9px] px-1.5 py-0.5 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] whitespace-nowrap select-none">
-                {clientAuthorName || "Guest Reviewer"}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
+    </div>
   );
 };
