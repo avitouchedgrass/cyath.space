@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Check, ArrowRight, ShieldCheck, Sparkles as SparklesIcon, Layers } from "lucide-react";
+import { X, Check, ArrowRight, ShieldCheck } from "lucide-react";
 import { TesseractMark } from "@/components/common/Logo";
 
 interface StudioUpgradeModalProps {
@@ -67,10 +67,10 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
                 <span className="text-white">UNLIMITED</span>
               </div>
               <div className="text-xs font-serif text-zinc-200">
-                &ldquo;Clients don&rsquo;t just approve faster &mdash; they treat our studio with an entirely different level of authority.&rdquo;
+                &quot;Clients don&apos;t just approve faster — they treat our studio with an entirely different level of authority.&quot;
               </div>
               <div className="text-[10px] font-mono text-zinc-500">
-                &mdash; Principal Architect, Atelier Nord
+                — Principal Architect, Atelier Nord
               </div>
             </div>
 
