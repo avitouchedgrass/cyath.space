@@ -38,28 +38,28 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
             <ShieldCheck className="w-5 h-5 stroke-[1.8]" />
           </div>
           <div>
-            <h3 className="font-serif text-lg font-medium text-white">Approve Staging Milestone</h3>
-            <p className="text-xs text-zinc-400">{project.title}</p>
+            <h3 className="font-sans text-base font-semibold text-white">Approve Staging Milestone</h3>
+            <p className="text-xs text-zinc-400 font-sans">{project.title}</p>
           </div>
         </div>
 
         {/* Status Snapshot */}
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-xl p-3 mb-5 flex items-center justify-between text-xs">
+        <div className="bg-white/[0.03] border border-white/[0.08] rounded-xl p-3 mb-5 flex items-center justify-between text-xs font-sans">
           <div>
-            <span className="text-zinc-500 font-mono text-[11px]">Resolved Feedback</span>
+            <span className="text-zinc-500 text-[11px]">Resolved Feedback</span>
             <p className="font-semibold text-sm text-zinc-100">{resolvedPins} items completed</p>
           </div>
           {openPins > 0 && (
             <div className="text-right">
-              <span className="text-zinc-500 font-mono text-[11px]">Unresolved Items</span>
+              <span className="text-zinc-500 text-[11px]">Unresolved Items</span>
               <p className="font-semibold text-sm text-zinc-300">{openPins} remaining open</p>
             </div>
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 font-sans">
           <div>
-            <label className="block text-[10px] uppercase font-mono tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
               Authorized Signer Full Name
             </label>
             <input
@@ -69,12 +69,12 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
               value={approverName}
               onChange={(e) => setApproverName(e.target.value)}
               placeholder="e.g. Jane Cooper"
-              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-sans"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-mono tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
               Client Organization / Atelier
             </label>
             <input
@@ -82,11 +82,11 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
               value={organization}
               onChange={(e) => setOrganization(e.target.value)}
               placeholder="e.g. Maison Élara Studio"
-              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-sans"
             />
           </div>
 
-          <div className="pt-2 text-[11px] text-zinc-500 leading-relaxed font-mono">
+          <div className="pt-2 text-[11px] text-zinc-500 leading-relaxed font-sans">
             By confirming, you certify that the staging deliverables are approved as presented. An immutable timestamped verification seal will be pinned to this review session.
           </div>
 

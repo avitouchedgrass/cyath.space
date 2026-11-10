@@ -179,7 +179,7 @@ export default function DashboardPage() {
     const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "Cyath Atelier";
     const shareId = createProject(parsedTitle, formattedUrl, agency, "url");
     setQuickUrl("");
-    router.push(`/r/${shareId}?u=${encodeURIComponent(formattedUrl)}&t=${encodeURIComponent(parsedTitle)}&a=${encodeURIComponent(agency)}`);
+    router.push(`/r/${shareId}`);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,12 +230,7 @@ export default function DashboardPage() {
 
   const handleCopyLink = (shareId: string) => {
     if (typeof window !== "undefined") {
-      const proj = projects.find((p) => p.shareId === shareId);
-      // Only append search params for short web URLs, NEVER for multi-megabyte data URLs!
-      const queryParams = proj && !proj.targetUrl.startsWith("data:")
-        ? `?u=${encodeURIComponent(proj.targetUrl)}&t=${encodeURIComponent(proj.title)}&a=${encodeURIComponent(proj.agencyName || "")}`
-        : "";
-      const fullUrl = `${window.location.origin}/r/${shareId}${queryParams}`;
+      const fullUrl = `${window.location.origin}/r/${shareId}`;
       navigator.clipboard.writeText(fullUrl);
       setCopiedId(shareId);
       setTimeout(() => setCopiedId(null), 2000);
@@ -243,10 +238,7 @@ export default function DashboardPage() {
   };
 
   const getCanvasHref = (project: Project) => {
-    if (project.targetUrl.startsWith("data:")) {
-      return `/r/${project.shareId}`;
-    }
-    return `/r/${project.shareId}?u=${encodeURIComponent(project.targetUrl)}&t=${encodeURIComponent(project.title)}&a=${encodeURIComponent(project.agencyName || "")}`;
+    return `/r/${project.shareId}`;
   };
 
   const handleDeleteProject = (projectId: string, projectTitle: string) => {
@@ -509,12 +501,12 @@ export default function DashboardPage() {
           }`}
         >
           {/* Title */}
-          <div className="flex items-center gap-4">
-            <h1 className="font-serif text-2xl font-medium tracking-tight">
+          <div className="flex items-center gap-3">
+            <h1 className="font-sans text-lg font-semibold tracking-tight">
               {activeNav === "overview" ? "Overview" : "All Canvases"}
             </h1>
             <span
-              className={`text-xs font-mono px-2 py-0.5 rounded-full border ${
+              className={`text-[11px] font-sans px-2 py-0.5 rounded-full border ${
                 isDay
                   ? "bg-black/5 border-black/10 text-zinc-600"
                   : "bg-white/5 border-white/10 text-zinc-400"
@@ -534,7 +526,7 @@ export default function DashboardPage() {
                 placeholder="Filter canvases..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-48 sm:w-64 pl-8 pr-3 py-1.5 rounded-lg border text-xs font-mono transition-all outline-none ${
+                className={`w-48 sm:w-64 pl-8 pr-3 py-1.5 rounded-lg border text-xs font-sans transition-all outline-none ${
                   isDay
                     ? "bg-white border-black/15 focus:border-black text-[#1C1A18]"
                     : "bg-white/[0.03] border-white/10 focus:border-white/30 text-white placeholder-zinc-500"
@@ -617,7 +609,7 @@ export default function DashboardPage() {
                     placeholder="Enter staging site URL (e.g. https://staging.client.com)"
                     value={quickUrl}
                     onChange={(e) => setQuickUrl(e.target.value)}
-                    className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs font-mono transition-all outline-none ${
+                    className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs font-sans transition-all outline-none ${
                       isDay
                         ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
                         : "bg-black border-white/10 focus:border-white/30 text-white placeholder-zinc-500"
@@ -641,7 +633,7 @@ export default function DashboardPage() {
 
               {/* Upload Image/PDF File */}
               <label
-                className={`w-full md:w-auto px-4 py-2 rounded-xl border text-xs font-mono flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`w-full md:w-auto px-4 py-2 rounded-xl border text-xs font-sans flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   isDay
                     ? "border-black/15 bg-black/[0.02] hover:bg-black/5 text-[#1C1A18]"
                     : "border-white/10 bg-black hover:bg-white/5 text-zinc-300 hover:text-white"
@@ -815,20 +807,20 @@ export default function DashboardPage() {
               isDay ? "bg-white border-black/15 text-[#1C1A18]" : "bg-[#09090b] border-white/15 text-white"
             }`}
           >
-            <h3 className="font-serif text-lg font-medium mb-1">New Review Canvas</h3>
-            <p className="text-xs text-zinc-400 font-mono mb-5">
+            <h3 className="font-sans text-base font-semibold mb-1">New Review Canvas</h3>
+            <p className="text-xs text-zinc-400 font-sans mb-5">
               Mount any live site URL or upload an asset to generate an instant zero-login client review link.
             </p>
 
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleCreate} className="space-y-4 font-sans">
               <div>
-                <label className="block text-xs font-mono text-zinc-400 mb-1.5">Canvas Title</label>
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">Canvas Title</label>
                 <input
                   type="text"
                   placeholder="e.g. Acme Studio Landing Page"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className={`w-full px-3 py-2 rounded-xl border text-xs font-mono transition-all outline-none ${
+                  className={`w-full px-3 py-2 rounded-xl border text-xs font-sans transition-all outline-none ${
                     isDay
                       ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
                       : "bg-black border-white/15 focus:border-white text-white"
@@ -838,13 +830,13 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-400 mb-1.5">Staging URL</label>
+                <label className="block text-xs font-medium text-zinc-300 mb-1.5">Staging URL</label>
                 <input
                   type="text"
                   placeholder="e.g. https://staging.acmestudio.com"
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
-                  className={`w-full px-3 py-2 rounded-xl border text-xs font-mono transition-all outline-none ${
+                  className={`w-full px-3 py-2 rounded-xl border text-xs font-sans transition-all outline-none ${
                     isDay
                       ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
                       : "bg-black border-white/15 focus:border-white text-white"
@@ -857,7 +849,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-sans text-zinc-400 hover:text-white transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -977,10 +969,10 @@ function ProjectCard({
             {/* Mock website viewport */}
             <div className="flex-1 flex flex-col items-center justify-center p-4 text-center group-hover:bg-white/[0.02] transition-colors">
               <Globe className="w-6 h-6 text-zinc-500 mb-2 stroke-[1.5]" />
-              <span className="text-xs font-serif text-zinc-300 truncate max-w-[90%]">
+              <span className="text-xs font-sans font-medium text-zinc-300 truncate max-w-[90%]">
                 {project.title}
               </span>
-              <span className="text-[10px] font-mono text-zinc-500 truncate max-w-[160px] mt-0.5">
+              <span className="text-[10px] font-sans text-zinc-500 truncate max-w-[160px] mt-0.5">
                 {project.targetUrl}
               </span>
             </div>
@@ -990,17 +982,17 @@ function ProjectCard({
         {/* Status Pill Badge floating in thumbnail */}
         <div className="absolute top-2.5 right-2.5 z-10">
           {project.isApproved ? (
-            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center gap-1 backdrop-blur-md">
+            <span className="text-[10px] font-sans font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center gap-1 backdrop-blur-md">
               <CheckCircle2 className="w-3 h-3" />
               Approved
             </span>
           ) : pinCount > 0 ? (
-            <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-1 backdrop-blur-md">
+            <span className="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-1 backdrop-blur-md">
               <MessageSquare className="w-3 h-3" />
               {openCount} notes
             </span>
           ) : (
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 border border-white/15 text-zinc-300 backdrop-blur-md">
+            <span className="text-[10px] font-sans px-2 py-0.5 rounded-full bg-white/10 border border-white/15 text-zinc-300 backdrop-blur-md">
               In Progress
             </span>
           )}
@@ -1015,18 +1007,18 @@ function ProjectCard({
             <span className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">
               {project.assetType ? project.assetType.toUpperCase() : "WEB"}
             </span>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 truncate max-w-[140px]">
+            <span className="text-[10px] font-sans uppercase tracking-wider text-zinc-400 truncate max-w-[140px]">
               {project.agencyName}
             </span>
           </div>
 
           {/* Title */}
-          <h3 className="font-serif text-base font-medium truncate text-white leading-snug" title={project.title}>
+          <h3 className="font-sans text-sm font-semibold truncate text-white leading-snug" title={project.title}>
             {project.title}
           </h3>
 
           {/* URL or Asset Subtext */}
-          <p className="text-[11px] font-mono text-zinc-400 truncate mt-0.5" title={project.targetUrl}>
+          <p className="text-[11px] font-sans text-zinc-400 truncate mt-0.5" title={project.targetUrl}>
             {project.assetType === "image" || project.assetType === "pdf"
               ? `Uploaded ${project.assetType.toUpperCase()} Canvas`
               : project.targetUrl}
@@ -1047,7 +1039,7 @@ function ProjectCard({
           {/* Copy Share Link */}
           <button
             onClick={() => onCopyLink(project.shareId)}
-            className={`py-1.5 px-2.5 rounded-lg border text-xs font-mono transition-colors flex items-center gap-1 cursor-pointer ${
+            className={`py-1.5 px-2.5 rounded-lg border text-xs font-sans transition-colors flex items-center gap-1 cursor-pointer ${
               copiedId === project.shareId
                 ? "border-emerald-500/50 text-emerald-400 bg-emerald-500/10"
                 : "border-white/10 hover:border-white/20 text-zinc-300 hover:text-white bg-white/[0.02]"

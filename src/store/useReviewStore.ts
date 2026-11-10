@@ -1,7 +1,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { nanoid } from "nanoid";
-import { Project, Pin, DeviceMode, InteractionMode, ClientTelemetry, AssetType } from "@/types";
+import { Project, Pin, PinStatus, DeviceMode, InteractionMode, ClientTelemetry, AssetType } from "@/types";
+
+function syncCanvasToServer(project: Project) {
+  if (!project || !project.shareId) return;
+  try {
+    if (typeof window !== "undefined") {
+      fetch(`/api/canvases/${project.shareId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(project),
+      }).catch(() => {});
+    }
+  } catch {}
+}
 
 interface ReviewState {
   projects: Project[];
@@ -61,6 +74,7 @@ export const useReviewStore = create<ReviewState>()(
           pins: [],
         };
         set((state) => ({ projects: [newProject, ...state.projects] }));
+        syncCanvasToServer(newProject);
         return shareId;
       },
 
@@ -76,6 +90,7 @@ export const useReviewStore = create<ReviewState>()(
               targetUrl: project.targetUrl || existing.targetUrl,
               title: project.title || existing.title,
               agencyName: project.agencyName || existing.agencyName,
+              assetType: project.assetType || existing.assetType || "url",
               pins:
                 project.pins && project.pins.length > 0
                   ? project.pins
@@ -83,8 +98,10 @@ export const useReviewStore = create<ReviewState>()(
             };
             const updated = [...state.projects];
             updated[existingIndex] = merged;
+            syncCanvasToServer(merged);
             return { projects: updated };
           }
+          syncCanvasToServer(project);
           return { projects: [project, ...state.projects] };
         });
       },
@@ -102,6 +119,7 @@ export const useReviewStore = create<ReviewState>()(
       addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName) => {
         const pinId = nanoid();
         set((state) => {
+          let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId) return proj;
             const nextNumber = proj.pins.length + 1;
@@ -127,11 +145,15 @@ export const useReviewStore = create<ReviewState>()(
                 },
               ],
             };
-            return {
+            updatedTargetProject = {
               ...proj,
               pins: [...proj.pins, newPin],
             };
+            return updatedTargetProject;
           });
+          if (updatedTargetProject) {
+            syncCanvasToServer(updatedTargetProject);
+          }
           return {
             projects: updatedProjects,
             activePinId: pinId,
@@ -140,10 +162,11 @@ export const useReviewStore = create<ReviewState>()(
       },
 
       addComment: (projectId, pinId, content, authorName, authorRole = "developer") => {
-        set((state) => ({
-          projects: state.projects.map((proj) => {
+        set((state) => {
+          let updatedTargetProject: Project | null = null;
+          const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId) return proj;
-            return {
+            const updatedProj = {
               ...proj,
               pins: proj.pins.map((pin) => {
                 if (pin.id !== pinId) return pin;
@@ -163,43 +186,64 @@ export const useReviewStore = create<ReviewState>()(
                 };
               }),
             };
-          }),
-        }));
+            updatedTargetProject = updatedProj;
+            return updatedProj;
+          });
+          if (updatedTargetProject) {
+            syncCanvasToServer(updatedTargetProject);
+          }
+          return { projects: updatedProjects };
+        });
       },
 
       toggleResolvePin: (projectId, pinId, resolvedBy = "Developer") => {
-        set((state) => ({
-          projects: state.projects.map((proj) => {
+        set((state) => {
+          let updatedTargetProject: Project | null = null;
+          const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId) return proj;
-            return {
+            const updatedProj = {
               ...proj,
               pins: proj.pins.map((pin) => {
                 if (pin.id !== pinId) return pin;
                 const isResolved = pin.status === "resolved";
+                const nextStatus: PinStatus = isResolved ? "open" : "resolved";
                 return {
                   ...pin,
-                  status: isResolved ? "open" : "resolved",
+                  status: nextStatus,
                   resolvedAt: isResolved ? undefined : new Date().toISOString(),
                   resolvedBy: isResolved ? undefined : resolvedBy,
                 };
               }),
             };
-          }),
-        }));
+            updatedTargetProject = updatedProj;
+            return updatedProj;
+          });
+          if (updatedTargetProject) {
+            syncCanvasToServer(updatedTargetProject);
+          }
+          return { projects: updatedProjects };
+        });
       },
 
       approveProject: (projectId, approverName) => {
-        set((state) => ({
-          projects: state.projects.map((proj) => {
+        set((state) => {
+          let updatedTargetProject: Project | null = null;
+          const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId) return proj;
-            return {
+            const updatedProj = {
               ...proj,
               isApproved: true,
               approvedAt: new Date().toISOString(),
               approvedBy: approverName,
             };
-          }),
-        }));
+            updatedTargetProject = updatedProj;
+            return updatedProj;
+          });
+          if (updatedTargetProject) {
+            syncCanvasToServer(updatedTargetProject);
+          }
+          return { projects: updatedProjects };
+        });
       },
 
       setActivePinId: (pinId) => set({ activePinId: pinId }),

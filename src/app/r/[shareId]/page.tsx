@@ -24,6 +24,7 @@ function ReviewCanvasInner() {
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [manualUrl, setManualUrl] = useState("");
   const [manualTitle, setManualTitle] = useState("");
+  const [isAuthor, setIsAuthor] = useState(false);
 
   const {
     projects,
@@ -34,6 +35,7 @@ function ReviewCanvasInner() {
     setActivePinId,
     setActiveDeviceMode,
     setInteractionMode,
+    setClientAuthorName,
     addPin,
     addComment,
     toggleResolvePin,
@@ -44,15 +46,47 @@ function ReviewCanvasInner() {
   useEffect(() => {
     setMounted(true);
 
+    // 0. Detect user session identity (Creator "You" vs Guest "Guest Reviewer")
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setIsAuthor(true);
+        setClientAuthorName("You");
+      } else {
+        setIsAuthor(false);
+        setClientAuthorName("Guest Reviewer");
+      }
+    });
+
     // 1. Check if project is already in local state
     const existing = projects.find((p) => p.shareId === shareId);
 
-    // 2. Hydrate from URL search parameters if available
+    // 2. Fetch from server canvas API (supports uploaded images, PDFs, URLs)
+    async function fetchServerCanvas() {
+      try {
+        const res = await fetch(`/api/canvases/${shareId}`);
+        if (res.ok) {
+          const serverProject = await res.json();
+          if (serverProject && serverProject.shareId) {
+            hydrateProject(serverProject);
+            return;
+          }
+        }
+      } catch (e) {
+        // Fallback
+      }
+    }
+
+    if (!existing || (existing && existing.pins.length === 0)) {
+      fetchServerCanvas();
+    }
+
+    // 3. Hydrate from URL search parameters if available (for external links)
     const urlParam = searchParams?.get("u");
     const titleParam = searchParams?.get("t");
     const agencyParam = searchParams?.get("a");
 
-    if (!existing && urlParam) {
+    if (!existing && urlParam && !urlParam.startsWith("data:")) {
       try {
         const decodedUrl = decodeURIComponent(urlParam);
         const decodedTitle = titleParam ? decodeURIComponent(titleParam) : "Staging Review";
@@ -64,6 +98,7 @@ function ReviewCanvasInner() {
           title: decodedTitle,
           targetUrl: decodedUrl,
           agencyName: decodedAgency,
+          assetType: "url",
           isApproved: false,
           createdAt: new Date().toISOString(),
           pins: [],
@@ -73,10 +108,9 @@ function ReviewCanvasInner() {
       }
     }
 
-    // 3. Attempt async query from Supabase in background
+    // 4. Attempt async query from Supabase in background
     async function fetchFromSupabase() {
       try {
-        const supabase = createClient();
         const { data, error } = await supabase
           .from("projects")
           .select("*, pins(*, comments(*))")
@@ -126,7 +160,7 @@ function ReviewCanvasInner() {
     }
 
     fetchFromSupabase();
-  }, [shareId, searchParams, projects, hydrateProject]);
+  }, [shareId, searchParams, projects, hydrateProject, setClientAuthorName]);
 
   if (!mounted) {
     return (

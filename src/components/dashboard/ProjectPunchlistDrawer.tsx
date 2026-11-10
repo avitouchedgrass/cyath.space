@@ -101,10 +101,7 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
                 </span>
               )}
             </div>
-            <h2
-              className="text-xl sm:text-2xl font-normal tracking-tight truncate max-w-md"
-              style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
-            >
+            <h2 className="text-lg font-semibold tracking-tight truncate max-w-md font-sans">
               {project.title}
             </h2>
             <div className="flex items-center gap-1.5 text-xs font-mono opacity-70 truncate">

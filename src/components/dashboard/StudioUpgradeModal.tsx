@@ -23,22 +23,22 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
             <ShieldCheck className="w-5 h-5 stroke-[1.8]" />
           </div>
           <div>
-            <h3 className="font-serif text-lg font-medium text-white">Cyath Studio Pro</h3>
-            <p className="text-xs text-zinc-400 font-mono">Unlock unlimited canvases & team collaboration</p>
+            <h3 className="font-sans text-base font-semibold text-white">Cyath Studio Pro</h3>
+            <p className="text-xs text-zinc-400 font-sans">Unlock unlimited canvases & team collaboration</p>
           </div>
         </div>
 
         <div className="p-4 rounded-xl border border-white/10 bg-white/[0.03] mb-5">
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="font-serif text-3xl font-medium text-white">$15</span>
-            <span className="text-xs text-zinc-400 font-mono">/ seat / month · $12 billed annually</span>
+            <span className="font-sans text-3xl font-bold tracking-tight text-white">$15</span>
+            <span className="text-xs text-zinc-400 font-sans">/ seat / month · $12 billed annually</span>
           </div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
             Eliminate client email chaos across every project and client contract with unlimited review staging viewports.
           </p>
         </div>
 
-        <ul className="space-y-2.5 mb-6 text-xs text-zinc-300 font-mono">
+        <ul className="space-y-2.5 mb-6 text-xs text-zinc-300 font-sans">
           <li className="flex items-center gap-2">
             <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
             <span>Unlimited review canvases (Websites, PDFs, Images)</span>

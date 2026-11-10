@@ -48,11 +48,11 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       <div className="p-4 border-b border-white/[0.08] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-zinc-400" />
-          <h2 className="font-serif font-medium text-sm text-zinc-100">Feedback Thread</h2>
+          <h2 className="font-sans font-semibold text-sm text-zinc-100">Feedback Thread</h2>
         </div>
         <button
           onClick={handleExportMarkdown}
-          className="text-xs px-2.5 py-1 rounded-md border border-white/[0.08] hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors font-mono"
+          className="text-xs px-2.5 py-1 rounded-md border border-white/[0.08] hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors font-sans cursor-pointer"
           title="Export notes as Markdown for GitHub / Linear"
         >
           <Download className="w-3.5 h-3.5 text-zinc-400" />
@@ -91,7 +91,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       <div className="px-3 py-2 border-b border-white/[0.08] flex items-center gap-1 bg-[#050505]">
         <button
           onClick={() => setFilter("open")}
-          className={`px-3 py-1 rounded-md text-xs font-mono transition-all ${
+          className={`px-3 py-1 rounded-md text-xs font-sans transition-all cursor-pointer ${
             filter === "open"
               ? "bg-white text-black font-semibold shadow-sm"
               : "text-zinc-400 hover:text-white"
@@ -102,7 +102,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
 
         <button
           onClick={() => setFilter("resolved")}
-          className={`px-3 py-1 rounded-md text-xs font-mono transition-all ${
+          className={`px-3 py-1 rounded-md text-xs font-sans transition-all cursor-pointer ${
             filter === "resolved"
               ? "bg-white text-black font-semibold shadow-sm"
               : "text-zinc-400 hover:text-white"
@@ -113,7 +113,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
 
         <button
           onClick={() => setFilter("all")}
-          className={`px-3 py-1 rounded-md text-xs font-mono transition-all ${
+          className={`px-3 py-1 rounded-md text-xs font-sans transition-all cursor-pointer ${
             filter === "all"
               ? "bg-white text-black font-semibold shadow-sm"
               : "text-zinc-400 hover:text-white"

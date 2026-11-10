@@ -56,19 +56,19 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white font-mono text-sm font-bold">
+          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white font-sans text-sm font-bold">
             {user?.email?.slice(0, 2).toUpperCase() || "CY"}
           </div>
           <div>
-            <h3 className="font-serif text-lg font-medium text-white">Studio Account</h3>
-            <p className="text-xs text-zinc-500 font-mono truncate max-w-[240px]">{user?.email}</p>
+            <h3 className="font-sans text-base font-semibold text-white">Studio Account</h3>
+            <p className="text-xs text-zinc-500 font-sans truncate max-w-[240px]">{user?.email}</p>
           </div>
         </div>
 
         {/* Studio / Agency Settings Form */}
         <form onSubmit={handleSave} className="space-y-4 mb-6">
           <div>
-            <label className="block text-[10px] uppercase font-mono tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">
               Studio / Agency Name
             </label>
             <div className="flex items-center gap-2">
@@ -78,11 +78,11 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                 value={editingAgency}
                 onChange={(e) => setEditingAgency(e.target.value)}
                 placeholder="e.g. North Creative Atelier"
-                className="flex-1 bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20"
+                className="flex-1 bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 font-sans"
               />
               <button
                 type="submit"
-                className="px-3 py-2 bg-white text-black font-semibold text-xs rounded-lg hover:bg-zinc-200 transition-colors whitespace-nowrap shadow-sm"
+                className="px-3 py-2 bg-white text-black font-semibold text-xs rounded-lg hover:bg-zinc-200 transition-colors whitespace-nowrap shadow-sm cursor-pointer"
               >
                 {isSaved ? "Saved!" : "Save"}
               </button>
@@ -94,10 +94,10 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
         <div className="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] mb-6 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="font-mono text-xs font-semibold text-white">Free Tier</span>
-              <span className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">1 Canvas Max</span>
+              <span className="font-sans text-xs font-semibold text-white">Free Tier</span>
+              <span className="text-[10px] font-sans bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">1 Canvas Max</span>
             </div>
-            <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+            <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
               Active Canvases: {projects.length} / 1
             </p>
           </div>
@@ -107,7 +107,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
               onClose();
               onOpenUpgrade();
             }}
-            className="px-3 py-1.5 bg-white text-black font-semibold text-xs rounded-lg hover:bg-zinc-200 transition-colors flex items-center gap-1 shadow-sm"
+            className="px-3 py-1.5 bg-white text-black font-semibold text-xs rounded-lg hover:bg-zinc-200 transition-colors flex items-center gap-1 shadow-sm cursor-pointer"
           >
             <span>Upgrade</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -118,7 +118,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
         <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
           <button
             onClick={handleExportData}
-            className="text-xs text-zinc-400 hover:text-white font-mono flex items-center gap-1.5 transition-colors"
+            className="text-xs text-zinc-400 hover:text-white font-sans flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export Data</span>
@@ -126,7 +126,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
           <button
             onClick={onSignOut}
-            className="text-xs text-zinc-400 hover:text-red-400 font-mono flex items-center gap-1.5 transition-colors"
+            className="text-xs text-zinc-400 hover:text-red-400 font-sans flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>

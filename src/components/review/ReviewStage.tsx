@@ -130,7 +130,11 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             ) : (
               <iframe
-                src={project.targetUrl}
+                src={
+                  project.targetUrl.startsWith("http://") || project.targetUrl.startsWith("https://")
+                    ? `/api/proxy?url=${encodeURIComponent(project.targetUrl)}`
+                    : project.targetUrl
+                }
                 title={project.title}
                 className="w-full h-[750px] border-none select-none"
                 sandbox="allow-scripts allow-same-origin allow-forms"
@@ -161,6 +165,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             {pendingPinCoords && (
               <PinPopover
                 isNew
+                deviceMode={deviceMode}
                 xPercent={pendingPinCoords.xPercent}
                 yPercent={pendingPinCoords.yPercent}
                 authorName={clientAuthorName}
@@ -173,6 +178,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             {activePin && (
               <PinPopover
                 pin={activePin}
+                deviceMode={deviceMode}
                 xPercent={activePin.xPercent}
                 yPercent={activePin.yPercent}
                 authorName={clientAuthorName}
@@ -205,7 +211,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 />
               </svg>
               <div className="absolute left-[13px] top-[9px] bg-white text-black font-mono font-bold text-[9px] px-1.5 py-0.5 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] whitespace-nowrap select-none">
-                {clientAuthorName || "Reviewer"}
+                {clientAuthorName || "Guest Reviewer"}
               </div>
             </div>
           )}
