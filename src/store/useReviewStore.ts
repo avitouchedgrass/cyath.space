@@ -12,6 +12,7 @@ interface ReviewState {
 
   // Actions
   createProject: (title: string, targetUrl: string, agencyName?: string) => string;
+  hydrateProject: (project: Project) => void;
   deleteProject: (projectId: string) => void;
   getProject: (shareId: string) => Project | undefined;
   addPin: (
@@ -134,6 +135,31 @@ export const useReviewStore = create<ReviewState>()(
         };
         set((state) => ({ projects: [newProject, ...state.projects] }));
         return shareId;
+      },
+
+      hydrateProject: (project: Project) => {
+        set((state) => {
+          const existingIndex = state.projects.findIndex(
+            (p) => p.shareId === project.shareId || p.id === project.id
+          );
+          if (existingIndex >= 0) {
+            const existing = state.projects[existingIndex];
+            const merged: Project = {
+              ...project,
+              targetUrl: project.targetUrl || existing.targetUrl,
+              title: project.title || existing.title,
+              agencyName: project.agencyName || existing.agencyName,
+              pins:
+                project.pins && project.pins.length > 0
+                  ? project.pins
+                  : existing.pins,
+            };
+            const updated = [...state.projects];
+            updated[existingIndex] = merged;
+            return { projects: updated };
+          }
+          return { projects: [project, ...state.projects] };
+        });
       },
 
       deleteProject: (projectId: string) => {

@@ -23,17 +23,16 @@ export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) 
         left: `${pin.xPercent}%`,
         top: `${pin.yPercent}%`,
       }}
-      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 z-20 flex items-center justify-center font-bold text-xs select-none ${
+      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 z-20 flex items-center justify-center font-mono font-bold select-none ${
         isResolved
-          ? "w-6 h-6 bg-[#121215] border border-[#10B981] text-[#10B981] opacity-75 hover:opacity-100 shadow-sm"
+          ? "w-5 h-5 bg-black/90 border border-white/20 text-zinc-500 opacity-60 hover:opacity-100 shadow-sm"
           : isActive
-          ? "w-8 h-8 bg-[#F59E0B] text-[#09090B] shadow-[0_0_24px_rgba(245,158,11,0.6)] ring-4 ring-[#F59E0B]/30 scale-110"
-          : "w-7 h-7 bg-[#121215] border-2 border-[#F59E0B] text-[#FAFAFA] hover:scale-110 shadow-[0_0_12px_rgba(245,158,11,0.35)]"
+          ? "w-7 h-7 bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.5)] ring-2 ring-white/40 scale-110 text-xs"
+          : "w-6 h-6 bg-black border border-white/50 text-white text-[11px] hover:border-white hover:scale-110 shadow-[0_0_12px_rgba(0,0,0,0.5)]"
       }`}
       title={`Pin #${pin.number}: ${pin.comments[0]?.content || ""}`}
     >
-      {isResolved ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : pin.number}
+      {isResolved ? <Check className="w-3 h-3 stroke-[2.5]" /> : pin.number}
     </button>
   );
 };
-

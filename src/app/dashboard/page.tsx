@@ -135,7 +135,11 @@ export default function DashboardPage() {
 
   const handleCopyLink = (shareId: string) => {
     if (typeof window !== "undefined") {
-      const fullUrl = `${window.location.origin}/r/${shareId}`;
+      const proj = projects.find((p) => p.shareId === shareId);
+      const queryParams = proj
+        ? `?u=${encodeURIComponent(proj.targetUrl)}&t=${encodeURIComponent(proj.title)}&a=${encodeURIComponent(proj.agencyName || "")}`
+        : "";
+      const fullUrl = `${window.location.origin}/r/${shareId}${queryParams}`;
       navigator.clipboard.writeText(fullUrl);
       setCopiedId(shareId);
       setTimeout(() => setCopiedId(null), 2000);
@@ -569,7 +573,7 @@ export default function DashboardPage() {
                     }`}
                   >
                     <Link
-                      href={`/r/${project.shareId}`}
+                      href={`/r/${project.shareId}?u=${encodeURIComponent(project.targetUrl)}&t=${encodeURIComponent(project.title)}&a=${encodeURIComponent(project.agencyName || "")}`}
                       className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-center flex items-center justify-center gap-1.5 transition-all ${
                         isDay ? "bg-[#1C1A18] text-white hover:bg-black" : "bg-white text-black hover:bg-zinc-200"
                       }`}

@@ -5,7 +5,6 @@ import { DeviceMode, InteractionMode, Pin, Project } from "@/types";
 import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
 import { calculateNormalizedCoords } from "@/lib/coordinates";
-import { captureClientTelemetry } from "@/lib/telemetry";
 
 interface ReviewStageProps {
   project: Project;
@@ -66,25 +65,28 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const activePin = project.pins.find((p) => p.id === activePinId);
 
   return (
-    <div className="flex-1 bg-[#09090B] overflow-auto p-4 sm:p-8 flex justify-center items-start min-h-[calc(100vh-3.5rem)]">
+    <div className="flex-1 bg-[#000000] overflow-auto p-4 sm:p-8 flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black">
       <div
-        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col rounded-xl overflow-hidden border border-[#27272A] bg-[#121215] shadow-2xl relative`}
+        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col rounded-xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] shadow-2xl relative`}
       >
-        {/* Simulated Browser Chrome */}
-        <div className="h-10 bg-[#18181B] border-b border-[#27272A] px-4 flex items-center justify-between select-none">
+        {/* Architectural Browser Chrome */}
+        <div className="h-10 bg-[#050505] border-b border-white/[0.08] px-4 flex items-center justify-between select-none">
+          {/* Subtle Window Notch Dots */}
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#EF4444]/60" />
-            <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]/60" />
-            <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]/60" />
+            <div className="w-2 h-2 rounded-full bg-white/20" />
+            <div className="w-2 h-2 rounded-full bg-white/10" />
+            <div className="w-2 h-2 rounded-full bg-white/10" />
           </div>
 
+          {/* Staging URL Capsule */}
           <div className="flex-1 max-w-sm mx-4">
-            <div className="bg-[#121215] border border-[#27272A] rounded-md px-3 py-1 text-center font-mono text-[11px] text-[#A1A1AA] truncate">
+            <div className="bg-[#000000] border border-white/[0.08] rounded-md px-3 py-1 text-center font-mono text-[11px] text-zinc-400 truncate">
               {project.targetUrl}
             </div>
           </div>
 
-          <div className="text-[10px] font-mono text-[#52525B] uppercase">
+          {/* Viewport Meta Indicator */}
+          <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
             {deviceMode}
           </div>
         </div>
@@ -105,14 +107,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             sandbox="allow-scripts allow-same-origin allow-forms"
           />
 
-          {/* Transparent Annotation Overlay */}
+          {/* Annotation Overlay Layer */}
           <div
             className={`absolute inset-0 z-10 ${
               interactionMode === "comment" ? "pointer-events-auto" : "pointer-events-none"
             }`}
           />
 
-          {/* Render Active Pins */}
+          {/* Active Pins */}
           {project.pins.map((pin) => (
             <PinMarker
               key={pin.id}
@@ -154,4 +156,3 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     </div>
   );
 };
-
