@@ -87,7 +87,25 @@ export default function DashboardPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
-        router.replace("/login");
+        const isGuest =
+          typeof window !== "undefined" &&
+          (localStorage.getItem("cyath_guest_session") === "true" ||
+            new URLSearchParams(window.location.search).get("demo") === "true");
+
+        if (isGuest) {
+          setCurrentUser({
+            id: "guest-atelier",
+            email: "guest@atelier.cyath.space",
+            user_metadata: { agency_name: "Cyath Drafting Atelier" },
+            app_metadata: {},
+            aud: "authenticated",
+            created_at: new Date().toISOString(),
+          } as User);
+          setAgencyInput("Cyath Drafting Atelier");
+          setMounted(true);
+        } else {
+          router.replace("/login");
+        }
       } else {
         setCurrentUser(user);
         const savedAgency = (user.user_metadata?.agency_name as string) || "Cyath Drafting Atelier";
@@ -98,6 +116,9 @@ export default function DashboardPage() {
   }, [router, supabase]);
 
   const handleSignOut = async () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cyath_guest_session");
+    }
     await supabase.auth.signOut();
     router.replace("/login");
   };

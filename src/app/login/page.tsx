@@ -705,6 +705,24 @@ export default function LoginPage() {
                     </button>
                   </span>
                 )}
+
+                <div className={`mt-4 pt-3 border-t ${isDay ? "border-black/10" : "border-white/10"}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        localStorage.setItem("cyath_guest_session", "true");
+                      }
+                      router.push("/dashboard");
+                    }}
+                    className={`text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
+                      isDay ? "text-zinc-500 hover:text-black" : "text-zinc-500 hover:text-white"
+                    }`}
+                  >
+                    <span>Explore Studio Workbench as Guest</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
             </>
           )}
