@@ -35,7 +35,8 @@ interface ReviewState {
     yPercent: number,
     telemetry: ClientTelemetry,
     initialComment: string,
-    authorName: string
+    authorName: string,
+    pageUrl?: string
   ) => void;
   addComment: (
     projectId: string,
@@ -125,7 +126,7 @@ export const useReviewStore = create<ReviewState>()(
         return get().projects.find((p) => p.shareId === shareId);
       },
 
-      addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName) => {
+      addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName, pageUrl) => {
         const pinId = nanoid();
         set((state) => {
           let updatedTargetProject: Project | null = null;
@@ -140,7 +141,7 @@ export const useReviewStore = create<ReviewState>()(
               yPercent,
               status: "open",
               deviceMode: state.activeDeviceMode,
-              pageUrl: proj.targetUrl,
+              pageUrl: pageUrl || proj.targetUrl,
               telemetry,
               createdAt: new Date().toISOString(),
               comments: [

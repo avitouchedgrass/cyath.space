@@ -12,15 +12,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const parsedTarget = new URL(targetUrl);
-    const origin = parsedTarget.origin;
-    const basePath =
-      parsedTarget.pathname.substring(
-        0,
-        parsedTarget.pathname.lastIndexOf("/") + 1
-      ) || "/";
-    const fullBase = `${origin}${basePath}`;
-
     const response = await fetch(targetUrl, {
       headers: {
         "User-Agent":
@@ -45,19 +36,129 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Capture the final URL after any HTTP 301/302/308 redirects
+    const finalUrl = response.url || targetUrl;
+    const finalParsed = new URL(finalUrl);
+    const targetOrigin = finalParsed.origin;
+    const basePath =
+      finalParsed.pathname.substring(
+        0,
+        finalParsed.pathname.lastIndexOf("/") + 1
+      ) || "/";
+    const fullBase = `${targetOrigin}${basePath}`;
+
     let html = await response.text();
 
-    // Remove existing <base> tags to avoid conflicts
+    // 1. Remove existing <base> tags to avoid conflicts
     html = html.replace(/<base[^>]*>/gi, "");
 
-    // Strip inline CSP and frame-busting meta headers that block assets, scripts, or fonts
+    // 2. Strip CSP and frame-busting meta headers that block assets, scripts, or fonts
     html = html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, "");
     html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, "");
 
-    // 1. Inject <base href="..."> so relative paths (CSS, images, fonts, JS) load from target origin, plus relax referrer for hotlink CDNs
+    // 3. Rewrite root-relative asset URLs in HTML so scripts, CSS, and images resolve to target origin
+    // Rewrite src="/path" -> src="https://target.com/path"
+    html = html.replace(/(\ssrc=["'])\/(?!\/)([^"'>]+)(["'])/gi, `$1${targetOrigin}/$2$3`);
+
+    // Rewrite <link href="/path" -> <link href="https://target.com/path"
+    html = html.replace(/(<link[^>]*\shref=["'])\/(?!\/)([^"'>]+)(["'])/gi, `$1${targetOrigin}/$2$3`);
+
+    // Rewrite srcset="/path"
+    html = html.replace(/(\ssrcset=["'])([^"'>]+)(["'])/gi, (_match, prefix, content, suffix) => {
+      const rewritten = content.split(",").map((part: string) => {
+        const trimmed = part.trim();
+        if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+          return `${targetOrigin}${trimmed}`;
+        }
+        return trimmed;
+      }).join(", ");
+      return `${prefix}${rewritten}${suffix}`;
+    });
+
+    // 4. Inject <base> tag and client-side bridge script
     const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">`;
     const bridgeScript = `<script id="cyath-staging-bridge">
 (function() {
+  var targetOrigin = ${JSON.stringify(targetOrigin)};
+
+  // 1. Intercept window.fetch so relative API and chunk calls hit targetOrigin
+  var origFetch = window.fetch;
+  if (origFetch) {
+    window.fetch = function(input, init) {
+      if (typeof input === 'string') {
+        if (input.startsWith('/') && !input.startsWith('//')) {
+          input = targetOrigin + input;
+        }
+      } else if (input && input.url && input.url.startsWith('/') && !input.url.startsWith('//')) {
+        input = new Request(targetOrigin + input.url, input);
+      }
+      return origFetch.call(this, input, init);
+    };
+  }
+
+  // 2. Intercept XMLHttpRequest
+  var origOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url) {
+    if (typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')) {
+      url = targetOrigin + url;
+    }
+    return origOpen.apply(this, arguments);
+  };
+
+  // 3. Notify parent about current page URL and pathname for multi-page pin tagging
+  function notifyParentNavigation(url) {
+    try {
+      if (window.parent && window.parent !== window) {
+        var parsed = new URL(url, targetOrigin);
+        window.parent.postMessage({
+          type: 'CYATH_PAGE_NAVIGATED',
+          url: parsed.href,
+          pathname: parsed.pathname || '/'
+        }, '*');
+      }
+    } catch(e) {}
+  }
+
+  // 4. Intercept history pushState and replaceState for SPA navigations
+  var origPushState = history.pushState;
+  history.pushState = function(state, title, url) {
+    if (url) {
+      var fullUrl = new URL(url, targetOrigin).href;
+      notifyParentNavigation(fullUrl);
+      return origPushState.call(this, state, title, '/api/proxy?url=' + encodeURIComponent(fullUrl));
+    }
+    return origPushState.apply(this, arguments);
+  };
+
+  var origReplaceState = history.replaceState;
+  history.replaceState = function(state, title, url) {
+    if (url) {
+      var fullUrl = new URL(url, targetOrigin).href;
+      notifyParentNavigation(fullUrl);
+      return origReplaceState.call(this, state, title, '/api/proxy?url=' + encodeURIComponent(fullUrl));
+    }
+    return origReplaceState.apply(this, arguments);
+  };
+
+  // 5. Intercept internal link navigation to stay within proxy sandbox
+  document.addEventListener('click', function(e) {
+    try {
+      var a = e.target.closest('a');
+      if (a && a.href) {
+        var rawHref = a.getAttribute('href');
+        if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('javascript:') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
+        var fullTargetUrl = new URL(rawHref, targetOrigin).href;
+        if (fullTargetUrl && (fullTargetUrl.startsWith('http://') || fullTargetUrl.startsWith('https://'))) {
+          e.preventDefault();
+          e.stopPropagation();
+          notifyParentNavigation(fullTargetUrl);
+          window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl);
+        }
+      }
+    } catch(err) {}
+  }, true);
+
+  // 6. Dynamic stage height synchronizer
   function sendHeight() {
     try {
       var body = document.body;
@@ -74,37 +175,16 @@ export async function GET(req: NextRequest) {
       }
     } catch(e) {}
   }
-  function sendScroll() {
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-          type: 'CYATH_STAGE_SCROLL',
-          scrollY: window.scrollY || window.pageYOffset || 0
-        }, '*');
-      }
-    } catch(e) {}
-  }
-  window.addEventListener('DOMContentLoaded', sendHeight);
-  window.addEventListener('load', sendHeight);
-  window.addEventListener('resize', sendHeight);
-  window.addEventListener('scroll', sendScroll, { passive: true });
 
-  // 3. Intercept internal link navigation to stay within proxy sandbox
-  document.addEventListener('click', function(e) {
-    try {
-      var a = e.target.closest('a');
-      if (a && a.href) {
-        var rawHref = a.getAttribute('href');
-        if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('javascript:') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
-        var fullTargetUrl = a.href;
-        if (fullTargetUrl && (fullTargetUrl.startsWith('http://') || fullTargetUrl.startsWith('https://'))) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl);
-        }
-      }
-    } catch(err) {}
-  }, true);
+  window.addEventListener('DOMContentLoaded', function() {
+    sendHeight();
+    notifyParentNavigation(window.location.href);
+  });
+  window.addEventListener('load', function() {
+    sendHeight();
+    notifyParentNavigation(window.location.href);
+  });
+  window.addEventListener('resize', sendHeight);
 
   if (typeof MutationObserver !== 'undefined' && document.body) {
     try {
@@ -125,7 +205,7 @@ export async function GET(req: NextRequest) {
       html = `${injectedTags}\n${html}`;
     }
 
-    // 2. Neutralize classic frame-busting scripts
+    // 5. Neutralize frame-busting scripts
     html = html.replace(/window\.top\s*!==\s*window\.self/g, "false");
     html = html.replace(/top\.location\s*=/g, "/* frame-neutralized */ void ");
 
@@ -152,4 +232,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

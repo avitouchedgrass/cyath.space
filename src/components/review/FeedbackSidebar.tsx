@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, CheckCircle2, Download, MessageSquare, Layers } from "lucide-react";
+import { Check, CheckCircle2, Download, MessageSquare, ArrowUpDown, Globe } from "lucide-react";
 import { DeviceMode, Pin, Project } from "@/types";
 import { exportProjectAsMarkdown } from "@/lib/export";
+import { getPageColor, formatPageLabel } from "@/lib/colors";
 
 interface FeedbackSidebarProps {
   project: Project;
@@ -13,6 +14,8 @@ interface FeedbackSidebarProps {
   onToggleResolve: (pinId: string) => void;
   onDeviceChange?: (mode: DeviceMode) => void;
 }
+
+type SortOrder = "newest" | "oldest" | "page";
 
 export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   project,
@@ -24,19 +27,46 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
 }) => {
   const [filter, setFilter] = useState<"all" | "open" | "resolved">("open");
   const [deviceScope, setDeviceScope] = useState<"current" | "all">("current");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
+  const [pageFilter, setPageFilter] = useState<string>("all");
   const [isCopied, setIsCopied] = useState(false);
 
   const allPins = Array.isArray(project?.pins) ? project.pins : [];
-  const scopedPins =
+
+  // Identify all unique subpages that have pins
+  const uniquePages = Array.from(new Set(allPins.map((p) => formatPageLabel(p.pageUrl))));
+
+  // Filter by device scope
+  let scopedPins =
     deviceScope === "current"
       ? allPins.filter((p) => p.deviceMode === activeDeviceMode)
       : allPins;
 
+  // Filter by subpage if selected
+  if (pageFilter !== "all") {
+    scopedPins = scopedPins.filter((p) => formatPageLabel(p.pageUrl) === pageFilter);
+  }
+
+  // Filter by status
   const openPins = scopedPins.filter((p) => p.status !== "resolved");
   const resolvedPins = scopedPins.filter((p) => p.status === "resolved");
 
-  const displayedPins =
+  let displayedPins =
     filter === "open" ? openPins : filter === "resolved" ? resolvedPins : scopedPins;
+
+  // Sort pins
+  displayedPins = [...displayedPins].sort((a, b) => {
+    if (sortOrder === "newest") {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    } else if (sortOrder === "oldest") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else if (sortOrder === "page") {
+      const pageA = formatPageLabel(a.pageUrl);
+      const pageB = formatPageLabel(b.pageUrl);
+      return pageA.localeCompare(pageB);
+    }
+    return 0;
+  });
 
   const handleExportMarkdown = () => {
     const md = exportProjectAsMarkdown({
@@ -66,15 +96,15 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         </button>
       </div>
 
-      {/* Scope Toggles (Current Viewport vs All Viewports) */}
-      <div className="px-3 py-1.5 border-b border-white/[0.06] flex items-center justify-between bg-[#030303] text-[10px] font-mono text-zinc-500">
-        <span className="uppercase tracking-wider">Device Scope</span>
+      {/* Scope & Sort Controls */}
+      <div className="px-3 py-2 border-b border-white/[0.06] flex items-center justify-between bg-[#050507] text-[10px] font-mono text-zinc-400 gap-2">
+        {/* Device Scope */}
         <div className="flex items-center gap-1">
           <button
             onClick={() => setDeviceScope("current")}
-            className={`px-2 py-0.5 rounded transition-all ${
+            className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
               deviceScope === "current"
-                ? "bg-white text-black font-semibold"
+                ? "bg-white text-black font-semibold shadow-sm"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
@@ -82,16 +112,61 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
           </button>
           <button
             onClick={() => setDeviceScope("all")}
-            className={`px-2 py-0.5 rounded transition-all ${
+            className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
               deviceScope === "all"
-                ? "bg-white text-black font-semibold"
+                ? "bg-white text-black font-semibold shadow-sm"
                 : "text-zinc-400 hover:text-white"
             }`}
           >
             ALL ({allPins.length})
           </button>
         </div>
+
+        {/* Sort Selector */}
+        <div className="flex items-center gap-1">
+          <ArrowUpDown className="w-3 h-3 text-zinc-500" />
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+            className="bg-white/[0.05] border border-white/10 rounded px-1.5 py-0.5 text-[10px] text-zinc-300 focus:outline-none focus:border-white/30 cursor-pointer"
+          >
+            <option value="newest" className="bg-[#121215] text-white">Newest</option>
+            <option value="oldest" className="bg-[#121215] text-white">Oldest</option>
+            <option value="page" className="bg-[#121215] text-white">By Page</option>
+          </select>
+        </div>
       </div>
+
+      {/* Multi-Page Filter Bar (Shows when multiple pages exist) */}
+      {uniquePages.length > 1 && (
+        <div className="px-3 py-1.5 border-b border-white/[0.06] bg-[#030304] flex items-center gap-1.5 overflow-x-auto text-[10px] font-mono">
+          <Globe className="w-3 h-3 text-zinc-500 shrink-0" />
+          <button
+            onClick={() => setPageFilter("all")}
+            className={`px-2 py-0.5 rounded whitespace-nowrap cursor-pointer transition-colors ${
+              pageFilter === "all" ? "bg-white/20 text-white font-medium" : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            All Subpages
+          </button>
+          {uniquePages.map((pg) => {
+            const palette = getPageColor(pg);
+            const isSelected = pageFilter === pg;
+            return (
+              <button
+                key={pg}
+                onClick={() => setPageFilter(pg)}
+                className={`px-2 py-0.5 rounded flex items-center gap-1 whitespace-nowrap cursor-pointer border transition-colors ${
+                  isSelected ? `${palette.bg} ${palette.border} text-white font-medium` : "border-transparent text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${palette.dot}`} />
+                <span className="truncate max-w-[100px]">{pg}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Status Filter Tabs */}
       <div className="px-3 py-2 border-b border-white/[0.08] flex items-center gap-1 bg-[#050505]">
@@ -148,6 +223,8 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
             const firstComment = comments[0]?.content || "No comment provided";
             const author = comments[0]?.authorName || "Reviewer";
             const browserName = pin.telemetry?.browser || "Browser";
+            const pagePalette = getPageColor(pin.pageUrl);
+            const pageLabel = formatPageLabel(pin.pageUrl);
 
             return (
               <div
@@ -187,7 +264,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                       e.stopPropagation();
                       onToggleResolve(pin.id);
                     }}
-                    className={`p-1 rounded transition-colors ${
+                    className={`p-1 rounded transition-colors cursor-pointer ${
                       isResolved
                         ? "text-white bg-white/10"
                         : "text-zinc-500 hover:text-white hover:bg-white/10"
@@ -196,6 +273,14 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </button>
+                </div>
+
+                {/* Subpage Identification Tag */}
+                <div className="mb-2">
+                  <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[9px] font-mono border ${pagePalette.bg} ${pagePalette.border} ${pagePalette.text}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${pagePalette.dot}`} />
+                    <span className="truncate max-w-[180px]">{pageLabel}</span>
+                  </div>
                 </div>
 
                 <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed mb-2.5">

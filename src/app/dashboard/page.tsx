@@ -24,6 +24,11 @@ import {
   ShieldCheck,
   Terminal,
   X,
+  Zap,
+  ArrowRight,
+  User as UserIcon,
+  Building,
+  Shield,
 } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
@@ -47,6 +52,7 @@ export default function DashboardPage() {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [selectedPunchlistProject, setSelectedPunchlistProject] = useState<Project | null>(null);
 
   const [title, setTitle] = useState("");
@@ -318,28 +324,112 @@ export default function DashboardPage() {
             <span className="font-sans font-bold text-xl tracking-tight text-white">cyath</span>
           </Link>
 
-          <div
-            className={`inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full border shadow-xl backdrop-blur-2xl ${
+          <div className="flex items-center gap-3">
+            {!isUserPro && (
+              <Link
+                href="/pro"
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition-all hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 border border-white"
+              >
+                <Zap className="w-3.5 h-3.5 fill-black stroke-black" />
+                <span>Studio Pro</span>
+                <span className="text-[10px] font-mono bg-black text-white px-1.5 py-0.2 rounded-full font-bold">$12</span>
+              </Link>
+            )}
+
+            <div
+              className={`inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full border shadow-xl backdrop-blur-2xl ${
               isDay
                 ? "bg-white/80 border-black/12 shadow-black/5"
                 : "bg-white/[0.05] border-white/15 shadow-black/40"
             }`}
           >
-            <button
-              onClick={() => setShowAccountModal(true)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-sans transition-all cursor-pointer ${
-                isDay ? "text-zinc-800 hover:bg-black/5" : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
-              }`}
-              title="Studio Profile & Settings"
-            >
-              <span className="w-4 h-4 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[9px] font-mono font-semibold text-white">
-                {agencyInput ? agencyInput.charAt(0).toUpperCase() : "S"}
-              </span>
-              <span className="font-medium truncate max-w-[130px]">
-                {agencyInput && !agencyInput.includes("@") ? agencyInput : "Studio Atelier"}
-              </span>
-              <ChevronDown className="w-3 h-3 opacity-60 shrink-0" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-sans transition-all cursor-pointer ${
+                  isDay ? "text-zinc-800 hover:bg-black/5" : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
+                }`}
+                title="Studio Profile & Settings"
+              >
+                <span className="w-4 h-4 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[9px] font-mono font-semibold text-white">
+                  {agencyInput ? agencyInput.charAt(0).toUpperCase() : "S"}
+                </span>
+                <span className="font-medium truncate max-w-[130px]">
+                  {agencyInput && !agencyInput.includes("@") ? agencyInput : "Studio Atelier"}
+                </span>
+                <ChevronDown className="w-3 h-3 opacity-60 shrink-0" />
+              </button>
+
+              {/* Architectural Account Dropdown Menu */}
+              {showAccountDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowAccountDropdown(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0a0a0d] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-2 z-50 text-white font-sans animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-2 border-b border-white/10 mb-1">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Signed in as</span>
+                      <span className="text-xs font-medium text-white truncate block">{currentUser?.email || "Studio Member"}</span>
+                    </div>
+
+                    <Link
+                      href="/settings?tab=profile"
+                      onClick={() => setShowAccountDropdown(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    >
+                      <Building className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Atelier Profile</span>
+                    </Link>
+
+                    <Link
+                      href="/settings?tab=account"
+                      onClick={() => setShowAccountDropdown(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    >
+                      <Shield className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Account Settings</span>
+                    </Link>
+
+                    <Link
+                      href="/settings?tab=mcp"
+                      onClick={() => setShowAccountDropdown(false)}
+                      className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Terminal className="w-3.5 h-3.5 text-zinc-400" />
+                        <span>Autonomous MCP Keys</span>
+                      </div>
+                      <span className="text-[9px] font-mono uppercase bg-white/10 text-zinc-300 px-1.5 py-0.5 rounded">
+                        PRO
+                      </span>
+                    </Link>
+
+                    <Link
+                      href="/settings?tab=billing"
+                      onClick={() => setShowAccountDropdown(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    >
+                      <Zap className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Plan & Billing</span>
+                    </Link>
+
+                    <div className="my-1 border-t border-white/10" />
+
+                    <button
+                      onClick={() => {
+                        setShowAccountDropdown(false);
+                        handleSignOut();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-rose-300 hover:text-rose-200 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
 
             <div className={`w-px h-4 ${isDay ? "bg-black/10" : "bg-white/10"}`} />
 
@@ -395,7 +485,8 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
       <main className="relative z-10 max-w-[1400px] mx-auto px-6 sm:px-12 py-10 sm:py-14 space-y-10">
         <section className="space-y-4">
@@ -417,20 +508,22 @@ export default function DashboardPage() {
                 {totalOpenNotes} open {totalOpenNotes === 1 ? "note" : "notes"}
               </span>
               {isUserPro ? (
-                <button
-                  onClick={() => setShowAccountModal(true)}
+                <Link
+                  href="/settings?tab=mcp"
                   className="px-3 py-1 rounded-full border border-white/20 bg-white text-black font-semibold hover:bg-zinc-200 transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   <Terminal className="w-3 h-3 text-black" />
                   <span>MCP: PRO ACTIVE</span>
-                </button>
+                </Link>
               ) : (
-                <button
-                  onClick={() => setShowUpgradeModal(true)}
-                  className="px-3 py-1 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
+                <Link
+                  href="/pro"
+                  className="px-3.5 py-1 rounded-full border border-white/40 bg-white/10 hover:bg-white text-white hover:text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm group"
                 >
-                  Pro Plan
-                </button>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Upgrade to Studio Pro ($12/mo)</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
               )}
             </div>
           </div>

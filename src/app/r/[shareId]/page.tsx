@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Globe } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { ReviewHeader } from "@/components/review/ReviewHeader";
 import { ReviewStage } from "@/components/review/ReviewStage";
@@ -25,6 +25,7 @@ function ReviewCanvasInner() {
   const [manualUrl, setManualUrl] = useState("");
   const [manualTitle, setManualTitle] = useState("");
   const [isAuthor, setIsAuthor] = useState(false);
+  const [fullSidebarOpen, setFullSidebarOpen] = useState(false);
   const hydratedShareIdRef = React.useRef<string | null>(null);
 
   const {
@@ -339,16 +340,16 @@ function ReviewCanvasInner() {
     xPercent: number,
     yPercent: number,
     comment: string,
-    authorName: string
+    authorName: string,
+    pageUrl?: string
   ) => {
     const telemetry = captureClientTelemetry(activeDeviceMode);
-    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName);
+    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl);
   };
 
   const handleAddComment = (pinId: string, content: string, authorName: string) => {
     addComment(project.id, pinId, content, authorName, "client");
   };
-
 
   const handleToggleResolve = (pinId: string) => {
     toggleResolvePin(project.id, pinId);
@@ -359,8 +360,10 @@ function ReviewCanvasInner() {
     setShowApprovalModal(false);
   };
 
+  const isFullMode = activeDeviceMode === "full";
+
   return (
-    <div className="min-h-screen bg-[#000000] flex flex-col text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#000000] flex flex-col text-white selection:bg-white selection:text-black relative">
       {/* Top Controls */}
       <ReviewHeader
         project={project}
@@ -372,7 +375,7 @@ function ReviewCanvasInner() {
       />
 
       {/* Main Interactive Stage + Sidebar */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         <ReviewStage
           project={project}
           deviceMode={activeDeviceMode}
@@ -386,14 +389,55 @@ function ReviewCanvasInner() {
           onDeletePin={(pinId) => deletePin(project.id, pinId)}
         />
 
-        <FeedbackSidebar
-          project={project}
-          activePinId={activePinId}
-          activeDeviceMode={activeDeviceMode}
-          onSelectPin={setActivePinId}
-          onToggleResolve={handleToggleResolve}
-          onDeviceChange={setActiveDeviceMode}
-        />
+        {/* In Full mode, sidebar is hidden by default for complete 100% immersive screen coverage */}
+        {!isFullMode && (
+          <FeedbackSidebar
+            project={project}
+            activePinId={activePinId}
+            activeDeviceMode={activeDeviceMode}
+            onSelectPin={setActivePinId}
+            onToggleResolve={handleToggleResolve}
+            onDeviceChange={setActiveDeviceMode}
+          />
+        )}
+
+        {/* Floating pill toggle in Full mode */}
+        {isFullMode && !fullSidebarOpen && (
+          <button
+            onClick={() => setFullSidebarOpen(true)}
+            className="fixed bottom-6 right-6 z-40 bg-[#09090c]/90 border border-white/20 hover:border-white/50 text-white px-4 py-2.5 rounded-full shadow-[0_10px_35px_rgba(0,0,0,0.9)] backdrop-blur-xl flex items-center gap-2 text-xs font-mono font-medium transition-all hover:scale-105 cursor-pointer"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-zinc-300" />
+            <span>Feedback Notes ({project.pins.length})</span>
+          </button>
+        )}
+
+        {/* Overlay Slide-out Drawer in Full mode */}
+        {isFullMode && fullSidebarOpen && (
+          <div className="fixed inset-y-0 right-0 z-50 flex animate-in slide-in-from-right duration-200">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm -z-10"
+              onClick={() => setFullSidebarOpen(false)}
+            />
+            <div className="relative flex">
+              <button
+                onClick={() => setFullSidebarOpen(false)}
+                className="absolute top-4 left-4 z-50 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                title="Close Notes"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+              <FeedbackSidebar
+                project={project}
+                activePinId={activePinId}
+                activeDeviceMode={activeDeviceMode}
+                onSelectPin={setActivePinId}
+                onToggleResolve={handleToggleResolve}
+                onDeviceChange={setActiveDeviceMode}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Approval Ceremony Modal */}

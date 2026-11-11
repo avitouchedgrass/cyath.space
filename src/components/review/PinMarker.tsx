@@ -3,6 +3,7 @@
 import React from "react";
 import { Check } from "lucide-react";
 import { Pin } from "@/types";
+import { getPageColor } from "@/lib/colors";
 
 interface PinMarkerProps {
   pin: Pin;
@@ -12,6 +13,7 @@ interface PinMarkerProps {
 
 export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) => {
   const isResolved = pin.status === "resolved";
+  const pagePalette = getPageColor(pin.pageUrl);
 
   return (
     <button
@@ -23,7 +25,7 @@ export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) 
         left: `${pin.xPercent}%`,
         top: `${pin.yPercent}%`,
       }}
-      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 z-20 flex items-center justify-center font-mono font-bold select-none ${
+      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 z-20 flex items-center justify-center font-mono font-bold select-none cursor-pointer ${
         isResolved
           ? "w-5 h-5 bg-black/90 border border-white/20 text-zinc-500 opacity-60 hover:opacity-100 shadow-sm"
           : isActive
@@ -33,6 +35,13 @@ export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) 
       title={`Pin #${pin.number}: ${pin.comments?.[0]?.content || ""}`}
     >
       {isResolved ? <Check className="w-3 h-3 stroke-[2.5]" /> : pin.number}
+      {pagePalette && !isResolved && (
+        <span
+          className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-black shadow-sm"
+          style={{ backgroundColor: pagePalette.hex }}
+          title={`Page: ${pin.pageUrl || "Home"}`}
+        />
+      )}
     </button>
   );
 };
