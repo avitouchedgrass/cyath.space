@@ -92,7 +92,7 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
   const [milestoneApproved, setMilestoneApproved] = useState(false);
   const [exportedMarkdown, setExportedMarkdown] = useState(false);
 
-  const fullUrlTarget = "https://staging.interior-atelier.com";
+  const fullUrlTarget = "https://staging.interior-design.com";
 
   // Main playback loop
   useEffect(() => {
@@ -253,7 +253,7 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
           <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto bg-[#070709] font-sans">
             <div className="space-y-1">
               <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-400">
-                ATELIER SPECIFICATION // REFERENCE LEDGER
+                CYATH SPECIFICATION // REFERENCE LEDGER
               </span>
               <h3 className="font-serif text-2xl font-normal text-white">
                 Studio Field Guide & Keyboard Hotkeys

@@ -63,9 +63,9 @@ export default function ProPricingPage() {
             className="flex items-center gap-2.5 group p-1"
           >
             <TesseractMark size={22} className="group-hover:scale-105 transition-transform" />
-            <span className="font-sans font-bold text-lg text-white">cyath</span>
+            <span className="font-serif tracking-tight text-white font-medium text-lg">cyath</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 uppercase tracking-wider font-semibold ml-1">
-              Studio Pro
+              Pro Plan
             </span>
           </Link>
 
@@ -82,8 +82,8 @@ export default function ProPricingPage() {
       {/* Hero Section with Generous Breathing Room */}
       <section className="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center relative">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/[0.04] text-xs font-mono text-zinc-300 mb-6 animate-in fade-in">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>CYATH 2026 ATELIER EDITION</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span className="uppercase tracking-widest text-[11px]">Autonomous Feedback Pipeline</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-medium tracking-tight text-white max-w-3xl mx-auto leading-[1.12] mb-6">
@@ -137,10 +137,10 @@ export default function ProPricingPage() {
                     Autonomous MCP Pipeline
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
-                    LIVE DISPATCH
+                <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="uppercase tracking-widest text-[10px]">
+                    Active Daemon
                   </span>
                 </div>
               </div>
@@ -234,18 +234,18 @@ export default function ProPricingPage() {
                 className="w-full py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.5)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isActivating ? (
-                  <span>Issuing Studio Keycard...</span>
+                  <span>Activating Cyath Pro...</span>
                 ) : activatedSuccess ? (
-                  <span>✓ Studio Pro Keycard Active!</span>
+                  <span>✓ Cyath Pro Active!</span>
                 ) : (
                   <>
-                    <span>Activate Studio Pro Keycard</span>
+                    <span>Activate Cyath Pro</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
               <p className="text-[11px] font-mono text-center text-zinc-500 mt-3">
-                Instant activation · Keycard issued immediately to workstation
+                Instant activation · MCP key generated immediately for workstation
               </p>
             </div>
           </div>
@@ -256,13 +256,13 @@ export default function ProPricingPage() {
       <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/[0.08]">
         <div className="text-center max-w-xl mx-auto mb-12">
           <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
-            ATELIER TIME ECONOMICS
+            PROJECT TIME ECONOMICS
           </span>
           <h2 className="text-3xl font-serif font-medium text-white tracking-tight mb-3">
-            Calculate your recovered development hours
+            Calculate your recovered engineering hours
           </h2>
           <p className="text-xs text-zinc-400">
-            See how much manual QA overhead Cyath eliminates each month for your team.
+            See how much manual QA overhead Cyath eliminates each month for your development team.
           </p>
         </div>
 
@@ -315,17 +315,17 @@ export default function ProPricingPage() {
         </div>
       </section>
 
-      {/* Feature Deep Dive Grid */}
+      {/* Feature Deep Dive Grid - Meaningful Capabilities */}
       <section className="max-w-5xl mx-auto px-6 py-16 border-t border-white/[0.08]">
         <div className="text-center max-w-xl mx-auto mb-12">
           <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
             ENGINEERING SPECIFICATIONS
           </span>
           <h2 className="text-3xl font-serif font-medium text-white tracking-tight mb-3">
-            Everything built into Studio Pro
+            Core capabilities built into Cyath Pro
           </h2>
           <p className="text-xs text-zinc-400">
-            Crafted for modern design agencies, boutique studios, and independent software craftsmen.
+            Engineered for high-performing product teams, design studios, and autonomous coding agent workflows.
           </p>
         </div>
 
@@ -335,22 +335,22 @@ export default function ProPricingPage() {
               <Terminal className="w-4 h-4" />
             </div>
             <h3 className="font-serif text-base font-medium text-white">
-              MCP Server Keycard
+              Autonomous MCP Agent Pipeline
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Native stdio & HTTP bridge for Cursor, Claude Code, and Antigravity. Let your AI agent read visual bugs with exact CSS selectors.
+              Full Model Context Protocol server key for Cursor, Claude Code, and Antigravity. Agents autonomously fetch pin telemetry (DOM selector, viewport, user-agent), apply Git code patches, and resolve client feedback in real time.
             </p>
           </div>
 
           <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
             <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <Maximize2 className="w-4 h-4" />
+              <Layers className="w-4 h-4" />
             </div>
             <h3 className="font-serif text-base font-medium text-white">
-              100% Fluid Full Screen
+              Enterprise Edge Proxy Tunneling
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Edge-to-edge browser canvas with floating minimal comment bar. Test real responsive fluid layouts without iframe clipping.
+              Custom zero-CORS proxy engine that neutralizes strict Content-Security-Policy headers, strips frame-busting scripts, and dynamically rewrites Next.js Turbopack chunks and assets for 100% faithful client hydration.
             </p>
           </div>
 
@@ -359,10 +359,10 @@ export default function ProPricingPage() {
               <Globe className="w-4 h-4" />
             </div>
             <h3 className="font-serif text-base font-medium text-white">
-              Multi-Page Subpage Color Coding
+              Route-Aware Multi-Page Isolation
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Traverse entire websites within one canvas session. Pins auto-tag by subpage pathname with distinct color pips and chronological sorting.
+              Full multi-page review navigation with isolated per-route pin threads. Pins placed on subpages stay pinned strictly to that subpage with distinct palette badges, chronological ordering, and deep route preservation.
             </p>
           </div>
 
@@ -371,10 +371,10 @@ export default function ProPricingPage() {
               <ShieldCheck className="w-4 h-4" />
             </div>
             <h3 className="font-serif text-base font-medium text-white">
-              Legal Milestone Acceptance Deeds
+              Cryptographic Milestone Sign-Off
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              One-click cryptographic audit deeds that clients sign before revisions. Lock completed milestones and end unpaid scope drift.
+              Legally binding digital acceptance deeds that clients formalize upon sign-off. Freezes project scope, locks commit hashes, and issues timestamped milestone certificates to prevent revisions creep.
             </p>
           </div>
 
@@ -383,10 +383,10 @@ export default function ProPricingPage() {
               <GitPullRequest className="w-4 h-4" />
             </div>
             <h3 className="font-serif text-base font-medium text-white">
-              Linear & GitHub Export
+              Bi-Directional Linear & GitHub Sync
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Export review threads directly into structured markdown or dispatch them to issue trackers with viewport dimensions attached.
+              Two-way telemetry synchronization with GitHub Issues and Linear. Resolving a pin in code automatically marks client feedback as resolved on the live canvas with author attribution and diff logs.
             </p>
           </div>
 
@@ -395,10 +395,10 @@ export default function ProPricingPage() {
               <Clock className="w-4 h-4" />
             </div>
             <h3 className="font-serif text-base font-medium text-white">
-              Zero Client Friction
+              White-Label Client Staging Portals
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Clients never need accounts or extension downloads. Send one universal link, and they immediately drop pins and annotate live.
+              Deploy unlimited review canvases under your agency identity. Clients require zero accounts, logins, or browser extensions—simply open a universal staging link and annotate immediately.
             </p>
           </div>
         </div>
@@ -408,19 +408,20 @@ export default function ProPricingPage() {
       <section className="max-w-4xl mx-auto px-6 pb-20 text-center">
         <div className="p-10 rounded-3xl bg-gradient-to-b from-[#111116] to-[#07070a] border border-white/20 shadow-2xl">
           <h2 className="text-3xl font-serif font-medium text-white mb-3">
-            Ready to upgrade your atelier workflow?
+            Ready to upgrade your team review workflow?
           </h2>
           <p className="text-sm text-zinc-400 max-w-md mx-auto mb-6">
-            Join independent software ateliers building with Cyath Studio Pro. Instant setup in under 60 seconds.
+            Join engineering teams and agencies building with Cyath Pro. Instant setup in under 60 seconds.
           </p>
           <button
             onClick={handleActivatePro}
             className="px-8 py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all shadow-lg hover:shadow-2xl cursor-pointer"
           >
-            Activate Studio Pro ($12/mo)
+            Activate Cyath Pro ($12/mo)
           </button>
         </div>
       </section>
     </div>
   );
 }
+

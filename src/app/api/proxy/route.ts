@@ -63,6 +63,11 @@ export async function GET(req: NextRequest) {
     // Rewrite <link href="/path" -> <link href="https://target.com/path"
     html = html.replace(/(<link[^>]*\shref=["'])\/(?!\/)([^"'>]+)(["'])/gi, `$1${targetOrigin}/$2$3`);
 
+    // Rewrite Next.js Turbopack / Webpack dynamic chunks and React Server Component Flight payloads
+    html = html.replace(/(["'])\/_next\//g, `$1${targetOrigin}/_next/`);
+    html = html.replace(/(["'])\/assets\//g, `$1${targetOrigin}/assets/`);
+    html = html.replace(/(["'])\/static\//g, `$1${targetOrigin}/static/`);
+
     // Rewrite srcset="/path"
     html = html.replace(/(\ssrcset=["'])([^"'>]+)(["'])/gi, (_match, prefix, content, suffix) => {
       const rewritten = content.split(",").map((part: string) => {
@@ -81,35 +86,85 @@ export async function GET(req: NextRequest) {
 (function() {
   var targetOrigin = ${JSON.stringify(targetOrigin)};
 
-  // 1. Intercept window.fetch so relative API and chunk calls hit targetOrigin
+  // 1. Unroll proxy URLs to actual target URL
+  function extractTargetUrl(rawUrl) {
+    if (!rawUrl) return targetOrigin;
+    try {
+      var u = new URL(rawUrl, window.location.origin);
+      if (u.pathname.includes('/api/proxy')) {
+        var inner = u.searchParams.get('url');
+        if (inner) return inner;
+      }
+    } catch(e) {}
+    return rawUrl;
+  }
+
+  // 2. Intercept dynamic Image src assignments (fixes food plate rotation and image cycling)
+  try {
+    var imgDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+    if (imgDesc && imgDesc.set) {
+      var origImgSet = imgDesc.set;
+      Object.defineProperty(HTMLImageElement.prototype, 'src', {
+        set: function(val) {
+          if (typeof val === 'string' && val.startsWith('/') && !val.startsWith('//') && !val.startsWith('/api/proxy')) {
+            val = targetOrigin + val;
+          }
+          return origImgSet.call(this, val);
+        },
+        get: imgDesc.get,
+        configurable: true
+      });
+    }
+  } catch(e) {}
+
+  // 3. Intercept dynamic Script src assignments (fixes dynamic chunk imports)
+  try {
+    var scriptDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+    if (scriptDesc && scriptDesc.set) {
+      var origScriptSet = scriptDesc.set;
+      Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+        set: function(val) {
+          if (typeof val === 'string' && val.startsWith('/') && !val.startsWith('//') && !val.startsWith('/api/proxy')) {
+            val = targetOrigin + val;
+          }
+          return origScriptSet.call(this, val);
+        },
+        get: scriptDesc.get,
+        configurable: true
+      });
+    }
+  } catch(e) {}
+
+  // 4. Intercept window.fetch so relative API and chunk calls hit targetOrigin
   var origFetch = window.fetch;
   if (origFetch) {
     window.fetch = function(input, init) {
       if (typeof input === 'string') {
-        if (input.startsWith('/') && !input.startsWith('//')) {
+        if (input.startsWith('/') && !input.startsWith('//') && !input.startsWith('/api/proxy')) {
           input = targetOrigin + input;
         }
-      } else if (input && input.url && input.url.startsWith('/') && !input.url.startsWith('//')) {
+      } else if (input && input.url && input.url.startsWith('/') && !input.url.startsWith('//') && !input.url.startsWith('/api/proxy')) {
         input = new Request(targetOrigin + input.url, input);
       }
       return origFetch.call(this, input, init);
     };
   }
 
-  // 2. Intercept XMLHttpRequest
+  // 5. Intercept XMLHttpRequest
   var origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url) {
-    if (typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')) {
+    if (typeof url === 'string' && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/api/proxy')) {
       url = targetOrigin + url;
     }
     return origOpen.apply(this, arguments);
   };
 
-  // 3. Notify parent about current page URL and pathname for multi-page pin tagging
+  // 6. Notify parent about current page URL and pathname for multi-page pin tagging
   function notifyParentNavigation(url) {
     try {
       if (window.parent && window.parent !== window) {
-        var parsed = new URL(url, targetOrigin);
+        var cleanUrl = extractTargetUrl(url);
+        var parsed = new URL(cleanUrl, targetOrigin);
         window.parent.postMessage({
           type: 'CYATH_PAGE_NAVIGATED',
           url: parsed.href,
@@ -119,7 +174,7 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
   }
 
-  // 4. Intercept history pushState and replaceState for SPA navigations
+  // 7. Intercept history pushState and replaceState for SPA navigations
   var origPushState = history.pushState;
   history.pushState = function(state, title, url) {
     if (url) {
@@ -140,7 +195,7 @@ export async function GET(req: NextRequest) {
     return origReplaceState.apply(this, arguments);
   };
 
-  // 5. Intercept internal link navigation to stay within proxy sandbox
+  // 8. Intercept internal link navigation to stay within proxy sandbox
   document.addEventListener('click', function(e) {
     try {
       var a = e.target.closest('a');

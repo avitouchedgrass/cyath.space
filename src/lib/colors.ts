@@ -48,3 +48,4 @@ export function formatPageLabel(urlOrPath: string = "/"): string {
     return urlOrPath || "Home (/)";
   }
 }
+

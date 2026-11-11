@@ -10,6 +10,7 @@ interface FeedbackSidebarProps {
   project: Project;
   activePinId: string | null;
   activeDeviceMode?: DeviceMode;
+  currentPageUrl?: string;
   onSelectPin: (pinId: string) => void;
   onToggleResolve: (pinId: string) => void;
   onDeviceChange?: (mode: DeviceMode) => void;
@@ -21,6 +22,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   project,
   activePinId,
   activeDeviceMode = "desktop",
+  currentPageUrl,
   onSelectPin,
   onToggleResolve,
   onDeviceChange,
@@ -32,6 +34,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   const [isCopied, setIsCopied] = useState(false);
 
   const allPins = Array.isArray(project?.pins) ? project.pins : [];
+  const currentStageLabel = formatPageLabel(currentPageUrl);
 
   // Identify all unique subpages that have pins
   const uniquePages = Array.from(new Set(allPins.map((p) => formatPageLabel(p.pageUrl))));

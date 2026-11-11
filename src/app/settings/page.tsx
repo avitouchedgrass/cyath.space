@@ -51,14 +51,14 @@ function SettingsContent() {
         } else if (user.user_metadata?.agency_name) {
           setAgencyName(user.user_metadata.agency_name);
         } else {
-          setAgencyName("North Creative Atelier");
+          setAgencyName("North Creative Agency");
         }
 
         const storedGreeting = localStorage.getItem("cyath_staging_greeting");
         if (storedGreeting) setGreetingMessage(storedGreeting);
       } else {
         // Fallback for guest testing
-        setAgencyName("Studio Atelier");
+        setAgencyName("My Company");
       }
     });
   }, []);
@@ -199,21 +199,21 @@ function SettingsContent() {
             <div className="p-4 rounded-2xl border border-white/10 bg-[#07070a] mb-6">
               <div className="flex items-center gap-3 mb-2">
                 <span className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center font-mono font-bold text-sm text-white">
-                  {agencyName ? agencyName.charAt(0).toUpperCase() : "S"}
+                  {agencyName ? agencyName.charAt(0).toUpperCase() : "M"}
                 </span>
                 <div className="overflow-hidden">
                   <h3 className="font-serif text-sm font-medium text-white truncate">
-                    {agencyName || "Studio Atelier"}
+                    {agencyName || "My Company"}
                   </h3>
                   <span className="text-[10px] font-mono text-zinc-400 block truncate">
-                    {user?.email || "Studio Member"}
+                    {user?.email || "Team Member"}
                   </span>
                 </div>
               </div>
               <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-zinc-500">Tier:</span>
+                <span className="text-zinc-500">Plan:</span>
                 <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-semibold ${isPro ? "bg-white text-black" : "bg-white/10 text-zinc-300"}`}>
-                  {isPro ? "Studio Pro" : "Free Atelier"}
+                  {isPro ? "Pro Plan" : "Free Plan"}
                 </span>
               </div>
             </div>
@@ -228,7 +228,7 @@ function SettingsContent() {
                 }`}
               >
                 <Building className="w-4 h-4" />
-                <span>Atelier Profile</span>
+                <span>Company Profile</span>
               </button>
 
               <button
@@ -283,10 +283,10 @@ function SettingsContent() {
               <div className="space-y-8">
                 <div>
                   <h1 className="text-2xl font-serif font-medium text-white tracking-tight mb-2">
-                    Atelier Profile & Branding
+                    Company Profile & Branding
                   </h1>
                   <p className="text-sm text-zinc-400 leading-relaxed max-w-2xl">
-                    Configure your agency name and default presentation details shown to clients on shareable staging viewports.
+                    Configure your agency or company name and default presentation details shown to clients on shareable staging viewports.
                   </p>
                 </div>
 
@@ -294,14 +294,14 @@ function SettingsContent() {
                   <div className="p-6 rounded-2xl border border-white/15 bg-[#07070a] space-y-6">
                     <div>
                       <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-2">
-                        Studio / Agency Brand Name
+                        Company / Agency Name
                       </label>
                       <input
                         type="text"
                         required
                         value={agencyName}
                         onChange={(e) => setAgencyName(e.target.value)}
-                        placeholder="e.g. North Creative Atelier"
+                        placeholder="e.g. North Creative Agency"
                         className="w-full max-w-md bg-white/[0.04] border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-mono"
                       />
                       <p className="text-xs text-zinc-500 mt-2">
@@ -424,11 +424,11 @@ function SettingsContent() {
                       <div className="flex items-center gap-2">
                         <Zap className="w-4 h-4 text-white" />
                         <h2 className="font-serif text-lg font-medium text-white">
-                          Studio Pro Exclusive
+                          Cyath Pro Exclusive
                         </h2>
                       </div>
                       <p className="text-xs text-zinc-300 max-w-md leading-relaxed">
-                        Autonomous MCP integration is reserved for Studio Pro ateliers. Unlock continuous agent loops, live pin telemetry, and automated PR generation.
+                        Autonomous MCP integration is reserved for Cyath Pro members. Unlock continuous agent loops, live pin telemetry, and automated PR generation.
                       </p>
                     </div>
                     <Link
@@ -549,7 +549,7 @@ function SettingsContent() {
                     Plan & Subscription
                   </h1>
                   <p className="text-sm text-zinc-400 leading-relaxed max-w-2xl">
-                    Review your atelier membership tier, seat allocations, and milestone sign-off capabilities.
+                    Review your workspace subscription tier, seat allocations, and milestone sign-off capabilities.
                   </p>
                 </div>
 
@@ -560,7 +560,7 @@ function SettingsContent() {
                         Active Membership
                       </span>
                       <h2 className="text-xl font-serif font-medium text-white">
-                        {isPro ? "Studio Pro Tier" : "Free Atelier Tier"}
+                        {isPro ? "Cyath Pro Plan" : "Free Plan"}
                       </h2>
                       <p className="text-xs text-zinc-400 mt-1">
                         {isPro
@@ -625,3 +625,4 @@ export default function SettingsPage() {
     </Suspense>
   );
 }
+

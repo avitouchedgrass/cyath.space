@@ -146,10 +146,10 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
                 <span className="font-serif text-lg font-medium text-white tracking-wide">
-                  {editingAgency && !editingAgency.includes("@") ? editingAgency : "Studio Atelier Workspace"}
+                  {editingAgency && !editingAgency.includes("@") ? editingAgency : "Workspace"}
                 </span>
                 <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${isPro ? "bg-white text-black" : "bg-white/10 text-zinc-400"}`}>
-                  {isPro ? "Studio Pro" : "Free Atelier"}
+                  {isPro ? "Pro Plan" : "Free Plan"}
                 </span>
               </div>
               <p className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
@@ -179,10 +179,10 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             </div>
           </div>
 
-          {/* Atelier Brand Identity Form */}
+          {/* Company Brand Identity Form */}
           <form onSubmit={handleSave} className="space-y-3">
             <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300">
-              Studio / Atelier Brand Name
+              Company / Agency Name
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -190,7 +190,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                 required
                 value={editingAgency.includes("@") ? "" : editingAgency}
                 onChange={(e) => setEditingAgency(e.target.value)}
-                placeholder="e.g. North Creative Atelier"
+                placeholder="e.g. North Creative Agency"
                 className="flex-1 bg-white/[0.04] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-mono"
               />
               <button

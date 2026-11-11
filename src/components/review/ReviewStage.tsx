@@ -14,6 +14,8 @@ interface ReviewStageProps {
   interactionMode: InteractionMode;
   activePinId: string | null;
   clientAuthorName: string;
+  currentPageUrl?: string;
+  onPageNavigated?: (url: string) => void;
   onSelectPin: (pinId: string | null) => void;
   onAddPin: (xPercent: number, yPercent: number, comment: string, authorName: string, pageUrl?: string) => void;
   onAddComment: (pinId: string, content: string, authorName: string) => void;
@@ -27,6 +29,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   interactionMode,
   activePinId,
   clientAuthorName,
+  currentPageUrl: externalPageUrl,
+  onPageNavigated,
   onSelectPin,
   onAddPin,
   onAddComment,
@@ -39,7 +43,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
   const [frameHeight, setFrameHeight] = useState<number>(1000);
-  const [currentPageUrl, setCurrentPageUrl] = useState<string>(project.targetUrl || "");
+  const [localPageUrl, setLocalPageUrl] = useState<string>(project.targetUrl || "");
+  const currentPageUrl = externalPageUrl || localPageUrl;
 
   const allPins = Array.isArray(project?.pins) ? project.pins : [];
 
@@ -69,13 +74,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         setFrameHeight(Math.max(800, event.data.height));
       }
       if (event.data?.type === "CYATH_PAGE_NAVIGATED" && typeof event.data.url === "string") {
-        setCurrentPageUrl(event.data.url);
+        setLocalPageUrl(event.data.url);
+        onPageNavigated?.(event.data.url);
       }
     };
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [onPageNavigated]);
 
   // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
@@ -108,10 +114,20 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     setPendingPinCoords(null);
   };
 
-  // Strictly filter pins for the active device viewport
-  const activeDevicePins = allPins.filter(
-    (p) => p.deviceMode === deviceMode || (deviceMode === "full" && p.deviceMode === "desktop")
-  );
+  // Strictly filter pins for the active device viewport AND current subpage
+  const currentStagePageLabel = formatPageLabel(currentPageUrl);
+  const activeDevicePins = allPins.filter((p) => {
+    // 1. Device match (desktop and full share pins, mobile and tablet are isolated)
+    const deviceMatch =
+      p.deviceMode === deviceMode ||
+      (deviceMode === "full" && p.deviceMode === "desktop") ||
+      (deviceMode === "desktop" && p.deviceMode === "full");
+    if (!deviceMatch) return false;
+
+    // 2. Subpage isolation: Pin must belong to the active subpage
+    const pinPageLabel = formatPageLabel(p.pageUrl);
+    return pinPageLabel === currentStagePageLabel;
+  });
   const activePin = activeDevicePins.find((p) => p.id === activePinId);
 
   const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));

@@ -89,7 +89,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
 
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-1.5">
-                Client Organization / Atelier (Optional)
+                Client Organization / Company (Optional)
               </label>
               <input
                 type="text"

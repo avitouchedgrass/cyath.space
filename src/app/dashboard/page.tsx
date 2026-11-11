@@ -320,8 +320,8 @@ export default function DashboardPage() {
             href="/dashboard"
             className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 rounded-lg p-1"
           >
-            <TesseractMark size={24} className="text-white shrink-0 group-hover:scale-105 transition-transform" />
-            <span className="font-sans font-bold text-xl tracking-tight text-white">cyath</span>
+            <TesseractMark size={22} className="text-white shrink-0 group-hover:scale-105 transition-transform" />
+            <span className="font-serif tracking-tight text-white font-medium text-lg">cyath</span>
           </Link>
 
           <div className="flex items-center gap-3">
@@ -331,7 +331,7 @@ export default function DashboardPage() {
                 className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition-all hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 border border-white"
               >
                 <Zap className="w-3.5 h-3.5 fill-black stroke-black" />
-                <span>Studio Pro</span>
+                <span>Cyath Pro</span>
                 <span className="text-[10px] font-mono bg-black text-white px-1.5 py-0.2 rounded-full font-bold">$12</span>
               </Link>
             )}
@@ -349,13 +349,13 @@ export default function DashboardPage() {
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-sans transition-all cursor-pointer ${
                   isDay ? "text-zinc-800 hover:bg-black/5" : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
                 }`}
-                title="Studio Profile & Settings"
+                title="Company Profile & Settings"
               >
                 <span className="w-4 h-4 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[9px] font-mono font-semibold text-white">
-                  {agencyInput ? agencyInput.charAt(0).toUpperCase() : "S"}
+                  {agencyInput ? agencyInput.charAt(0).toUpperCase() : "M"}
                 </span>
                 <span className="font-medium truncate max-w-[130px]">
-                  {agencyInput && !agencyInput.includes("@") ? agencyInput : "Studio Atelier"}
+                  {agencyInput && !agencyInput.includes("@") ? agencyInput : "My Company"}
                 </span>
                 <ChevronDown className="w-3 h-3 opacity-60 shrink-0" />
               </button>
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                   <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0a0a0d] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-2 z-50 text-white font-sans animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-3 py-2 border-b border-white/10 mb-1">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Signed in as</span>
-                      <span className="text-xs font-medium text-white truncate block">{currentUser?.email || "Studio Member"}</span>
+                      <span className="text-xs font-medium text-white truncate block">{currentUser?.email || "Team Member"}</span>
                     </div>
 
                     <Link
@@ -379,7 +379,7 @@ export default function DashboardPage() {
                       className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
                       <Building className="w-3.5 h-3.5 text-zinc-400" />
-                      <span>Atelier Profile</span>
+                      <span>Company Profile</span>
                     </Link>
 
                     <Link
@@ -507,24 +507,6 @@ export default function DashboardPage() {
               <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.03]">
                 {totalOpenNotes} open {totalOpenNotes === 1 ? "note" : "notes"}
               </span>
-              {isUserPro ? (
-                <Link
-                  href="/settings?tab=mcp"
-                  className="px-3 py-1 rounded-full border border-white/20 bg-white text-black font-semibold hover:bg-zinc-200 transition-colors cursor-pointer flex items-center gap-1.5"
-                >
-                  <Terminal className="w-3 h-3 text-black" />
-                  <span>MCP: PRO ACTIVE</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/pro"
-                  className="px-3.5 py-1 rounded-full border border-white/40 bg-white/10 hover:bg-white text-white hover:text-black font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm group"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Upgrade to Studio Pro ($12/mo)</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-              )}
             </div>
           </div>
 

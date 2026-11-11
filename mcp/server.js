@@ -286,7 +286,7 @@ async function handleToolCall(name, args) {
   }
 
   if (name === "cyath_create_canvas") {
-    const { targetUrl, title, agencyName = "Studio Atelier" } = args;
+    const { targetUrl, title, agencyName = "My Company" } = args;
     const shareId = generateId();
 
     let formattedUrl = targetUrl.trim();

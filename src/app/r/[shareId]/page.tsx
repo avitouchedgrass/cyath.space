@@ -26,6 +26,7 @@ function ReviewCanvasInner() {
   const [manualTitle, setManualTitle] = useState("");
   const [isAuthor, setIsAuthor] = useState(false);
   const [fullSidebarOpen, setFullSidebarOpen] = useState(false);
+  const [currentPageUrl, setCurrentPageUrl] = useState<string>("");
   const hydratedShareIdRef = React.useRef<string | null>(null);
 
   const {
@@ -382,6 +383,8 @@ function ReviewCanvasInner() {
           interactionMode={interactionMode}
           activePinId={activePinId}
           clientAuthorName={clientAuthorName}
+          currentPageUrl={currentPageUrl || project.targetUrl}
+          onPageNavigated={setCurrentPageUrl}
           onSelectPin={setActivePinId}
           onAddPin={handleAddPin}
           onAddComment={handleAddComment}
@@ -395,6 +398,7 @@ function ReviewCanvasInner() {
             project={project}
             activePinId={activePinId}
             activeDeviceMode={activeDeviceMode}
+            currentPageUrl={currentPageUrl || project.targetUrl}
             onSelectPin={setActivePinId}
             onToggleResolve={handleToggleResolve}
             onDeviceChange={setActiveDeviceMode}
@@ -431,6 +435,7 @@ function ReviewCanvasInner() {
                 project={project}
                 activePinId={activePinId}
                 activeDeviceMode={activeDeviceMode}
+                currentPageUrl={currentPageUrl || project.targetUrl}
                 onSelectPin={setActivePinId}
                 onToggleResolve={handleToggleResolve}
                 onDeviceChange={setActiveDeviceMode}
