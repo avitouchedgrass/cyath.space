@@ -144,14 +144,16 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
           displayedPins.map((pin) => {
             const isResolved = pin.status === "resolved";
             const isActive = pin.id === activePinId;
-            const firstComment = pin.comments[0]?.content || "No comment provided";
-            const author = pin.comments[0]?.authorName || "Reviewer";
+            const comments = Array.isArray(pin.comments) ? pin.comments : [];
+            const firstComment = comments[0]?.content || "No comment provided";
+            const author = comments[0]?.authorName || "Reviewer";
+            const browserName = pin.telemetry?.browser || "Browser";
 
             return (
               <div
                 key={pin.id}
                 onClick={() => {
-                  if (onDeviceChange && pin.deviceMode !== activeDeviceMode) {
+                  if (onDeviceChange && pin.deviceMode && pin.deviceMode !== activeDeviceMode) {
                     onDeviceChange(pin.deviceMode);
                   }
                   onSelectPin(pin.id);
@@ -201,10 +203,10 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 </p>
 
                 <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                  <span className="uppercase">{pin.deviceMode} · {pin.telemetry.browser}</span>
-                  {pin.comments.length > 1 && (
+                  <span className="uppercase">{pin.deviceMode || "desktop"} · {browserName}</span>
+                  {comments.length > 1 && (
                     <span className="text-zinc-300">
-                      {pin.comments.length} replies
+                      {comments.length} replies
                     </span>
                   )}
                 </div>

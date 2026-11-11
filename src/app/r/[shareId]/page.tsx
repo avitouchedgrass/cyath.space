@@ -176,6 +176,41 @@ function ReviewCanvasInner() {
     fetchFromSupabase();
   }, [shareId, searchParams, hydrateProject, setClientAuthorName]);
 
+  // Keyboard hotkeys: C (Comment), V (Browse), 1/2/3/4 (Devices), Esc (Deselect)
+  // Must be called at top level before any conditional returns (React Hook Rules)
+  useEffect(() => {
+    const handleGlobalKeys = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (e.key === "c" || e.key === "C") {
+        setInteractionMode("comment");
+      } else if (e.key === "v" || e.key === "V") {
+        setInteractionMode("browse");
+      } else if (e.key === "1") {
+        setActiveDeviceMode("desktop");
+      } else if (e.key === "2") {
+        setActiveDeviceMode("tablet");
+      } else if (e.key === "3") {
+        setActiveDeviceMode("mobile");
+      } else if (e.key === "4" || e.key === "f" || e.key === "F") {
+        setActiveDeviceMode("full");
+      } else if (e.key === "Escape") {
+        setActivePinId(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeys);
+    return () => window.removeEventListener("keydown", handleGlobalKeys);
+  }, [setInteractionMode, setActiveDeviceMode, setActivePinId]);
+
   if (!mounted) {
     return (
       <div className="min-h-screen bg-[#000000] flex items-center justify-center text-xs text-zinc-500 font-mono">
@@ -314,39 +349,6 @@ function ReviewCanvasInner() {
     addComment(project.id, pinId, content, authorName, "client");
   };
 
-  // Keyboard hotkeys: C (Comment), V (Browse), 1/2/3 (Devices), Esc (Deselect)
-  useEffect(() => {
-    const handleGlobalKeys = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.isContentEditable)
-      ) {
-        return;
-      }
-
-      if (e.key === "c" || e.key === "C") {
-        setInteractionMode("comment");
-      } else if (e.key === "v" || e.key === "V") {
-        setInteractionMode("browse");
-      } else if (e.key === "1") {
-        setActiveDeviceMode("desktop");
-      } else if (e.key === "2") {
-        setActiveDeviceMode("tablet");
-      } else if (e.key === "3") {
-        setActiveDeviceMode("mobile");
-      } else if (e.key === "4" || e.key === "f" || e.key === "F") {
-        setActiveDeviceMode("full");
-      } else if (e.key === "Escape") {
-        setActivePinId(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleGlobalKeys);
-    return () => window.removeEventListener("keydown", handleGlobalKeys);
-  }, [setInteractionMode, setActiveDeviceMode, setActivePinId]);
 
   const handleToggleResolve = (pinId: string) => {
     toggleResolvePin(project.id, pinId);

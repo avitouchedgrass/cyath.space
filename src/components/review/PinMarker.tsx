@@ -30,7 +30,7 @@ export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) 
           ? "w-7 h-7 bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.5)] ring-2 ring-white/40 scale-110 text-xs"
           : "w-6 h-6 bg-black border border-white/50 text-white text-[11px] hover:border-white hover:scale-110 shadow-[0_0_12px_rgba(0,0,0,0.5)]"
       }`}
-      title={`Pin #${pin.number}: ${pin.comments[0]?.content || ""}`}
+      title={`Pin #${pin.number}: ${pin.comments?.[0]?.content || ""}`}
     >
       {isResolved ? <Check className="w-3 h-3 stroke-[2.5]" /> : pin.number}
     </button>

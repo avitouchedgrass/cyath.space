@@ -301,7 +301,12 @@ export const useReviewStore = create<ReviewState>()(
         if (state && Array.isArray(state.projects)) {
           state.projects = state.projects.map((p) => ({
             ...p,
-            pins: Array.isArray(p.pins) ? p.pins : [],
+            pins: (Array.isArray(p.pins) ? p.pins : []).map((pin) => ({
+              ...pin,
+              comments: Array.isArray(pin.comments) ? pin.comments : [],
+              telemetry: pin.telemetry || {},
+              deviceMode: pin.deviceMode || "desktop",
+            })),
           }));
         }
       },

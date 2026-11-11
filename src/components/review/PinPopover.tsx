@@ -227,14 +227,14 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           {/* Telemetry Chip */}
           {pin?.telemetry && (
             <div className="bg-white/[0.03] border border-white/[0.08] rounded-md px-2.5 py-1 text-[10px] font-mono text-zinc-400 flex items-center justify-between">
-              <span>{pin.deviceMode.toUpperCase()} · {pin.telemetry.viewportWidth}×{pin.telemetry.viewportHeight}</span>
-              <span>{pin.telemetry.browser}</span>
+              <span>{(pin.deviceMode || "desktop").toUpperCase()} · {pin.telemetry.viewportWidth || "—"}×{pin.telemetry.viewportHeight || "—"}</span>
+              <span>{pin.telemetry.browser || "Browser"}</span>
             </div>
           )}
 
           {/* Comment Thread List */}
           <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
-            {pin?.comments.map((comment) => (
+            {(Array.isArray(pin?.comments) ? pin.comments : []).map((comment) => (
               <div key={comment.id} className="bg-white/[0.03] rounded-lg p-2.5 border border-white/[0.06]">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-semibold text-xs text-white">{comment.authorName}</span>
