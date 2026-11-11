@@ -84,29 +84,34 @@ export const useReviewStore = create<ReviewState>()(
 
       hydrateProject: (project: Project) => {
         set((state) => {
+          const incomingPins = Array.isArray(project.pins) ? project.pins : [];
           const existingIndex = state.projects.findIndex(
             (p) => p.shareId === project.shareId || p.id === project.id
           );
           if (existingIndex >= 0) {
             const existing = state.projects[existingIndex];
+            const existingPins = Array.isArray(existing?.pins) ? existing.pins : [];
+            const mergedPins = incomingPins.length > 0 ? incomingPins : existingPins;
             const merged: Project = {
+              ...existing,
               ...project,
-              targetUrl: project.targetUrl || existing.targetUrl,
-              title: project.title || existing.title,
-              agencyName: project.agencyName || existing.agencyName,
+              targetUrl: project.targetUrl || existing.targetUrl || "",
+              title: project.title || existing.title || "Staging Review",
+              agencyName: project.agencyName || existing.agencyName || "Independent Studio",
               assetType: project.assetType || existing.assetType || "url",
-              pins:
-                project.pins && project.pins.length > 0
-                  ? project.pins
-                  : existing.pins,
+              pins: mergedPins,
             };
             const updated = [...state.projects];
             updated[existingIndex] = merged;
             syncCanvasToServer(merged);
             return { projects: updated };
           }
-          syncCanvasToServer(project);
-          return { projects: [project, ...state.projects] };
+          const sanitizedProject: Project = {
+            ...project,
+            pins: incomingPins,
+          };
+          syncCanvasToServer(sanitizedProject);
+          return { projects: [sanitizedProject, ...state.projects] };
         });
       },
 
@@ -292,6 +297,14 @@ export const useReviewStore = create<ReviewState>()(
     }),
     {
       name: "cyath_staging_store",
+      onRehydrateStorage: () => (state) => {
+        if (state && Array.isArray(state.projects)) {
+          state.projects = state.projects.map((p) => ({
+            ...p,
+            pins: Array.isArray(p.pins) ? p.pins : [],
+          }));
+        }
+      },
     }
   )
 );

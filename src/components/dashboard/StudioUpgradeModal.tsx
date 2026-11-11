@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Check, ArrowRight } from "lucide-react";
+import { X, Check, ArrowRight, Terminal, Layers, ShieldCheck, Maximize2, Zap } from "lucide-react";
 import { TesseractMark } from "@/components/common/Logo";
 import { useReviewStore } from "@/store/useReviewStore";
 
@@ -25,14 +25,15 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
-      <div className="w-full max-w-3xl bg-[#0a0a0d] border border-white/15 rounded-2xl shadow-[0_20px_80px_rgba(0,0,0,0.9),0_0_40px_rgba(255,255,255,0.06)] overflow-hidden flex flex-col relative text-white animate-in zoom-in-[0.97] fade-in duration-300 ease-out">
-        {/* Top Hairline Header */}
-        <div className="h-12 border-b border-white/[0.08] px-5 flex items-center justify-between select-none bg-black">
-          <div className="flex items-center gap-2 group cursor-default">
-            <TesseractMark size={18} className="text-white shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300" />
-            <span className="font-mono text-[10px] tracking-widest text-zinc-400 uppercase">
-              CYATH ATELIER · ARCHIVAL STUDIO EDITION
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
+      <div className="w-full max-w-4xl bg-[#050507] border border-white/20 rounded-2xl shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(255,255,255,0.08)] overflow-hidden flex flex-col relative text-white animate-in zoom-in-[0.98] duration-200">
+        
+        {/* Top Architectural Header Bar */}
+        <div className="h-12 border-b border-white/15 px-6 flex items-center justify-between select-none bg-black">
+          <div className="flex items-center gap-2.5">
+            <TesseractMark size={18} className="text-white shrink-0" />
+            <span className="font-mono text-[10px] tracking-widest text-zinc-300 uppercase">
+              CYATH STUDIO SPECIFICATION // PRO TIER
             </span>
           </div>
 
@@ -46,80 +47,81 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
         </div>
 
         {/* 2-Column Monograph Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-12 overflow-hidden">
-          {/* Left Column: Studio Narrative & Visual Artifact */}
-          <div className="md:col-span-5 p-6 sm:p-8 bg-[#060608] border-b md:border-b-0 md:border-r border-white/[0.08] flex flex-col justify-between space-y-6 relative overflow-hidden">
-            {/* Subtle Drafting Matrix Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:18px_18px] pointer-events-none opacity-80" />
-
-            <div className="space-y-4 relative z-10">
-              <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-500">
-                Studio Philosophy
-              </span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+          
+          {/* Left Column: Live MCP Pipeline Terminal & Studio Prestige */}
+          <div className="lg:col-span-5 p-6 sm:p-8 bg-[#09090c] border-b lg:border-b-0 lg:border-r border-white/15 flex flex-col justify-between space-y-6 relative overflow-hidden">
+            <div className="space-y-3 relative z-10">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-white/20 bg-white/5 font-mono text-[10px] text-zinc-300">
+                <Zap className="w-3 h-3 text-white" />
+                <span>AUTONOMOUS CODING WORKFLOW</span>
+              </div>
 
               <h3 className="font-serif text-2xl sm:text-3xl font-normal text-white leading-tight">
-                Every design reviewed in its <span className="italic font-normal">true element</span>.
+                Your AI agent fixes client notes <span className="italic">automatically</span>.
               </h3>
 
-              <p className="text-xs text-zinc-400 font-sans leading-relaxed">
-                Stop chasing client feedback across 15 emails, fragmented Figma comments, and video recordings. One private link unlocks immediate, pin-point clarity for your clients.
+              <p className="text-xs text-zinc-300 font-sans leading-relaxed">
+                Connect Cursor, Claude Code, and Antigravity directly to your staging canvas via our native Model Context Protocol (MCP) server.
               </p>
             </div>
 
-            {/* Visual Artifact: Miniature Certificate Stamp */}
-            <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05] space-y-2.5 relative z-10 transition-all duration-300 group overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full border border-white/5 pointer-events-none group-hover:scale-125 transition-transform duration-700 ease-out" />
-              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
-                <span className="tracking-wider">SPECIFICATION</span>
-                <span className="text-white px-2 py-0.5 rounded-full border border-white/10 bg-white/5 font-semibold group-hover:border-white/30 transition-colors">
-                  UNLIMITED
+            {/* Interactive Hardware Terminal Emulation */}
+            <div className="rounded-xl border border-white/15 bg-black/80 p-3.5 space-y-2 relative font-mono text-[11px] shadow-inner select-none">
+              <div className="flex items-center justify-between pb-2 border-b border-white/10 text-[10px] text-zinc-500">
+                <span className="flex items-center gap-1.5 text-zinc-300">
+                  <Terminal className="w-3 h-3 text-white" />
+                  cursor-agent --cyath-mcp
                 </span>
+                <span className="text-white font-semibold">LIVE PIPELINE</span>
               </div>
-              <div className="text-xs font-serif text-zinc-200 leading-snug">
-                &quot;Clients don&apos;t just approve faster — they treat our studio with an entirely different level of authority.&quot;
-              </div>
-              <div className="text-[10px] font-mono text-zinc-500">
-                — Principal Architect, Atelier Nord
+
+              <div className="space-y-1.5 text-zinc-400 pt-1 leading-relaxed">
+                <div className="text-zinc-500">$ agent inspect --canvas jjhe58ep</div>
+                <div className="text-zinc-300">✓ Found Pin #1: &quot;Fix mobile button alignment&quot;</div>
+                <div className="text-zinc-500">↳ Viewport: 375×812 (iOS Safari)</div>
+                <div className="text-zinc-300">✓ Rewrote Tailwind classes at Hero.tsx:42</div>
+                <div className="text-white flex items-center gap-1 font-semibold">
+                  <span>✓ cyath_resolve_pin(&quot;1&quot;)</span>
+                  <span className="text-zinc-400 font-normal">→ Client Notified</span>
+                </div>
               </div>
             </div>
 
-            <div className="text-[10px] font-mono text-zinc-600 relative z-10">
-              IMMUTABLE REVIEW CADENCE · 2026 EDITION
+            <div className="pt-2 text-[10px] font-mono text-zinc-500 flex items-center justify-between">
+              <span>ZERO MANUAL linear COPY-PASTE</span>
+              <span className="text-zinc-300">2026 EDITION</span>
             </div>
           </div>
 
-          {/* Right Column: Interactive Pricing & Specification */}
-          <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-[#0a0a0d] relative">
-            <div className="space-y-6">
-              {/* Billing Cycle Capsule Switcher with Smooth Sliding Pill */}
+          {/* Right Column: Pricing Tiers & Specification Matrix */}
+          <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-[#050507] relative">
+            <div className="space-y-5">
+              
+              {/* Billing Switcher */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">
-                  Membership Tier
+                <span className="text-xs font-mono text-zinc-300 uppercase tracking-wider">
+                  Membership Term
                 </span>
 
-                <div className="relative flex items-center p-1 rounded-full border border-white/10 bg-white/[0.04] text-xs font-mono select-none">
-                  {/* Smooth sliding pill indicator */}
-                  <div
-                    className={`absolute top-1 bottom-1 rounded-full bg-white transition-all duration-300 ease-out shadow-sm ${
-                      billingCycle === "annual"
-                        ? "left-1 w-[122px]"
-                        : "left-[126px] w-[82px]"
-                    }`}
-                  />
-
+                <div className="flex items-center p-1 rounded-full border border-white/20 bg-white/[0.04] text-xs font-mono">
                   <button
                     onClick={() => setBillingCycle("annual")}
-                    className={`relative z-10 px-3.5 py-1 rounded-full transition-colors duration-200 cursor-pointer ${
-                      billingCycle === "annual" ? "text-black font-semibold" : "text-zinc-400 hover:text-white"
+                    className={`px-3.5 py-1 rounded-full transition-all duration-200 cursor-pointer ${
+                      billingCycle === "annual"
+                        ? "bg-white text-black font-semibold shadow-sm"
+                        : "text-zinc-400 hover:text-white"
                     }`}
                   >
-                    Annual <span className="text-[10px] opacity-75 font-mono">(-25%)</span>
+                    Annual <span className="text-[10px] opacity-75 font-mono">(-20%)</span>
                   </button>
 
                   <button
                     onClick={() => setBillingCycle("monthly")}
-                    className={`relative z-10 px-3.5 py-1 rounded-full transition-colors duration-200 cursor-pointer ${
-                      billingCycle === "monthly" ? "text-black font-semibold" : "text-zinc-400 hover:text-white"
+                    className={`px-3.5 py-1 rounded-full transition-all duration-200 cursor-pointer ${
+                      billingCycle === "monthly"
+                        ? "bg-white text-black font-semibold shadow-sm"
+                        : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     Monthly
@@ -127,119 +129,101 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
                 </div>
               </div>
 
-              {/* Price Display with Animated Morph Counter */}
-              <div className="pb-4 border-b border-white/[0.08]">
+              {/* Price Hero Display */}
+              <div className="pb-4 border-b border-white/15">
                 <div className="flex items-baseline gap-2">
-                  <span
-                    key={price}
-                    className="font-serif text-4xl sm:text-5xl font-normal text-white inline-block animate-in fade-in slide-in-from-bottom-2 duration-200"
-                  >
+                  <span className="font-serif text-5xl font-normal text-white">
                     ${price}
                   </span>
                   <div className="text-xs font-mono text-zinc-400">
-                    <span>/ seat / month</span>
-                    <p className="text-[10px] text-zinc-500 transition-all duration-200">
+                    <span className="text-zinc-200">/ seat / month</span>
+                    <p className="text-[10px] text-zinc-500">
                       {billingCycle === "annual" ? "Billed annually ($144/yr)" : "Billed monthly · cancel anytime"}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Feature Specifications with Hover Transitions */}
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
+              {/* Feature Specifications */}
+              <div className="space-y-3 font-sans">
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] transition-colors">
+                  <div className="w-5 h-5 rounded-full border border-white/30 bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Terminal className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
-                      Unlimited Review Canvases
+                    <h4 className="text-xs font-semibold text-white">
+                      Full Model Context Protocol (MCP) Server Key
                     </h4>
-                    <p className="text-[11px] font-sans text-zinc-400 leading-normal">
-                      Deploy unlimited live site URLs, staging domains, and high-res PDFs with zero storage caps.
+                    <p className="text-[11px] text-zinc-400 leading-normal">
+                      Allows Cursor, Claude Code, and Antigravity to autonomously fetch pins, inspect telemetry, and resolve issues directly in code.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] transition-colors">
+                  <div className="w-5 h-5 rounded-full border border-white/30 bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Layers className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
-                      Device-Isolated Viewports
+                    <h4 className="text-xs font-semibold text-white">
+                      Unlimited Client Review Canvases
                     </h4>
-                    <p className="text-[11px] font-sans text-zinc-400 leading-normal">
-                      Separate desktop (1440px), tablet (768px), and mobile (375px) feedback so responsive notes never conflict.
+                    <p className="text-[11px] text-zinc-400 leading-normal">
+                      Deploy unlimited staging URLs, live websites, Figma prototypes, and multi-page PDFs with zero storage caps.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] transition-colors">
+                  <div className="w-5 h-5 rounded-full border border-white/30 bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Maximize2 className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
+                    <h4 className="text-xs font-semibold text-white">
+                      Full Page & Breakpoint Viewports
+                    </h4>
+                    <p className="text-[11px] text-zinc-400 leading-normal">
+                      Isolate client feedback across Full Width (100%), Desktop (1440px), Tablet (768px), and Mobile (375px).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] transition-colors">
+                  <div className="w-5 h-5 rounded-full border border-white/30 bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <ShieldCheck className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-semibold text-white">
                       Client Milestone Approval Seals
                     </h4>
                     <p className="text-[11px] font-sans text-zinc-400 leading-normal">
-                      One-click digital milestone sign-off that locks project scope and captures authorized client signatures.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
-                      Direct Issue Sync & Export
-                    </h4>
-                    <p className="text-[11px] font-sans text-zinc-400 leading-normal">
-                      Instant Markdown export with full hardware telemetry for Linear, GitHub Issues, and Notion.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
-                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
-                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
-                      Autonomous MCP Coding Pipeline
-                    </h4>
-                    <p className="text-[11px] font-sans text-zinc-400 leading-normal">
-                      Full Model Context Protocol server key for Cursor, Claude Code, and Antigravity to resolve client pins automatically.
+                      Formal milestone acceptance deeds that lock scope, capture digital signatures, and prevent scope creep.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Action Area with Magnetic Pulse Button */}
-            <div className="pt-4 border-t border-white/[0.08] space-y-2.5">
+            {/* CTA Button */}
+            <div className="pt-4 border-t border-white/15 space-y-2.5">
               {isSuccess ? (
-                <div className="py-3 px-4 rounded-xl bg-white text-black text-xs font-mono font-semibold flex items-center justify-center gap-2 animate-in zoom-in-95 duration-200 shadow-xl">
+                <div className="py-3.5 px-4 rounded-xl bg-white text-black text-xs font-mono font-semibold flex items-center justify-center gap-2 animate-in zoom-in-95 duration-200 shadow-xl">
                   <Check className="w-4 h-4 stroke-[2.5]" />
-                  <span>STUDIO PRO ACTIVATED · WELCOME</span>
+                  <span>STUDIO PRO ACTIVATED · ALL PERKS UNLOCKED</span>
                 </div>
               ) : (
                 <button
                   onClick={handleUpgrade}
-                  className="group relative overflow-hidden w-full py-3.5 px-5 bg-white hover:bg-zinc-100 text-black font-sans font-semibold text-xs tracking-tight rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(255,255,255,0.18)] hover:shadow-[0_0_35px_rgba(255,255,255,0.35)] hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  className="w-full py-3.5 px-5 bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-tight rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
                 >
-                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full duration-1000 bg-gradient-to-r from-transparent via-black/10 to-transparent transition-transform ease-out pointer-events-none" />
-                  <span className="relative z-10">Activate Studio Pro (${price}/mo)</span>
-                  <ArrowRight className="relative z-10 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
+                  <span>Activate Studio Pro (${price}/mo)</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               )}
 
               <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 px-1">
-                <span>Zero Risk · Cancel Anytime</span>
-                <span>Instant Canvas Unlock</span>
+                <span>Cancel Anytime · No Long-Term Lock-in</span>
+                <span>Immediate Pro Keycard Issued</span>
               </div>
             </div>
           </div>

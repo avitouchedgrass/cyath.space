@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import { ExternalLink } from "lucide-react";
 import { DeviceMode, InteractionMode, Pin, Project } from "@/types";
 import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
@@ -38,10 +39,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
   const [frameHeight, setFrameHeight] = useState<number>(1000);
 
+  const allPins = Array.isArray(project?.pins) ? project.pins : [];
+
   // Auto-scroll viewport to pin when activePinId changes
   useEffect(() => {
     if (!activePinId || !scrollViewportRef.current || !containerRef.current) return;
-    const pin = project.pins.find((p) => p.id === activePinId);
+    const pin = allPins.find((p) => p.id === activePinId);
     if (!pin) return;
 
     const containerHeight = containerRef.current.scrollHeight || containerRef.current.clientHeight;
@@ -55,7 +58,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       top: targetScrollY,
       behavior: "smooth",
     });
-  }, [activePinId, project.pins]);
+  }, [activePinId, allPins]);
 
   // Listen to height and scroll messages from proxy iframe bridge
   useEffect(() => {
@@ -72,6 +75,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
     switch (deviceMode) {
+      case "full":
+        return "w-full max-w-none";
       case "mobile":
         return "w-[375px]";
       case "tablet":
@@ -99,16 +104,24 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   };
 
   // Strictly filter pins for the active device viewport
-  const activeDevicePins = project.pins.filter((p) => p.deviceMode === deviceMode);
+  const activeDevicePins = allPins.filter(
+    (p) => p.deviceMode === deviceMode || (deviceMode === "full" && p.deviceMode === "desktop")
+  );
   const activePin = activeDevicePins.find((p) => p.id === activePinId);
 
-  const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl.startsWith("http"));
+  const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));
   const stageMinHeight = isWebUrl ? `${frameHeight}px` : project.assetType === "pdf" ? "850px" : "auto";
 
   return (
-    <div className="flex-1 bg-[#000000] overflow-auto p-4 sm:p-8 flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black">
+    <div
+      className={`flex-1 bg-[#000000] overflow-auto ${
+        deviceMode === "full" ? "p-0" : "p-4 sm:p-8"
+      } flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black`}
+    >
       <div
-        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col rounded-xl overflow-hidden border border-white/[0.08] bg-[#0a0a0a] shadow-2xl relative`}
+        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${
+          deviceMode === "full" ? "rounded-none border-x-0 border-t-0" : "rounded-xl border"
+        } border-white/[0.08] bg-[#0a0a0a] shadow-2xl relative`}
       >
         {/* Architectural Browser Chrome */}
         <div className="h-10 bg-[#050505] border-b border-white/[0.08] px-4 flex items-center justify-between select-none shrink-0">
@@ -118,10 +131,23 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             <div className="w-2 h-2 rounded-full bg-white/10" />
           </div>
 
-          <div className="flex-1 max-w-sm mx-4">
-            <div className="bg-[#000000] border border-white/[0.08] rounded-md px-3 py-1 text-center font-mono text-[11px] text-zinc-400 truncate">
-              {project.targetUrl.startsWith("data:") ? "Uploaded Document (" + (project.assetType || "asset").toUpperCase() + ")" : project.targetUrl}
+          <div className="flex-1 max-w-sm mx-4 flex items-center justify-center gap-1.5">
+            <div className="bg-[#000000] border border-white/[0.08] rounded-md px-3 py-1 text-center font-mono text-[11px] text-zinc-400 truncate flex-1">
+              {project.targetUrl?.startsWith("data:")
+                ? "Uploaded Document (" + (project.assetType || "asset").toUpperCase() + ")"
+                : project.targetUrl}
             </div>
+            {project.targetUrl?.startsWith("http") && (
+              <a
+                href={project.targetUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1 rounded text-zinc-500 hover:text-white hover:bg-white/10 transition-colors"
+                title="Open live site directly in new tab"
+              >
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
           </div>
 
           <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
@@ -162,14 +188,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               <iframe
                 ref={iframeRef}
                 src={
-                  project.targetUrl.startsWith("http://") || project.targetUrl.startsWith("https://")
+                  project.targetUrl?.startsWith("http://") || project.targetUrl?.startsWith("https://")
                     ? `/api/proxy?url=${encodeURIComponent(project.targetUrl)}`
                     : project.targetUrl
                 }
                 title={project.title}
                 className="w-full border-none select-none block"
                 style={{ height: `${frameHeight}px`, minHeight: "800px" }}
-                sandbox="allow-scripts allow-same-origin allow-forms"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-presentation"
               />
             )}
 

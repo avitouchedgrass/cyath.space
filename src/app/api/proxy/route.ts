@@ -47,8 +47,15 @@ export async function GET(req: NextRequest) {
 
     let html = await response.text();
 
-    // 1. Inject <base href="..."> so relative paths (CSS, images, fonts, JS) load from target origin
-    const baseTag = `<base href="${fullBase}">`;
+    // Remove existing <base> tags to avoid conflicts
+    html = html.replace(/<base[^>]*>/gi, "");
+
+    // Strip inline CSP and frame-busting meta headers that block assets, scripts, or fonts
+    html = html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, "");
+    html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, "");
+
+    // 1. Inject <base href="..."> so relative paths (CSS, images, fonts, JS) load from target origin, plus relax referrer for hotlink CDNs
+    const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">`;
     const bridgeScript = `<script id="cyath-staging-bridge">
 (function() {
   function sendHeight() {
@@ -127,6 +134,7 @@ export async function GET(req: NextRequest) {
       headers: {
         "Content-Type": "text/html; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
+        "Cross-Origin-Resource-Policy": "cross-origin",
         "Cache-Control": "public, max-age=60, s-maxage=60",
       },
     });

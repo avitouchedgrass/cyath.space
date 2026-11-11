@@ -23,6 +23,7 @@ import {
   MessageSquare,
   ShieldCheck,
   Terminal,
+  X,
 } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
@@ -745,31 +746,40 @@ export default function DashboardPage() {
       </main>
 
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-150">
           <div
-            className={`w-full max-w-md rounded-2xl border p-6 sm:p-8 shadow-2xl relative ${
-              isDay ? "bg-white border-black/15 text-[#1C1A18]" : "bg-[#09090b] border-white/15 text-white"
+            className={`w-full max-w-lg rounded-2xl border p-6 sm:p-8 shadow-2xl relative ${
+              isDay ? "bg-white border-black/15 text-[#1C1A18]" : "bg-[#070709] border-white/20 text-white"
             }`}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <TesseractMark size={18} className="text-white" />
-              <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
-                New Review
-              </span>
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <TesseractMark size={18} className="text-white" />
+                <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-widest">
+                  STAGING VIEWPORT DISPATCHER
+                </span>
+              </div>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <h3 className="font-serif text-2xl font-normal text-white mb-2">Create Canvas</h3>
+
+            <h3 className="font-serif text-2xl font-normal text-white mb-2">Deploy Review Canvas</h3>
             <p className="text-xs text-zinc-400 font-sans mb-6 leading-relaxed">
-              Enter a live URL or staging site to generate a client review link.
+              Mount any live web application or staging domain to generate an isolated, hardware-anchored review link.
             </p>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-2">
-                  Canvas Name
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-1.5">
+                  Canvas Title
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Client Landing Page"
+                  placeholder="e.g. Acme Corp Brand Staging"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-mono transition-all outline-none ${
@@ -782,12 +792,12 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-2">
-                  Website URL
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-1.5">
+                  Staging / Production URL
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. https://staging.client.com"
+                  placeholder="e.g. https://staging.acmecorp.com"
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
                   className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-mono transition-all outline-none ${
@@ -814,7 +824,7 @@ export default function DashboardPage() {
                     isDay ? "bg-black text-white hover:bg-zinc-800" : "bg-white text-black hover:bg-zinc-200"
                   }`}
                 >
-                  Create Canvas →
+                  Deploy Canvas →
                 </button>
               </div>
             </form>

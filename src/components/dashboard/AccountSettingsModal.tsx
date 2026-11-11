@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { X, ArrowUpRight, LogOut, Download, Key, Terminal, Copy, Check, ShieldCheck } from "lucide-react";
+import { X, ArrowUpRight, LogOut, Download, Key, Terminal, Copy, Check, ShieldCheck, Code2, Globe } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
@@ -29,6 +29,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   const [isSaved, setIsSaved] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedConfig, setCopiedConfig] = useState(false);
+  const [activeConfigTab, setActiveConfigTab] = useState<"cursor" | "claude" | "cli">("cursor");
   const projects = useReviewStore((s) => s.projects);
 
   const apiKey = useMemo(() => {
@@ -61,6 +62,28 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
     );
   }, [apiKey]);
 
+  const claudeConfigJson = useMemo(() => {
+    return JSON.stringify(
+      {
+        mcpServers: {
+          cyath: {
+            command: "node",
+            args: ["mcp/server.js"],
+            env: {
+              CYATH_API_KEY: apiKey,
+            },
+          },
+        },
+      },
+      null,
+      2
+    );
+  }, [apiKey]);
+
+  const cliSnippet = `CYATH_API_KEY="${apiKey}" node mcp/server.js`;
+
+  const activeSnippet = activeConfigTab === "cursor" ? cursorConfigJson : activeConfigTab === "claude" ? claudeConfigJson : cliSnippet;
+
   const handleCopyKey = () => {
     if (typeof window !== "undefined") {
       navigator.clipboard.writeText(apiKey);
@@ -71,7 +94,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
   const handleCopyConfig = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(cursorConfigJson);
+      navigator.clipboard.writeText(activeSnippet);
       setCopiedConfig(true);
       setTimeout(() => setCopiedConfig(false), 2000);
     }
@@ -96,32 +119,69 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-150 selection:bg-white selection:text-black">
-      <div className="w-full max-w-lg bg-[#0a0a0a] border border-white/15 rounded-2xl shadow-2xl p-6 text-white relative max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-          aria-label="Close modal"
-        >
-          <X className="w-4 h-4" />
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
+      <div className="w-full max-w-xl bg-[#070709] border border-white/20 rounded-2xl shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(255,255,255,0.06)] overflow-hidden flex flex-col relative text-white max-h-[92vh] animate-in zoom-in-[0.98] duration-200">
+        
+        {/* Physical Keycard Top Header */}
+        <div className="h-12 border-b border-white/15 px-6 flex items-center justify-between select-none bg-black">
+          <div className="flex items-center gap-2.5">
+            <TesseractMark size={18} className="text-white shrink-0" />
+            <span className="font-mono text-[10px] tracking-widest text-zinc-300 uppercase">
+              STUDIO KEYCARD & CREDENTIALS
+            </span>
+          </div>
 
-        {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">
-            <TesseractMark size={20} />
-          </div>
-          <div>
-            <h3 className="font-serif text-lg font-medium text-white tracking-wide">Studio Profile & Settings</h3>
-            <p className="text-xs text-zinc-400 font-mono truncate max-w-[260px]">{user?.email || "Studio Workspace"}</p>
-          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* Studio / Agency Settings Form */}
-        <form onSubmit={handleSave} className="space-y-4 mb-6">
-          <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300 mb-1.5">
-              Studio / Atelier Name
+        <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
+          {/* Member Card Dossier */}
+          <div className="p-5 rounded-2xl border border-white/15 bg-[#0d0d12] relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="font-serif text-lg font-medium text-white tracking-wide">
+                  {editingAgency || "Studio Atelier"}
+                </span>
+                <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${isPro ? "bg-white text-black" : "bg-white/10 text-zinc-400"}`}>
+                  {isPro ? "Studio Pro" : "Free Atelier"}
+                </span>
+              </div>
+              <p className="text-xs font-mono text-zinc-400 truncate max-w-xs">
+                {user?.email || "Workspace Member"}
+              </p>
+            </div>
+
+            <div className="shrink-0 flex items-center gap-2">
+              {!isPro ? (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenUpgrade();
+                  }}
+                  className="px-4 py-2 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                >
+                  <span>Upgrade to Pro</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <div className="px-3 py-1.5 rounded-xl border border-white/20 bg-white/5 font-mono text-[11px] text-zinc-200 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                  <span>UNLIMITED CANVASES</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Atelier Brand Identity Form */}
+          <form onSubmit={handleSave} className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300">
+              Studio / Atelier Brand Name
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -130,143 +190,130 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                 value={editingAgency}
                 onChange={(e) => setEditingAgency(e.target.value)}
                 placeholder="e.g. North Creative Atelier"
-                className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 font-mono"
+                className="flex-1 bg-white/[0.04] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-mono"
               />
               <button
                 type="submit"
-                className="px-3.5 py-2 bg-white text-black font-mono font-medium text-xs rounded-xl hover:bg-zinc-200 transition-colors whitespace-nowrap shadow-sm cursor-pointer"
+                className="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition-colors whitespace-nowrap cursor-pointer shadow-sm"
               >
-                {isSaved ? "SAVED" : "SAVE"}
+                {isSaved ? "Saved ✓" : "Save Changes"}
               </button>
             </div>
-          </div>
-        </form>
+          </form>
 
-        {/* Plan & Subscription Card */}
-        <div className="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] mb-6 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="font-mono text-xs font-semibold text-white uppercase">
-                {isPro ? "Studio Pro Tier" : "Free Atelier Tier"}
-              </span>
-              <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isPro ? "bg-white text-black font-semibold" : "bg-white/10 text-zinc-400"}`}>
-                {isPro ? "UNLIMITED CANVASES" : "1 CANVAS MAX"}
+          {/* Autonomous MCP Agent Station */}
+          <div className="p-5 rounded-2xl border border-white/15 bg-[#09090c] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-white" />
+                <span className="font-mono text-xs font-semibold text-white uppercase tracking-wider">
+                  Model Context Protocol (MCP) Server
+                </span>
+              </div>
+              <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full ${isPro ? "bg-white/10 text-white border border-white/20" : "bg-white/5 text-zinc-500 border border-white/10"}`}>
+                {isPro ? "PRO UNLOCKED" : "PRO EXCLUSIVE"}
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400 font-mono">
-              {isPro
-                ? `Active Canvases: ${projects.length} (Unlimited)`
-                : `Active Canvases: ${projects.length} / 1`}
+
+            <p className="text-xs text-zinc-300 leading-relaxed font-sans">
+              Connect AI coding agents (Cursor, Claude Code, Antigravity) directly to your review threads. Agents can inspect visual pins and push fixes with zero manual copy-paste.
             </p>
-          </div>
 
-          {!isPro ? (
-            <button
-              onClick={() => {
-                onClose();
-                onOpenUpgrade();
-              }}
-              className="px-3 py-1.5 bg-white text-black font-mono font-medium text-xs rounded-lg hover:bg-zinc-200 transition-colors flex items-center gap-1 shadow-sm cursor-pointer"
-            >
-              <span>UPGRADE</span>
-              <ArrowUpRight className="w-3 h-3" />
-            </button>
-          ) : (
-            <div className="px-2.5 py-1 rounded bg-white/10 border border-white/20 text-zinc-200 font-mono text-[10px] flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3 text-white" />
-              <span>PRO ACTIVE</span>
-            </div>
-          )}
-        </div>
-
-        {/* Autonomous MCP Server Section */}
-        <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02] mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Terminal className="w-3.5 h-3.5 text-zinc-300" />
-              <span className="font-mono text-xs font-semibold text-white uppercase tracking-wider">
-                Autonomous MCP Server
-              </span>
-            </div>
-            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isPro ? "bg-white/10 text-white border border-white/20" : "bg-white/5 text-zinc-500 border border-white/10"}`}>
-              {isPro ? "PRO UNLOCKED" : "PRO EXCLUSIVE"}
-            </span>
-          </div>
-
-          <p className="text-[11px] text-zinc-400 leading-relaxed mb-3">
-            Mount your review feedback directly into Cursor, Claude Desktop, and Antigravity. Agents can fetch pins, inspect telemetry, and resolve threads upon code delivery.
-          </p>
-
-          {isPro ? (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-1">
-                  Studio Pro API Key
-                </label>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-black/60 border border-white/10 rounded-lg px-2.5 py-1.5 font-mono text-xs text-zinc-200 truncate select-all">
-                    {apiKey}
+            {isPro ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-1.5">
+                    Studio Pro API Key
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-black border border-white/15 rounded-xl px-3 py-2 font-mono text-xs text-zinc-200 truncate select-all">
+                      {apiKey}
+                    </div>
+                    <button
+                      onClick={handleCopyKey}
+                      className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-mono text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      {copiedKey ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedKey ? "Copied" : "Copy Key"}</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={handleCopyKey}
-                    className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-xs font-mono text-white flex items-center gap-1 transition-all"
-                    title="Copy API key to clipboard"
-                  >
-                    {copiedKey ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedKey ? "Copied" : "Copy"}</span>
-                  </button>
+                </div>
+
+                {/* Agent Config Drawer */}
+                <div className="space-y-2 pt-2 border-t border-white/10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 p-0.5 rounded-lg border border-white/10 bg-white/[0.03] text-[11px] font-mono">
+                      <button
+                        onClick={() => setActiveConfigTab("cursor")}
+                        className={`px-2.5 py-1 rounded transition-colors ${activeConfigTab === "cursor" ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"}`}
+                      >
+                        Cursor
+                      </button>
+                      <button
+                        onClick={() => setActiveConfigTab("claude")}
+                        className={`px-2.5 py-1 rounded transition-colors ${activeConfigTab === "claude" ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"}`}
+                      >
+                        Claude Desktop
+                      </button>
+                      <button
+                        onClick={() => setActiveConfigTab("cli")}
+                        className={`px-2.5 py-1 rounded transition-colors ${activeConfigTab === "cli" ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"}`}
+                      >
+                        CLI / Env
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={handleCopyConfig}
+                      className="px-3 py-1 rounded-lg bg-white text-black hover:bg-zinc-200 text-[11px] font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                    >
+                      {copiedConfig ? <Check className="w-3.5 h-3.5 text-black" /> : <Copy className="w-3.5 h-3.5 text-black" />}
+                      <span>{copiedConfig ? "Copied!" : "Copy Config"}</span>
+                    </button>
+                  </div>
+
+                  <pre className="bg-black border border-white/15 rounded-xl p-3 text-[11px] font-mono text-zinc-300 overflow-x-auto max-h-36 selection:bg-white selection:text-black">
+                    <code>{activeSnippet}</code>
+                  </pre>
                 </div>
               </div>
-
-              <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
-                <span className="text-[11px] font-mono text-zinc-400">
-                  Agent Config (Cursor / Claude)
+            ) : (
+              <div className="pt-2 flex items-center justify-between">
+                <span className="text-xs font-mono text-zinc-400">
+                  Upgrade to unlock instant autonomous agent resolutions.
                 </span>
                 <button
-                  onClick={handleCopyConfig}
-                  className="px-2.5 py-1 rounded-md bg-white text-black hover:bg-zinc-200 text-[11px] font-mono font-medium flex items-center gap-1 transition-all"
+                  onClick={() => {
+                    onClose();
+                    onOpenUpgrade();
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-white text-black text-xs font-semibold flex items-center gap-1.5 hover:bg-zinc-200 transition-all cursor-pointer"
                 >
-                  {copiedConfig ? <Check className="w-3 h-3 text-black" /> : <Terminal className="w-3 h-3 text-black" />}
-                  <span>{copiedConfig ? "Config Copied!" : "Copy Cursor Config"}</span>
+                  <span>Unlock MCP</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
               </div>
-            </div>
-          ) : (
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
-              <span className="text-[11px] font-mono text-zinc-500">
-                Requires Studio Pro membership
-              </span>
-              <button
-                onClick={() => {
-                  onClose();
-                  onOpenUpgrade();
-                }}
-                className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white text-[11px] font-mono flex items-center gap-1 transition-all"
-              >
-                <span>Unlock MCP Server</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Data Management & Session Actions */}
-        <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
-          <button
-            onClick={handleExportData}
-            className="text-xs text-zinc-400 hover:text-white font-sans flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export Data</span>
-          </button>
+          {/* Backup & Sign Out Footer */}
+          <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-zinc-400">
+            <button
+              onClick={handleExportData}
+              className="hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Studio Data (.json)</span>
+            </button>
 
-          <button
-            onClick={onSignOut}
-            className="text-xs text-zinc-400 hover:text-red-400 font-sans flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
-          </button>
+            <button
+              onClick={onSignOut}
+              className="hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out Session</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

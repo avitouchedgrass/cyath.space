@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Monitor, Tablet, Smartphone, MessageSquare, MousePointer, CheckCircle, Share2, ArrowLeft } from "lucide-react";
+import { Monitor, Tablet, Smartphone, Maximize2, MessageSquare, MousePointer, CheckCircle, Share2, ArrowLeft } from "lucide-react";
 import { DeviceMode, InteractionMode, Project } from "@/types";
 import { CyathLogo } from "@/components/common/Logo";
 
@@ -25,8 +25,9 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const openCount = project.pins.filter((p) => p.status !== "resolved").length;
-  const resolvedCount = project.pins.filter((p) => p.status === "resolved").length;
+  const pins = Array.isArray(project?.pins) ? project.pins : [];
+  const openCount = pins.filter((p) => p.status !== "resolved").length;
+  const resolvedCount = pins.filter((p) => p.status === "resolved").length;
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
@@ -69,6 +70,19 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
       <div className="hidden md:flex items-center gap-3">
         {/* Viewport Toggles */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-lg border border-white/[0.08]">
+          <button
+            onClick={() => onDeviceChange("full")}
+            className={`px-2.5 py-1 rounded-md text-xs font-mono flex items-center gap-1.5 transition-all ${
+              deviceMode === "full"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+            title="Full Page (Fluid 100% Width)"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+            <span>Full</span>
+          </button>
+
           <button
             onClick={() => onDeviceChange("desktop")}
             className={`px-2.5 py-1 rounded-md text-xs font-mono flex items-center gap-1.5 transition-all ${

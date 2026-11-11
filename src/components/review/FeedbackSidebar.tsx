@@ -26,10 +26,11 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   const [deviceScope, setDeviceScope] = useState<"current" | "all">("current");
   const [isCopied, setIsCopied] = useState(false);
 
+  const allPins = Array.isArray(project?.pins) ? project.pins : [];
   const scopedPins =
     deviceScope === "current"
-      ? project.pins.filter((p) => p.deviceMode === activeDeviceMode)
-      : project.pins;
+      ? allPins.filter((p) => p.deviceMode === activeDeviceMode)
+      : allPins;
 
   const openPins = scopedPins.filter((p) => p.status !== "resolved");
   const resolvedPins = scopedPins.filter((p) => p.status === "resolved");
@@ -38,7 +39,10 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
     filter === "open" ? openPins : filter === "resolved" ? resolvedPins : scopedPins;
 
   const handleExportMarkdown = () => {
-    const md = exportProjectAsMarkdown(project);
+    const md = exportProjectAsMarkdown({
+      ...project,
+      pins: allPins,
+    });
     navigator.clipboard.writeText(md);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
@@ -74,7 +78,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            {activeDeviceMode.toUpperCase()} ({project.pins.filter((p) => p.deviceMode === activeDeviceMode).length})
+            {activeDeviceMode.toUpperCase()} ({allPins.filter((p) => p.deviceMode === activeDeviceMode).length})
           </button>
           <button
             onClick={() => setDeviceScope("all")}
@@ -84,7 +88,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 : "text-zinc-400 hover:text-white"
             }`}
           >
-            ALL ({project.pins.length})
+            ALL ({allPins.length})
           </button>
         </div>
       </div>

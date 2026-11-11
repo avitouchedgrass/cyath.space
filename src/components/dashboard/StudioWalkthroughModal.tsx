@@ -14,6 +14,9 @@ import {
   MessageSquare,
   Copy,
   ChevronRight,
+  BookOpen,
+  Maximize2,
+  Terminal,
 } from "lucide-react";
 import { TesseractMark } from "@/components/common/Logo";
 
@@ -67,6 +70,7 @@ const SCENES: Scene[] = [
 ];
 
 export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughModalProps) {
+  const [viewMode, setViewMode] = useState<"walkthrough" | "guide">("walkthrough");
   const [activeScene, setActiveScene] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [elapsedSceneTime, setElapsedSceneTime] = useState(0);
@@ -191,29 +195,50 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
       <div className="w-full max-w-4xl bg-[#09090c] border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col relative text-white">
         {/* Top Floating Control Bar */}
         <div className="h-14 border-b border-white/[0.08] px-5 flex items-center justify-between select-none bg-black">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <TesseractMark size={20} className="text-white shrink-0" />
-            <span className="font-serif text-base font-normal tracking-wide text-white">
-              Cyath Motion Walkthrough
-            </span>
-          </div>
-
-          {/* Autonomous Scene Chapters */}
-          <div className="hidden sm:flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-white/[0.03]">
-            {SCENES.map((scene, idx) => (
+            <div className="flex items-center p-0.5 rounded-lg border border-white/10 bg-white/[0.04] text-xs font-mono">
               <button
-                key={scene.id}
-                onClick={() => handleSelectScene(idx)}
-                className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer relative overflow-hidden ${
-                  activeScene === idx
-                    ? "text-black bg-white font-semibold shadow-sm"
+                onClick={() => setViewMode("walkthrough")}
+                className={`px-3 py-1 rounded-md transition-all ${
+                  viewMode === "walkthrough"
+                    ? "bg-white text-black font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <span>{scene.label}</span>
+                Walkthrough Cinema
               </button>
-            ))}
+              <button
+                onClick={() => setViewMode("guide")}
+                className={`px-3 py-1 rounded-md transition-all ${
+                  viewMode === "guide"
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Field Guide & Hotkeys
+              </button>
+            </div>
           </div>
+
+          {/* Autonomous Scene Chapters (only in walkthrough mode) */}
+          {viewMode === "walkthrough" && (
+            <div className="hidden sm:flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-white/[0.03]">
+              {SCENES.map((scene, idx) => (
+                <button
+                  key={scene.id}
+                  onClick={() => handleSelectScene(idx)}
+                  className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer relative overflow-hidden ${
+                    activeScene === idx
+                      ? "text-black bg-white font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  <span>{scene.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           <button
             onClick={onClose}
@@ -224,7 +249,95 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
           </button>
         </div>
 
-        {/* Autonomous Motion Stage */}
+        {viewMode === "guide" ? (
+          <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto bg-[#070709] font-sans">
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-400">
+                ATELIER SPECIFICATION // REFERENCE LEDGER
+              </span>
+              <h3 className="font-serif text-2xl font-normal text-white">
+                Studio Field Guide & Keyboard Hotkeys
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xl">
+                Cyath is designed for rapid client review and autonomous AI agent workflows. Keep this ledger handy during active reviews.
+              </p>
+            </div>
+
+            {/* Keyboard Hotkeys Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold text-white">Comment Mode</div>
+                  <div className="text-[11px] text-zinc-400 font-sans">Click anywhere on live canvas to drop feedback pins</div>
+                </div>
+                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">C</kbd>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold text-white">Browse / Navigate Mode</div>
+                  <div className="text-[11px] text-zinc-400 font-sans">Interact with forms, buttons, and links inside frame</div>
+                </div>
+                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">V</kbd>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold text-white">Full Page Viewport</div>
+                  <div className="text-[11px] text-zinc-400 font-sans">Switch to 100% fluid edge-to-edge canvas width</div>
+                </div>
+                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">4 / F</kbd>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold text-white">Desktop Viewport</div>
+                  <div className="text-[11px] text-zinc-400 font-sans">Switch to isolated 1440px desktop frame</div>
+                </div>
+                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">1</kbd>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold text-white">Tablet & Mobile Viewports</div>
+                  <div className="text-[11px] text-zinc-400 font-sans">Switch to 768px tablet or 375px mobile frames</div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <kbd className="px-2 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">2</kbd>
+                  <kbd className="px-2 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">3</kbd>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold text-white">Deselect / Dismiss</div>
+                  <div className="text-[11px] text-zinc-400 font-sans">Close active pin popover and clear selection</div>
+                </div>
+                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">Esc</kbd>
+              </div>
+            </div>
+
+            {/* Autonomous MCP Agent Integration Guide */}
+            <div className="p-4 rounded-xl border border-white/15 bg-[#0a0a0e] space-y-2.5">
+              <div className="flex items-center gap-2 text-xs font-mono font-semibold text-white uppercase tracking-wider">
+                <Terminal className="w-3.5 h-3.5 text-white" />
+                <span>Autonomous MCP Agent Prompts</span>
+              </div>
+              <p className="text-xs text-zinc-300 font-sans leading-relaxed">
+                When using Cursor or Claude Code with your Studio Pro key, copy and paste these prompt templates directly into your AI assistant:
+              </p>
+              <div className="space-y-1.5 font-mono text-[11px]">
+                <div className="p-2 rounded-lg bg-black border border-white/10 text-zinc-300">
+                  &gt; &quot;@cyath inspect open pins on canvas &lt;shareId&gt; and fix responsive issues.&quot;
+                </div>
+                <div className="p-2 rounded-lg bg-black border border-white/10 text-zinc-300">
+                  &gt; &quot;@cyath fetch all resolved pins and export an audit log to Linear.&quot;
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         <div className="relative aspect-[16/10] sm:aspect-video w-full bg-[#050507] overflow-hidden flex items-center justify-center border-b border-white/[0.08]">
           <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
@@ -474,6 +587,8 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
             </div>
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

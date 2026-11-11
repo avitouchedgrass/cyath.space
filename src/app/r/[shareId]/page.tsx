@@ -331,6 +331,8 @@ function ReviewCanvasInner() {
         setActiveDeviceMode("tablet");
       } else if (e.key === "3") {
         setActiveDeviceMode("mobile");
+      } else if (e.key === "4" || e.key === "f" || e.key === "F") {
+        setActiveDeviceMode("full");
       } else if (e.key === "Escape") {
         setActivePinId(null);
       }

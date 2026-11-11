@@ -1,4 +1,4 @@
-export type DeviceMode = "desktop" | "tablet" | "mobile";
+export type DeviceMode = "desktop" | "tablet" | "mobile" | "full";
 export type PinStatus = "open" | "in_progress" | "resolved";
 export type InteractionMode = "browse" | "comment";
 export type AssetType = "url" | "image" | "pdf";
