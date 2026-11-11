@@ -61,7 +61,43 @@ function ReviewCanvasInner() {
     // 1. Check if project is already in local state
     const existing = projects.find((p) => p.shareId === shareId);
 
-    // 2. Fetch from server canvas API (supports uploaded images, PDFs, URLs)
+    // 2. Hydrate from URL search parameters if available (instant zero-network mount)
+    const urlParam = searchParams?.get("u");
+    const titleParam = searchParams?.get("t");
+    const agencyParam = searchParams?.get("a");
+
+    if (urlParam && !urlParam.startsWith("data:")) {
+      let decodedUrl = urlParam;
+      try {
+        decodedUrl = decodeURIComponent(urlParam);
+      } catch {
+        decodedUrl = urlParam;
+      }
+
+      let decodedTitle = titleParam || "Staging Review";
+      try {
+        if (titleParam) decodedTitle = decodeURIComponent(titleParam);
+      } catch {}
+
+      let decodedAgency = agencyParam || "Independent Studio";
+      try {
+        if (agencyParam) decodedAgency = decodeURIComponent(agencyParam);
+      } catch {}
+
+      hydrateProject({
+        id: shareId,
+        shareId,
+        title: decodedTitle,
+        targetUrl: decodedUrl,
+        agencyName: decodedAgency,
+        assetType: "url",
+        isApproved: false,
+        createdAt: new Date().toISOString(),
+        pins: existing?.pins || [],
+      });
+    }
+
+    // 3. Fetch from server canvas API (pulls full project, pins, and approvals from cloud)
     async function fetchServerCanvas() {
       try {
         const res = await fetch(`/api/canvases/${shareId}`);
@@ -77,36 +113,7 @@ function ReviewCanvasInner() {
       }
     }
 
-    if (!existing || (existing && existing.pins.length === 0)) {
-      fetchServerCanvas();
-    }
-
-    // 3. Hydrate from URL search parameters if available (for external links)
-    const urlParam = searchParams?.get("u");
-    const titleParam = searchParams?.get("t");
-    const agencyParam = searchParams?.get("a");
-
-    if (!existing && urlParam && !urlParam.startsWith("data:")) {
-      try {
-        const decodedUrl = decodeURIComponent(urlParam);
-        const decodedTitle = titleParam ? decodeURIComponent(titleParam) : "Staging Review";
-        const decodedAgency = agencyParam ? decodeURIComponent(agencyParam) : "Independent Studio";
-
-        hydrateProject({
-          id: shareId,
-          shareId,
-          title: decodedTitle,
-          targetUrl: decodedUrl,
-          agencyName: decodedAgency,
-          assetType: "url",
-          isApproved: false,
-          createdAt: new Date().toISOString(),
-          pins: [],
-        });
-      } catch (err) {
-        console.error("Failed to parse hydration params:", err);
-      }
-    }
+    fetchServerCanvas();
 
     // 4. Attempt async query from Supabase in background
     async function fetchFromSupabase() {
@@ -186,16 +193,32 @@ function ReviewCanvasInner() {
         formatted = "https://" + formatted;
       }
 
-      hydrateProject({
+      const title = manualTitle.trim() || "Staging Review";
+      const newProj: Project = {
         id: shareId,
         shareId,
-        title: manualTitle.trim() || "Staging Review",
+        title,
         targetUrl: formatted,
         agencyName: "Independent Studio",
         isApproved: false,
         createdAt: new Date().toISOString(),
         pins: [],
-      });
+      };
+
+      hydrateProject(newProj);
+
+      // Persist to cloud API
+      fetch(`/api/canvases/${shareId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProj),
+      }).catch(() => {});
+
+      // Keep address bar in sync
+      const params = new URLSearchParams();
+      params.set("u", formatted);
+      params.set("t", title);
+      router.replace(`/r/${shareId}?${params.toString()}`);
     };
 
     return (

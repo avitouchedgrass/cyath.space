@@ -169,7 +169,11 @@ export default function DashboardPage() {
     const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "My Studio";
     const shareId = createProject(parsedTitle, formattedUrl, agency, "url");
     setQuickUrl("");
-    router.push(`/r/${shareId}`);
+    const params = new URLSearchParams();
+    params.set("u", formattedUrl);
+    params.set("t", parsedTitle);
+    params.set("a", agency);
+    router.push(`/r/${shareId}?${params.toString()}`);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +223,15 @@ export default function DashboardPage() {
 
   const handleCopyLink = (shareId: string) => {
     if (typeof window !== "undefined") {
-      const fullUrl = `${window.location.origin}/r/${shareId}`;
+      const proj = projects.find((p) => p.shareId === shareId);
+      let fullUrl = `${window.location.origin}/r/${shareId}`;
+      if (proj?.targetUrl && !proj.targetUrl.startsWith("data:")) {
+        const params = new URLSearchParams();
+        params.set("u", proj.targetUrl);
+        if (proj.title) params.set("t", proj.title);
+        if (proj.agencyName) params.set("a", proj.agencyName);
+        fullUrl = `${window.location.origin}/r/${shareId}?${params.toString()}`;
+      }
       navigator.clipboard.writeText(fullUrl);
       setCopiedId(shareId);
       setTimeout(() => setCopiedId(null), 2000);
@@ -227,6 +239,13 @@ export default function DashboardPage() {
   };
 
   const getCanvasHref = (project: Project) => {
+    if (project.targetUrl && !project.targetUrl.startsWith("data:")) {
+      const params = new URLSearchParams();
+      params.set("u", project.targetUrl);
+      if (project.title) params.set("t", project.title);
+      if (project.agencyName) params.set("a", project.agencyName);
+      return `/r/${project.shareId}?${params.toString()}`;
+    }
     return `/r/${project.shareId}`;
   };
 

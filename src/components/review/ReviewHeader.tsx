@@ -30,7 +30,14 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
-      const fullUrl = `${window.location.origin}/r/${project.shareId}`;
+      let fullUrl = `${window.location.origin}/r/${project.shareId}`;
+      if (project.targetUrl && !project.targetUrl.startsWith("data:")) {
+        const params = new URLSearchParams();
+        params.set("u", project.targetUrl);
+        if (project.title) params.set("t", project.title);
+        if (project.agencyName) params.set("a", project.agencyName);
+        fullUrl = `${window.location.origin}/r/${project.shareId}?${params.toString()}`;
+      }
       navigator.clipboard.writeText(fullUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
