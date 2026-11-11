@@ -50,7 +50,10 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
       const isResolved = pin.status === "resolved";
       md += `### #${pin.number} [${isResolved ? "RESOLVED" : "OPEN"}]\n`;
       md += `- **Location:** (${pin.xPercent}%, ${pin.yPercent}%)\n`;
-      md += `- **Device:** ${pin.telemetry.viewportWidth}×${pin.telemetry.viewportHeight} • ${pin.telemetry.browser} • ${pin.telemetry.os}\n`;
+      const devInfo = pin.telemetry
+        ? `${pin.telemetry.viewportWidth || "—"}×${pin.telemetry.viewportHeight || "—"} • ${pin.telemetry.browser || ""} • ${pin.telemetry.os || ""}`
+        : `${pin.deviceMode}`;
+      md += `- **Device:** ${devInfo}\n`;
       md += `- **Created:** ${pin.createdAt}\n\n`;
 
       if (pin.comments.length > 0) {

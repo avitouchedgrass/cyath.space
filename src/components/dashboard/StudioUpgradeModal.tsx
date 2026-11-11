@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { X, Check, ArrowRight } from "lucide-react";
 import { TesseractMark } from "@/components/common/Logo";
+import { useReviewStore } from "@/store/useReviewStore";
 
 interface StudioUpgradeModalProps {
   onClose: () => void;
 }
 
 export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose }) => {
+  const { activatePro } = useReviewStore();
   const [billingCycle, setBillingCycle] = useState<"annual" | "monthly">("annual");
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -16,6 +18,7 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
 
   const handleUpgrade = () => {
     setIsSuccess(true);
+    activatePro();
     setTimeout(() => {
       onClose();
     }, 2200);

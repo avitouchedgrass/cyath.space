@@ -6,7 +6,7 @@ import { Project } from "@/types";
 
 interface ApprovalModalProps {
   project: Project;
-  onApprove: (approverName: string) => void;
+  onApprove: (approverName: string, organization?: string) => void;
   onClose: () => void;
 }
 
@@ -20,7 +20,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!approverName.trim()) return;
-    onApprove(approverName.trim());
+    onApprove(approverName.trim(), organization.trim() || undefined);
   };
 
   return (

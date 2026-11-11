@@ -38,6 +38,7 @@ function ReviewCanvasInner() {
     setClientAuthorName,
     addPin,
     addComment,
+    deletePin,
     toggleResolvePin,
     approveProject,
     hydrateProject,
@@ -307,12 +308,44 @@ function ReviewCanvasInner() {
     addComment(project.id, pinId, content, authorName, "client");
   };
 
+  // Keyboard hotkeys: C (Comment), V (Browse), 1/2/3 (Devices), Esc (Deselect)
+  useEffect(() => {
+    const handleGlobalKeys = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (e.key === "c" || e.key === "C") {
+        setInteractionMode("comment");
+      } else if (e.key === "v" || e.key === "V") {
+        setInteractionMode("browse");
+      } else if (e.key === "1") {
+        setActiveDeviceMode("desktop");
+      } else if (e.key === "2") {
+        setActiveDeviceMode("tablet");
+      } else if (e.key === "3") {
+        setActiveDeviceMode("mobile");
+      } else if (e.key === "Escape") {
+        setActivePinId(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeys);
+    return () => window.removeEventListener("keydown", handleGlobalKeys);
+  }, [setInteractionMode, setActiveDeviceMode, setActivePinId]);
+
   const handleToggleResolve = (pinId: string) => {
     toggleResolvePin(project.id, pinId);
   };
 
-  const handleApprove = (approverName: string) => {
-    approveProject(project.id, approverName);
+  const handleApprove = (approverName: string, organization?: string) => {
+    approveProject(project.id, approverName, organization);
     setShowApprovalModal(false);
   };
 
@@ -340,6 +373,7 @@ function ReviewCanvasInner() {
           onAddPin={handleAddPin}
           onAddComment={handleAddComment}
           onToggleResolve={handleToggleResolve}
+          onDeletePin={(pinId) => deletePin(project.id, pinId)}
         />
 
         <FeedbackSidebar
@@ -348,6 +382,7 @@ function ReviewCanvasInner() {
           activeDeviceMode={activeDeviceMode}
           onSelectPin={setActivePinId}
           onToggleResolve={handleToggleResolve}
+          onDeviceChange={setActiveDeviceMode}
         />
       </div>
 

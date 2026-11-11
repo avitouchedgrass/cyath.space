@@ -16,6 +16,7 @@ interface ReviewStageProps {
   onAddPin: (xPercent: number, yPercent: number, comment: string, authorName: string) => void;
   onAddComment: (pinId: string, content: string, authorName: string) => void;
   onToggleResolve: (pinId: string) => void;
+  onDeletePin?: (pinId: string) => void;
 }
 
 export const ReviewStage: React.FC<ReviewStageProps> = ({
@@ -28,6 +29,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   onAddPin,
   onAddComment,
   onToggleResolve,
+  onDeletePin,
 }) => {
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,6 +37,25 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
   const [frameHeight, setFrameHeight] = useState<number>(1000);
+
+  // Auto-scroll viewport to pin when activePinId changes
+  useEffect(() => {
+    if (!activePinId || !scrollViewportRef.current || !containerRef.current) return;
+    const pin = project.pins.find((p) => p.id === activePinId);
+    if (!pin) return;
+
+    const containerHeight = containerRef.current.scrollHeight || containerRef.current.clientHeight;
+    if (containerHeight <= 0) return;
+
+    const pinPixelY = (pin.yPercent / 100) * containerHeight;
+    const viewportHeight = scrollViewportRef.current.clientHeight;
+    const targetScrollY = Math.max(0, pinPixelY - viewportHeight / 2);
+
+    scrollViewportRef.current.scrollTo({
+      top: targetScrollY,
+      behavior: "smooth",
+    });
+  }, [activePinId, project.pins]);
 
   // Listen to height and scroll messages from proxy iframe bridge
   useEffect(() => {
@@ -195,6 +216,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 authorName={clientAuthorName}
                 onAddComment={onAddComment}
                 onToggleResolve={onToggleResolve}
+                onDeletePin={onDeletePin}
                 onClose={() => onSelectPin(null)}
               />
             )}

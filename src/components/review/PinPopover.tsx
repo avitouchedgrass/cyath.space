@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Check, Send } from "lucide-react";
+import { X, Check, Send, Trash2 } from "lucide-react";
 import { Pin } from "@/types";
 
 interface PinPopoverProps {
@@ -14,6 +14,7 @@ interface PinPopoverProps {
   onSaveNewPin?: (comment: string, authorName: string) => void;
   onAddComment?: (pinId: string, content: string, authorName: string) => void;
   onToggleResolve?: (pinId: string) => void;
+  onDeletePin?: (pinId: string) => void;
   onClose: () => void;
 }
 
@@ -27,6 +28,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   onSaveNewPin,
   onAddComment,
   onToggleResolve,
+  onDeletePin,
   onClose,
 }) => {
   const [commentText, setCommentText] = useState("");
@@ -46,6 +48,16 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const isSmallScreen = windowWidth < 640;
   const isMobileLayout = deviceMode === "mobile" || isSmallScreen;
@@ -126,6 +138,21 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             </button>
           )}
 
+          {!isNew && pin && onDeletePin && (
+            <button
+              onClick={() => {
+                if (window.confirm(`Delete Pin #${pin.number}?`)) {
+                  onDeletePin(pin.id);
+                  onClose();
+                }
+              }}
+              className="p-1 rounded text-zinc-500 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              title="Delete this pin"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+
           <button
             onClick={onClose}
             className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
@@ -160,6 +187,14 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
               autoFocus
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (commentText.trim()) {
+                    handleCreateSubmit(e);
+                  }
+                }
+              }}
               rows={3}
               placeholder="What needs to change here?"
               className="w-full bg-white/[0.04] border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 resize-none font-sans"

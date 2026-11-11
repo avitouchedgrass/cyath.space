@@ -11,6 +11,7 @@ interface FeedbackSidebarProps {
   activeDeviceMode?: DeviceMode;
   onSelectPin: (pinId: string) => void;
   onToggleResolve: (pinId: string) => void;
+  onDeviceChange?: (mode: DeviceMode) => void;
 }
 
 export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
@@ -19,6 +20,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   activeDeviceMode = "desktop",
   onSelectPin,
   onToggleResolve,
+  onDeviceChange,
 }) => {
   const [filter, setFilter] = useState<"all" | "open" | "resolved">("open");
   const [deviceScope, setDeviceScope] = useState<"current" | "all">("current");
@@ -144,7 +146,12 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
             return (
               <div
                 key={pin.id}
-                onClick={() => onSelectPin(pin.id)}
+                onClick={() => {
+                  if (onDeviceChange && pin.deviceMode !== activeDeviceMode) {
+                    onDeviceChange(pin.deviceMode);
+                  }
+                  onSelectPin(pin.id);
+                }}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer text-left ${
                   isActive
                     ? "bg-white/[0.08] border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.06)]"

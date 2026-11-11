@@ -81,6 +81,24 @@ export async function GET(req: NextRequest) {
   window.addEventListener('load', sendHeight);
   window.addEventListener('resize', sendHeight);
   window.addEventListener('scroll', sendScroll, { passive: true });
+
+  // 3. Intercept internal link navigation to stay within proxy sandbox
+  document.addEventListener('click', function(e) {
+    try {
+      var a = e.target.closest('a');
+      if (a && a.href) {
+        var rawHref = a.getAttribute('href');
+        if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('javascript:') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
+        var fullTargetUrl = a.href;
+        if (fullTargetUrl && (fullTargetUrl.startsWith('http://') || fullTargetUrl.startsWith('https://'))) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl);
+        }
+      }
+    } catch(err) {}
+  }, true);
+
   if (typeof MutationObserver !== 'undefined' && document.body) {
     try {
       new MutationObserver(sendHeight).observe(document.body, { childList: true, subtree: true, attributes: true });

@@ -57,7 +57,8 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "signed_off">("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const { projects, createProject, deleteProject } = useReviewStore();
+  const { projects, createProject, deleteProject, isPro } = useReviewStore();
+  const isUserPro = isPro || (typeof window !== "undefined" && localStorage.getItem("cyath_pro_member") === "true");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -126,7 +127,7 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!title.trim() || !targetUrl.trim()) return;
 
-    if (projects.length >= 1) {
+    if (!isUserPro && projects.length >= 1) {
       setShowCreateModal(false);
       setShowUpgradeModal(true);
       return;
@@ -148,7 +149,7 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!quickUrl.trim()) return;
 
-    if (projects.length >= 1) {
+    if (!isUserPro && projects.length >= 1) {
       setShowUpgradeModal(true);
       return;
     }
@@ -180,7 +181,7 @@ export default function DashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (projects.length >= 1) {
+    if (!isUserPro && projects.length >= 1) {
       setShowUpgradeModal(true);
       return;
     }

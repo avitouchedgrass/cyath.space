@@ -16,7 +16,10 @@ export function exportProjectAsMarkdown(project: Project): string {
   } else {
     openPins.forEach((pin) => {
       const firstComment = pin.comments[0]?.content || "No description provided";
-      md += `- [ ] **#${pin.number}** (${pin.deviceMode} · ${pin.telemetry.viewportWidth}x${pin.telemetry.viewportHeight} · ${pin.telemetry.browser} ${pin.telemetry.os})\n`;
+      const telemetryInfo = pin.telemetry
+        ? `${pin.deviceMode} · ${pin.telemetry.viewportWidth || "—"}x${pin.telemetry.viewportHeight || "—"} · ${pin.telemetry.browser || ""} ${pin.telemetry.os || ""}`
+        : `${pin.deviceMode}`;
+      md += `- [ ] **#${pin.number}** (${telemetryInfo})\n`;
       md += `  > ${firstComment}\n`;
       if (pin.comments.length > 1) {
         md += `  _(${pin.comments.length - 1} follow-up replies)_\n`;

@@ -22,6 +22,7 @@ interface ReviewState {
   activeDeviceMode: DeviceMode;
   interactionMode: InteractionMode;
   clientAuthorName: string;
+  isPro: boolean;
 
   // Actions
   createProject: (title: string, targetUrl: string, agencyName?: string, assetType?: AssetType) => string;
@@ -43,8 +44,10 @@ interface ReviewState {
     authorName: string,
     authorRole?: "client" | "developer"
   ) => void;
+  deletePin: (projectId: string, pinId: string) => void;
   toggleResolvePin: (projectId: string, pinId: string, resolvedBy?: string) => void;
-  approveProject: (projectId: string, approverName: string) => void;
+  approveProject: (projectId: string, approverName: string, organization?: string) => void;
+  activatePro: () => void;
   setActivePinId: (pinId: string | null) => void;
   setActiveDeviceMode: (mode: DeviceMode) => void;
   setInteractionMode: (mode: InteractionMode) => void;
@@ -59,6 +62,7 @@ export const useReviewStore = create<ReviewState>()(
       activeDeviceMode: "desktop",
       interactionMode: "comment",
       clientAuthorName: "Guest Reviewer",
+      isPro: false,
 
       createProject: (title, targetUrl, agencyName = "Independent Studio", assetType = "url") => {
         const shareId = nanoid(8);
@@ -225,16 +229,44 @@ export const useReviewStore = create<ReviewState>()(
         });
       },
 
-      approveProject: (projectId, approverName) => {
+      deletePin: (projectId, pinId) => {
+        let updatedTargetProject: Project | null = null;
+        set((state) => {
+          const updated = state.projects.map((p) => {
+            if (p.id === projectId || p.shareId === projectId) {
+              const remaining = p.pins.filter((pin) => pin.id !== pinId);
+              const renumbered = remaining.map((pin, index) => ({
+                ...pin,
+                number: index + 1,
+              }));
+              const res = { ...p, pins: renumbered };
+              updatedTargetProject = res;
+              return res;
+            }
+            return p;
+          });
+          return {
+            projects: updated,
+            activePinId: state.activePinId === pinId ? null : state.activePinId,
+          };
+        });
+        if (updatedTargetProject) {
+          syncCanvasToServer(updatedTargetProject);
+        }
+      },
+
+      approveProject: (projectId, approverName, organization) => {
         set((state) => {
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
-            if (proj.id !== projectId) return proj;
+            if (proj.id !== projectId && proj.shareId !== projectId) return proj;
+            const signature = organization ? `${approverName} · ${organization}` : approverName;
             const updatedProj = {
               ...proj,
               isApproved: true,
               approvedAt: new Date().toISOString(),
-              approvedBy: approverName,
+              approvedBy: signature,
+              approvalSignature: signature,
             };
             updatedTargetProject = updatedProj;
             return updatedProj;
@@ -244,6 +276,13 @@ export const useReviewStore = create<ReviewState>()(
           }
           return { projects: updatedProjects };
         });
+      },
+
+      activatePro: () => {
+        set({ isPro: true });
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cyath_pro_member", "true");
+        }
       },
 
       setActivePinId: (pinId) => set({ activePinId: pinId }),
