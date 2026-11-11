@@ -25,6 +25,7 @@ function ReviewCanvasInner() {
   const [manualUrl, setManualUrl] = useState("");
   const [manualTitle, setManualTitle] = useState("");
   const [isAuthor, setIsAuthor] = useState(false);
+  const hydratedShareIdRef = React.useRef<string | null>(null);
 
   const {
     projects,
@@ -59,8 +60,13 @@ function ReviewCanvasInner() {
       }
     });
 
-    // 1. Check if project is already in local state
-    const existing = projects.find((p) => p.shareId === shareId);
+    if (!shareId || hydratedShareIdRef.current === shareId) {
+      return;
+    }
+    hydratedShareIdRef.current = shareId;
+
+    const currentProjects = useReviewStore.getState().projects;
+    const existing = currentProjects.find((p) => p.shareId === shareId);
 
     // 2. Hydrate from URL search parameters if available (instant zero-network mount)
     const urlParam = searchParams?.get("u");
@@ -86,14 +92,14 @@ function ReviewCanvasInner() {
       } catch {}
 
       hydrateProject({
-        id: shareId,
+        id: existing?.id || shareId,
         shareId,
         title: decodedTitle,
         targetUrl: decodedUrl,
         agencyName: decodedAgency,
         assetType: "url",
         isApproved: false,
-        createdAt: new Date().toISOString(),
+        createdAt: existing?.createdAt || new Date().toISOString(),
         pins: existing?.pins || [],
       });
     }
@@ -168,7 +174,7 @@ function ReviewCanvasInner() {
     }
 
     fetchFromSupabase();
-  }, [shareId, searchParams, projects, hydrateProject, setClientAuthorName]);
+  }, [shareId, searchParams, hydrateProject, setClientAuthorName]);
 
   if (!mounted) {
     return (

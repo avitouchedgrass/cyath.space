@@ -330,9 +330,14 @@ export default function DashboardPage() {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-sans transition-all cursor-pointer ${
                 isDay ? "text-zinc-800 hover:bg-black/5" : "text-zinc-300 hover:text-white hover:bg-white/[0.06]"
               }`}
-              title="Studio Profile"
+              title="Studio Profile & Settings"
             >
-              <span className="font-medium truncate max-w-[120px]">{agencyInput || "My Studio"}</span>
+              <span className="w-4 h-4 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-[9px] font-mono font-semibold text-white">
+                {agencyInput ? agencyInput.charAt(0).toUpperCase() : "S"}
+              </span>
+              <span className="font-medium truncate max-w-[130px]">
+                {agencyInput && !agencyInput.includes("@") ? agencyInput : "Studio Atelier"}
+              </span>
               <ChevronDown className="w-3 h-3 opacity-60 shrink-0" />
             </button>
 
@@ -959,14 +964,7 @@ function ViewfinderCard({
               </span>
             </div>
           ) : isWebUrl ? (
-            <div className="relative w-full h-full bg-white overflow-hidden pointer-events-none select-none">
-              <div className="absolute inset-0 bg-[#09090b] flex flex-col items-center justify-center p-4 text-center z-0">
-                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-1 text-white">
-                  <TesseractMark size={16} />
-                </div>
-                <span className="text-xs font-serif text-white/80 truncate max-w-[80%]">{project.title}</span>
-                <span className="text-[10px] font-mono text-zinc-500 truncate max-w-[80%]">{hostname}</span>
-              </div>
+            <div className="relative w-full h-full bg-[#0a0a0d] overflow-hidden pointer-events-none select-none">
               <iframe
                 src={`/api/proxy?url=${encodeURIComponent(project.targetUrl)}`}
                 title={project.title}

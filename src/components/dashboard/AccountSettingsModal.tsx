@@ -120,7 +120,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
-      <div className="w-full max-w-xl bg-[#070709] border border-white/20 rounded-2xl shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(255,255,255,0.06)] overflow-hidden flex flex-col relative text-white max-h-[92vh] animate-in zoom-in-[0.98] duration-200">
+      <div className="w-full max-w-2xl bg-[#070709] border border-white/20 rounded-2xl shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(255,255,255,0.06)] overflow-hidden flex flex-col relative text-white max-h-[92vh] animate-in zoom-in-[0.98] duration-200">
         
         {/* Physical Keycard Top Header */}
         <div className="h-12 border-b border-white/15 px-6 flex items-center justify-between select-none bg-black">
@@ -144,16 +144,17 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
           {/* Member Card Dossier */}
           <div className="p-5 rounded-2xl border border-white/15 bg-[#0d0d12] relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <span className="font-serif text-lg font-medium text-white tracking-wide">
-                  {editingAgency || "Studio Atelier"}
+                  {editingAgency && !editingAgency.includes("@") ? editingAgency : "Studio Atelier Workspace"}
                 </span>
                 <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${isPro ? "bg-white text-black" : "bg-white/10 text-zinc-400"}`}>
                   {isPro ? "Studio Pro" : "Free Atelier"}
                 </span>
               </div>
-              <p className="text-xs font-mono text-zinc-400 truncate max-w-xs">
-                {user?.email || "Workspace Member"}
+              <p className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                <span>{user?.email || "Member Account"}</span>
               </p>
             </div>
 
@@ -187,10 +188,10 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
               <input
                 type="text"
                 required
-                value={editingAgency}
+                value={editingAgency.includes("@") ? "" : editingAgency}
                 onChange={(e) => setEditingAgency(e.target.value)}
                 placeholder="e.g. North Creative Atelier"
-                className="flex-1 bg-white/[0.04] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-mono"
+                className="flex-1 bg-white/[0.04] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-mono"
               />
               <button
                 type="submit"
