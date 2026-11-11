@@ -272,9 +272,6 @@ function ReviewCanvasInner() {
             <TesseractMark size={36} />
           </div>
 
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
-            Staging Viewport // {shareId}
-          </span>
           <h1 className="text-xl font-serif font-medium text-white mb-2">
             Connect Staging Canvas
           </h1>

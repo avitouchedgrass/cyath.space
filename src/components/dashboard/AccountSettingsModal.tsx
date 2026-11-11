@@ -224,7 +224,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
               <div className="space-y-4">
                 <div>
                   <label className="block text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-1.5">
-                    Studio Pro API Key
+                    Cyath Pro API Key
                   </label>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-black border border-white/15 rounded-xl px-3 py-2 font-mono text-xs text-zinc-200 truncate select-all">

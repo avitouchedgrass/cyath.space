@@ -39,6 +39,7 @@ import { StudioWalkthroughModal } from "@/components/dashboard/StudioWalkthrough
 import { ProjectPunchlistDrawer } from "@/components/dashboard/ProjectPunchlistDrawer";
 import { AccountSettingsModal } from "@/components/dashboard/AccountSettingsModal";
 import { StudioUpgradeModal } from "@/components/dashboard/StudioUpgradeModal";
+import { Footer } from "@/components/common/Footer";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -315,9 +316,10 @@ export default function DashboardPage() {
             : "bg-black/80 border-white/[0.08]"
         }`}
       >
-        <div className="max-w-[1400px] mx-auto px-6 sm:px-12 h-20 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-12 h-16 flex items-center justify-between">
           <Link
             href="/dashboard"
+            prefetch={true}
             className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 rounded-lg p-1"
           >
             <TesseractMark size={22} className="text-white shrink-0 group-hover:scale-105 transition-transform" />
@@ -328,7 +330,8 @@ export default function DashboardPage() {
             {!isUserPro && (
               <Link
                 href="/pro"
-                className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition-all hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 border border-white"
+                prefetch={true}
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition-all hover:bg-zinc-200 shadow-md hover:scale-105 border border-white"
               >
                 <Zap className="w-3.5 h-3.5 fill-black stroke-black" />
                 <span>Cyath Pro</span>
@@ -360,7 +363,7 @@ export default function DashboardPage() {
                 <ChevronDown className="w-3 h-3 opacity-60 shrink-0" />
               </button>
 
-              {/* Architectural Account Dropdown Menu */}
+              {/* Account Dropdown Menu */}
               {showAccountDropdown && (
                 <>
                   <div
@@ -369,12 +372,13 @@ export default function DashboardPage() {
                   />
                   <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0a0a0d] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.95)] p-2 z-50 text-white font-sans animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-3 py-2 border-b border-white/10 mb-1">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Signed in as</span>
+                      <span className="text-xs text-zinc-400 block mb-0.5">Signed in as</span>
                       <span className="text-xs font-medium text-white truncate block">{currentUser?.email || "Team Member"}</span>
                     </div>
 
                     <Link
                       href="/settings?tab=profile"
+                      prefetch={true}
                       onClick={() => setShowAccountDropdown(false)}
                       className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
@@ -384,6 +388,7 @@ export default function DashboardPage() {
 
                     <Link
                       href="/settings?tab=account"
+                      prefetch={true}
                       onClick={() => setShowAccountDropdown(false)}
                       className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
@@ -393,12 +398,13 @@ export default function DashboardPage() {
 
                     <Link
                       href="/settings?tab=mcp"
+                      prefetch={true}
                       onClick={() => setShowAccountDropdown(false)}
                       className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
                       <div className="flex items-center gap-2.5">
                         <Terminal className="w-3.5 h-3.5 text-zinc-400" />
-                        <span>Autonomous MCP Keys</span>
+                        <span>MCP Keys</span>
                       </div>
                       <span className="text-[9px] font-mono uppercase bg-white/10 text-zinc-300 px-1.5 py-0.5 rounded">
                         PRO
@@ -407,6 +413,7 @@ export default function DashboardPage() {
 
                     <Link
                       href="/settings?tab=billing"
+                      prefetch={true}
                       onClick={() => setShowAccountDropdown(false)}
                       className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors"
                     >
@@ -525,16 +532,13 @@ export default function DashboardPage() {
                   placeholder="Enter website URL (e.g. https://yoursite.com)"
                   value={quickUrl}
                   onChange={(e) => setQuickUrl(e.target.value)}
-                  className={`w-full pl-11 pr-24 py-3 rounded-xl border text-xs sm:text-sm font-mono transition-all outline-none ${
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border text-xs sm:text-sm font-mono transition-all outline-none ${
                     isDay
                       ? "bg-black/[0.02] border-black/15 focus:border-black text-[#1C1A18]"
                       : "bg-black border-white/10 focus:border-white/30 text-white placeholder:text-zinc-600"
                   }`}
                   aria-label="Enter website URL"
                 />
-                <span className="hidden sm:inline-block absolute right-4 top-1/2 -translate-y-1/2 font-mono text-[10px] text-zinc-500 pointer-events-none">
-                  ↵ RETURN
-                </span>
               </div>
 
               <div className="flex items-center gap-2 w-full md:w-auto">
@@ -825,6 +829,9 @@ export default function DashboardPage() {
         </section>
       </main>
 
+      {/* Standardized Unified Footer */}
+      <Footer onOpenGuide={() => setShowWalkthrough(true)} />
+
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-150">
           <div
@@ -835,8 +842,8 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
               <div className="flex items-center gap-2.5">
                 <TesseractMark size={18} className="text-white" />
-                <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-widest">
-                  STAGING VIEWPORT DISPATCHER
+                <span className="font-serif text-sm font-normal text-zinc-200">
+                  New Review Canvas
                 </span>
               </div>
               <button

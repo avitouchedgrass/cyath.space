@@ -21,6 +21,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
+import { Footer } from "@/components/common/Footer";
 
 type SettingsTab = "profile" | "account" | "mcp" | "billing";
 
@@ -165,7 +166,7 @@ function SettingsContent() {
             <div className="flex items-center gap-2.5">
               <TesseractMark size={22} />
               <span className="font-serif text-sm font-medium tracking-wide text-white">
-                Studio Settings
+                Settings
               </span>
             </div>
           </div>
@@ -571,9 +572,10 @@ function SettingsContent() {
 
                     <Link
                       href="/pro"
+                      prefetch={true}
                       className="px-5 py-2.5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors shadow-sm self-start sm:self-auto whitespace-nowrap"
                     >
-                      {isPro ? "Manage Billing" : "Upgrade to Studio Pro ($12/mo)"}
+                      {isPro ? "Manage Billing" : "Upgrade to Pro ($12/mo)"}
                     </Link>
                   </div>
 
@@ -608,6 +610,8 @@ function SettingsContent() {
           </section>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

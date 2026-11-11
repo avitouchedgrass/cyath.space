@@ -36,9 +36,6 @@ export default function GlobalError({
             <TesseractMark size={36} />
           </div>
 
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
-            System Level Fault Recovery
-          </span>
           <h1 className="text-xl font-serif font-medium text-white mb-2">
             Staging Session Suspended
           </h1>

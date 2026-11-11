@@ -135,6 +135,18 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
+  // 3b. Intercept getAttribute for script src so Next.js Turbopack chunk lookup matches root-relative path
+  try {
+    var origGetAttribute = Element.prototype.getAttribute;
+    Element.prototype.getAttribute = function(name) {
+      var val = origGetAttribute.apply(this, arguments);
+      if (name === 'src' && typeof val === 'string' && val.indexOf('/_next/') !== -1) {
+        return val.substring(val.indexOf('/_next/'));
+      }
+      return val;
+    };
+  } catch(e) {}
+
   // 4. Intercept window.fetch so relative API and chunk calls hit targetOrigin
   var origFetch = window.fetch;
   if (origFetch) {

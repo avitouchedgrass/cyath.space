@@ -9,17 +9,15 @@ import {
   Terminal,
   Zap,
   ShieldCheck,
-  Maximize2,
-  GitPullRequest,
   Globe,
-  Sliders,
   Clock,
   ArrowRight,
-  ExternalLink,
   Layers,
+  GitPullRequest,
 } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
+import { Footer } from "@/components/common/Footer";
 
 export default function ProPricingPage() {
   const router = useRouter();
@@ -30,7 +28,7 @@ export default function ProPricingPage() {
   const [isActivating, setIsActivating] = useState(false);
   const [activatedSuccess, setActivatedSuccess] = useState(false);
 
-  // Terminal animated steps
+  // Terminal animated step simulation
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % 4);
@@ -54,24 +52,24 @@ export default function ProPricingPage() {
   const dollarsSaved = hoursSaved * 95;
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white selection:bg-white selection:text-black font-sans">
+    <div className="min-h-screen bg-[#000000] text-white selection:bg-white selection:text-black font-sans flex flex-col animate-in fade-in duration-200">
       {/* Top Navigation */}
       <header className="border-b border-white/[0.08] bg-[#000000]/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/dashboard"
+            prefetch={true}
             className="flex items-center gap-2.5 group p-1"
           >
             <TesseractMark size={22} className="group-hover:scale-105 transition-transform" />
             <span className="font-serif tracking-tight text-white font-medium text-lg">cyath</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 uppercase tracking-wider font-semibold ml-1">
-              Pro Plan
-            </span>
+            <span className="text-xs font-serif italic text-zinc-400 ml-1">pro</span>
           </Link>
 
           <Link
             href="/dashboard"
-            className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-400 hover:text-white transition-all flex items-center gap-2 text-xs font-mono"
+            prefetch={true}
+            className="px-3.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-300 hover:text-white transition-all flex items-center gap-2 text-xs font-mono"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Return to Dashboard</span>
@@ -80,12 +78,7 @@ export default function ProPricingPage() {
       </header>
 
       {/* Hero Section with Generous Breathing Room */}
-      <section className="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center relative">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/[0.04] text-xs font-mono text-zinc-300 mb-6 animate-in fade-in">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="uppercase tracking-widest text-[11px]">Autonomous Feedback Pipeline</span>
-        </div>
-
+      <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center relative flex-1">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-medium tracking-tight text-white max-w-3xl mx-auto leading-[1.12] mb-6">
           Your AI coding agent fixes client feedback <span className="italic font-normal text-zinc-200 underline decoration-white/30 underline-offset-8">automatically</span>.
         </h1>
@@ -124,24 +117,21 @@ export default function ProPricingPage() {
         </div>
 
         {/* Pricing Card & Terminal Showcase Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left items-stretch">
-          {/* Left: Animated Real-Time MCP Terminal Showcase */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left items-stretch mb-20">
+          {/* Left: Real-Time MCP Terminal Showcase */}
           <div className="lg:col-span-7 bg-[#07070a] border border-white/15 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
 
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-                <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-white" />
-                  <span className="font-mono text-xs uppercase tracking-wider text-white font-semibold">
-                    Autonomous MCP Pipeline
+                <div className="flex items-center gap-2 text-white">
+                  <Terminal className="w-4 h-4" />
+                  <span className="font-mono text-xs text-white font-medium">
+                    MCP Agent Integration
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="uppercase tracking-widest text-[10px]">
-                    Active Daemon
-                  </span>
+                <div className="font-mono text-xs text-zinc-400">
+                  <span>Connected</span>
                 </div>
               </div>
 
@@ -153,7 +143,7 @@ export default function ProPricingPage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-white">
-                    <span className="text-emerald-400">✓</span>
+                    <span>✓</span>
                     <span>MCP Server Handshake Established [Key: cyath_pro_live]</span>
                   </div>
 
@@ -165,7 +155,7 @@ export default function ProPricingPage() {
                     <span className="text-zinc-500">→</span> Telemetry: 375×812 (iOS Safari) · Selector: <code className="text-white bg-white/10 px-1 py-0.5 rounded">header.sticky &gt; button.cta</code>
                   </div>
 
-                  <div className={`transition-opacity duration-300 ${activeStep >= 3 ? "opacity-100 text-emerald-400 font-semibold" : "opacity-30"}`}>
+                  <div className={`transition-opacity duration-300 ${activeStep >= 3 ? "opacity-100 text-white font-semibold" : "opacity-30"}`}>
                     <span>✓ Auto-patched Tailwind classes in Hero.tsx:42</span>
                     <span className="block text-zinc-400 font-normal mt-0.5">
                       ✓ Resolved Pin #1 in Cyath Staging Stage · Client Notified
@@ -176,21 +166,18 @@ export default function ProPricingPage() {
             </div>
 
             <div className="pt-6 border-t border-white/10 mt-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
-              <span>ZERO COPY-PASTING OF EMAILS</span>
-              <span className="text-white">COMPATIBLE WITH CURSOR, CLAUDE, & ANTIGRAVITY</span>
+              <span>Zero manual copy-pasting of emails</span>
+              <span className="text-white">Compatible with Cursor, Claude, & Antigravity</span>
             </div>
           </div>
 
           {/* Right: High-Contrast Pricing & Activation Card */}
-          <div className="lg:col-span-5 bg-gradient-to-b from-[#111116] to-[#07070a] border-2 border-white/30 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative">
+          <div className="lg:col-span-5 bg-[#0a0a0d] border border-white/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-[0_20px_60px_rgba(0,0,0,0.8)] relative">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">
-                  PRO STUDIO LICENSE
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-white text-black font-mono font-bold text-[10px] uppercase">
-                  POPULAR FOR AGENCIES
-                </span>
+              <div className="mb-4">
+                <h3 className="font-serif text-2xl font-normal text-white">
+                  Pro Plan
+                </h3>
               </div>
 
               <div className="flex items-baseline gap-2 mb-2">
@@ -202,7 +189,7 @@ export default function ProPricingPage() {
                 </span>
               </div>
 
-              <p className="text-xs font-mono text-zinc-500 mb-6">
+              <p className="text-xs font-mono text-zinc-400 mb-6">
                 {billingCycle === "annual"
                   ? "Billed annually ($144/yr). Cancel anytime."
                   : "Billed monthly. Cancel anytime."}
@@ -231,7 +218,7 @@ export default function ProPricingPage() {
               <button
                 onClick={handleActivatePro}
                 disabled={isActivating || activatedSuccess}
-                className="w-full py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.5)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.35)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isActivating ? (
                   <span>Activating Cyath Pro...</span>
@@ -244,184 +231,180 @@ export default function ProPricingPage() {
                   </>
                 )}
               </button>
-              <p className="text-[11px] font-mono text-center text-zinc-500 mt-3">
+              <p className="text-[11px] font-mono text-center text-zinc-400 mt-3">
                 Instant activation · MCP key generated immediately for workstation
               </p>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Interactive ROI Calculator Section (Breathing Room) */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/[0.08]">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
-            PROJECT TIME ECONOMICS
-          </span>
-          <h2 className="text-3xl font-serif font-medium text-white tracking-tight mb-3">
-            Calculate your recovered engineering hours
-          </h2>
-          <p className="text-xs text-zinc-400">
-            See how much manual QA overhead Cyath eliminates each month for your development team.
-          </p>
-        </div>
-
-        <div className="p-8 rounded-3xl border border-white/15 bg-[#07070a] shadow-xl">
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-3 text-xs font-mono">
-              <span className="text-zinc-300">Client Staging Reviews Per Month:</span>
-              <span className="text-lg font-serif text-white font-medium">{reviewsPerMonth} reviews</span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              value={reviewsPerMonth}
-              onChange={(e) => setReviewsPerMonth(Number(e.target.value))}
-              className="w-full accent-white h-2 bg-white/10 rounded-lg cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] font-mono text-zinc-500 mt-1">
-              <span>1 review</span>
-              <span>10 reviews</span>
-              <span>20 reviews</span>
-            </div>
+        {/* Interactive ROI Calculator Section (Breathing Room) */}
+        <div className="max-w-4xl mx-auto pt-16 pb-20 border-t border-white/[0.08]">
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <h2 className="text-3xl font-serif font-medium text-white tracking-tight mb-3">
+              Calculate your recovered engineering hours
+            </h2>
+            <p className="text-xs text-zinc-400">
+              See how much manual QA overhead Cyath eliminates each month for your development team.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-white/10 text-center">
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block mb-1">
-                Engineering Hours Recovered
-              </span>
-              <span className="text-4xl font-serif font-medium text-white">
-                {hoursSaved.toFixed(0)} hrs
-              </span>
-              <span className="text-xs font-mono text-zinc-500 block mt-1">
-                per month in eliminated back-and-forth
-              </span>
+          <div className="p-8 rounded-3xl border border-white/15 bg-[#07070a] shadow-xl text-left">
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-3 text-xs font-mono">
+                <span className="text-zinc-300">Client Staging Reviews Per Month:</span>
+                <span className="text-lg font-serif text-white font-medium">{reviewsPerMonth} reviews</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={reviewsPerMonth}
+                onChange={(e) => setReviewsPerMonth(Number(e.target.value))}
+                className="w-full accent-white h-2 bg-white/10 rounded-lg cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-zinc-500 mt-1">
+                <span>1 review</span>
+                <span>10 reviews</span>
+                <span>20 reviews</span>
+              </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block mb-1">
-                Value of Prevented Scope Creep
-              </span>
-              <span className="text-4xl font-serif font-medium text-emerald-400">
-                ${dollarsSaved.toLocaleString()}
-              </span>
-              <span className="text-xs font-mono text-zinc-500 block mt-1">
-                based on standard $95/hr developer rate
-              </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-white/10 text-center">
+              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
+                <span className="text-xs text-zinc-400 block mb-1">
+                  Engineering Hours Recovered
+                </span>
+                <span className="text-4xl font-serif font-medium text-white">
+                  {hoursSaved.toFixed(0)} hrs
+                </span>
+                <span className="text-xs font-mono text-zinc-500 block mt-1">
+                  per month in eliminated back-and-forth
+                </span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
+                <span className="text-xs text-zinc-400 block mb-1">
+                  Value of Prevented Scope Creep
+                </span>
+                <span className="text-4xl font-serif font-medium text-white">
+                  ${dollarsSaved.toLocaleString()}
+                </span>
+                <span className="text-xs font-mono text-zinc-500 block mt-1">
+                  based on standard $95/hr developer rate
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Feature Deep Dive Grid - Meaningful Capabilities */}
-      <section className="max-w-5xl mx-auto px-6 py-16 border-t border-white/[0.08]">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
-            ENGINEERING SPECIFICATIONS
-          </span>
-          <h2 className="text-3xl font-serif font-medium text-white tracking-tight mb-3">
-            Core capabilities built into Cyath Pro
-          </h2>
-          <p className="text-xs text-zinc-400">
-            Engineered for high-performing product teams, design studios, and autonomous coding agent workflows.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <Terminal className="w-4 h-4" />
-            </div>
-            <h3 className="font-serif text-base font-medium text-white">
-              Autonomous MCP Agent Pipeline
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Full Model Context Protocol server key for Cursor, Claude Code, and Antigravity. Agents autonomously fetch pin telemetry (DOM selector, viewport, user-agent), apply Git code patches, and resolve client feedback in real time.
+        {/* Feature Deep Dive Grid - Meaningful Capabilities */}
+        <div className="max-w-5xl mx-auto pt-16 pb-20 border-t border-white/[0.08] text-left">
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <h2 className="text-3xl font-serif font-medium text-white tracking-tight mb-3">
+              Core capabilities built into Cyath Pro
+            </h2>
+            <p className="text-xs text-zinc-400">
+              Engineered for high-performing product teams, design studios, and autonomous coding agent workflows.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <Layers className="w-4 h-4" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <Terminal className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif text-base font-medium text-white">
+                Autonomous MCP Agent Pipeline
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Full Model Context Protocol server key for Cursor, Claude Code, and Antigravity. Agents autonomously fetch pin telemetry (DOM selector, viewport, user-agent), apply Git code patches, and resolve client feedback in real time.
+              </p>
             </div>
-            <h3 className="font-serif text-base font-medium text-white">
-              Enterprise Edge Proxy Tunneling
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Custom zero-CORS proxy engine that neutralizes strict Content-Security-Policy headers, strips frame-busting scripts, and dynamically rewrites Next.js Turbopack chunks and assets for 100% faithful client hydration.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <Globe className="w-4 h-4" />
+            <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <Layers className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif text-base font-medium text-white">
+                Enterprise Edge Proxy Tunneling
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Custom zero-CORS proxy engine that neutralizes strict Content-Security-Policy headers, strips frame-busting scripts, and dynamically rewrites Next.js Turbopack chunks and assets for 100% faithful client hydration.
+              </p>
             </div>
-            <h3 className="font-serif text-base font-medium text-white">
-              Route-Aware Multi-Page Isolation
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Full multi-page review navigation with isolated per-route pin threads. Pins placed on subpages stay pinned strictly to that subpage with distinct palette badges, chronological ordering, and deep route preservation.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <Globe className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif text-base font-medium text-white">
+                Route-Aware Multi-Page Isolation
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Full multi-page review navigation with isolated per-route pin threads. Pins placed on subpages stay pinned strictly to that subpage with distinct palette badges, chronological ordering, and deep route preservation.
+              </p>
             </div>
-            <h3 className="font-serif text-base font-medium text-white">
-              Cryptographic Milestone Sign-Off
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Legally binding digital acceptance deeds that clients formalize upon sign-off. Freezes project scope, locks commit hashes, and issues timestamped milestone certificates to prevent revisions creep.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <GitPullRequest className="w-4 h-4" />
+            <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif text-base font-medium text-white">
+                Cryptographic Milestone Sign-Off
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Legally binding digital acceptance deeds that clients formalize upon sign-off. Freezes project scope, locks commit hashes, and issues timestamped milestone certificates to prevent revisions creep.
+              </p>
             </div>
-            <h3 className="font-serif text-base font-medium text-white">
-              Bi-Directional Linear & GitHub Sync
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Two-way telemetry synchronization with GitHub Issues and Linear. Resolving a pin in code automatically marks client feedback as resolved on the live canvas with author attribution and diff logs.
-            </p>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
-              <Clock className="w-4 h-4" />
+            <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <GitPullRequest className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif text-base font-medium text-white">
+                Bi-Directional Linear & GitHub Sync
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Two-way telemetry synchronization with GitHub Issues and Linear. Resolving a pin in code automatically marks client feedback as resolved on the live canvas with author attribution and diff logs.
+              </p>
             </div>
-            <h3 className="font-serif text-base font-medium text-white">
-              White-Label Client Staging Portals
-            </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Deploy unlimited review canvases under your agency identity. Clients require zero accounts, logins, or browser extensions—simply open a universal staging link and annotate immediately.
-            </p>
+
+            <div className="p-6 rounded-2xl bg-[#070709] border border-white/10 space-y-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <Clock className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif text-base font-medium text-white">
+                White-Label Client Staging Portals
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Deploy unlimited review canvases under your company identity. Clients require zero accounts, logins, or browser extensions—simply open a universal staging link and annotate immediately.
+              </p>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Bottom CTA Banner */}
-      <section className="max-w-4xl mx-auto px-6 pb-20 text-center">
-        <div className="p-10 rounded-3xl bg-gradient-to-b from-[#111116] to-[#07070a] border border-white/20 shadow-2xl">
-          <h2 className="text-3xl font-serif font-medium text-white mb-3">
-            Ready to upgrade your team review workflow?
-          </h2>
-          <p className="text-sm text-zinc-400 max-w-md mx-auto mb-6">
-            Join engineering teams and agencies building with Cyath Pro. Instant setup in under 60 seconds.
-          </p>
-          <button
-            onClick={handleActivatePro}
-            className="px-8 py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all shadow-lg hover:shadow-2xl cursor-pointer"
-          >
-            Activate Cyath Pro ($12/mo)
-          </button>
+        {/* Bottom CTA Banner */}
+        <div className="max-w-4xl mx-auto pb-16 text-center">
+          <div className="p-10 rounded-3xl bg-[#0a0a0d] border border-white/20 shadow-2xl">
+            <h2 className="text-3xl font-serif font-medium text-white mb-3">
+              Ready to upgrade your team review workflow?
+            </h2>
+            <p className="text-sm text-zinc-400 max-w-md mx-auto mb-6">
+              Join engineering teams and agencies building with Cyath Pro. Instant setup in under 60 seconds.
+            </p>
+            <button
+              onClick={handleActivatePro}
+              className="px-8 py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all shadow-lg hover:shadow-2xl cursor-pointer"
+            >
+              Activate Cyath Pro ($12/mo)
+            </button>
+          </div>
         </div>
       </section>
+
+      {/* Standardized Unified Footer */}
+      <Footer />
     </div>
   );
 }
-

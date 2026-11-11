@@ -17,11 +17,12 @@ export const PAGE_PALETTES: PagePalette[] = [
   { name: "Orange", bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-400", dot: "bg-orange-400", hex: "#f97316" },
 ];
 
-export function getPageColor(urlOrPath: string = "/"): PagePalette {
-  let clean = urlOrPath;
+export function getPageColor(urlOrPath?: string | null): PagePalette {
+  if (!urlOrPath) return PAGE_PALETTES[0];
+  let clean = String(urlOrPath).trim();
   try {
-    if (urlOrPath.startsWith("http://") || urlOrPath.startsWith("https://")) {
-      const u = new URL(urlOrPath);
+    if (clean.startsWith("http://") || clean.startsWith("https://")) {
+      const u = new URL(clean);
       clean = u.pathname;
     }
   } catch {}
@@ -36,16 +37,17 @@ export function getPageColor(urlOrPath: string = "/"): PagePalette {
   return PAGE_PALETTES[index];
 }
 
-export function formatPageLabel(urlOrPath: string = "/"): string {
+export function formatPageLabel(urlOrPath?: string | null): string {
+  if (!urlOrPath) return "Home (/)";
   try {
-    if (urlOrPath.startsWith("http://") || urlOrPath.startsWith("https://")) {
-      const u = new URL(urlOrPath);
+    const val = String(urlOrPath).trim();
+    if (val.startsWith("http://") || val.startsWith("https://")) {
+      const u = new URL(val);
       const p = u.pathname;
       return p === "" || p === "/" ? "Home (/)" : p;
     }
-    return urlOrPath === "" || urlOrPath === "/" ? "Home (/)" : urlOrPath;
+    return val === "" || val === "/" ? "Home (/)" : val;
   } catch {
-    return urlOrPath || "Home (/)";
+    return String(urlOrPath || "Home (/)");
   }
 }
-

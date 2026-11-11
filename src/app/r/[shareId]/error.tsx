@@ -36,14 +36,11 @@ export default function ReviewError({
           <TesseractMark size={36} />
         </div>
 
-        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 block mb-2">
-          Viewport Recovery Protocol
-        </span>
         <h1 className="text-xl font-serif font-medium text-white mb-2">
           Staging Session Interrupted
         </h1>
         <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
-          The canvas state encountered an unexpected rendering condition. Clear the local cache to re-sync this staging session directly from the cloud.
+          The canvas encountered an unexpected rendering condition. Clear the local cache to re-sync this staging session.
         </p>
 
         <div className="space-y-3">

@@ -139,16 +139,16 @@ async function verifyProAccess() {
   if (!API_KEY) {
     throw new Error(
       "CYATH_API_KEY environment variable is missing.\n" +
-      "The Cyath MCP Server is an exclusive Studio Pro feature.\n" +
-      "To unlock, upgrade to Studio Pro at https://cyath-space.vercel.app/dashboard, copy your key from Studio Settings, and add it to your MCP configuration:\n\n" +
+      "The Cyath MCP Server is an exclusive Cyath Pro feature.\n" +
+      "To unlock, upgrade to Pro at https://cyath-space.vercel.app/pro, copy your key from Settings, and add it to your MCP configuration:\n\n" +
       '  "env": { "CYATH_API_KEY": "cyath_pro_..." }'
     );
   }
 
   if (!API_KEY.startsWith("cyath_pro_") && !API_KEY.startsWith("cyath_live_")) {
     throw new Error(
-      "Invalid CYATH_API_KEY. Studio Pro keys begin with 'cyath_pro_'.\n" +
-      "Obtain your key from Studio Settings at https://cyath-space.vercel.app/dashboard."
+      "Invalid CYATH_API_KEY. Cyath Pro keys begin with 'cyath_pro_'.\n" +
+      "Obtain your key from Settings at https://cyath-space.vercel.app/settings?tab=mcp."
     );
   }
 
@@ -157,15 +157,15 @@ async function verifyProAccess() {
     const authRes = await fetch(authUrl, { cache: "no-store" });
     if (!authRes.ok) {
       const errJson = await authRes.json().catch(() => ({}));
-      throw new Error(errJson.error || "Studio Pro authentication failed.");
+      throw new Error(errJson.error || "Cyath Pro authentication failed.");
     }
   } catch (err) {
-    if (err.message && (err.message.includes("Studio Pro") || err.message.includes("CYATH_API_KEY"))) {
+    if (err.message && (err.message.includes("Cyath Pro") || err.message.includes("CYATH_API_KEY"))) {
       throw err;
     }
     // Fallback if offline
     if (!API_KEY.startsWith("cyath_pro_")) {
-      throw new Error("Studio Pro authentication failed.");
+      throw new Error("Cyath Pro authentication failed.");
     }
   }
 }

@@ -206,7 +206,7 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Walkthrough Cinema
+                Product Tour
               </button>
               <button
                 onClick={() => setViewMode("guide")}
@@ -216,7 +216,7 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Field Guide & Hotkeys
+                Hotkeys & Guide
               </button>
             </div>
           </div>
@@ -529,11 +529,6 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
               </div>
             </div>
           )}
-
-          {/* Micro Watermark */}
-          <div className="absolute bottom-3 left-4 text-[10px] font-mono text-zinc-600 pointer-events-none">
-            CYATH ARCHITECTURAL ENGINE · SIMULATED PLAYBACK
-          </div>
         </div>
 
         {/* Bottom Playback Scrubber & Scene Explanation */}

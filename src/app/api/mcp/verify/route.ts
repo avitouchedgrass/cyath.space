@@ -8,19 +8,19 @@ export async function GET(req: NextRequest) {
       {
         valid: false,
         error:
-          "Missing CYATH_API_KEY. The Cyath MCP Server is an exclusive Studio Pro feature. Upgrade to Pro at https://cyath-space.vercel.app/dashboard to generate your API key.",
+          "Missing CYATH_API_KEY. The Cyath MCP Server is an exclusive Cyath Pro feature. Upgrade to Pro at https://cyath-space.vercel.app/pro to generate your API key.",
       },
       { status: 401 }
     );
   }
 
-  // Validate Studio Pro key pattern
+  // Validate Cyath Pro key pattern
   if (!key.startsWith("cyath_pro_") && !key.startsWith("cyath_live_")) {
     return NextResponse.json(
       {
         valid: false,
         error:
-          "Invalid CYATH_API_KEY format. Studio Pro keys begin with 'cyath_pro_'. Obtain your key from Studio Settings.",
+          "Invalid CYATH_API_KEY format. Cyath Pro keys begin with 'cyath_pro_'. Obtain your key from Settings.",
       },
       { status: 403 }
     );
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
         {
           valid: false,
           error:
-            "Invalid or missing Studio Pro key. Upgrade to Pro at https://cyath-space.vercel.app/dashboard.",
+            "Invalid or missing Cyath Pro key. Upgrade to Pro at https://cyath-space.vercel.app/pro.",
         },
         { status: 401 }
       );
