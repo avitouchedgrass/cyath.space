@@ -125,11 +125,11 @@ export const useReviewStore = create<ReviewState>()(
         set((state) => {
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
-            if (proj.id !== projectId) return proj;
+            if (proj.id !== projectId && proj.shareId !== projectId) return proj;
             const nextNumber = proj.pins.length + 1;
             const newPin: Pin = {
               id: pinId,
-              projectId,
+              projectId: proj.id,
               number: nextNumber,
               xPercent,
               yPercent,
@@ -169,7 +169,7 @@ export const useReviewStore = create<ReviewState>()(
         set((state) => {
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
-            if (proj.id !== projectId) return proj;
+            if (proj.id !== projectId && proj.shareId !== projectId) return proj;
             const updatedProj = {
               ...proj,
               pins: proj.pins.map((pin) => {
@@ -204,7 +204,7 @@ export const useReviewStore = create<ReviewState>()(
         set((state) => {
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
-            if (proj.id !== projectId) return proj;
+            if (proj.id !== projectId && proj.shareId !== projectId) return proj;
             const updatedProj = {
               ...proj,
               pins: proj.pins.map((pin) => {

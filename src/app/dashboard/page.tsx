@@ -22,6 +22,7 @@ import {
   ChevronDown,
   MessageSquare,
   ShieldCheck,
+  Terminal,
 } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
@@ -371,7 +372,7 @@ export default function DashboardPage() {
 
             <button
               onClick={() => {
-                if (projects.length >= 1) {
+                if (!isUserPro && projects.length >= 1) {
                   setShowUpgradeModal(true);
                 } else {
                   setShowCreateModal(true);
@@ -409,12 +410,22 @@ export default function DashboardPage() {
               <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.03]">
                 {totalOpenNotes} open {totalOpenNotes === 1 ? "note" : "notes"}
               </span>
-              <button
-                onClick={() => setShowUpgradeModal(true)}
-                className="px-3 py-1 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
-              >
-                Pro Plan
-              </button>
+              {isUserPro ? (
+                <button
+                  onClick={() => setShowAccountModal(true)}
+                  className="px-3 py-1 rounded-full border border-white/20 bg-white text-black font-semibold hover:bg-zinc-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Terminal className="w-3 h-3 text-black" />
+                  <span>MCP: PRO ACTIVE</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="px-3 py-1 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
+                >
+                  Pro Plan
+                </button>
+              )}
             </div>
           </div>
 
@@ -823,6 +834,7 @@ export default function DashboardPage() {
         <AccountSettingsModal
           user={currentUser}
           agencyName={agencyInput}
+          isPro={isUserPro}
           onUpdateAgencyName={handleUpdateAgencyName}
           onSignOut={handleSignOut}
           onOpenUpgrade={() => {

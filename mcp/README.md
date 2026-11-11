@@ -1,25 +1,25 @@
-# Cyath MCP Server
+# Cyath Model Context Protocol (MCP) Server
 
-Model Context Protocol (MCP) server for **Cyath** — the agentic visual review and client sign-off tool.
+The **Cyath MCP Server** connects your live client feedback threads directly to AI coding agents (Cursor, Claude Code, Antigravity, Windsurf).
 
-Enables AI coding agents (Claude Code, Cursor, Windsurf, Antigravity) to directly inspect visual feedback pins, read client comments, post updates, and resolve design notes from the code editor.
+> **Studio Pro Exclusive**: The MCP server requires an active Studio Pro membership and a valid `CYATH_API_KEY` (`cyath_pro_...`), available under **Studio Settings** at [cyath-space.vercel.app/dashboard](https://cyath-space.vercel.app/dashboard).
 
 ---
 
-## Capabilities & Tools
+## Tools Exposed
 
-| Tool | Description |
-| :--- | :--- |
-| `cyath_get_pins` | Fetches all open or resolved visual pins for a given canvas ID with coordinates, device viewport, and comments. |
-| `cyath_resolve_pin` | Marks a pin as resolved and appends a resolution comment explaining the code fix. |
-| `cyath_add_comment` | Posts a response or clarifying question to the client thread. |
-| `cyath_create_canvas` | Programmatically creates a new staging review canvas for any URL. |
+| Tool | Parameters | Description |
+| :--- | :--- | :--- |
+| `cyath_get_pins` | `shareId`, `status` (`open` \| `resolved` \| `all`) | Fetches all visual pins, pinpoint coordinates, device viewport modes, client telemetry, and discussion comments. |
+| `cyath_resolve_pin` | `shareId`, `pinId` (or pin number `#1`), `resolutionComment`, `resolvedBy` | Marks a pin as resolved and appends the code fix explanation directly into the client punchlist. |
+| `cyath_add_comment` | `shareId`, `pinId`, `comment`, `authorName` | Posts a response or clarifying note into a feedback thread. |
+| `cyath_create_canvas` | `targetUrl`, `title`, `agencyName` | Programmatically creates a new staging review canvas for preview deployments or pull requests. |
 
 ---
 
 ## Configuration
 
-### Cursor (`.cursor/mcp.json`)
+### 1. Cursor (`.cursor/mcp.json`)
 ```json
 {
   "mcpServers": {
@@ -27,14 +27,14 @@ Enables AI coding agents (Claude Code, Cursor, Windsurf, Antigravity) to directl
       "command": "node",
       "args": ["<PATH_TO_CYATH>/mcp/server.js"],
       "env": {
-        "CYATH_API_URL": "https://cyath-space.vercel.app"
+        "CYATH_API_KEY": "cyath_pro_your_key_here"
       }
     }
   }
 }
 ```
 
-### Claude Desktop (`claude_desktop_config.json`)
+### 2. Claude Desktop (`claude_desktop_config.json`)
 ```json
 {
   "mcpServers": {
@@ -42,17 +42,25 @@ Enables AI coding agents (Claude Code, Cursor, Windsurf, Antigravity) to directl
       "command": "node",
       "args": ["<PATH_TO_CYATH>/mcp/server.js"],
       "env": {
-        "CYATH_API_URL": "https://cyath-space.vercel.app"
+        "CYATH_API_KEY": "cyath_pro_your_key_here"
       }
     }
   }
 }
+```
+
+### 3. Antigravity / Custom Agent Runner
+```bash
+CYATH_API_KEY="cyath_pro_..." node mcp/server.js
 ```
 
 ---
 
-## Example Usage with an AI Assistant
+## Example Autonomous Workflow
 
-> *"@cyath check canvas `T6X6leLv` and fetch all open pins."*
-
-The assistant will retrieve the punchlist, inspect your local codebase, make the responsive adjustments, and resolve each pin directly on the live client review canvas.
+1. A client drops pins on your staging URL via `https://cyath-space.vercel.app/r/<shareId>`.
+2. In Cursor or Claude, you type:
+   > *"@cyath check canvas `<shareId>` for open pins and fix the responsive button padding on mobile."*
+3. The agent calls `cyath_get_pins`, inspects the exact viewport (`mobile: 375px`) and coordinate telemetry, modifies your Tailwind/CSS classes, tests the change, and invokes `cyath_resolve_pin` with:
+   > *"Adjusted `px-4 py-2` on mobile viewport to prevent title collision in commit a1b2c3d."*
+4. Your client sees the green resolution badge and explanation on their live canvas instantly.

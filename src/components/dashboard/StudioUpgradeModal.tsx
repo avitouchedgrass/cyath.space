@@ -202,6 +202,20 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose 
                     </p>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-white/[0.04] hover:translate-x-0.5 transition-all duration-200 group cursor-default">
+                  <div className="w-4 h-4 rounded-full border border-white/20 bg-white/5 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white group-hover:bg-white group-hover:scale-110 transition-all duration-200">
+                    <Check className="w-2.5 h-2.5 text-white group-hover:text-black stroke-[2.5] transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-sans font-medium text-white group-hover:text-white transition-colors">
+                      Autonomous MCP Coding Pipeline
+                    </h4>
+                    <p className="text-[11px] font-sans text-zinc-400 leading-normal">
+                      Full Model Context Protocol server key for Cursor, Claude Code, and Antigravity to resolve client pins automatically.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
