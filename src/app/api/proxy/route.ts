@@ -40,12 +40,7 @@ export async function GET(req: NextRequest) {
     const finalUrl = response.url || targetUrl;
     const finalParsed = new URL(finalUrl);
     const targetOrigin = finalParsed.origin;
-    const basePath =
-      finalParsed.pathname.substring(
-        0,
-        finalParsed.pathname.lastIndexOf("/") + 1
-      ) || "/";
-    const fullBase = `${targetOrigin}${basePath}`;
+    const fullBase = `${targetOrigin}/`;
 
     let html = await response.text();
 
@@ -56,37 +51,14 @@ export async function GET(req: NextRequest) {
     html = html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, "");
     html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, "");
 
-    // 3. Rewrite root-relative asset URLs in HTML so scripts, CSS, and images resolve to target origin
-    // Rewrite src="/path" -> src="https://target.com/path"
-    html = html.replace(/(\ssrc=["'])\/(?!\/)([^"'>]+)(["'])/gi, `$1${targetOrigin}/$2$3`);
-
-    // Rewrite <link href="/path" -> <link href="https://target.com/path"
-    html = html.replace(/(<link[^>]*\shref=["'])\/(?!\/)([^"'>]+)(["'])/gi, `$1${targetOrigin}/$2$3`);
-
-    // Rewrite Next.js Turbopack / Webpack dynamic chunks and React Server Component Flight payloads
-    html = html.replace(/(["'])\/_next\//g, `$1${targetOrigin}/_next/`);
-    html = html.replace(/(["'])\/assets\//g, `$1${targetOrigin}/assets/`);
-    html = html.replace(/(["'])\/static\//g, `$1${targetOrigin}/static/`);
-
-    // Rewrite srcset="/path"
-    html = html.replace(/(\ssrcset=["'])([^"'>]+)(["'])/gi, (_match, prefix, content, suffix) => {
-      const rewritten = content.split(",").map((part: string) => {
-        const trimmed = part.trim();
-        if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
-          return `${targetOrigin}${trimmed}`;
-        }
-        return trimmed;
-      }).join(", ");
-      return `${prefix}${rewritten}${suffix}`;
-    });
-
-    // 4. Inject <base> tag and client-side bridge script
+    // 3. Inject <base> tag and client-side bridge script
+    // NOTE: We preserve script src attributes as root-relative so Turbopack and Webpack chunk
+    // manifests match exactly without hanging. The browser resolves them naturally against fullBase.
     const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">`;
     const bridgeScript = `<script id="cyath-staging-bridge">
 (function() {
   var targetOrigin = ${JSON.stringify(targetOrigin)};
 
-  // 1. Unroll proxy URLs to actual target URL
   function extractTargetUrl(rawUrl) {
     if (!rawUrl) return targetOrigin;
     try {
@@ -99,7 +71,7 @@ export async function GET(req: NextRequest) {
     return rawUrl;
   }
 
-  // 2. Intercept dynamic Image src assignments (fixes food plate rotation and image cycling)
+  // Intercept dynamic Image src assignments (fixes rotating canvas images and food plates)
   try {
     var imgDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
     if (imgDesc && imgDesc.set) {
@@ -117,37 +89,7 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // 3. Intercept dynamic Script src assignments (fixes dynamic chunk imports)
-  try {
-    var scriptDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-    if (scriptDesc && scriptDesc.set) {
-      var origScriptSet = scriptDesc.set;
-      Object.defineProperty(HTMLScriptElement.prototype, 'src', {
-        set: function(val) {
-          if (typeof val === 'string' && val.startsWith('/') && !val.startsWith('//') && !val.startsWith('/api/proxy')) {
-            val = targetOrigin + val;
-          }
-          return origScriptSet.call(this, val);
-        },
-        get: scriptDesc.get,
-        configurable: true
-      });
-    }
-  } catch(e) {}
-
-  // 3b. Intercept getAttribute for script src so Next.js Turbopack chunk lookup matches root-relative path
-  try {
-    var origGetAttribute = Element.prototype.getAttribute;
-    Element.prototype.getAttribute = function(name) {
-      var val = origGetAttribute.apply(this, arguments);
-      if (name === 'src' && typeof val === 'string' && val.indexOf('/_next/') !== -1) {
-        return val.substring(val.indexOf('/_next/'));
-      }
-      return val;
-    };
-  } catch(e) {}
-
-  // 4. Intercept window.fetch so relative API and chunk calls hit targetOrigin
+  // Intercept window.fetch so relative API calls reach targetOrigin
   var origFetch = window.fetch;
   if (origFetch) {
     window.fetch = function(input, init) {
@@ -162,7 +104,7 @@ export async function GET(req: NextRequest) {
     };
   }
 
-  // 5. Intercept XMLHttpRequest
+  // Intercept XMLHttpRequest
   var origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url) {
     if (typeof url === 'string' && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/api/proxy')) {
@@ -171,7 +113,7 @@ export async function GET(req: NextRequest) {
     return origOpen.apply(this, arguments);
   };
 
-  // 6. Notify parent about current page URL and pathname for multi-page pin tagging
+  // Notify parent about current page URL and pathname for multi-page pin tagging
   function notifyParentNavigation(url) {
     try {
       if (window.parent && window.parent !== window) {
@@ -186,46 +128,47 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
   }
 
-  // 7. Intercept history pushState and replaceState for SPA navigations
+  // Hook history pushState and replaceState WITHOUT mangling the URL passed to client routers
   var origPushState = history.pushState;
   history.pushState = function(state, title, url) {
+    var res = origPushState.apply(this, arguments);
     if (url) {
       var fullUrl = new URL(url, targetOrigin).href;
       notifyParentNavigation(fullUrl);
-      return origPushState.call(this, state, title, '/api/proxy?url=' + encodeURIComponent(fullUrl));
     }
-    return origPushState.apply(this, arguments);
+    return res;
   };
 
   var origReplaceState = history.replaceState;
   history.replaceState = function(state, title, url) {
+    var res = origReplaceState.apply(this, arguments);
     if (url) {
       var fullUrl = new URL(url, targetOrigin).href;
       notifyParentNavigation(fullUrl);
-      return origReplaceState.call(this, state, title, '/api/proxy?url=' + encodeURIComponent(fullUrl));
     }
-    return origReplaceState.apply(this, arguments);
+    return res;
   };
 
-  // 8. Intercept internal link navigation to stay within proxy sandbox
+  // Handle standard link clicks for non-SPA links in bubbling phase (does not interfere with Next.js client routing)
   document.addEventListener('click', function(e) {
     try {
+      if (e.defaultPrevented) return;
       var a = e.target.closest('a');
       if (a && a.href) {
         var rawHref = a.getAttribute('href');
         if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('javascript:') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
-        var fullTargetUrl = new URL(rawHref, targetOrigin).href;
+        var currentBase = extractTargetUrl(window.location.href);
+        var fullTargetUrl = new URL(rawHref, currentBase).href;
         if (fullTargetUrl && (fullTargetUrl.startsWith('http://') || fullTargetUrl.startsWith('https://'))) {
           e.preventDefault();
-          e.stopPropagation();
           notifyParentNavigation(fullTargetUrl);
           window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl);
         }
       }
     } catch(err) {}
-  }, true);
+  }, false);
 
-  // 6. Dynamic stage height synchronizer
+  // Dynamic stage height synchronizer
   function sendHeight() {
     try {
       var body = document.body;
@@ -272,7 +215,7 @@ export async function GET(req: NextRequest) {
       html = `${injectedTags}\n${html}`;
     }
 
-    // 5. Neutralize frame-busting scripts
+    // Neutralize frame-busting scripts
     html = html.replace(/window\.top\s*!==\s*window\.self/g, "false");
     html = html.replace(/top\.location\s*=/g, "/* frame-neutralized */ void ");
 

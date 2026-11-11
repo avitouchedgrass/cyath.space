@@ -11,22 +11,43 @@
   --font-serif: 'Oranienbaum', Georgia, serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Surfaces — Pure Black & Deep Obsidian */
+  /* Surfaces — Night mode (Default) */
   --surface-canvas: #000000;
-  --surface-panel: #0a0a0a;
-  --surface-overlay: #141414;
-  --surface-glass: rgba(10, 10, 10, 0.85);
+  --surface-panel: #0a0a0c;
+  --surface-card: #111114;
+  --surface-overlay: #16161b;
+  --surface-glass: rgba(10, 10, 12, 0.85);
 
-  /* Borders */
+  /* Borders — Night */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.28);
-  --border-glow: rgba(255, 255, 255, 0.45);
+  --border-active: rgba(255, 255, 255, 0.22);
+  --border-glow: rgba(255, 255, 255, 0.4);
 
-  /* Text - High contrast WCAG AA calibrated */
+  /* Text — Night */
   --text-primary: #FFFFFF;
-  --text-secondary: #D1D5DB;
-  --text-muted: #8E929B;
-  --text-dim: #6B7280;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --text-dim: #52525B;
+}
+
+[data-theme="day"] {
+  /* Surfaces — Day mode: Warm alabaster & museum paper */
+  --surface-canvas: #FBF9F4;
+  --surface-panel: #F4F1EA;
+  --surface-card: #FFFFFF;
+  --surface-overlay: #FFFFFF;
+  --surface-glass: rgba(251, 249, 244, 0.9);
+
+  /* Borders — Day */
+  --border-subtle: rgba(28, 25, 23, 0.08);
+  --border-active: rgba(28, 25, 23, 0.2);
+  --border-glow: rgba(28, 25, 23, 0.35);
+
+  /* Text — Day: Deep stone ink */
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #78716C;
+  --text-dim: #A8A29E;
 }
 
 body {
@@ -34,11 +55,12 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
+  background: rgba(120, 113, 108, 0.25);
+  color: inherit;
 }
 
 @property --angle {

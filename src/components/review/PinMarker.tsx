@@ -25,7 +25,7 @@ export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) 
         left: `${pin.xPercent}%`,
         top: `${pin.yPercent}%`,
       }}
-      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 z-20 flex items-center justify-center font-mono font-bold select-none cursor-pointer ${
+      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 z-20 flex items-center justify-center font-mono font-bold select-none cursor-pointer animate-in zoom-in-50 duration-200 active:scale-95 ${
         isResolved
           ? "w-5 h-5 bg-black/90 border border-white/20 text-zinc-500 opacity-60 hover:opacity-100 shadow-sm"
           : isActive

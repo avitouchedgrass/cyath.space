@@ -132,7 +132,8 @@ export const useReviewStore = create<ReviewState>()(
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId && proj.shareId !== projectId) return proj;
-            const nextNumber = proj.pins.length + 1;
+            const currentPins = Array.isArray(proj.pins) ? proj.pins : [];
+            const nextNumber = currentPins.length + 1;
             const newPin: Pin = {
               id: pinId,
               projectId: proj.id,
@@ -157,7 +158,7 @@ export const useReviewStore = create<ReviewState>()(
             };
             updatedTargetProject = {
               ...proj,
-              pins: [...proj.pins, newPin],
+              pins: [...currentPins, newPin],
             };
             return updatedTargetProject;
           });
@@ -176,14 +177,16 @@ export const useReviewStore = create<ReviewState>()(
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId && proj.shareId !== projectId) return proj;
+            const currentPins = Array.isArray(proj.pins) ? proj.pins : [];
             const updatedProj = {
               ...proj,
-              pins: proj.pins.map((pin) => {
+              pins: currentPins.map((pin) => {
                 if (pin.id !== pinId) return pin;
+                const currentComments = Array.isArray(pin.comments) ? pin.comments : [];
                 return {
                   ...pin,
                   comments: [
-                    ...pin.comments,
+                    ...currentComments,
                     {
                       id: nanoid(),
                       pinId,
@@ -211,9 +214,10 @@ export const useReviewStore = create<ReviewState>()(
           let updatedTargetProject: Project | null = null;
           const updatedProjects = state.projects.map((proj) => {
             if (proj.id !== projectId && proj.shareId !== projectId) return proj;
+            const currentPins = Array.isArray(proj.pins) ? proj.pins : [];
             const updatedProj = {
               ...proj,
-              pins: proj.pins.map((pin) => {
+              pins: currentPins.map((pin) => {
                 if (pin.id !== pinId) return pin;
                 const isResolved = pin.status === "resolved";
                 const nextStatus: PinStatus = isResolved ? "open" : "resolved";
@@ -240,7 +244,8 @@ export const useReviewStore = create<ReviewState>()(
         set((state) => {
           const updated = state.projects.map((p) => {
             if (p.id === projectId || p.shareId === projectId) {
-              const remaining = p.pins.filter((pin) => pin.id !== pinId);
+              const currentPins = Array.isArray(p.pins) ? p.pins : [];
+              const remaining = currentPins.filter((pin) => pin.id !== pinId);
               const renumbered = remaining.map((pin, index) => ({
                 ...pin,
                 number: index + 1,

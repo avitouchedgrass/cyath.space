@@ -142,7 +142,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       } flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black`}
     >
       <div
-        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${
+        className={`${getFrameWidthClass()} transition-all duration-300 ease-in-out flex flex-col ${
           isFullMode ? "rounded-none border-none shadow-none" : "rounded-xl border border-white/[0.08] shadow-2xl"
         } bg-[#0a0a0a] relative`}
       >

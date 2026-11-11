@@ -110,7 +110,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
     <div
       onClick={(e) => e.stopPropagation()}
       style={popoverStyle}
-      className="bg-[#0a0a0a] border border-white/20 rounded-xl shadow-2xl p-4 text-white text-xs transition-all animate-in fade-in duration-150 backdrop-blur-xl selection:bg-white selection:text-black font-sans cursor-default"
+      className="bg-[#0a0a0a] border border-white/20 rounded-xl shadow-2xl p-4 text-white text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl selection:bg-white selection:text-black font-sans cursor-default"
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5 mb-3">

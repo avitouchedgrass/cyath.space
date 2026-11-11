@@ -69,7 +69,7 @@ const SCENES: Scene[] = [
   },
 ];
 
-export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughModalProps) {
+export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: StudioWalkthroughModalProps) {
   const [viewMode, setViewMode] = useState<"walkthrough" | "guide">("walkthrough");
   const [activeScene, setActiveScene] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -189,20 +189,39 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
 
   const currentScene = SCENES[activeScene];
   const sceneProgressPercent = Math.min(100, (elapsedSceneTime / currentScene.durationMs) * 100);
+  const isDay = theme === "day";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-150 selection:bg-white selection:text-black">
-      <div className="w-full max-w-4xl bg-[#09090c] border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col relative text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-150 selection:bg-white selection:text-black">
+      <div
+        className={`w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col relative transition-all border ${
+          isDay
+            ? "bg-white border-stone-200 text-stone-900 shadow-[0_25px_90px_rgba(0,0,0,0.15)]"
+            : "bg-[#09090c] border-white/15 text-white shadow-2xl"
+        }`}
+      >
         {/* Top Floating Control Bar */}
-        <div className="h-14 border-b border-white/[0.08] px-5 flex items-center justify-between select-none bg-black">
+        <div
+          className={`h-14 px-5 flex items-center justify-between select-none border-b ${
+            isDay ? "bg-[#FBF9F4] border-stone-200" : "bg-black border-white/[0.08]"
+          }`}
+        >
           <div className="flex items-center gap-3">
-            <TesseractMark size={20} className="text-white shrink-0" />
-            <div className="flex items-center p-0.5 rounded-lg border border-white/10 bg-white/[0.04] text-xs font-mono">
+            <TesseractMark size={20} className={`shrink-0 ${isDay ? "text-stone-900" : "text-white"}`} />
+            <div
+              className={`flex items-center p-0.5 rounded-lg border text-xs font-mono ${
+                isDay ? "border-stone-200 bg-stone-100" : "border-white/10 bg-white/[0.04]"
+              }`}
+            >
               <button
                 onClick={() => setViewMode("walkthrough")}
-                className={`px-3 py-1 rounded-md transition-all ${
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                   viewMode === "walkthrough"
-                    ? "bg-white text-black font-semibold shadow-sm"
+                    ? isDay
+                      ? "bg-stone-900 text-white font-semibold shadow-sm"
+                      : "bg-white text-black font-semibold shadow-sm"
+                    : isDay
+                    ? "text-stone-600 hover:text-stone-900"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
@@ -210,9 +229,13 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
               </button>
               <button
                 onClick={() => setViewMode("guide")}
-                className={`px-3 py-1 rounded-md transition-all ${
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                   viewMode === "guide"
-                    ? "bg-white text-black font-semibold shadow-sm"
+                    ? isDay
+                      ? "bg-stone-900 text-white font-semibold shadow-sm"
+                      : "bg-white text-black font-semibold shadow-sm"
+                    : isDay
+                    ? "text-stone-600 hover:text-stone-900"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
@@ -223,14 +246,22 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
 
           {/* Autonomous Scene Chapters (only in walkthrough mode) */}
           {viewMode === "walkthrough" && (
-            <div className="hidden sm:flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-white/[0.03]">
+            <div
+              className={`hidden sm:flex items-center gap-1.5 p-1 rounded-full border ${
+                isDay ? "border-stone-200 bg-stone-100" : "border-white/10 bg-white/[0.03]"
+              }`}
+            >
               {SCENES.map((scene, idx) => (
                 <button
                   key={scene.id}
                   onClick={() => handleSelectScene(idx)}
                   className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer relative overflow-hidden ${
                     activeScene === idx
-                      ? "text-black bg-white font-semibold shadow-sm"
+                      ? isDay
+                        ? "text-white bg-stone-900 font-semibold shadow-sm"
+                        : "text-black bg-white font-semibold shadow-sm"
+                      : isDay
+                      ? "text-stone-600 hover:text-stone-900"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
@@ -242,7 +273,9 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+              isDay ? "text-stone-400 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/10"
+            }`}
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -250,70 +283,70 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
         </div>
 
         {viewMode === "guide" ? (
-          <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto bg-[#070709] font-sans">
+          <div className={`p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto font-sans ${isDay ? "bg-[#FBF9F4] text-stone-900" : "bg-[#070709] text-white"}`}>
             <div className="space-y-1">
-              <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-400">
+              <span className={`text-[10px] font-mono tracking-widest uppercase ${isDay ? "text-stone-500" : "text-zinc-400"}`}>
                 CYATH SPECIFICATION // REFERENCE LEDGER
               </span>
-              <h3 className="font-serif text-2xl font-normal text-white">
+              <h3 className={`font-serif text-2xl font-normal ${isDay ? "text-stone-900" : "text-white"}`}>
                 Studio Field Guide & Keyboard Hotkeys
               </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xl">
+              <p className={`text-xs leading-relaxed max-w-xl ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
                 Cyath is designed for rapid client review and autonomous AI agent workflows. Keep this ledger handy during active reviews.
               </p>
             </div>
 
             {/* Keyboard Hotkeys Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+              <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
-                  <div className="text-xs font-semibold text-white">Comment Mode</div>
-                  <div className="text-[11px] text-zinc-400 font-sans">Click anywhere on live canvas to drop feedback pins</div>
+                  <div className={`text-xs font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>Comment Mode</div>
+                  <div className={`text-[11px] font-sans ${isDay ? "text-stone-500" : "text-zinc-400"}`}>Click anywhere on live canvas to drop feedback pins</div>
                 </div>
-                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">C</kbd>
+                <kbd className={`px-2.5 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>C</kbd>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+              <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
-                  <div className="text-xs font-semibold text-white">Browse / Navigate Mode</div>
-                  <div className="text-[11px] text-zinc-400 font-sans">Interact with forms, buttons, and links inside frame</div>
+                  <div className={`text-xs font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>Browse / Navigate Mode</div>
+                  <div className={`text-[11px] font-sans ${isDay ? "text-stone-500" : "text-zinc-400"}`}>Interact with forms, buttons, and links inside frame</div>
                 </div>
-                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">V</kbd>
+                <kbd className={`px-2.5 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>V</kbd>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+              <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
-                  <div className="text-xs font-semibold text-white">Full Page Viewport</div>
-                  <div className="text-[11px] text-zinc-400 font-sans">Switch to 100% fluid edge-to-edge canvas width</div>
+                  <div className={`text-xs font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>Full Page Viewport</div>
+                  <div className={`text-[11px] font-sans ${isDay ? "text-stone-500" : "text-zinc-400"}`}>Switch to 100% fluid edge-to-edge canvas width</div>
                 </div>
-                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">4 / F</kbd>
+                <kbd className={`px-2.5 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>4 / F</kbd>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+              <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
-                  <div className="text-xs font-semibold text-white">Desktop Viewport</div>
-                  <div className="text-[11px] text-zinc-400 font-sans">Switch to isolated 1440px desktop frame</div>
+                  <div className={`text-xs font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>Desktop Viewport</div>
+                  <div className={`text-[11px] font-sans ${isDay ? "text-stone-500" : "text-zinc-400"}`}>Switch to isolated 1440px desktop frame</div>
                 </div>
-                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">1</kbd>
+                <kbd className={`px-2.5 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>1</kbd>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+              <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
-                  <div className="text-xs font-semibold text-white">Tablet & Mobile Viewports</div>
-                  <div className="text-[11px] text-zinc-400 font-sans">Switch to 768px tablet or 375px mobile frames</div>
+                  <div className={`text-xs font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>Tablet & Mobile Viewports</div>
+                  <div className={`text-[11px] font-sans ${isDay ? "text-stone-500" : "text-zinc-400"}`}>Switch to 768px tablet or 375px mobile frames</div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <kbd className="px-2 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">2</kbd>
-                  <kbd className="px-2 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">3</kbd>
+                  <kbd className={`px-2 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>2</kbd>
+                  <kbd className={`px-2 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>3</kbd>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-white/15 bg-black/60 flex items-center justify-between">
+              <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
-                  <div className="text-xs font-semibold text-white">Deselect / Dismiss</div>
-                  <div className="text-[11px] text-zinc-400 font-sans">Close active pin popover and clear selection</div>
+                  <div className={`text-xs font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>Deselect / Dismiss</div>
+                  <div className={`text-[11px] font-sans ${isDay ? "text-stone-500" : "text-zinc-400"}`}>Close active pin popover and clear selection</div>
                 </div>
-                <kbd className="px-2.5 py-1 rounded bg-white/10 border border-white/20 font-mono text-xs text-white">Esc</kbd>
+                <kbd className={`px-2.5 py-1 rounded font-mono text-xs ${isDay ? "bg-stone-100 border border-stone-300 text-stone-900" : "bg-white/10 border border-white/20 text-white"}`}>Esc</kbd>
               </div>
             </div>
 
@@ -532,21 +565,21 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
         </div>
 
         {/* Bottom Playback Scrubber & Scene Explanation */}
-        <div className="p-5 sm:p-6 bg-black space-y-4">
+        <div className={`p-5 sm:p-6 border-t transition-colors ${isDay ? "bg-[#FBF9F4] border-stone-200" : "bg-black border-white/10"} space-y-4`}>
           {/* Progress Bar (Scrubber) */}
-          <div className="w-full h-1.5 rounded-full bg-white/10 relative overflow-hidden">
+          <div className={`w-full h-1.5 rounded-full relative overflow-hidden ${isDay ? "bg-stone-200" : "bg-white/10"}`}>
             <div
-              className="h-full bg-white transition-all duration-75"
+              className={`h-full transition-all duration-75 ${isDay ? "bg-stone-900" : "bg-white"}`}
               style={{ width: `${sceneProgressPercent}%` }}
             />
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1 max-w-xl">
-              <h3 className="font-serif text-lg font-normal text-white">
+              <h3 className={`font-serif text-lg font-normal ${isDay ? "text-stone-900" : "text-white"}`}>
                 {currentScene.title}
               </h3>
-              <p className="font-sans text-xs text-zinc-400 leading-relaxed">
+              <p className={`font-sans text-xs leading-relaxed ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
                 {currentScene.caption}
               </p>
             </div>
@@ -555,7 +588,11 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="p-2 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer"
+                className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+                  isDay
+                    ? "border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:text-stone-900 shadow-sm"
+                    : "border-white/15 bg-white/5 hover:bg-white/10 text-white"
+                }`}
                 title={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -563,7 +600,11 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
 
               <button
                 onClick={handleRestart}
-                className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+                  isDay
+                    ? "border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+                    : "border-white/10 hover:border-white/20 text-zinc-400 hover:text-white"
+                }`}
                 title="Replay from beginning"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -574,7 +615,11 @@ export function StudioWalkthroughModal({ isOpen, onClose }: StudioWalkthroughMod
                   setActiveScene((s) => (s + 1) % SCENES.length);
                   setElapsedSceneTime(0);
                 }}
-                className="px-3.5 py-2 rounded-lg bg-white text-black font-sans font-semibold text-xs hover:bg-zinc-200 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                className={`px-3.5 py-2 rounded-lg font-sans font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm cursor-pointer ${
+                  isDay
+                    ? "bg-stone-900 text-white hover:bg-stone-800"
+                    : "bg-white text-black hover:bg-zinc-200"
+                }`}
               >
                 <span>Next</span>
                 <ChevronRight className="w-3.5 h-3.5" />

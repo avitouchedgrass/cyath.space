@@ -10,6 +10,7 @@ interface AccountSettingsModalProps {
   user: User | null;
   agencyName: string;
   isPro?: boolean;
+  theme?: "night" | "day";
   onUpdateAgencyName: (name: string) => void;
   onSignOut: () => void;
   onOpenUpgrade: () => void;
@@ -20,6 +21,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   user,
   agencyName,
   isPro = false,
+  theme = "night",
   onUpdateAgencyName,
   onSignOut,
   onOpenUpgrade,
@@ -31,6 +33,8 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   const [copiedConfig, setCopiedConfig] = useState(false);
   const [activeConfigTab, setActiveConfigTab] = useState<"cursor" | "claude" | "cli">("cursor");
   const projects = useReviewStore((s) => s.projects);
+
+  const isDay = theme === "day";
 
   const apiKey = useMemo(() => {
     const seed = user?.id || user?.email || "studio_member";
@@ -49,10 +53,11 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
       {
         mcpServers: {
           cyath: {
-            command: "node",
-            args: ["mcp/server.js"],
+            command: "npx",
+            args: ["-y", "cyath-mcp@latest"],
             env: {
               CYATH_API_KEY: apiKey,
+              CYATH_STAGING_ENDPOINT: "https://cyath-space.vercel.app/api/mcp",
             },
           },
         },
@@ -66,9 +71,9 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
     return JSON.stringify(
       {
         mcpServers: {
-          cyath: {
-            command: "node",
-            args: ["mcp/server.js"],
+          "cyath-reviews": {
+            command: "npx",
+            args: ["-y", "cyath-mcp@latest"],
             env: {
               CYATH_API_KEY: apiKey,
             },
@@ -80,25 +85,20 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
     );
   }, [apiKey]);
 
-  const cliSnippet = `CYATH_API_KEY="${apiKey}" node mcp/server.js`;
+  const cliEnvSnippet = useMemo(() => {
+    return `# Export to your environment (.env.local or ~/.bashrc)\nexport CYATH_API_KEY="${apiKey}"\nexport CYATH_STAGING_ENDPOINT="https://cyath-space.vercel.app/api/mcp"\n\n# Run inspector directly\nnpx cyath-mcp --test`;
+  }, [apiKey]);
 
-  const activeSnippet = activeConfigTab === "cursor" ? cursorConfigJson : activeConfigTab === "claude" ? claudeConfigJson : cliSnippet;
-
-  const handleCopyKey = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(apiKey);
-      setCopiedKey(true);
-      setTimeout(() => setCopiedKey(false), 2000);
+  const activeSnippet = useMemo(() => {
+    switch (activeConfigTab) {
+      case "cursor":
+        return cursorConfigJson;
+      case "claude":
+        return claudeConfigJson;
+      case "cli":
+        return cliEnvSnippet;
     }
-  };
-
-  const handleCopyConfig = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(activeSnippet);
-      setCopiedConfig(true);
-      setTimeout(() => setCopiedConfig(false), 2000);
-    }
-  };
+  }, [activeConfigTab, cursorConfigJson, claudeConfigJson, cliEnvSnippet]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +106,18 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
     onUpdateAgencyName(editingAgency.trim());
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2000);
+  };
+
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(apiKey);
+    setCopiedKey(true);
+    setTimeout(() => setCopiedKey(false), 2000);
+  };
+
+  const handleCopyConfig = () => {
+    navigator.clipboard.writeText(activeSnippet);
+    setCopiedConfig(true);
+    setTimeout(() => setCopiedConfig(false), 2000);
   };
 
   const handleExportData = () => {
@@ -119,21 +131,32 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
-      <div className="w-full max-w-2xl bg-[#070709] border border-white/20 rounded-2xl shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(255,255,255,0.06)] overflow-hidden flex flex-col relative text-white max-h-[92vh] animate-in zoom-in-[0.98] duration-200">
-        
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
+      <div
+        className={`w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col relative max-h-[92vh] animate-in zoom-in-95 duration-200 border transition-all ${
+          isDay
+            ? "bg-white border-stone-200 text-stone-900 shadow-[0_25px_90px_rgba(0,0,0,0.15)]"
+            : "bg-[#070709] border-white/20 text-white shadow-[0_25px_90px_rgba(0,0,0,0.95)]"
+        }`}
+      >
         {/* Physical Keycard Top Header */}
-        <div className="h-12 border-b border-white/15 px-6 flex items-center justify-between select-none bg-black">
+        <div
+          className={`h-12 border-b px-6 flex items-center justify-between select-none ${
+            isDay ? "bg-[#FBF9F4] border-stone-200" : "bg-black border-white/15"
+          }`}
+        >
           <div className="flex items-center gap-2.5">
-            <TesseractMark size={18} className="text-white shrink-0" />
-            <span className="font-mono text-[10px] tracking-widest text-zinc-300 uppercase">
+            <TesseractMark size={18} className={`shrink-0 ${isDay ? "text-stone-900" : "text-white"}`} />
+            <span className={`font-mono text-[10px] tracking-widest uppercase ${isDay ? "text-stone-600 font-medium" : "text-zinc-300"}`}>
               STUDIO KEYCARD & CREDENTIALS
             </span>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+              isDay ? "text-stone-400 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/10"
+            }`}
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -142,18 +165,32 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
         <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
           {/* Member Card Dossier */}
-          <div className="p-5 rounded-2xl border border-white/15 bg-[#0d0d12] relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div
+            className={`p-5 rounded-2xl border relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+              isDay ? "bg-stone-50 border-stone-200" : "bg-[#0d0d12] border-white/15"
+            }`}
+          >
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <span className="font-serif text-lg font-medium text-white tracking-wide">
+                <span className={`font-serif text-lg font-medium tracking-wide ${isDay ? "text-stone-900" : "text-white"}`}>
                   {editingAgency && !editingAgency.includes("@") ? editingAgency : "Workspace"}
                 </span>
-                <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${isPro ? "bg-white text-black" : "bg-white/10 text-zinc-400"}`}>
+                <span
+                  className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold ${
+                    isPro
+                      ? isDay
+                        ? "bg-stone-900 text-white"
+                        : "bg-white text-black"
+                      : isDay
+                      ? "bg-stone-200 text-stone-700"
+                      : "bg-white/10 text-zinc-400"
+                  }`}
+                >
                   {isPro ? "Pro Plan" : "Free Plan"}
                 </span>
               </div>
-              <p className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+              <p className={`text-xs font-mono flex items-center gap-1.5 ${isDay ? "text-stone-500" : "text-zinc-400"}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isDay ? "bg-stone-400" : "bg-white/40"}`} />
                 <span>{user?.email || "Member Account"}</span>
               </p>
             </div>
@@ -165,14 +202,20 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                     onClose();
                     onOpenUpgrade();
                   }}
-                  className="px-4 py-2 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                  className={`px-4 py-2 font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md ${
+                    isDay ? "bg-stone-900 text-white hover:bg-stone-800" : "bg-white text-black hover:bg-zinc-200"
+                  }`}
                 >
                   <span>Upgrade to Pro</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
               ) : (
-                <div className="px-3 py-1.5 rounded-xl border border-white/20 bg-white/5 font-mono text-[11px] text-zinc-200 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                <div
+                  className={`px-3 py-1.5 rounded-xl border font-mono text-[11px] flex items-center gap-1.5 ${
+                    isDay ? "border-stone-200 bg-white text-stone-800" : "border-white/20 bg-white/5 text-zinc-200"
+                  }`}
+                >
+                  <ShieldCheck className={`w-3.5 h-3.5 ${isDay ? "text-stone-900" : "text-white"}`} />
                   <span>UNLIMITED CANVASES</span>
                 </div>
               )}
@@ -181,7 +224,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
           {/* Company Brand Identity Form */}
           <form onSubmit={handleSave} className="space-y-3">
-            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-300">
+            <label className={`block text-xs font-mono uppercase tracking-wider ${isDay ? "text-stone-700 font-medium" : "text-zinc-300"}`}>
               Company / Agency Name
             </label>
             <div className="flex items-center gap-2">
@@ -191,11 +234,17 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                 value={editingAgency.includes("@") ? "" : editingAgency}
                 onChange={(e) => setEditingAgency(e.target.value)}
                 placeholder="e.g. North Creative Agency"
-                className="flex-1 bg-white/[0.04] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 font-mono"
+                className={`flex-1 border rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none transition-all ${
+                  isDay
+                    ? "bg-stone-50 border-stone-200 focus:border-stone-900 focus:bg-white text-stone-900 placeholder:text-stone-400"
+                    : "bg-white/[0.04] border-white/15 text-white placeholder:text-zinc-500 focus:border-white/50 focus:ring-1 focus:ring-white/20"
+                }`}
               />
               <button
                 type="submit"
-                className="px-4 py-2.5 bg-white text-black font-semibold text-xs rounded-xl hover:bg-zinc-200 transition-colors whitespace-nowrap cursor-pointer shadow-sm"
+                className={`px-4 py-2.5 font-semibold text-xs rounded-xl transition-colors whitespace-nowrap cursor-pointer shadow-sm ${
+                  isDay ? "bg-stone-900 text-white hover:bg-stone-800" : "bg-white text-black hover:bg-zinc-200"
+                }`}
               >
                 {isSaved ? "Saved ✓" : "Save Changes"}
               </button>
@@ -203,7 +252,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
           </form>
 
           {/* Autonomous MCP Agent Station */}
-          <div className="p-5 rounded-2xl border border-white/15 bg-[#09090c] space-y-4">
+          <div className="p-5 rounded-2xl border border-stone-800 bg-[#121215] space-y-4 text-white">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-white" />
@@ -288,7 +337,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                     onClose();
                     onOpenUpgrade();
                   }}
-                  className="px-3.5 py-1.5 rounded-xl bg-white text-black text-xs font-semibold flex items-center gap-1.5 hover:bg-zinc-200 transition-all cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-white text-black text-xs font-semibold flex items-center gap-1.5 hover:bg-zinc-200 transition-all cursor-pointer shadow-sm"
                 >
                   <span>Unlock MCP</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -298,10 +347,10 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
           </div>
 
           {/* Backup & Sign Out Footer */}
-          <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-zinc-400">
+          <div className={`pt-4 border-t flex items-center justify-between text-xs font-mono ${isDay ? "border-stone-200 text-stone-600" : "border-white/10 text-zinc-400"}`}>
             <button
               onClick={handleExportData}
-              className="hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+              className={`flex items-center gap-1.5 transition-colors cursor-pointer ${isDay ? "hover:text-stone-900" : "hover:text-white"}`}
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Studio Data (.json)</span>
@@ -309,7 +358,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
 
             <button
               onClick={onSignOut}
-              className="hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-rose-500 hover:text-rose-600 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out Session</span>
