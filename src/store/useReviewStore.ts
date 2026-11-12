@@ -25,7 +25,14 @@ interface ReviewState {
   isPro: boolean;
 
   // Actions
-  createProject: (title: string, targetUrl: string, agencyName?: string, assetType?: AssetType) => string;
+  createProject: (
+    title: string,
+    targetUrl: string,
+    agencyName?: string,
+    assetType?: AssetType,
+    ownerId?: string,
+    ownerEmail?: string
+  ) => string;
   hydrateProject: (project: Project) => void;
   deleteProject: (projectId: string) => void;
   getProject: (shareId: string) => Project | undefined;
@@ -65,7 +72,14 @@ export const useReviewStore = create<ReviewState>()(
       clientAuthorName: "Guest Reviewer",
       isPro: false,
 
-      createProject: (title, targetUrl, agencyName = "Independent Studio", assetType = "url") => {
+      createProject: (
+        title,
+        targetUrl,
+        agencyName = "Independent Firm",
+        assetType = "url",
+        ownerId,
+        ownerEmail
+      ) => {
         const shareId = nanoid(8);
         const newProject: Project = {
           id: nanoid(),
@@ -73,6 +87,8 @@ export const useReviewStore = create<ReviewState>()(
           title,
           targetUrl,
           agencyName,
+          ownerId,
+          ownerEmail,
           assetType,
           isApproved: false,
           createdAt: new Date().toISOString(),

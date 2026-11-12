@@ -40,6 +40,16 @@ function SettingsContent() {
 
   const { isPro, projects } = useReviewStore();
 
+  const userProjects = projects.filter((p) => {
+    if (!p) return false;
+    if (p.ownerId && user?.id) return p.ownerId === user.id;
+    if (p.ownerEmail && user?.email) return p.ownerEmail.toLowerCase() === user.email.toLowerCase();
+    if (p.agencyName && p.agencyName.includes("@")) {
+      return p.agencyName.toLowerCase() === (user?.email || "").toLowerCase();
+    }
+    return false;
+  });
+
   useEffect(() => {
     const saved = localStorage.getItem("cyath_theme") as "night" | "day";
     if (saved) {
@@ -95,6 +105,8 @@ function SettingsContent() {
     const supabase = createClient();
     if (typeof window !== "undefined") {
       localStorage.removeItem("cyath_guest_session");
+      localStorage.removeItem("cyath_pro_member");
+      localStorage.removeItem("cyath_pro_api_key");
       document.querySelectorAll("iframe").forEach((f) => {
         try {
           f.src = "about:blank";
@@ -111,8 +123,8 @@ function SettingsContent() {
       agency: agencyName,
       exportedAt: new Date().toISOString(),
       account: user?.email,
-      projectsCount: projects.length,
-      projects,
+      projectsCount: userProjects.length,
+      projects: userProjects,
     };
     const blob = new Blob([JSON.stringify(backup, null, 2)], {
       type: "application/json",
@@ -937,7 +949,7 @@ function SettingsContent() {
                           isDay ? "text-stone-900" : "text-white"
                         }`}
                       >
-                        {projects.length}
+                        {userProjects.length}
                       </span>
                       <span
                         className={`text-[11px] font-mono block mt-1 ${

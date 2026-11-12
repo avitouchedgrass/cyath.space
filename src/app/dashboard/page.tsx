@@ -127,6 +127,8 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("cyath_guest_session");
+      localStorage.removeItem("cyath_pro_member");
+      localStorage.removeItem("cyath_pro_api_key");
       // Destroy all child iframes and audio contexts immediately before teardown
       document.querySelectorAll("iframe").forEach((f) => {
         try {
@@ -143,7 +145,7 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!title.trim() || !targetUrl.trim()) return;
 
-    if (!isUserPro && projects.length >= 1) {
+    if (!isUserPro && userProjects.length >= 1) {
       setShowCreateModal(false);
       setShowUpgradeModal(true);
       return;
@@ -155,7 +157,7 @@ export default function DashboardPage() {
     }
 
     const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "My Studio";
-    createProject(title.trim(), formattedUrl, agency, "url");
+    createProject(title.trim(), formattedUrl, agency, "url", currentUser?.id, currentUser?.email);
     setTitle("");
     setTargetUrl("");
     setShowCreateModal(false);
@@ -165,7 +167,7 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!quickUrl.trim()) return;
 
-    if (!isUserPro && projects.length >= 1) {
+    if (!isUserPro && userProjects.length >= 1) {
       setShowUpgradeModal(true);
       return;
     }
@@ -184,7 +186,7 @@ export default function DashboardPage() {
     }
 
     const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "My Studio";
-    const shareId = createProject(parsedTitle, formattedUrl, agency, "url");
+    const shareId = createProject(parsedTitle, formattedUrl, agency, "url", currentUser?.id, currentUser?.email);
     setQuickUrl("");
     const params = new URLSearchParams();
     params.set("u", formattedUrl);
@@ -197,7 +199,7 @@ export default function DashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!isUserPro && projects.length >= 1) {
+    if (!isUserPro && userProjects.length >= 1) {
       setShowUpgradeModal(true);
       return;
     }
@@ -210,7 +212,7 @@ export default function DashboardPage() {
       const dataUrl = reader.result as string;
       const title = file.name.replace(/\.[^/.]+$/, "");
       const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "My Studio";
-      const shareId = createProject(title, dataUrl, agency, assetType);
+      const shareId = createProject(title, dataUrl, agency, assetType, currentUser?.id, currentUser?.email);
       router.push(`/r/${shareId}`);
     };
 
@@ -275,8 +277,27 @@ export default function DashboardPage() {
     }
   };
 
-  const filteredProjects = useMemo(() => {
+  // Isolate canvases to the currently authenticated account
+  const userProjects = useMemo(() => {
+    if (!currentUser) return [];
     return projects.filter((p) => {
+      if (!p) return false;
+      if (p.ownerId && currentUser.id) return p.ownerId === currentUser.id;
+      if (p.ownerEmail && currentUser.email) {
+        return p.ownerEmail.toLowerCase() === currentUser.email.toLowerCase();
+      }
+      if (p.agencyName && p.agencyName.includes("@")) {
+        return p.agencyName.toLowerCase() === (currentUser.email || "").toLowerCase();
+      }
+      if (currentUser.id === "guest-user") {
+        return !p.ownerId && !p.agencyName?.includes("@");
+      }
+      return false;
+    });
+  }, [projects, currentUser]);
+
+  const filteredProjects = useMemo(() => {
+    return userProjects.filter((p) => {
       if (statusFilter === "active" && (p.isApproved || p.pins.length === 0)) return false;
       if (statusFilter === "signed_off" && !p.isApproved) return false;
       if (searchQuery.trim()) {
@@ -288,11 +309,11 @@ export default function DashboardPage() {
       }
       return true;
     });
-  }, [projects, searchQuery, statusFilter]);
+  }, [userProjects, searchQuery, statusFilter]);
 
   const totalOpenNotes = useMemo(() => {
-    return projects.reduce((acc, p) => acc + p.pins.filter((pin) => pin.status !== "resolved").length, 0);
-  }, [projects]);
+    return userProjects.reduce((acc, p) => acc + p.pins.filter((pin) => pin.status !== "resolved").length, 0);
+  }, [userProjects]);
 
   const isDay = theme === "day";
 
@@ -553,7 +574,7 @@ export default function DashboardPage() {
 
               <button
                 onClick={() => {
-                  if (!isUserPro && projects.length >= 1) {
+                  if (!isUserPro && userProjects.length >= 1) {
                     setShowUpgradeModal(true);
                   } else {
                     setShowCreateModal(true);
@@ -587,7 +608,7 @@ export default function DashboardPage() {
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0 font-mono text-[11px]">
               <span className={`px-3 py-1 rounded-full border ${isDay ? "border-stone-200 bg-white text-stone-700 shadow-sm" : "border-white/10 bg-white/[0.03] text-zinc-400"}`}>
-                {projects.length} {projects.length === 1 ? "canvas" : "canvases"}
+                {userProjects.length} {userProjects.length === 1 ? "canvas" : "canvases"}
               </span>
               <span className={`px-3 py-1 rounded-full border ${isDay ? "border-stone-200 bg-white text-stone-700 shadow-sm" : "border-white/10 bg-white/[0.03] text-zinc-400"}`}>
                 {totalOpenNotes} open {totalOpenNotes === 1 ? "note" : "notes"}
@@ -677,7 +698,7 @@ export default function DashboardPage() {
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                All ({projects.length})
+                All ({userProjects.length})
               </button>
               <button
                 onClick={() => setStatusFilter("active")}
@@ -691,7 +712,7 @@ export default function DashboardPage() {
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Needs Review ({projects.filter((p) => !p.isApproved && p.pins.length > 0).length})
+                Needs Review ({userProjects.filter((p) => !p.isApproved && p.pins.length > 0).length})
               </button>
               <button
                 onClick={() => setStatusFilter("signed_off")}
@@ -705,7 +726,7 @@ export default function DashboardPage() {
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Approved ({projects.filter((p) => p.isApproved).length})
+                Approved ({userProjects.filter((p) => p.isApproved).length})
               </button>
             </div>
 
@@ -788,7 +809,7 @@ export default function DashboardPage() {
 
               <div
                 onClick={() => {
-                  if (projects.length >= 1) {
+                  if (userProjects.length >= 1) {
                     setShowUpgradeModal(true);
                   } else {
                     setShowCreateModal(true);

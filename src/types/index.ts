@@ -45,6 +45,8 @@ export interface Project {
   title: string;
   targetUrl: string;
   agencyName: string;
+  ownerId?: string;
+  ownerEmail?: string;
   assetType?: AssetType;
   isApproved: boolean;
   approvedAt?: string;

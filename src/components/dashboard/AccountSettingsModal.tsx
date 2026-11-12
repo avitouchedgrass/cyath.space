@@ -32,7 +32,18 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedConfig, setCopiedConfig] = useState(false);
   const [activeConfigTab, setActiveConfigTab] = useState<"cursor" | "claude" | "cli">("cursor");
-  const projects = useReviewStore((s) => s.projects);
+  const rawProjects = useReviewStore((s) => s.projects);
+  const projects = useMemo(() => {
+    return rawProjects.filter((p) => {
+      if (!p) return false;
+      if (p.ownerId && user?.id) return p.ownerId === user.id;
+      if (p.ownerEmail && user?.email) return p.ownerEmail.toLowerCase() === user.email.toLowerCase();
+      if (p.agencyName && p.agencyName.includes("@")) {
+        return p.agencyName.toLowerCase() === (user?.email || "").toLowerCase();
+      }
+      return false;
+    });
+  }, [rawProjects, user]);
 
   const isDay = theme === "day";
 
