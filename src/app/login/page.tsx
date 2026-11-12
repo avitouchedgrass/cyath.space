@@ -405,7 +405,7 @@ export default function LoginPage() {
                   </p>
                 </div>
                 <div className="w-full bg-black/10 dark:bg-white/10 rounded-full h-1 overflow-hidden mt-4">
-                  <div className="bg-emerald-500 h-full w-full animate-pulse" />
+                  <div className="bg-white h-full w-full animate-pulse" />
                 </div>
               </div>
             ) : (
@@ -622,7 +622,7 @@ export default function LoginPage() {
                 {mode === "signup" && (
                   <div>
                     <label className="block text-[11px] font-mono font-medium mb-1.5 uppercase tracking-wider text-zinc-400">
-                      Studio / Agency Name
+                      Firm / Company Name
                     </label>
                     <div className="relative">
                       <Building2 className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" />
@@ -761,7 +761,7 @@ export default function LoginPage() {
 
       {/* 4. Minimal Footer */}
       <footer className="relative z-10 h-10 px-6 sm:px-12 flex items-center justify-end text-[10px] font-mono text-zinc-500 pointer-events-none">
-        <span>CRYPTOGRAPHIC MILESTONE CERTIFICATION</span>
+        <span>© 2026 Cyath. All rights reserved.</span>
       </footer>
     </div>
   );

@@ -33,36 +33,41 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   const [pageFilter, setPageFilter] = useState<string>("all");
   const [isCopied, setIsCopied] = useState(false);
 
-  const allPins = Array.isArray(project?.pins) ? project.pins : [];
+  const allPins = Array.isArray(project?.pins) ? project.pins.filter(Boolean) : [];
   const currentStageLabel = formatPageLabel(currentPageUrl);
 
   // Identify all unique subpages that have pins
-  const uniquePages = Array.from(new Set(allPins.map((p) => formatPageLabel(p.pageUrl))));
+  const uniquePages = Array.from(new Set(allPins.map((p) => formatPageLabel(p?.pageUrl))));
 
   // Filter by device scope
   let scopedPins =
     deviceScope === "current"
-      ? allPins.filter((p) => p.deviceMode === activeDeviceMode)
+      ? allPins.filter((p) => p && p.deviceMode === activeDeviceMode)
       : allPins;
 
   // Filter by subpage if selected
   if (pageFilter !== "all") {
-    scopedPins = scopedPins.filter((p) => formatPageLabel(p.pageUrl) === pageFilter);
+    scopedPins = scopedPins.filter((p) => p && formatPageLabel(p.pageUrl) === pageFilter);
   }
 
   // Filter by status
-  const openPins = scopedPins.filter((p) => p.status !== "resolved");
-  const resolvedPins = scopedPins.filter((p) => p.status === "resolved");
+  const openPins = scopedPins.filter((p) => p && p.status !== "resolved");
+  const resolvedPins = scopedPins.filter((p) => p && p.status === "resolved");
 
   let displayedPins =
     filter === "open" ? openPins : filter === "resolved" ? resolvedPins : scopedPins;
 
   // Sort pins
-  displayedPins = [...displayedPins].sort((a, b) => {
+  displayedPins = [...displayedPins].filter(Boolean).sort((a, b) => {
+    if (!a || !b) return 0;
     if (sortOrder === "newest") {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      return timeB - timeA;
     } else if (sortOrder === "oldest") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      return timeA - timeB;
     } else if (sortOrder === "page") {
       const pageA = formatPageLabel(a.pageUrl);
       const pageB = formatPageLabel(b.pageUrl);

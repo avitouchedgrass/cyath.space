@@ -15,9 +15,9 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
   const [approverName, setApproverName] = useState("");
   const [organization, setOrganization] = useState("");
 
-  const pins = Array.isArray(project?.pins) ? project.pins : [];
-  const openPins = pins.filter((p) => p.status !== "resolved").length;
-  const resolvedPins = pins.filter((p) => p.status === "resolved").length;
+  const pins = Array.isArray(project?.pins) ? project.pins.filter(Boolean) : [];
+  const openPins = pins.filter((p) => p && p.status !== "resolved").length;
+  const resolvedPins = pins.filter((p) => p && p.status === "resolved").length;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +33,8 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
         <div className="h-12 border-b border-white/15 px-6 flex items-center justify-between select-none bg-black">
           <div className="flex items-center gap-2">
             <TesseractMark size={16} className="text-white shrink-0" />
-            <span className="font-mono text-[10px] tracking-widest text-zinc-300 uppercase">
-              DEED OF MILESTONE ACCEPTANCE // SEAL
+            <span className="font-serif text-xs font-medium text-zinc-200">
+              Milestone Acceptance
             </span>
           </div>
 

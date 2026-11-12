@@ -127,9 +127,16 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("cyath_guest_session");
+      // Destroy all child iframes and audio contexts immediately before teardown
+      document.querySelectorAll("iframe").forEach((f) => {
+        try {
+          f.src = "about:blank";
+          f.remove();
+        } catch {}
+      });
     }
     await supabase.auth.signOut();
-    router.replace("/login");
+    window.location.href = "/login";
   };
 
   const handleCreate = (e: React.FormEvent) => {
@@ -1223,7 +1230,7 @@ function ViewfinderCard({
           ) : isWebUrl ? (
             <div className={`relative w-full h-full overflow-hidden pointer-events-none select-none ${isDay ? "bg-stone-50" : "bg-[#0a0a0d]"}`}>
               <iframe
-                src={`/api/proxy?url=${encodeURIComponent(project.targetUrl)}`}
+                src={`/api/proxy?url=${encodeURIComponent(project.targetUrl)}&mute=1`}
                 title={project.title}
                 className="absolute top-0 left-0 border-none select-none z-10 opacity-90 group-hover:opacity-100 transition-opacity"
                 style={{
@@ -1234,6 +1241,8 @@ function ViewfinderCard({
                 }}
                 tabIndex={-1}
                 loading="lazy"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+                allow="autoplay 'none'; camera 'none'; microphone 'none'"
               />
             </div>
           ) : (

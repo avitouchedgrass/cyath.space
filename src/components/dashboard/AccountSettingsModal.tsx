@@ -147,8 +147,8 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
         >
           <div className="flex items-center gap-2.5">
             <TesseractMark size={18} className={`shrink-0 ${isDay ? "text-stone-900" : "text-white"}`} />
-            <span className={`font-mono text-[10px] tracking-widest uppercase ${isDay ? "text-stone-600 font-medium" : "text-zinc-300"}`}>
-              STUDIO KEYCARD & CREDENTIALS
+            <span className={`font-serif text-sm font-medium ${isDay ? "text-stone-900" : "text-white"}`}>
+              Account Settings
             </span>
           </div>
 
@@ -272,8 +272,8 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             {isPro ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-1.5">
-                    Cyath Pro API Key
+                  <label className="block text-xs font-mono text-zinc-400 mb-1.5">
+                    Pro API Key
                   </label>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-black border border-white/15 rounded-xl px-3 py-2 font-mono text-xs text-zinc-200 truncate select-all">

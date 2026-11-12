@@ -285,11 +285,8 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
         {viewMode === "guide" ? (
           <div className={`p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto font-sans ${isDay ? "bg-[#FBF9F4] text-stone-900" : "bg-[#070709] text-white"}`}>
             <div className="space-y-1">
-              <span className={`text-[10px] font-mono tracking-widest uppercase ${isDay ? "text-stone-500" : "text-zinc-400"}`}>
-                CYATH SPECIFICATION // REFERENCE LEDGER
-              </span>
               <h3 className={`font-serif text-2xl font-normal ${isDay ? "text-stone-900" : "text-white"}`}>
-                Studio Field Guide & Keyboard Hotkeys
+                Field Guide & Keyboard Hotkeys
               </h3>
               <p className={`text-xs leading-relaxed max-w-xl ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
                 Cyath is designed for rapid client review and autonomous AI agent workflows. Keep this ledger handy during active reviews.
@@ -406,7 +403,7 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                  <span className="w-2 h-2 rounded-full bg-white/80" />
                   <span className="text-white">Canvas Ready for Client Feedback</span>
                 </div>
                 <span className="text-zinc-500">Zero SDK Needed</span>

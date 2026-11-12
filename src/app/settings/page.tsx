@@ -93,8 +93,17 @@ function SettingsContent() {
 
   const handleSignOut = async () => {
     const supabase = createClient();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cyath_guest_session");
+      document.querySelectorAll("iframe").forEach((f) => {
+        try {
+          f.src = "about:blank";
+          f.remove();
+        } catch {}
+      });
+    }
     await supabase.auth.signOut();
-    router.push("/login");
+    window.location.href = "/login";
   };
 
   const handleExportData = () => {
@@ -540,7 +549,7 @@ function SettingsContent() {
                       className={`text-xs font-mono px-3 py-1 rounded-full border self-start sm:self-auto ${
                         isDay
                           ? "bg-stone-100 border-stone-200 text-stone-800"
-                          : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                          : "bg-white/10 border-white/20 text-zinc-200"
                       }`}
                     >
                       Session Active

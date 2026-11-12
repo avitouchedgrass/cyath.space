@@ -231,33 +231,28 @@ function AuthConfirmContent() {
 
           {status === "success" && (
             <div className="py-4 space-y-6">
-              {/* Drafting Seal Badge */}
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 mx-auto">
-                <CheckCircle2 className="w-8 h-8" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/10 border border-white/20 text-white mx-auto">
+                <CheckCircle2 className="w-7 h-7" />
               </div>
 
-              <div className="space-y-2">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] px-2.5 py-0.5 rounded border border-emerald-500/30 text-emerald-500 bg-emerald-500/5">
-                  Verification Confirmed
-                </span>
-                <h1 className="text-2xl sm:text-[28px] font-normal font-serif tracking-[-0.02em] mt-2">
+              <div className="space-y-1">
+                <h1 className="text-2xl sm:text-[28px] font-normal font-serif tracking-[-0.02em]">
                   Email Verified
                 </h1>
                 {userEmail && (
-                  <p className="font-mono text-[11px] text-[#38BDF8] truncate max-w-xs mx-auto">
+                  <p className="font-mono text-xs text-zinc-400 truncate max-w-xs mx-auto">
                     {userEmail}
                   </p>
                 )}
               </div>
 
-              {/* Primary Instruction Card requested by user */}
               <div
                 className={`p-4 rounded-xl border text-left space-y-2 ${
                   isDay ? "bg-white/80 border-black/10" : "bg-black/30 border-white/10"
                 }`}
               >
                 <div className="flex items-start gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 mt-1.5 shrink-0 animate-ping" />
+                  <div className="w-2 h-2 rounded-full bg-white/80 mt-1.5 shrink-0" />
                   <div className="space-y-1">
                     <p className={`text-xs font-semibold ${isDay ? "text-[#1C1A18]" : "text-white"}`}>
                       Return to your original window

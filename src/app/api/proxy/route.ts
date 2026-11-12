@@ -1,5 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD",
+      "Access-Control-Allow-Headers": "*",
+    },
+  });
+}
+
+export async function POST(req: NextRequest) {
+  const urlParam = req.nextUrl.searchParams.get("url");
+  if (!urlParam) {
+    return new NextResponse("Missing url parameter", { status: 400 });
+  }
+
+  let targetUrl = urlParam;
+  if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
+    targetUrl = "https://" + targetUrl;
+  }
+
+  try {
+    const body = await req.arrayBuffer();
+    const contentType = req.headers.get("content-type") || "application/json";
+    const response = await fetch(targetUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": contentType,
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      },
+      body,
+    });
+
+    const resBuffer = await response.arrayBuffer();
+    const resContentType = response.headers.get("content-type") || "application/json";
+    return new NextResponse(resBuffer, {
+      status: response.status,
+      headers: {
+        "Content-Type": resContentType,
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD",
+        "Access-Control-Allow-Headers": "*",
+      },
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 502 });
+  }
+}
+
 export async function GET(req: NextRequest) {
   const urlParam = req.nextUrl.searchParams.get("url");
   if (!urlParam) {
@@ -25,22 +76,32 @@ export async function GET(req: NextRequest) {
 
     const contentType = response.headers.get("content-type") || "text/html";
 
-    // If it's a binary file or non-HTML, pass through as array buffer
+    // If it's a binary file, stylesheet, script, font, or JSON, pass through as array buffer with wide CORS
     if (!contentType.includes("text/html")) {
       const buffer = await response.arrayBuffer();
       return new NextResponse(buffer, {
+        status: response.status,
         headers: {
           "Content-Type": contentType,
           "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+          "Access-Control-Allow-Headers": "*",
+          "Cross-Origin-Resource-Policy": "cross-origin",
+          "Cache-Control": "public, max-age=300",
         },
       });
     }
 
-    // Capture the final URL after any HTTP 301/302/308 redirects
+    // Capture the final URL after any HTTP redirects
     const finalUrl = response.url || targetUrl;
     const finalParsed = new URL(finalUrl);
     const targetOrigin = finalParsed.origin;
-    const fullBase = `${targetOrigin}/`;
+    const basePath =
+      finalParsed.pathname.substring(
+        0,
+        finalParsed.pathname.lastIndexOf("/") + 1
+      ) || "/";
+    const fullBase = `${targetOrigin}${basePath}`;
 
     let html = await response.text();
 
@@ -51,16 +112,89 @@ export async function GET(req: NextRequest) {
     html = html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, "");
     html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, "");
 
-    // 3. Inject <base> tag and client-side bridge script
-    // NOTE: We preserve script src attributes as root-relative so Turbopack and Webpack chunk
-    // manifests match exactly without hanging. The browser resolves them naturally against fullBase.
+    const muteParam = req.nextUrl.searchParams.get("mute");
+    const shouldMuteAudio = muteParam === "1" || muteParam === "true";
+
     const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">`;
     const bridgeScript = `<script id="cyath-staging-bridge">
 (function() {
+  var initialTargetUrl = ${JSON.stringify(finalUrl)};
   var targetOrigin = ${JSON.stringify(targetOrigin)};
+  var currentTargetUrl = initialTargetUrl;
+  var isAudioMuted = ${shouldMuteAudio ? "true" : "false"};
+  window.__cyathAudioContexts = [];
+
+  // Audio silencing protocol for preview cards and muted canvases
+  function applyAudioMute(muted) {
+    try {
+      if (muted) {
+        if (window.__cyathAudioContexts) {
+          window.__cyathAudioContexts.forEach(function(ctx) {
+            try { ctx.suspend(); } catch(e) {}
+          });
+        }
+        document.querySelectorAll('audio, video').forEach(function(el) {
+          try {
+            el.muted = true;
+            el.volume = 0;
+            el.pause();
+          } catch(e) {}
+        });
+      }
+    } catch(e) {}
+  }
+
+  // Intercept Web Audio API
+  try {
+    var OrigAC = window.AudioContext || window.webkitAudioContext;
+    if (OrigAC) {
+      var SilencedAudioContext = function(options) {
+        var ctx = new OrigAC(options);
+        window.__cyathAudioContexts.push(ctx);
+        if (isAudioMuted) {
+          try { ctx.suspend(); } catch(e) {}
+          var origResume = ctx.resume;
+          ctx.resume = function() {
+            if (isAudioMuted) return Promise.resolve();
+            return origResume ? origResume.apply(this, arguments) : Promise.resolve();
+          };
+        }
+        return ctx;
+      };
+      SilencedAudioContext.prototype = OrigAC.prototype;
+      window.AudioContext = SilencedAudioContext;
+      if (window.webkitAudioContext) window.webkitAudioContext = SilencedAudioContext;
+    }
+  } catch(e) {}
+
+  // Intercept HTML5 media elements
+  try {
+    var origPlay = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function() {
+      if (isAudioMuted) {
+        this.muted = true;
+        this.volume = 0;
+      }
+      return origPlay.apply(this, arguments);
+    };
+  } catch(e) {}
+
+  // Listen for dynamic audio toggle events from parent frame
+  window.addEventListener('message', function(ev) {
+    if (ev.data && ev.data.type === 'CYATH_SET_AUDIO_MUTED') {
+      isAudioMuted = !!ev.data.muted;
+      applyAudioMute(isAudioMuted);
+    }
+  });
+
+  if (isAudioMuted) {
+    applyAudioMute(true);
+    window.addEventListener('DOMContentLoaded', function() { applyAudioMute(true); });
+    window.addEventListener('load', function() { applyAudioMute(true); });
+  }
 
   function extractTargetUrl(rawUrl) {
-    if (!rawUrl) return targetOrigin;
+    if (!rawUrl) return currentTargetUrl;
     try {
       var u = new URL(rawUrl, window.location.origin);
       if (u.pathname.includes('/api/proxy')) {
@@ -71,7 +205,30 @@ export async function GET(req: NextRequest) {
     return rawUrl;
   }
 
-  // Intercept dynamic Image src assignments (fixes rotating canvas images and food plates)
+  // Helper to route relative and targetOrigin API/asset requests through Cyath proxy (defeats CORS errors)
+  function toProxiedUrl(raw) {
+    if (!raw) return raw;
+    try {
+      var strUrl = typeof raw === 'string' ? raw : raw && raw.url ? raw.url : null;
+      if (!strUrl) return raw;
+      if (strUrl.indexOf('/api/proxy') !== -1) return raw;
+
+      var resolved = new URL(strUrl, currentTargetUrl).href;
+      if (resolved.startsWith('http://') || resolved.startsWith('https://')) {
+        // If the request is for the target website origin or relative path, proxy it
+        if (resolved.startsWith(targetOrigin) || strUrl.startsWith('/')) {
+          var proxied = '/api/proxy?url=' + encodeURIComponent(resolved) + (isAudioMuted ? '&mute=1' : '');
+          if (typeof raw === 'object' && raw instanceof Request) {
+            return new Request(proxied, raw);
+          }
+          return proxied;
+        }
+      }
+    } catch(e) {}
+    return raw;
+  }
+
+  // Intercept dynamic Image src assignments (fixes rotating canvas images and plates)
   try {
     var imgDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
     if (imgDesc && imgDesc.set) {
@@ -89,17 +246,13 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // Intercept window.fetch so relative API calls reach targetOrigin
+  // Intercept window.fetch to route target origin requests through proxy
   var origFetch = window.fetch;
   if (origFetch) {
     window.fetch = function(input, init) {
-      if (typeof input === 'string') {
-        if (input.startsWith('/') && !input.startsWith('//') && !input.startsWith('/api/proxy')) {
-          input = targetOrigin + input;
-        }
-      } else if (input && input.url && input.url.startsWith('/') && !input.url.startsWith('//') && !input.url.startsWith('/api/proxy')) {
-        input = new Request(targetOrigin + input.url, input);
-      }
+      try {
+        input = toProxiedUrl(input);
+      } catch(e) {}
       return origFetch.call(this, input, init);
     };
   }
@@ -107,18 +260,22 @@ export async function GET(req: NextRequest) {
   // Intercept XMLHttpRequest
   var origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url) {
-    if (typeof url === 'string' && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/api/proxy')) {
-      url = targetOrigin + url;
-    }
+    try {
+      if (typeof url === 'string') {
+        url = toProxiedUrl(url);
+      }
+    } catch(e) {}
     return origOpen.apply(this, arguments);
   };
 
   // Notify parent about current page URL and pathname for multi-page pin tagging
   function notifyParentNavigation(url) {
     try {
+      if (!url) url = currentTargetUrl;
+      var cleanUrl = extractTargetUrl(url);
+      var parsed = new URL(cleanUrl, targetOrigin);
+      currentTargetUrl = parsed.href;
       if (window.parent && window.parent !== window) {
-        var cleanUrl = extractTargetUrl(url);
-        var parsed = new URL(cleanUrl, targetOrigin);
         window.parent.postMessage({
           type: 'CYATH_PAGE_NAVIGATED',
           url: parsed.href,
@@ -128,28 +285,32 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
   }
 
-  // Hook history pushState and replaceState WITHOUT mangling the URL passed to client routers
+  // Hook history pushState and replaceState
   var origPushState = history.pushState;
   history.pushState = function(state, title, url) {
-    var res = origPushState.apply(this, arguments);
     if (url) {
-      var fullUrl = new URL(url, targetOrigin).href;
-      notifyParentNavigation(fullUrl);
+      try {
+        var nextTarget = new URL(url, currentTargetUrl).href;
+        currentTargetUrl = nextTarget;
+        notifyParentNavigation(nextTarget);
+      } catch(e) {}
     }
-    return res;
+    return origPushState.apply(this, arguments);
   };
 
   var origReplaceState = history.replaceState;
   history.replaceState = function(state, title, url) {
-    var res = origReplaceState.apply(this, arguments);
     if (url) {
-      var fullUrl = new URL(url, targetOrigin).href;
-      notifyParentNavigation(fullUrl);
+      try {
+        var nextTarget = new URL(url, currentTargetUrl).href;
+        currentTargetUrl = nextTarget;
+        notifyParentNavigation(nextTarget);
+      } catch(e) {}
     }
-    return res;
+    return origReplaceState.apply(this, arguments);
   };
 
-  // Handle standard link clicks for non-SPA links in bubbling phase (does not interfere with Next.js client routing)
+  // Handle standard link clicks
   document.addEventListener('click', function(e) {
     try {
       if (e.defaultPrevented) return;
@@ -157,12 +318,14 @@ export async function GET(req: NextRequest) {
       if (a && a.href) {
         var rawHref = a.getAttribute('href');
         if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('javascript:') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) return;
-        var currentBase = extractTargetUrl(window.location.href);
-        var fullTargetUrl = new URL(rawHref, currentBase).href;
+        if (a.getAttribute('target') === '_blank') return;
+
+        var fullTargetUrl = new URL(rawHref, currentTargetUrl).href;
         if (fullTargetUrl && (fullTargetUrl.startsWith('http://') || fullTargetUrl.startsWith('https://'))) {
           e.preventDefault();
+          currentTargetUrl = fullTargetUrl;
           notifyParentNavigation(fullTargetUrl);
-          window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl);
+          window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl) + (isAudioMuted ? '&mute=1' : '');
         }
       }
     } catch(err) {}
@@ -188,11 +351,11 @@ export async function GET(req: NextRequest) {
 
   window.addEventListener('DOMContentLoaded', function() {
     sendHeight();
-    notifyParentNavigation(window.location.href);
+    notifyParentNavigation(currentTargetUrl);
   });
   window.addEventListener('load', function() {
     sendHeight();
-    notifyParentNavigation(window.location.href);
+    notifyParentNavigation(currentTargetUrl);
   });
   window.addEventListener('resize', sendHeight);
 

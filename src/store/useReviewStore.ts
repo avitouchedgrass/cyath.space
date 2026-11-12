@@ -85,34 +85,36 @@ export const useReviewStore = create<ReviewState>()(
 
       hydrateProject: (project: Project) => {
         set((state) => {
-          const incomingPins = Array.isArray(project.pins) ? project.pins : [];
-          const existingIndex = state.projects.findIndex(
-            (p) => p.shareId === project.shareId || p.id === project.id
+          const currentProjects = Array.isArray(state.projects) ? state.projects.filter(Boolean) : [];
+          const incomingPins = Array.isArray(project.pins) ? project.pins.filter(Boolean) : [];
+          const existingIndex = currentProjects.findIndex(
+            (p) => p && (p.shareId === project.shareId || p.id === project.id)
           );
           if (existingIndex >= 0) {
-            const existing = state.projects[existingIndex];
-            const existingPins = Array.isArray(existing?.pins) ? existing.pins : [];
+            const existing = currentProjects[existingIndex];
+            const existingPins = Array.isArray(existing?.pins) ? existing.pins.filter(Boolean) : [];
             const mergedPins = incomingPins.length > 0 ? incomingPins : existingPins;
             const merged: Project = {
               ...existing,
               ...project,
               targetUrl: project.targetUrl || existing.targetUrl || "",
               title: project.title || existing.title || "Staging Review",
-              agencyName: project.agencyName || existing.agencyName || "Independent Studio",
+              agencyName: project.agencyName || existing.agencyName || "Independent Firm",
               assetType: project.assetType || existing.assetType || "url",
               pins: mergedPins,
             };
-            const updated = [...state.projects];
+            const updated = [...currentProjects];
             updated[existingIndex] = merged;
             syncCanvasToServer(merged);
             return { projects: updated };
           }
           const sanitizedProject: Project = {
             ...project,
+            agencyName: project.agencyName || "Independent Firm",
             pins: incomingPins,
           };
           syncCanvasToServer(sanitizedProject);
-          return { projects: [sanitizedProject, ...state.projects] };
+          return { projects: [sanitizedProject, ...currentProjects] };
         });
       },
 
@@ -305,15 +307,20 @@ export const useReviewStore = create<ReviewState>()(
       name: "cyath_staging_store",
       onRehydrateStorage: () => (state) => {
         if (state && Array.isArray(state.projects)) {
-          state.projects = state.projects.map((p) => ({
-            ...p,
-            pins: (Array.isArray(p.pins) ? p.pins : []).map((pin) => ({
-              ...pin,
-              comments: Array.isArray(pin.comments) ? pin.comments : [],
-              telemetry: pin.telemetry || {},
-              deviceMode: pin.deviceMode || "desktop",
-            })),
-          }));
+          state.projects = state.projects
+            .filter(Boolean)
+            .map((p) => ({
+              ...p,
+              agencyName: p?.agencyName || "Independent Firm",
+              pins: (Array.isArray(p?.pins) ? p.pins : [])
+                .filter(Boolean)
+                .map((pin) => ({
+                  ...pin,
+                  comments: (Array.isArray(pin?.comments) ? pin.comments : []).filter(Boolean),
+                  telemetry: pin?.telemetry || {},
+                  deviceMode: pin?.deviceMode || "desktop",
+                })),
+            }));
         }
       },
     }

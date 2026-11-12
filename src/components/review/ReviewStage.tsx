@@ -15,6 +15,7 @@ interface ReviewStageProps {
   activePinId: string | null;
   clientAuthorName: string;
   currentPageUrl?: string;
+  isAudioMuted?: boolean;
   onPageNavigated?: (url: string) => void;
   onSelectPin: (pinId: string | null) => void;
   onAddPin: (xPercent: number, yPercent: number, comment: string, authorName: string, pageUrl?: string) => void;
@@ -30,6 +31,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   activePinId,
   clientAuthorName,
   currentPageUrl: externalPageUrl,
+  isAudioMuted = true,
   onPageNavigated,
   onSelectPin,
   onAddPin,
@@ -46,12 +48,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const [localPageUrl, setLocalPageUrl] = useState<string>(project.targetUrl || "");
   const currentPageUrl = externalPageUrl || localPageUrl;
 
-  const allPins = Array.isArray(project?.pins) ? project.pins : [];
+  const allPins = Array.isArray(project?.pins) ? project.pins.filter(Boolean) : [];
 
   // Auto-scroll viewport to pin when activePinId changes
   useEffect(() => {
     if (!activePinId || !scrollViewportRef.current || !containerRef.current) return;
-    const pin = allPins.find((p) => p.id === activePinId);
+    const pin = allPins.find((p) => p && p.id === activePinId);
     if (!pin) return;
 
     const containerHeight = containerRef.current.scrollHeight || containerRef.current.clientHeight;
@@ -66,6 +68,18 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       behavior: "smooth",
     });
   }, [activePinId, allPins]);
+
+  // Synchronize audio mute state with child proxy iframe
+  useEffect(() => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          { type: "CYATH_SET_AUDIO_MUTED", muted: isAudioMuted },
+          "*"
+        );
+      } catch {}
+    }
+  }, [isAudioMuted]);
 
   // Listen to height and page navigation messages from proxy iframe bridge
   useEffect(() => {
@@ -117,18 +131,17 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   // Strictly filter pins for the active device viewport AND current subpage
   const currentStagePageLabel = formatPageLabel(currentPageUrl);
   const activeDevicePins = allPins.filter((p) => {
-    // 1. Device match (desktop and full share pins, mobile and tablet are isolated)
+    if (!p) return false;
     const deviceMatch =
       p.deviceMode === deviceMode ||
       (deviceMode === "full" && p.deviceMode === "desktop") ||
       (deviceMode === "desktop" && p.deviceMode === "full");
     if (!deviceMatch) return false;
 
-    // 2. Subpage isolation: Pin must belong to the active subpage
     const pinPageLabel = formatPageLabel(p.pageUrl);
     return pinPageLabel === currentStagePageLabel;
   });
-  const activePin = activeDevicePins.find((p) => p.id === activePinId);
+  const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
 
   const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));
   const stageMinHeight = isWebUrl ? `${frameHeight}px` : project.assetType === "pdf" ? "850px" : "auto";
@@ -137,17 +150,23 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   return (
     <div
-      className={`flex-1 bg-[#000000] overflow-auto ${
+      className={`flex-1 bg-[#000000] overflow-auto flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black transition-[padding] duration-500 ease-in-out ${
         isFullMode ? "p-0" : "p-4 sm:p-8"
-      } flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black`}
+      }`}
     >
       <div
-        className={`${getFrameWidthClass()} transition-all duration-300 ease-in-out flex flex-col ${
-          isFullMode ? "rounded-none border-none shadow-none" : "rounded-xl border border-white/[0.08] shadow-2xl"
+        className={`${getFrameWidthClass()} transition-all duration-500 ease-in-out flex flex-col ${
+          isFullMode
+            ? "rounded-none border-transparent shadow-none"
+            : "rounded-xl border border-white/[0.08] shadow-2xl"
         } bg-[#0a0a0a] relative`}
       >
-        {/* Architectural Browser Chrome (Hidden in Full Mode for pure edge-to-edge immersion) */}
-        {!isFullMode && (
+        {/* Architectural Browser Chrome (Smooth animated collapse when entering Full Mode) */}
+        <div
+          className={`transition-all duration-500 ease-in-out overflow-hidden ${
+            isFullMode ? "max-h-0 opacity-0 pointer-events-none" : "max-h-10 opacity-100"
+          }`}
+        >
           <div className="h-10 bg-[#050505] border-b border-white/[0.08] px-4 flex items-center justify-between select-none shrink-0">
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-white/20" />
@@ -180,14 +199,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               <span>{activeDevicePins.length} pins</span>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Viewport Frame Container with Scroll Anchoring */}
+        {/* Viewport Frame Container with Scroll Anchoring & Animated Height Scaling */}
         <div
           ref={scrollViewportRef}
-          className={`w-full overflow-y-auto ${
+          className={`w-full overflow-y-auto bg-white relative transition-all duration-500 ease-in-out ${
             isFullMode ? "h-[calc(100vh-3.5rem)]" : "max-h-[calc(100vh-9.5rem)]"
-          } bg-white relative ${
+          } ${
             interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
           }`}
         >
@@ -216,13 +235,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 ref={iframeRef}
                 src={
                   project.targetUrl?.startsWith("http://") || project.targetUrl?.startsWith("https://")
-                    ? `/api/proxy?url=${encodeURIComponent(project.targetUrl)}`
+                    ? `/api/proxy?url=${encodeURIComponent(project.targetUrl)}${isAudioMuted ? "&mute=1" : ""}`
                     : project.targetUrl
                 }
                 title={project.title}
                 className="w-full border-none select-none block"
                 style={{ height: `${frameHeight}px`, minHeight: "800px" }}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-presentation"
+                allow="camera 'none'; microphone 'none'"
               />
             )}
 
@@ -249,24 +269,25 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             {/* Pending New Pin Popover */}
             {pendingPinCoords && (
               <PinPopover
-                isNew
-                deviceMode={deviceMode}
                 xPercent={pendingPinCoords.xPercent}
                 yPercent={pendingPinCoords.yPercent}
+                isNew={true}
                 authorName={clientAuthorName}
+                deviceMode={deviceMode}
                 onSaveNewPin={handleSaveNewPin}
                 onClose={() => setPendingPinCoords(null)}
               />
             )}
 
-            {/* Active Pin Popover Thread */}
+            {/* Active Existing Pin Thread Popover */}
             {activePin && (
               <PinPopover
                 pin={activePin}
-                deviceMode={deviceMode}
                 xPercent={activePin.xPercent}
                 yPercent={activePin.yPercent}
+                isNew={false}
                 authorName={clientAuthorName}
+                deviceMode={deviceMode}
                 onAddComment={onAddComment}
                 onToggleResolve={onToggleResolve}
                 onDeletePin={onDeletePin}
