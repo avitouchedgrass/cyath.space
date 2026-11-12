@@ -1274,8 +1274,8 @@ html[data-theme="day"] .animated-dashed-border rect {
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
   margin-top: 48px;
 }
 
@@ -1402,7 +1402,7 @@ html[data-theme="day"] .animated-dashed-border rect {
   color: var(--text-primary);
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1080px) {
   .section-grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -1860,6 +1860,23 @@ html.over-pin-demo .fluid-cursor,
         </ul>
       </div>
       <a href="/login" target="_top" class="btn-primary" style="text-align: center; justify-content: center;">Upgrade to Pro</a>
+    </div>
+
+    <div class="price-card">
+      <div>
+        <div class="price-tier-name">ENTERPRISE</div>
+        <div class="price-figure">Custom</div>
+        <div class="price-period">Flexible deployment for engineering teams.</div>
+        <p class="price-desc">For design engineering orgs and agencies requiring multiple team seats, shared review workspaces, and dedicated agent pipelines.</p>
+        <ul class="price-features">
+          <li class="price-feature-item"><span class="bullet-dash">—</span> <strong>Multi-Seat Team Workspaces</strong> with role-based permissions</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Dedicated MCP API endpoints with custom rate limits</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Centralized team billing & pooled review bandwidth</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Custom domain staging canvases & white-label reviews</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Priority 24/7 engineering SLA & custom onboarding</li>
+        </ul>
+      </div>
+      <a href="mailto:avitouchedgrass@gmail.com?subject=Cyath%20Enterprise%20Tier%20Inquiry&amp;body=Hi%20there%2C%0A%0AWe%20are%20interested%20in%20the%20Cyath%20Enterprise%20tier%20for%20our%20team.%20We%20would%20like%20to%20learn%20more%20about%20team%20seat%20allocations%2C%20MCP%20agent%20integrations%2C%20and%20shared%20workspaces.%0A%0ACompany%20Name%3A%20%0ATeam%20Size%3A%20%0AEstimated%20Active%20Projects%3A%20%0A%0AThanks!" target="_top" class="btn-free-tier">Enquire</a>
     </div>
   </div>
 </section>
