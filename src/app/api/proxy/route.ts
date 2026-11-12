@@ -115,7 +115,10 @@ export async function GET(req: NextRequest) {
     const muteParam = req.nextUrl.searchParams.get("mute");
     const shouldMuteAudio = muteParam === "1" || muteParam === "true";
 
-    const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">`;
+    const hasViewport = /<meta[^>]*name=["']viewport["'][^>]*>/i.test(html);
+    const viewportMetaTag = hasViewport ? "" : '\n  <meta name="viewport" content="width=device-width, initial-scale=1">';
+
+    const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">${viewportMetaTag}`;
     const bridgeScript = `<script id="cyath-staging-bridge">
 (function() {
   var initialTargetUrl = ${JSON.stringify(finalUrl)};
@@ -331,22 +334,31 @@ export async function GET(req: NextRequest) {
     } catch(err) {}
   }, false);
 
-  // Dynamic stage height synchronizer
+  // Dynamic stage height synchronizer with anti-runaway clamping & debouncing
+  var lastSentHeight = 0;
+  var resizeDebounceTimer = null;
+
   function sendHeight() {
-    try {
-      var body = document.body;
-      var doc = document.documentElement;
-      var height = Math.max(
-        body ? body.scrollHeight : 0,
-        body ? body.offsetHeight : 0,
-        doc ? doc.clientHeight : 0,
-        doc ? doc.scrollHeight : 0,
-        doc ? doc.offsetHeight : 0
-      );
-      if (height > 200 && window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'CYATH_STAGE_RESIZE', height: height }, '*');
-      }
-    } catch(e) {}
+    if (resizeDebounceTimer) clearTimeout(resizeDebounceTimer);
+    resizeDebounceTimer = setTimeout(function() {
+      try {
+        var body = document.body;
+        var doc = document.documentElement;
+        if (!body && !doc) return;
+        // Only measure scrollHeight and body offsetHeight; avoid doc.clientHeight/doc.offsetHeight
+        // which match the iframe window size and create an irreversible upward growth loop
+        var rawHeight = Math.max(
+          body ? body.scrollHeight : 0,
+          doc ? doc.scrollHeight : 0,
+          body ? body.offsetHeight : 0
+        );
+        var height = Math.min(12000, Math.max(800, rawHeight));
+        if (Math.abs(height - lastSentHeight) > 30 && window.parent && window.parent !== window) {
+          lastSentHeight = height;
+          window.parent.postMessage({ type: 'CYATH_STAGE_RESIZE', height: height }, '*');
+        }
+      } catch(e) {}
+    }, 120);
   }
 
   window.addEventListener('DOMContentLoaded', function() {

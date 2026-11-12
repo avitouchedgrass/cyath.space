@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Check, Send, Trash2 } from "lucide-react";
+import { X, Check, Send, Trash2, Copy } from "lucide-react";
 import { Pin } from "@/types";
 
 interface PinPopoverProps {
@@ -34,6 +34,40 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   const [commentText, setCommentText] = useState("");
   const [name, setName] = useState(initialAuthorName || "Guest Reviewer");
   const [replyText, setReplyText] = useState("");
+  const [copiedIssue, setCopiedIssue] = useState(false);
+
+  const handleCopyIssue = () => {
+    if (!pin) return;
+    const firstComment = pin.comments?.[0]?.content || "No feedback content.";
+    const extraComments = (pin.comments?.slice(1) || [])
+      .map((c) => `- **${c.authorName || "Reviewer"}**: ${c.content}`)
+      .join("\n");
+
+    const text = [
+      `### [Cyath Pin #${pin.number}] ${firstComment.slice(0, 80)}${firstComment.length > 80 ? "..." : ""}`,
+      "",
+      `- **Status:** ${pin.status === "resolved" ? "Resolved" : "Open"}`,
+      `- **Page:** \`${pin.pageUrl || "/"}\``,
+      `- **Viewport:** ${pin.deviceMode || deviceMode} (${pin.telemetry?.viewportWidth || 1440}×${pin.telemetry?.viewportHeight || 900})`,
+      `- **Browser:** ${pin.telemetry?.browser || "Browser"}`,
+      `- **Coordinates:** ${pin.xPercent.toFixed(1)}% X, ${pin.yPercent.toFixed(1)}% Y`,
+      "",
+      "#### Feedback",
+      firstComment,
+      extraComments ? `\n#### Discussion\n${extraComments}` : "",
+      "",
+      "---",
+      "*Captured via [Cyath](https://cyath-space.vercel.app)*",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedIssue(true);
+      setTimeout(() => setCopiedIssue(false), 2000);
+    }
+  };
 
   useEffect(() => {
     setName(initialAuthorName || "Guest Reviewer");
@@ -124,6 +158,20 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
         </div>
 
         <div className="flex items-center gap-1">
+          {!isNew && pin && (
+            <button
+              onClick={handleCopyIssue}
+              className={`p-1 rounded text-xs transition-colors flex items-center gap-1 cursor-pointer ${
+                copiedIssue
+                  ? "bg-white/20 text-white"
+                  : "text-zinc-500 hover:text-white hover:bg-white/10"
+              }`}
+              title={copiedIssue ? "Copied Markdown to clipboard!" : "Copy for GitHub / Linear"}
+            >
+              <Copy className="w-3.5 h-3.5" />
+            </button>
+          )}
+
           {!isNew && pin && onToggleResolve && (
             <button
               onClick={() => onToggleResolve(pin.id)}

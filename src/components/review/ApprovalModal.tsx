@@ -28,7 +28,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ project, onApprove
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200 selection:bg-white selection:text-black font-sans">
       <div className="w-full max-w-lg bg-[#070709] border border-white/20 rounded-2xl shadow-[0_25px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(255,255,255,0.06)] overflow-hidden flex flex-col relative text-white animate-in zoom-in-[0.98] duration-200">
-        
+
         {/* Certificate Top Header */}
         <div className="h-12 border-b border-white/15 px-6 flex items-center justify-between select-none bg-black">
           <div className="flex items-center gap-2">

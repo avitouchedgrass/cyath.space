@@ -85,10 +85,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "CYATH_STAGE_RESIZE" && typeof event.data.height === "number") {
-        setFrameHeight(Math.max(800, event.data.height));
+        const clamped = Math.min(12000, Math.max(800, Math.round(event.data.height)));
+        setFrameHeight(clamped);
       }
       if (event.data?.type === "CYATH_PAGE_NAVIGATED" && typeof event.data.url === "string") {
         setLocalPageUrl(event.data.url);
+        setFrameHeight(900);
         onPageNavigated?.(event.data.url);
       }
     };
@@ -144,9 +146,14 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
 
   const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));
-  const stageMinHeight = isWebUrl ? `${frameHeight}px` : project.assetType === "pdf" ? "850px" : "auto";
-
   const isFullMode = deviceMode === "full";
+  const stageMinHeight = isFullMode
+    ? "calc(100vh - 3.5rem)"
+    : isWebUrl
+    ? `${frameHeight}px`
+    : project.assetType === "pdf"
+    ? "850px"
+    : "auto";
 
   return (
     <div
@@ -204,7 +211,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         {/* Viewport Frame Container with Scroll Anchoring & Animated Height Scaling */}
         <div
           ref={scrollViewportRef}
-          className={`w-full overflow-y-auto bg-white relative transition-all duration-500 ease-in-out ${
+          className={`w-full overflow-y-auto overflow-x-hidden bg-white relative transition-all duration-300 ease-in-out ${
             isFullMode ? "h-[calc(100vh-3.5rem)]" : "max-h-[calc(100vh-9.5rem)]"
           } ${
             interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
@@ -214,7 +221,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           <div
             ref={containerRef}
             onClick={handleStageClick}
-            className="relative w-full"
+            className="relative w-full max-w-full overflow-x-hidden"
             style={{ minHeight: stageMinHeight }}
           >
             {/* Content renderer based on assetType */}
@@ -239,8 +246,11 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                     : project.targetUrl
                 }
                 title={project.title}
-                className="w-full border-none select-none block"
-                style={{ height: `${frameHeight}px`, minHeight: "800px" }}
+                className="w-full border-none select-none block max-w-full"
+                style={{
+                  height: isFullMode ? `${Math.max(frameHeight, 800)}px` : `${frameHeight}px`,
+                  minHeight: isFullMode ? "calc(100vh - 3.5rem)" : "800px",
+                }}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-presentation"
                 allow="camera 'none'; microphone 'none'"
               />

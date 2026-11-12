@@ -166,9 +166,8 @@ function AuthConfirmContent() {
 
   return (
     <div
-      className={`relative min-h-screen w-full flex flex-col transition-colors duration-300 font-sans selection:bg-[#38BDF8]/20 ${
-        isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-[#141312] text-[#F3F1EC]"
-      }`}
+      className={`relative min-h-screen w-full flex flex-col transition-colors duration-300 font-sans selection:bg-[#38BDF8]/20 ${isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-[#141312] text-[#F3F1EC]"
+        }`}
     >
       {/* Precision Drafting Grid Pattern */}
       <div
@@ -193,11 +192,10 @@ function AuthConfirmContent() {
           <button
             onClick={toggleTheme}
             title={isDay ? "Switch to Night Mode" : "Switch to Day Mode"}
-            className={`p-2 rounded-full border transition-colors flex items-center justify-center cursor-pointer ${
-              isDay
-                ? "border-black/15 bg-white/70 hover:bg-white text-black shadow-sm"
-                : "border-white/15 bg-white/5 hover:bg-white/10 text-white"
-            }`}
+            className={`p-2 rounded-full border transition-colors flex items-center justify-center cursor-pointer ${isDay
+              ? "border-black/15 bg-white/70 hover:bg-white text-black shadow-sm"
+              : "border-white/15 bg-white/5 hover:bg-white/10 text-white"
+              }`}
           >
             {isDay ? <Moon className="w-4 h-4 text-[#1C1A18]" /> : <Sun className="w-4 h-4 text-white" />}
           </button>
@@ -207,18 +205,16 @@ function AuthConfirmContent() {
       {/* Main Content Area */}
       <main className="relative z-10 flex-1 flex items-center justify-center p-6 sm:p-10">
         <div
-          className={`w-full max-w-[440px] rounded-2xl border p-8 sm:p-10 text-center shadow-xl backdrop-blur-md transition-all ${
-            isDay
-              ? "bg-[#FAF8F2]/90 border-black/15 shadow-[0_20px_50px_rgba(28,26,24,0.06)]"
-              : "bg-[#1B1A18]/90 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
-          }`}
+          className={`w-full max-w-[440px] rounded-2xl border p-8 sm:p-10 text-center shadow-xl backdrop-blur-md transition-all ${isDay
+            ? "bg-[#FAF8F2]/90 border-black/15 shadow-[0_20px_50px_rgba(28,26,24,0.06)]"
+            : "bg-[#1B1A18]/90 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+            }`}
         >
           {status === "verifying" && (
             <div className="py-8 space-y-4">
               <div
-                className={`w-12 h-12 mx-auto rounded-full border-2 border-t-transparent animate-spin ${
-                  isDay ? "border-black/20 border-t-black" : "border-white/20 border-t-white"
-                }`}
+                className={`w-12 h-12 mx-auto rounded-full border-2 border-t-transparent animate-spin ${isDay ? "border-black/20 border-t-black" : "border-white/20 border-t-white"
+                  }`}
               />
               <h2 className="text-xl font-normal font-serif tracking-tight">
                 Verifying Studio Credentials
@@ -247,9 +243,8 @@ function AuthConfirmContent() {
               </div>
 
               <div
-                className={`p-4 rounded-xl border text-left space-y-2 ${
-                  isDay ? "bg-white/80 border-black/10" : "bg-black/30 border-white/10"
-                }`}
+                className={`p-4 rounded-xl border text-left space-y-2 ${isDay ? "bg-white/80 border-black/10" : "bg-black/30 border-white/10"
+                  }`}
               >
                 <div className="flex items-start gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-white/80 mt-1.5 shrink-0" />
@@ -268,11 +263,10 @@ function AuthConfirmContent() {
               <div className="pt-2">
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className={`w-full py-2.5 px-4 rounded-xl text-xs font-medium border transition-colors flex items-center justify-center gap-2 cursor-pointer ${
-                    isDay
-                      ? "border-black/15 hover:bg-black/5 text-[#1C1A18]"
-                      : "border-white/15 hover:bg-white/5 text-white"
-                  }`}
+                  className={`w-full py-2.5 px-4 rounded-xl text-xs font-medium border transition-colors flex items-center justify-center gap-2 cursor-pointer ${isDay
+                    ? "border-black/15 hover:bg-black/5 text-[#1C1A18]"
+                    : "border-white/15 hover:bg-white/5 text-white"
+                    }`}
                 >
                   <span>Continue in this window instead</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -299,11 +293,10 @@ function AuthConfirmContent() {
               <div className="pt-2">
                 <Link
                   href="/login"
-                  className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-medium cursor-pointer ${
-                    isDay
-                      ? "bg-[#1C1A18] text-white hover:bg-black"
-                      : "bg-white text-[#141312] hover:bg-white/90"
-                  }`}
+                  className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-medium cursor-pointer ${isDay
+                    ? "bg-[#1C1A18] text-white hover:bg-black"
+                    : "bg-white text-[#141312] hover:bg-white/90"
+                    }`}
                 >
                   <span>Back to Sign In</span>
                   <ArrowRight className="w-3.5 h-3.5" />
