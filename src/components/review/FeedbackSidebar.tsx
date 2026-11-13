@@ -340,7 +340,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 {/* Subpage Identification Tag */}
                 <div className="mb-2">
                   <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[9px] font-mono border ${pagePalette.bg} ${pagePalette.border} ${pagePalette.text}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${palette.dot}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${pagePalette.dot}`} />
                     <span className="truncate max-w-[180px]">{pageLabel}</span>
                   </div>
                 </div>
@@ -363,6 +363,5 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         )}
       </div>
     </aside>
-  );
   );
 };

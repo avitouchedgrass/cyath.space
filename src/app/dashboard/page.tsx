@@ -556,7 +556,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => {
                   if (!isUserPro && userProjects.length >= 1) {
-                    setShowUpgradeModal(true);
+                    router.push("/pro");
                   } else {
                     setShowCreateModal(true);
                   }

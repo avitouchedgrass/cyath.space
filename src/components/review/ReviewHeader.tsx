@@ -314,5 +314,4 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
       </div>
     </header>
   );
-  );
 };
