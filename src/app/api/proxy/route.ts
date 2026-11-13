@@ -125,6 +125,8 @@ export async function GET(req: NextRequest) {
   var targetOrigin = ${JSON.stringify(targetOrigin)};
   var currentTargetUrl = initialTargetUrl;
   var isAudioMuted = ${shouldMuteAudio ? "true" : "false"};
+  // Fix SPA router 404: correct pathname before client-side router boots
+  try { history.replaceState(null, '', ${JSON.stringify(new URL(finalUrl).pathname || "/")}); } catch(e) {}
   window.__cyathAudioContexts = [];
 
   // Synchronize location pathname for client-side routers (React Router, Next.js, Vue Router)

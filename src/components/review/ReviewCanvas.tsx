@@ -418,7 +418,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
 
   return (
     <div
-      className={`min-h-screen flex flex-col transition-colors duration-200 selection:bg-stone-300 selection:text-black relative ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
+      className={`h-screen flex flex-col transition-colors duration-200 selection:bg-stone-300 selection:text-black relative overflow-hidden ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
         }`}
     >
       {/* Top Controls */}

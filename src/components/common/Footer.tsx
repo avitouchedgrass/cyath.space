@@ -90,6 +90,20 @@ export const Footer: React.FC<FooterProps> = ({ onOpenGuide, className = "", the
           >
             Settings
           </Link>
+          <Link
+            href="/privacy"
+            prefetch={true}
+            className={`transition-colors ${isDay ? "text-stone-600 hover:text-stone-950" : "text-zinc-400 hover:text-white"}`}
+          >
+            Privacy
+          </Link>
+          <Link
+            href="/terms"
+            prefetch={true}
+            className={`transition-colors ${isDay ? "text-stone-600 hover:text-stone-950" : "text-zinc-400 hover:text-white"}`}
+          >
+            Terms
+          </Link>
           {onOpenGuide ? (
             <button
               onClick={onOpenGuide}

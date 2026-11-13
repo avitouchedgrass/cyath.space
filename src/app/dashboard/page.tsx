@@ -555,7 +555,8 @@ export default function DashboardPage() {
 
               <button
                 onClick={() => {
-                  if (!isUserPro && userProjects.length >= 1) {
+                  const userWebCanvases = userProjects.filter((p) => p.assetType === "url" || (!p.assetType && p.targetUrl?.startsWith("http")));
+                  if (!isUserPro && userWebCanvases.length >= 1) {
                     router.push("/pro");
                   } else {
                     setShowCreateModal(true);
