@@ -11,9 +11,9 @@ function syncCanvasToServer(project: Project) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(project),
-      }).catch(() => {});
+      }).catch(() => { });
     }
-  } catch {}
+  } catch { }
 }
 
 interface ReviewState {
@@ -23,6 +23,7 @@ interface ReviewState {
   interactionMode: InteractionMode;
   clientAuthorName: string;
   isPro: boolean;
+  proCancelled: boolean;
 
   // Actions
   createProject: (
@@ -56,6 +57,7 @@ interface ReviewState {
   toggleResolvePin: (projectId: string, pinId: string, resolvedBy?: string) => void;
   approveProject: (projectId: string, approverName: string, organization?: string) => void;
   activatePro: () => void;
+  cancelPro: () => void;
   setActivePinId: (pinId: string | null) => void;
   setActiveDeviceMode: (mode: DeviceMode) => void;
   setInteractionMode: (mode: InteractionMode) => void;
@@ -71,6 +73,7 @@ export const useReviewStore = create<ReviewState>()(
       interactionMode: "comment",
       clientAuthorName: "Guest Reviewer",
       isPro: false,
+      proCancelled: false,
 
       createProject: (
         title,
@@ -308,9 +311,18 @@ export const useReviewStore = create<ReviewState>()(
       },
 
       activatePro: () => {
-        set({ isPro: true });
+        set({ isPro: true, proCancelled: false });
         if (typeof window !== "undefined") {
           localStorage.setItem("cyath_pro_member", "true");
+          localStorage.removeItem("cyath_pro_cancelled");
+        }
+      },
+
+      cancelPro: () => {
+        set({ isPro: false, proCancelled: true });
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cyath_pro_member");
+          localStorage.setItem("cyath_pro_cancelled", "true");
         }
       },
 
@@ -322,6 +334,17 @@ export const useReviewStore = create<ReviewState>()(
     {
       name: "cyath_staging_store",
       onRehydrateStorage: () => (state) => {
+        if (state) {
+          if (typeof window !== "undefined") {
+            if (localStorage.getItem("cyath_pro_cancelled") === "true") {
+              state.proCancelled = true;
+              state.isPro = false;
+            } else if (localStorage.getItem("cyath_pro_member") === "true") {
+              state.isPro = true;
+              state.proCancelled = false;
+            }
+          }
+        }
         if (state && Array.isArray(state.projects)) {
           state.projects = state.projects
             .filter(Boolean)

@@ -127,6 +127,16 @@ export async function GET(req: NextRequest) {
   var isAudioMuted = ${shouldMuteAudio ? "true" : "false"};
   window.__cyathAudioContexts = [];
 
+  // Synchronize location pathname for client-side routers (React Router, Next.js, Vue Router)
+  // Prevents SPAs (like shivayur.com) from falling into a 404 catch-all route when seeing /api/proxy
+  try {
+    var targetUrlObj = new URL(initialTargetUrl);
+    var targetPath = (targetUrlObj.pathname || '/') + (targetUrlObj.search || '') + (targetUrlObj.hash || '');
+    if (window.location.pathname.indexOf('/api/proxy') !== -1) {
+      history.replaceState(null, '', targetPath);
+    }
+  } catch(e) {}
+
   // Audio silencing protocol for preview cards and muted canvases
   function applyAudioMute(muted) {
     try {

@@ -76,8 +76,32 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
+    if (typeof window !== "undefined") {
+      const isGuest = localStorage.getItem("cyath_guest_session") === "true";
+      const hasAuth = localStorage.getItem("cyath_auth_active") === "true";
+      let hasSbToken = false;
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.startsWith("sb-") && key.endsWith("-auth-token"))) {
+            const raw = localStorage.getItem(key);
+            if (raw && raw.length > 20) {
+              hasSbToken = true;
+              break;
+            }
+          }
+        }
+      } catch { }
+
+      if (isGuest || hasAuth || hasSbToken) {
+        router.replace("/dashboard");
+        return;
+      }
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
         router.replace("/dashboard");
       }
     });
@@ -94,6 +118,7 @@ export default function LoginPage() {
       isDone = true;
       setVerifiedSuccess(true);
       setTimeout(() => {
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
         router.push("/dashboard");
         router.refresh();
       }, 1200);
@@ -207,6 +232,7 @@ export default function LoginPage() {
           return;
         }
 
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
         router.push("/dashboard");
         router.refresh();
       } else {
@@ -248,6 +274,7 @@ export default function LoginPage() {
                 });
 
                 if (!signInErr) {
+                  try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
                   router.push("/dashboard");
                   router.refresh();
                   return;
@@ -263,6 +290,7 @@ export default function LoginPage() {
         }
 
         if (data.session) {
+          try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
           router.push("/dashboard");
           router.refresh();
         } else {
@@ -329,9 +357,8 @@ export default function LoginPage() {
 
   return (
     <div
-      className={`min-h-screen relative flex flex-col justify-between selection:bg-[#F59E0B] selection:text-[#09090B] overflow-x-hidden ${
-        isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-black text-[#FAFAFA]"
-      }`}
+      className={`min-h-screen relative flex flex-col justify-between selection:bg-[#F59E0B] selection:text-[#09090B] overflow-x-hidden ${isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-black text-[#FAFAFA]"
+        }`}
       style={{
         fontFamily: "'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
@@ -354,11 +381,10 @@ export default function LoginPage() {
           <button
             onClick={toggleTheme}
             title={`Switch to ${isDay ? "Night" : "Day"} mode`}
-            className={`inline-flex items-center justify-center p-2 rounded-full border transition-colors cursor-pointer ${
-              isDay
+            className={`inline-flex items-center justify-center p-2 rounded-full border transition-colors cursor-pointer ${isDay
                 ? "border-black/15 bg-white/70 hover:bg-white text-[#1C1A18] shadow-sm"
                 : "border-white/15 bg-black/40 hover:bg-black/70 text-zinc-300 hover:text-white shadow-sm"
-            }`}
+              }`}
           >
             {isDay ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -367,11 +393,10 @@ export default function LoginPage() {
           <Link
             href="/"
             title="Close"
-            className={`p-2 rounded-full border transition-colors flex items-center justify-center cursor-pointer ${
-              isDay
+            className={`p-2 rounded-full border transition-colors flex items-center justify-center cursor-pointer ${isDay
                 ? "border-black/15 bg-white/70 hover:bg-white text-black shadow-sm"
                 : "border-white/15 bg-black/40 hover:bg-black/70 text-white shadow-sm"
-            }`}
+              }`}
           >
             <X className="w-4 h-4" />
           </Link>
@@ -381,11 +406,10 @@ export default function LoginPage() {
       {/* 3. Main Body: Card shifted further left, with generous solid-background buffer avoiding dither */}
       <main className="relative z-10 flex-1 flex items-center justify-center lg:justify-end px-6 sm:px-12 lg:pr-72 xl:pr-80 py-8 pointer-events-none">
         <div
-          className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto ${
-            isDay
+          className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto ${isDay
               ? "bg-[#EBE7DC] border border-black/15 shadow-black/5 text-[#1C1A18]"
               : "bg-[#0a0a0a] border border-white/10 shadow-black/90 text-[#FAFAFA]"
-          }`}
+            }`}
         >
           {awaitingEmail ? (
             verifiedSuccess ? (
@@ -423,25 +447,22 @@ export default function LoginPage() {
                 </div>
 
                 <div
-                  className={`p-3.5 rounded-xl border font-mono text-xs text-center truncate ${
-                    isDay
+                  className={`p-3.5 rounded-xl border font-mono text-xs text-center truncate ${isDay
                       ? "bg-white/80 border-black/15 text-[#1C1A18]"
                       : "bg-black/40 border-white/10 text-[#38BDF8]"
-                  }`}
+                    }`}
                 >
                   {awaitingEmail}
                 </div>
 
                 {/* Real-time synchronization signal card */}
                 <div
-                  className={`p-4 rounded-xl border space-y-1.5 text-left ${
-                    isDay ? "bg-white/60 border-black/10" : "bg-black/30 border-white/10"
-                  }`}
+                  className={`p-4 rounded-xl border space-y-1.5 text-left ${isDay ? "bg-white/60 border-black/10" : "bg-black/30 border-white/10"
+                    }`}
                 >
                   <span
-                    className={`block text-[11px] font-mono tracking-wide ${
-                      isDay ? "text-zinc-700 font-medium" : "text-zinc-300 font-medium"
-                    }`}
+                    className={`block text-[11px] font-mono tracking-wide ${isDay ? "text-zinc-700 font-medium" : "text-zinc-300 font-medium"
+                      }`}
                   >
                     Listening for email confirmation...
                   </span>
@@ -466,11 +487,10 @@ export default function LoginPage() {
                     type="button"
                     onClick={handleResendVerification}
                     disabled={resendCooldown > 0}
-                    className={`w-full py-2.5 px-4 rounded-lg text-xs font-medium border transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 ${
-                      isDay
+                    className={`w-full py-2.5 px-4 rounded-lg text-xs font-medium border transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 ${isDay
                         ? "border-black/15 bg-white/70 hover:bg-white text-black"
                         : "border-white/15 bg-white/5 hover:bg-white/10 text-white"
-                    }`}
+                      }`}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${resendCooldown > 0 ? "animate-spin" : ""}`} />
                     <span>
@@ -487,9 +507,8 @@ export default function LoginPage() {
                       setErrorMsg(null);
                       setInfoMsg(null);
                     }}
-                    className={`w-full py-2 text-[11px] font-mono underline cursor-pointer text-center ${
-                      isDay ? "text-zinc-600 hover:text-black" : "text-zinc-400 hover:text-white"
-                    }`}
+                    className={`w-full py-2 text-[11px] font-mono underline cursor-pointer text-center ${isDay ? "text-zinc-600 hover:text-black" : "text-zinc-400 hover:text-white"
+                      }`}
                   >
                     Use a different email / Back to Sign In
                   </button>
@@ -515,9 +534,8 @@ export default function LoginPage() {
 
               {/* Segmented Mode Selector */}
               <div
-                className={`grid grid-cols-2 p-1 rounded-xl border mb-5 text-xs font-medium ${
-                  isDay ? "bg-[#DFD9CB] border-black/10" : "bg-black border-white/10"
-                }`}
+                className={`grid grid-cols-2 p-1 rounded-xl border mb-5 text-xs font-medium ${isDay ? "bg-[#DFD9CB] border-black/10" : "bg-black border-white/10"
+                  }`}
               >
                 <button
                   type="button"
@@ -526,15 +544,14 @@ export default function LoginPage() {
                     setErrorMsg(null);
                     setInfoMsg(null);
                   }}
-                  className={`py-2 rounded-lg transition-all font-mono text-xs cursor-pointer ${
-                    mode === "signin"
+                  className={`py-2 rounded-lg transition-all font-mono text-xs cursor-pointer ${mode === "signin"
                       ? isDay
                         ? "bg-white text-black shadow-sm font-bold"
                         : "bg-[#181818] border border-white/10 text-white shadow-sm font-bold"
                       : isDay
-                      ? "text-zinc-600 hover:text-black"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
+                        ? "text-zinc-600 hover:text-black"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
                 >
                   Sign In
                 </button>
@@ -545,15 +562,14 @@ export default function LoginPage() {
                     setErrorMsg(null);
                     setInfoMsg(null);
                   }}
-                  className={`py-2 rounded-lg transition-all font-mono text-xs cursor-pointer ${
-                    mode === "signup"
+                  className={`py-2 rounded-lg transition-all font-mono text-xs cursor-pointer ${mode === "signup"
                       ? isDay
                         ? "bg-white text-black shadow-sm font-bold"
                         : "bg-[#181818] border border-white/10 text-white shadow-sm font-bold"
                       : isDay
-                      ? "text-zinc-600 hover:text-black"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
+                        ? "text-zinc-600 hover:text-black"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
                 >
                   Create Account
                 </button>
@@ -563,11 +579,10 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className={`w-full py-2.5 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2.5 border cursor-pointer mb-4 ${
-                  isDay
+                className={`w-full py-2.5 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2.5 border cursor-pointer mb-4 ${isDay
                     ? "bg-white hover:bg-zinc-50 border-black/15 text-black shadow-sm"
                     : "bg-black hover:bg-[#141414] border-white/10 text-white shadow-sm"
-                }`}
+                  }`}
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -594,9 +609,8 @@ export default function LoginPage() {
               <div className="relative my-4 flex items-center justify-center">
                 <div className={`w-full border-t ${isDay ? "border-black/10" : "border-white/10"}`} />
                 <span
-                  className={`absolute px-2 text-[10px] font-mono uppercase tracking-widest ${
-                    isDay ? "bg-[#EBE7DC] text-zinc-500" : "bg-[#0a0a0a] text-zinc-400"
-                  }`}
+                  className={`absolute px-2 text-[10px] font-mono uppercase tracking-widest ${isDay ? "bg-[#EBE7DC] text-zinc-500" : "bg-[#0a0a0a] text-zinc-400"
+                    }`}
                 >
                   OR
                 </span>
@@ -632,11 +646,10 @@ export default function LoginPage() {
                         value={agencyName}
                         onChange={(e) => setAgencyName(e.target.value)}
                         placeholder="e.g. North Creative Studio"
-                        className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${
-                          isDay
+                        className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${isDay
                             ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
                             : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
-                        }`}
+                          }`}
                       />
                     </div>
                   </div>
@@ -654,11 +667,10 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="designer@agency.com"
-                      className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${
-                        isDay
+                      className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${isDay
                           ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
                           : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
-                      }`}
+                        }`}
                     />
                   </div>
                 </div>
@@ -676,11 +688,10 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${
-                        isDay
+                      className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${isDay
                           ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
                           : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
-                      }`}
+                        }`}
                     />
                   </div>
                 </div>
@@ -688,18 +699,17 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full mt-2 py-2.5 px-4 rounded-lg font-semibold text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-md cursor-pointer ${
-                    isDay
+                  className={`w-full mt-2 py-2.5 px-4 rounded-lg font-semibold text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-md cursor-pointer ${isDay
                       ? "bg-[#1C1A18] hover:bg-black text-white"
                       : "bg-white hover:bg-zinc-200 text-black"
-                  }`}
+                    }`}
                 >
                   <span>
                     {loading
                       ? "Authenticating..."
                       : mode === "signin"
-                      ? "Sign In to Studio"
-                      : "Create Account"}
+                        ? "Sign In to Studio"
+                        : "Create Account"}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -711,9 +721,8 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className={`text-[11px] font-mono underline cursor-pointer transition-colors ${
-                      isDay ? "text-zinc-600 hover:text-black" : "text-zinc-400 hover:text-white"
-                    }`}
+                    className={`text-[11px] font-mono underline cursor-pointer transition-colors ${isDay ? "text-zinc-600 hover:text-black" : "text-zinc-400 hover:text-white"
+                      }`}
                   >
                     Forgot your password?
                   </button>
@@ -727,9 +736,8 @@ export default function LoginPage() {
                         setErrorMsg(null);
                         setInfoMsg(null);
                       }}
-                      className={`underline font-medium cursor-pointer ${
-                        isDay ? "text-black hover:text-zinc-700" : "text-white hover:text-zinc-300"
-                      }`}
+                      className={`underline font-medium cursor-pointer ${isDay ? "text-black hover:text-zinc-700" : "text-white hover:text-zinc-300"
+                        }`}
                     >
                       Sign in here
                     </button>
@@ -745,9 +753,8 @@ export default function LoginPage() {
                       }
                       router.push("/dashboard");
                     }}
-                    className={`text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
-                      isDay ? "text-zinc-500 hover:text-black" : "text-zinc-500 hover:text-white"
-                    }`}
+                    className={`text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1.5 ${isDay ? "text-zinc-500 hover:text-black" : "text-zinc-500 hover:text-white"
+                      }`}
                   >
                     <span>Explore Studio Workbench as Guest</span>
                     <ArrowRight className="w-3 h-3" />

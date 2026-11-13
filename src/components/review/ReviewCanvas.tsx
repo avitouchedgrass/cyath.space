@@ -32,15 +32,37 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
   const [currentPageUrl, setCurrentPageUrl] = useState<string>("");
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
+  const [theme, setTheme] = useState<"night" | "day">("night");
   const hydratedShareIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("cyath_theme") as "night" | "day";
+      if (saved === "day" || saved === "night") {
+        setTheme(saved);
+        document.documentElement.setAttribute("data-theme", saved);
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "night" ? "day" : "night";
+    setTheme(next);
+    localStorage.setItem("cyath_theme", next);
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", next);
+    }
+  };
+
+  const isDay = theme === "day";
 
   const toggleNativeFullscreen = () => {
     if (typeof document === "undefined") return;
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+      document.documentElement.requestFullscreen().catch(() => { });
       setIsNativeFullscreen(true);
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
       setIsNativeFullscreen(false);
     }
   };
@@ -112,12 +134,12 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
       let decodedTitle = titleParam || "Staging Review";
       try {
         if (titleParam) decodedTitle = decodeURIComponent(titleParam);
-      } catch {}
+      } catch { }
 
       let decodedAgency = agencyParam || "Independent Firm";
       try {
         if (agencyParam) decodedAgency = decodeURIComponent(agencyParam);
-      } catch {}
+      } catch { }
 
       hydrateProject({
         id: existing?.id || shareId,
@@ -290,7 +312,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newProj),
-      }).catch(() => {});
+      }).catch(() => { });
 
       // Keep address bar in sync
       const params = new URLSearchParams();
@@ -395,7 +417,10 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
   const isFullMode = activeDeviceMode === "full";
 
   return (
-    <div className="min-h-screen bg-[#000000] flex flex-col text-white selection:bg-white selection:text-black relative">
+    <div
+      className={`min-h-screen flex flex-col transition-colors duration-200 selection:bg-stone-300 selection:text-black relative ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
+        }`}
+    >
       {/* Top Controls */}
       <ReviewHeader
         project={project}
@@ -403,6 +428,8 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
         interactionMode={interactionMode}
         isAudioMuted={isAudioMuted}
         isNativeFullscreen={isNativeFullscreen}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onDeviceChange={setActiveDeviceMode}
         onInteractionModeChange={setInteractionMode}
         onOpenApproval={() => setShowApprovalModal(true)}
@@ -420,6 +447,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
           clientAuthorName={clientAuthorName}
           currentPageUrl={currentPageUrl || project.targetUrl}
           isAudioMuted={isAudioMuted}
+          theme={theme}
           onPageNavigated={setCurrentPageUrl}
           onSelectPin={setActivePinId}
           onAddPin={handleAddPin}
@@ -435,6 +463,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             activePinId={activePinId}
             activeDeviceMode={activeDeviceMode}
             currentPageUrl={currentPageUrl || project.targetUrl}
+            theme={theme}
             onSelectPin={setActivePinId}
             onToggleResolve={handleToggleResolve}
             onDeviceChange={setActiveDeviceMode}
@@ -509,6 +538,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
                 activePinId={activePinId}
                 activeDeviceMode={activeDeviceMode}
                 currentPageUrl={currentPageUrl || project.targetUrl}
+                theme={theme}
                 onSelectPin={setActivePinId}
                 onToggleResolve={handleToggleResolve}
                 onDeviceChange={setActiveDeviceMode}

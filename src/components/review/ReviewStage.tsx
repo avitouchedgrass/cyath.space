@@ -16,6 +16,7 @@ interface ReviewStageProps {
   clientAuthorName: string;
   currentPageUrl?: string;
   isAudioMuted?: boolean;
+  theme?: "day" | "night";
   onPageNavigated?: (url: string) => void;
   onSelectPin: (pinId: string | null) => void;
   onAddPin: (xPercent: number, yPercent: number, comment: string, authorName: string, pageUrl?: string) => void;
@@ -32,6 +33,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   clientAuthorName,
   currentPageUrl: externalPageUrl,
   isAudioMuted = true,
+  theme = "night",
   onPageNavigated,
   onSelectPin,
   onAddPin,
@@ -77,7 +79,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           { type: "CYATH_SET_AUDIO_MUTED", muted: isAudioMuted },
           "*"
         );
-      } catch {}
+      } catch { }
     }
   }, [isAudioMuted]);
 
@@ -150,39 +152,48 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const stageMinHeight = isFullMode
     ? "calc(100vh - 3.5rem)"
     : isWebUrl
-    ? `${frameHeight}px`
-    : project.assetType === "pdf"
-    ? "850px"
-    : "auto";
+      ? `${frameHeight}px`
+      : project.assetType === "pdf"
+        ? "850px"
+        : "auto";
+
+  const isDay = theme === "day";
 
   return (
     <div
-      className={`flex-1 bg-[#000000] overflow-auto flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-white selection:text-black transition-[padding] duration-500 ease-in-out ${
-        isFullMode ? "p-0" : "p-4 sm:p-8"
-      }`}
+      className={`flex-1 overflow-hidden flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-stone-300 selection:text-black transition-all duration-300 ${isDay ? "bg-[#ECE8DE]" : "bg-[#000000]"
+        } ${isFullMode ? "p-0" : "p-3 sm:p-6"}`}
     >
       <div
-        className={`${getFrameWidthClass()} transition-all duration-500 ease-in-out flex flex-col ${
-          isFullMode
+        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${isFullMode
             ? "rounded-none border-transparent shadow-none"
-            : "rounded-xl border border-white/[0.08] shadow-2xl"
-        } bg-[#0a0a0a] relative`}
+            : isDay
+              ? "rounded-2xl border border-stone-300/80 shadow-[0_15px_45px_rgba(0,0,0,0.08)] bg-white"
+              : "rounded-xl border border-white/[0.08] shadow-2xl bg-[#0a0a0a]"
+          } relative`}
       >
         {/* Architectural Browser Chrome (Smooth animated collapse when entering Full Mode) */}
         <div
-          className={`transition-all duration-500 ease-in-out overflow-hidden ${
-            isFullMode ? "max-h-0 opacity-0 pointer-events-none" : "max-h-10 opacity-100"
-          }`}
+          className={`transition-all duration-300 overflow-hidden ${isFullMode ? "max-h-0 opacity-0 pointer-events-none" : "max-h-10 opacity-100"
+            }`}
         >
-          <div className="h-10 bg-[#050505] border-b border-white/[0.08] px-4 flex items-center justify-between select-none shrink-0">
+          <div
+            className={`h-10 border-b px-4 flex items-center justify-between select-none shrink-0 ${isDay ? "bg-[#F5F2EA] border-stone-200" : "bg-[#050505] border-white/[0.08]"
+              }`}
+          >
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-white/20" />
-              <div className="w-2 h-2 rounded-full bg-white/10" />
-              <div className="w-2 h-2 rounded-full bg-white/10" />
+              <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-400" : "bg-white/20"}`} />
+              <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+              <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
             </div>
 
             <div className="flex-1 max-w-sm mx-4 flex items-center justify-center gap-1.5">
-              <div className="bg-[#000000] border border-white/[0.08] rounded-md px-3 py-1 text-center font-mono text-[11px] text-zinc-400 truncate flex-1">
+              <div
+                className={`border rounded-md px-3 py-1 text-center font-mono text-[11px] truncate flex-1 ${isDay
+                    ? "bg-white border-stone-200 text-stone-700 shadow-xs"
+                    : "bg-[#000000] border-white/[0.08] text-zinc-400"
+                  }`}
+              >
                 {currentPageUrl?.startsWith("data:")
                   ? "Uploaded Document (" + (project.assetType || "asset").toUpperCase() + ")"
                   : formatPageLabel(currentPageUrl)}
@@ -192,7 +203,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                   href={currentPageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1 rounded text-zinc-500 hover:text-white hover:bg-white/10 transition-colors"
+                  className={`p-1 rounded transition-colors ${isDay ? "text-stone-500 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-500 hover:text-white hover:bg-white/10"
+                    }`}
                   title="Open live site directly in new tab"
                 >
                   <ExternalLink className="w-3 h-3" />
@@ -200,9 +212,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               )}
             </div>
 
-            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
+            <div
+              className={`text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 ${isDay ? "text-stone-500" : "text-zinc-500"
+                }`}
+            >
               <span>{deviceMode}</span>
-              <span className="text-zinc-700">·</span>
+              <span className={isDay ? "text-stone-300" : "text-zinc-700"}>·</span>
               <span>{activeDevicePins.length} pins</span>
             </div>
           </div>
@@ -211,11 +226,9 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         {/* Viewport Frame Container with Scroll Anchoring & Animated Height Scaling */}
         <div
           ref={scrollViewportRef}
-          className={`w-full overflow-y-auto overflow-x-hidden bg-white relative transition-all duration-300 ease-in-out ${
-            isFullMode ? "h-[calc(100vh-3.5rem)]" : "max-h-[calc(100vh-9.5rem)]"
-          } ${
-            interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
-          }`}
+          className={`w-full overflow-y-auto overflow-x-hidden bg-white relative transition-all duration-300 ease-in-out ${isFullMode ? "h-[calc(100vh-3.5rem)]" : "max-h-[calc(100vh-9.5rem)]"
+            } ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
+            }`}
         >
           {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
           <div
@@ -258,9 +271,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
             {/* Annotation Overlay Layer */}
             <div
-              className={`absolute inset-0 z-10 ${
-                interactionMode === "comment" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none"
-              }`}
+              className={`absolute inset-0 z-10 ${interactionMode === "comment" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none"
+                }`}
             />
 
             {/* Active Pins (Strictly scoped to current device viewport and sticky to content pixels) */}
@@ -282,6 +294,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 xPercent={pendingPinCoords.xPercent}
                 yPercent={pendingPinCoords.yPercent}
                 isNew={true}
+                theme={theme}
                 authorName={clientAuthorName}
                 deviceMode={deviceMode}
                 onSaveNewPin={handleSaveNewPin}
@@ -296,6 +309,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 xPercent={activePin.xPercent}
                 yPercent={activePin.yPercent}
                 isNew={false}
+                theme={theme}
                 authorName={clientAuthorName}
                 deviceMode={deviceMode}
                 onAddComment={onAddComment}

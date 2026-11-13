@@ -10,15 +10,31 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isGuest = localStorage.getItem("cyath_guest_session") === "true";
-      if (isGuest) {
+      const hasAuth = localStorage.getItem("cyath_auth_active") === "true";
+      let hasSbToken = false;
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.startsWith("sb-") && key.endsWith("-auth-token"))) {
+            const raw = localStorage.getItem(key);
+            if (raw && raw.length > 20) {
+              hasSbToken = true;
+              break;
+            }
+          }
+        }
+      } catch { }
+
+      if (isGuest || hasAuth || hasSbToken) {
         router.replace("/dashboard");
         return;
       }
     }
 
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
         router.replace("/dashboard");
       }
     });
