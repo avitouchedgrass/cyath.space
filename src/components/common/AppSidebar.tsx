@@ -124,6 +124,24 @@ export function AppSidebar({
     }
   };
 
+  const handlePageNavigation = (e: React.MouseEvent, targetPath: string) => {
+    if (typeof window !== "undefined" && window.location.pathname === targetPath) {
+      e.preventDefault();
+      return;
+    }
+    e.preventDefault();
+    const mainEl = document.querySelector("main");
+    if (mainEl) {
+      mainEl.classList.remove("page-enter");
+      mainEl.classList.add("page-exit");
+      setTimeout(() => {
+        router.push(targetPath);
+      }, 130);
+    } else {
+      router.push(targetPath);
+    }
+  };
+
   const handleNewReview = () => {
     if (onNewReviewClick) {
       onNewReviewClick();
@@ -146,6 +164,7 @@ export function AppSidebar({
           <Link
             href="/dashboard"
             prefetch={true}
+            onClick={(e) => handlePageNavigation(e, "/dashboard")}
             className="flex items-center gap-2.5 group transition-transform active:scale-[0.96]"
           >
             <TesseractMark
@@ -206,6 +225,7 @@ export function AppSidebar({
             id="tour-sidebar-projects"
             href="/dashboard"
             prefetch={true}
+            onClick={(e) => handlePageNavigation(e, "/dashboard")}
             className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 active:scale-[0.96] ${
               activeItem === "projects"
                 ? isDay
@@ -248,6 +268,7 @@ export function AppSidebar({
             id="tour-sidebar-settings"
             href="/settings"
             prefetch={true}
+            onClick={(e) => handlePageNavigation(e, "/settings")}
             className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 active:scale-[0.96] ${
               activeItem === "settings"
                 ? isDay
@@ -268,6 +289,7 @@ export function AppSidebar({
             id="tour-sidebar-plans"
             href="/pro"
             prefetch={true}
+            onClick={(e) => handlePageNavigation(e, "/pro")}
             className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 active:scale-[0.96] ${
               activeItem === "plans"
                 ? isDay
@@ -323,6 +345,8 @@ export function AppSidebar({
           {!isUserPro && userProjects.length >= 1 && (
             <Link
               href="/pro"
+              prefetch={true}
+              onClick={(e) => handlePageNavigation(e, "/pro")}
               className={`mt-2 text-[10px] underline cursor-pointer block text-left transition-colors ${
                 isDay ? "text-stone-700 hover:text-stone-950 font-medium" : "text-zinc-400 hover:text-white"
               }`}

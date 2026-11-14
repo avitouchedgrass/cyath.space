@@ -328,6 +328,24 @@ export default function DashboardPage() {
     }, 0);
   }, [userProjects]);
 
+  const handleNavigate = (e: React.MouseEvent, path: string) => {
+    if (typeof window !== "undefined" && window.location.pathname === path) {
+      e.preventDefault();
+      return;
+    }
+    e.preventDefault();
+    const mainEl = document.querySelector("main");
+    if (mainEl) {
+      mainEl.classList.remove("page-enter");
+      mainEl.classList.add("page-exit");
+      setTimeout(() => {
+        router.push(path);
+      }, 130);
+    } else {
+      router.push(path);
+    }
+  };
+
   return (
     <div
       className={`min-h-screen font-sans flex flex-col md:flex-row transition-colors duration-200 selection:bg-stone-300 selection:text-black ${
@@ -404,6 +422,7 @@ export default function DashboardPage() {
                 <Link
                   href="/pro"
                   prefetch={true}
+                  onClick={(e) => handleNavigate(e, "/pro")}
                   className={`px-4 py-2 rounded-full font-mono font-semibold text-xs transition-all duration-150 cursor-pointer active:scale-[0.96] flex items-center gap-1.5 shadow-md ${
                     isDay
                       ? "bg-stone-900 text-white hover:bg-stone-800 shadow-stone-300"
@@ -672,13 +691,13 @@ export default function DashboardPage() {
                         </div>
                       ) : (
                         /* Web Preview Iframe Frame */
-                        <div className="relative w-full h-full overflow-hidden select-none pointer-events-none">
+                        <div className="relative w-full h-full overflow-hidden select-none pointer-events-none bg-black">
                           <iframe
                             src={`/api/proxy?url=${encodeURIComponent(project.targetUrl)}&mute=1`}
                             title={project.title}
                             tabIndex={-1}
-                            className="w-[300%] h-[300%] origin-top-left scale-[0.333333] border-none pointer-events-none opacity-100 transition-opacity duration-300"
-                            sandbox="allow-scripts allow-same-origin"
+                            className="w-[355%] h-[355%] origin-top-left scale-[0.2817] border-none pointer-events-none opacity-100 transition-opacity duration-300"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                           />
                         </div>
                       )}

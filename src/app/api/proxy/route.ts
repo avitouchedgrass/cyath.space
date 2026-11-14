@@ -115,14 +115,6 @@ export async function GET(req: NextRequest) {
     const muteParam = req.nextUrl.searchParams.get("mute");
     const shouldMuteAudio = muteParam === "1" || muteParam === "true";
 
-    // 3. Rewrite root-relative <script src="/..."> and <link href="/..."> to route through Cyath proxy
-    html = html.replace(/(<(?:script|link)[^>]+(?:src|href)=["'])\/([^"'>]+)(["'][^>]*>)/gi, (match, prefix, path, suffix) => {
-      if (path.startsWith("/")) return match;
-      const fullAssetUrl = `${targetOrigin}/${path}`;
-      const proxied = `/api/proxy?url=${encodeURIComponent(fullAssetUrl)}${shouldMuteAudio ? "&mute=1" : ""}`;
-      return `${prefix}${proxied}${suffix}`;
-    });
-
     const hasViewport = /<meta[^>]*name=["']viewport["'][^>]*>/i.test(html);
     const viewportMetaTag = hasViewport ? "" : '\n  <meta name="viewport" content="width=device-width, initial-scale=1">';
 
@@ -249,7 +241,7 @@ export async function GET(req: NextRequest) {
       if (resolved.startsWith('http://') || resolved.startsWith('https://')) {
         // If the request is for the target website origin, proxy it
         if (resolved.startsWith(targetOrigin)) {
-          var proxied = '/api/proxy?url=' + encodeURIComponent(resolved) + (isAudioMuted ? '&mute=1' : '');
+          var proxied = window.location.origin + '/api/proxy?url=' + encodeURIComponent(resolved) + (isAudioMuted ? '&mute=1' : '');
           if (typeof raw === 'object' && raw instanceof Request) {
             return new Request(proxied, raw);
           }
@@ -277,50 +269,6 @@ export async function GET(req: NextRequest) {
           return origImgSet.call(this, val);
         },
         get: imgDesc.get,
-        configurable: true
-      });
-    }
-  } catch(e) {}
-
-  // Intercept dynamic script loading (fixes Next.js, Webpack, Nuxt, Vite chunk 404s)
-  try {
-    var scriptDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-    if (scriptDesc && scriptDesc.set) {
-      var origScriptSet = scriptDesc.set;
-      Object.defineProperty(HTMLScriptElement.prototype, 'src', {
-        set: function(val) {
-          if (typeof val === 'string' && !val.includes('/api/proxy')) {
-            if (val.startsWith('/')) {
-              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val);
-            } else if (val.startsWith(window.location.origin)) {
-              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val.slice(window.location.origin.length));
-            }
-          }
-          return origScriptSet.call(this, val);
-        },
-        get: scriptDesc.get,
-        configurable: true
-      });
-    }
-  } catch(e) {}
-
-  // Intercept dynamic stylesheet / link loading
-  try {
-    var linkDesc = Object.getOwnPropertyDescriptor(HTMLLinkElement.prototype, 'href');
-    if (linkDesc && linkDesc.set) {
-      var origLinkSet = linkDesc.set;
-      Object.defineProperty(HTMLLinkElement.prototype, 'href', {
-        set: function(val) {
-          if (typeof val === 'string' && !val.includes('/api/proxy')) {
-            if (val.startsWith('/')) {
-              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val);
-            } else if (val.startsWith(window.location.origin)) {
-              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val.slice(window.location.origin.length));
-            }
-          }
-          return origLinkSet.call(this, val);
-        },
-        get: linkDesc.get,
         configurable: true
       });
     }
@@ -418,7 +366,7 @@ export async function GET(req: NextRequest) {
           e.preventDefault();
           currentTargetUrl = fullTargetUrl;
           notifyParentNavigation(fullTargetUrl);
-          window.location.href = '/api/proxy?url=' + encodeURIComponent(fullTargetUrl) + (isAudioMuted ? '&mute=1' : '');
+          window.location.href = window.location.origin + '/api/proxy?url=' + encodeURIComponent(fullTargetUrl) + (isAudioMuted ? '&mute=1' : '');
         }
       }
     } catch(err) {}
