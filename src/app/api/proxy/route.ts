@@ -580,7 +580,8 @@ export async function GET(req: NextRequest) {
         badge.innerText = isResolved ? '✓' : pin.number;
         pinEl.appendChild(badge);
       } else {
-        pinEl.style.cssText = 'position:absolute;left:' + posX + 'px;top:' + posY + 'px;transform:translate(-50%, -50%);width:' + (isActive ? '28px' : '24px') + ';height:' + (isActive ? '28px' : '24px') + ';border-radius:50%;pointer-events:auto;cursor:pointer;background:' + (isActive ? '#ffffff' : '#000000') + ';color:' + (isActive ? '#000000' : '#ffffff') + ';border:2px solid #ffffff;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:' + (isActive ? '12px' : '11px') + ';font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,0.85);z-index:' + (isActive ? 2147483647 : 2147483642) + ';transition:transform 0.15s ease-out;';
+        pinEl.className = 'cyath-dom-pin' + (isActive ? ' cyath-active-pulse' : '');
+        pinEl.style.cssText = 'position:absolute;left:' + posX + 'px;top:' + posY + 'px;transform:translate(-50%, -50%);width:' + (isActive ? '28px' : '24px') + ';height:' + (isActive ? '28px' : '24px') + ';border-radius:50%;pointer-events:auto;cursor:pointer;background:' + (isActive ? '#ffffff' : '#000000') + ';color:' + (isActive ? '#000000' : '#ffffff') + ';border:2px solid #ffffff;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:' + (isActive ? '12px' : '11px') + ';font-weight:bold;box-shadow:' + (isActive ? '0 0 24px rgba(255,255,255,0.7), 0 0 0 2px rgba(255,255,255,0.5)' : '0 4px 14px rgba(0,0,0,0.85)') + ';z-index:' + (isActive ? 2147483647 : 2147483642) + ';transition:transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);';
         pinEl.innerText = isResolved ? '✓' : pin.number;
       }
 
@@ -719,7 +720,15 @@ export async function GET(req: NextRequest) {
 })();
 </script>`;
 
-    const stageSyncStyle = `<style id="cyath-stage-sync">html, body { overflow-y: visible !important; height: auto !important; min-height: 100% !important; }</style>`;
+    const stageSyncStyle = `<style id="cyath-stage-sync">
+html, body { overflow-y: visible !important; height: auto !important; min-height: 100% !important; }
+@keyframes cyathPinPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.4); transform: translate(-50%, -50%) scale(0.92); }
+  60% { box-shadow: 0 0 0 10px rgba(255,255,255,0), 0 0 25px rgba(255,255,255,0.25); transform: translate(-50%, -50%) scale(1.06); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 0 14px rgba(255,255,255,0.2); transform: translate(-50%, -50%) scale(1); }
+}
+.cyath-active-pulse { animation: cyathPinPulse 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+</style>`;
     const injectedTags = `${baseTag}\n  ${stageSyncStyle}\n  ${bridgeScript}`;
 
     if (/<head[^>]*>/i.test(html)) {

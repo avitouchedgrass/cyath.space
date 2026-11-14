@@ -65,7 +65,7 @@ export const PinMarker: React.FC<PinMarkerProps> = ({ pin, isActive, onClick }) 
         isResolved
           ? "w-5 h-5 bg-black/90 border border-white/20 text-zinc-500 opacity-60 hover:opacity-100 shadow-sm"
           : isActive
-          ? "w-7 h-7 bg-white text-black shadow-[0_0_24px_rgba(255,255,255,0.7)] ring-2 ring-white/50 scale-110 text-xs animate-[bounce_1.5s_ease-in-out_infinite]"
+          ? "w-7 h-7 bg-white text-black shadow-[0_0_24px_rgba(255,255,255,0.7)] ring-2 ring-white/60 scale-105 text-xs animate-pin-ripple"
           : "w-6 h-6 bg-black border border-white/50 text-white text-[11px] hover:border-white shadow-[0_0_12px_rgba(0,0,0,0.5)] hover:shadow-[0_0_18px_rgba(255,255,255,0.35)]"
       }`}
       title={`Pin #${pin.number}: ${pin.comments?.[0]?.content || ""}`}

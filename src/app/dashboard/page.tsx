@@ -506,7 +506,7 @@ export default function DashboardPage() {
 
               <button
                 onClick={handleSignOut}
-                className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer active:scale-[0.96]"
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer active:scale-[0.96]"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
@@ -858,7 +858,7 @@ export default function DashboardPage() {
 
                           <button
                             onClick={() => deleteProject(project.id)}
-                            className="p-1.5 rounded-lg border border-transparent text-zinc-500 hover:text-rose-400 hover:border-rose-500/20 hover:bg-rose-500/10 transition-all cursor-pointer active:scale-[0.96]"
+                            className="p-1.5 rounded-lg border border-transparent text-zinc-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all cursor-pointer active:scale-[0.96]"
                             title="Delete Project"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
