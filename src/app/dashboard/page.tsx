@@ -36,7 +36,7 @@ import type { User } from "@supabase/supabase-js";
 import { Project } from "@/types";
 import { ProjectPunchlistDrawer } from "@/components/dashboard/ProjectPunchlistDrawer";
 import { StudioUpgradeModal } from "@/components/dashboard/StudioUpgradeModal";
-import { startDashboardTour } from "@/lib/dashboardTour";
+import { DashboardTour } from "@/components/dashboard/DashboardTour";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { StarBorder } from "@/components/common/StarBorder";
 import { HoldButton } from "@/components/common/HoldButton";
@@ -147,20 +147,6 @@ export default function DashboardPage() {
       subscription.unsubscribe();
     };
   }, [router, supabase]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("startTour") === "1") {
-        const url = new URL(window.location.href);
-        url.searchParams.delete("startTour");
-        window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
-        setTimeout(() => {
-          startDashboardTour();
-        }, 400);
-      }
-    }
-  }, []);
 
   const handleSignOut = async () => {
     if (typeof window !== "undefined") {
@@ -820,6 +806,9 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Native Interactive Dashboard Walkthrough Guide */}
+      <DashboardTour />
     </div>
   );
 }
