@@ -369,12 +369,12 @@ export default function DashboardPage() {
             className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-stone-400 rounded-lg p-1"
           >
             <TesseractMark
-              size={22}
-              className={`shrink-0 group-hover:scale-105 transition-transform ${isDay ? "text-stone-900" : "text-white"
+              size={24}
+              className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${isDay ? "text-stone-900" : "text-white"
                 }`}
             />
             <span
-              className={`font-serif tracking-tight font-medium text-lg ${isDay ? "text-stone-900" : "text-white"
+              className={`font-sans font-bold text-[19px] tracking-[-0.04em] leading-none transition-colors ${isDay ? "text-[#1C1A18] group-hover:text-black" : "text-white"
                 }`}
             >
               cyath

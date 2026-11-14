@@ -200,24 +200,28 @@ function SettingsContent() {
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className={`p-2 rounded-lg border transition-all flex items-center gap-2 text-xs font-mono ${isDay
-                  ? "bg-white border-stone-200 text-stone-700 hover:text-stone-900 hover:bg-stone-100"
-                  : "bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-400 hover:text-white"
-                }`}
+              prefetch={true}
+              className="flex items-center gap-2.5 group p-1"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Dashboard</span>
-            </Link>
-            <div className={`h-4 w-px ${isDay ? "bg-stone-300" : "bg-white/15"}`} />
-            <div className="flex items-center gap-2.5">
-              <TesseractMark size={22} className={isDay ? "text-stone-900" : "text-white"} />
+              <TesseractMark
+                size={24}
+                className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
+                  isDay ? "text-stone-900" : "text-white"
+                }`}
+              />
               <span
-                className={`font-serif text-sm font-medium tracking-wide ${isDay ? "text-stone-900" : "text-white"
-                  }`}
+                className={`font-sans font-bold text-[19px] tracking-[-0.04em] leading-none transition-colors ${
+                  isDay ? "text-[#1C1A18] group-hover:text-black" : "text-white"
+                }`}
               >
+                cyath
+              </span>
+              <span className={`text-xs font-mono uppercase px-2 py-0.5 rounded border ml-1 ${
+                isDay ? "border-stone-300 text-stone-600 bg-stone-100" : "border-white/20 text-zinc-400 bg-white/5"
+              }`}>
                 Settings
               </span>
-            </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">

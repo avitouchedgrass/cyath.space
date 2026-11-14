@@ -38,13 +38,22 @@ export default function TermsOfServicePage() {
         }`}
       >
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/dashboard" prefetch={true} className="flex items-center gap-2.5">
-            <TesseractMark size={22} className={isDay ? "text-stone-900" : "text-white"} />
-            <span className={`font-serif tracking-tight font-medium text-lg ${isDay ? "text-stone-900" : "text-white"}`}>
+          <Link href="/dashboard" prefetch={true} className="flex items-center gap-2.5 group p-1">
+            <TesseractMark
+              size={24}
+              className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
+                isDay ? "text-stone-900" : "text-white"
+              }`}
+            />
+            <span
+              className={`font-sans font-bold text-[19px] tracking-[-0.04em] leading-none transition-colors ${
+                isDay ? "text-[#1C1A18] group-hover:text-black" : "text-white"
+              }`}
+            >
               cyath
             </span>
-            <span className={`text-xs font-mono uppercase px-2 py-0.5 rounded border ${
-              isDay ? "border-stone-300 text-stone-600" : "border-white/20 text-zinc-400"
+            <span className={`text-xs font-mono uppercase px-2 py-0.5 rounded border ml-1 ${
+              isDay ? "border-stone-300 text-stone-600 bg-stone-100" : "border-white/20 text-zinc-400 bg-white/5"
             }`}>
               Terms
             </span>

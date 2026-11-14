@@ -47,16 +47,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenGuide, className = "", the
       <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
         {/* Brand & Mission */}
         <div className="space-y-2 max-w-sm">
-          <Link href="/dashboard" prefetch={true} className="flex items-center gap-2.5 group">
+          <Link href="/dashboard" prefetch={true} className="flex items-center gap-2.5 group p-1">
             <TesseractMark
-              size={20}
-              className={`transition-transform group-hover:scale-105 ${
+              size={24}
+              className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
                 isDay ? "text-stone-900" : "text-white"
               }`}
             />
             <span
-              className={`font-serif tracking-tight font-medium text-lg ${
-                isDay ? "text-stone-900" : "text-white"
+              className={`font-sans font-bold text-[19px] tracking-[-0.04em] leading-none transition-colors ${
+                isDay ? "text-[#1C1A18] group-hover:text-black" : "text-white"
               }`}
             >
               cyath

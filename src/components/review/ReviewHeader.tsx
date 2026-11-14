@@ -19,7 +19,7 @@ import {
   Moon,
 } from "lucide-react";
 import { DeviceMode, InteractionMode, Project } from "@/types";
-import { CyathLogo } from "@/components/common/Logo";
+import { CyathLogo, TesseractMark } from "@/components/common/Logo";
 
 interface ReviewHeaderProps {
   project: Project;
@@ -92,7 +92,25 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
         </Link>
 
         <div className="flex items-center gap-2.5">
-          <CyathLogo size={22} locked={project.isApproved} />
+          <Link
+            href="/dashboard"
+            prefetch={true}
+            className="flex items-center gap-2.5 group p-1"
+          >
+            <TesseractMark
+              size={24}
+              className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
+                isDay ? "text-stone-900" : "text-white"
+              }`}
+            />
+            <span
+              className={`font-sans font-bold text-[19px] tracking-[-0.04em] leading-none transition-colors ${
+                isDay ? "text-[#1C1A18] group-hover:text-black" : "text-white"
+              }`}
+            >
+              cyath
+            </span>
+          </Link>
           <div className={`h-4 w-[1px] ${isDay ? "bg-stone-200" : "bg-white/15"}`} />
           <span
             className={`font-serif text-sm font-medium tracking-wide max-w-[150px] sm:max-w-xs truncate ${isDay ? "text-stone-900" : "text-zinc-100"
