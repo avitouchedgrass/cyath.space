@@ -118,7 +118,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   };
 
   const isRight = xPercent > 50;
-  const isBottom = yPercent > 65;
+  const isBottom = yPercent > 70;
 
   const popoverStyle: React.CSSProperties = isMobileLayout
     ? {
@@ -133,12 +133,10 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
     : {
       position: "absolute",
       zIndex: 50,
-      ...(isRight
-        ? { right: `${Math.max(2, Math.min(65, 100 - xPercent + 2))}%`, left: "auto" }
-        : { left: `${Math.max(2, Math.min(65, xPercent + 2))}%`, right: "auto" }),
-      ...(isBottom
-        ? { bottom: `${Math.max(2, Math.min(60, 100 - yPercent + 2))}%`, top: "auto" }
-        : { top: `${Math.max(2, Math.min(60, yPercent + 2))}%`, bottom: "auto" }),
+      left: isRight ? "auto" : `${Math.max(2, Math.min(68, xPercent + 1.5))}%`,
+      right: isRight ? `${Math.max(2, Math.min(68, 100 - xPercent + 1.5))}%` : "auto",
+      top: isBottom ? "auto" : `${Math.max(1, Math.min(96, yPercent + 1))}%`,
+      bottom: isBottom ? `${Math.max(1, Math.min(96, 100 - yPercent + 1))}%` : "auto",
       width: "320px",
       maxWidth: "calc(100% - 16px)",
     };

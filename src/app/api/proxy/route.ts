@@ -346,6 +346,17 @@ export async function GET(req: NextRequest) {
     } catch(err) {}
   }, false);
 
+  // Forward mouse wheel events so stage container and pins scroll in sync
+  window.addEventListener('wheel', function(e) {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'CYATH_WHEEL',
+        deltaY: e.deltaY,
+        deltaX: e.deltaX
+      }, '*');
+    }
+  }, { passive: true });
+
   // Dynamic stage height synchronizer with anti-runaway clamping & debouncing
   var lastSentHeight = 0;
   var resizeDebounceTimer = null;
@@ -357,20 +368,18 @@ export async function GET(req: NextRequest) {
         var body = document.body;
         var doc = document.documentElement;
         if (!body && !doc) return;
-        // Only measure scrollHeight and body offsetHeight; avoid doc.clientHeight/doc.offsetHeight
-        // which match the iframe window size and create an irreversible upward growth loop
         var rawHeight = Math.max(
           body ? body.scrollHeight : 0,
           doc ? doc.scrollHeight : 0,
           body ? body.offsetHeight : 0
         );
-        var height = Math.min(12000, Math.max(800, rawHeight));
-        if (Math.abs(height - lastSentHeight) > 30 && window.parent && window.parent !== window) {
+        var height = Math.min(16000, Math.max(800, rawHeight));
+        if (Math.abs(height - lastSentHeight) > 15 && window.parent && window.parent !== window) {
           lastSentHeight = height;
           window.parent.postMessage({ type: 'CYATH_STAGE_RESIZE', height: height }, '*');
         }
       } catch(e) {}
-    }, 120);
+    }, 60);
   }
 
   window.addEventListener('DOMContentLoaded', function() {
@@ -392,7 +401,8 @@ export async function GET(req: NextRequest) {
 })();
 </script>`;
 
-    const injectedTags = `${baseTag}\n  ${bridgeScript}`;
+    const stageSyncStyle = `<style id="cyath-stage-sync">html, body { overflow-y: visible !important; height: auto !important; min-height: 100% !important; }</style>`;
+    const injectedTags = `${baseTag}\n  ${stageSyncStyle}\n  ${bridgeScript}`;
 
     if (/<head[^>]*>/i.test(html)) {
       html = html.replace(/(<head[^>]*>)/i, `$1\n  ${injectedTags}`);

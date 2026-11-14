@@ -83,12 +83,15 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     }
   }, [isAudioMuted]);
 
-  // Listen to height and page navigation messages from proxy iframe bridge
+  // Listen to height, wheel, and navigation messages from proxy iframe bridge
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "CYATH_STAGE_RESIZE" && typeof event.data.height === "number") {
-        const clamped = Math.min(12000, Math.max(800, Math.round(event.data.height)));
+        const clamped = Math.min(16000, Math.max(800, Math.round(event.data.height)));
         setFrameHeight(clamped);
+      }
+      if (event.data?.type === "CYATH_WHEEL" && typeof event.data.deltaY === "number" && scrollViewportRef.current) {
+        scrollViewportRef.current.scrollTop += event.data.deltaY;
       }
       if (event.data?.type === "CYATH_PAGE_NAVIGATED" && typeof event.data.url === "string") {
         setLocalPageUrl(event.data.url);
@@ -147,14 +150,34 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   });
   const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
 
+  // Estimate PDF height so multi-page documents render continuously in stage scroll
+  const pdfPageCount = React.useMemo(() => {
+    if (project.assetType !== "pdf" || !project.targetUrl) return 1;
+    try {
+      if (project.targetUrl.startsWith("data:application/pdf;base64,")) {
+        const raw = atob(project.targetUrl.slice(28, 120000));
+        const countMatch = raw.match(/\/Count\s+(\d+)/);
+        if (countMatch && countMatch[1]) {
+          const parsed = parseInt(countMatch[1], 10);
+          if (parsed > 0 && parsed < 200) return parsed;
+        }
+        const pages = (raw.match(/\/Type\s*\/Page\b/g) || []).length;
+        if (pages > 0) return pages;
+      }
+    } catch {}
+    return 1;
+  }, [project.assetType, project.targetUrl]);
+
+  const pdfHeight = Math.max(900, pdfPageCount * 1150);
+
   const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));
   const isFullMode = deviceMode === "full";
-  const stageMinHeight = isFullMode
-    ? "calc(100vh - 3.5rem)"
-    : isWebUrl
-      ? `${frameHeight}px`
-      : project.assetType === "pdf"
-        ? "850px"
+  const stageMinHeight = isWebUrl
+    ? `${frameHeight}px`
+    : project.assetType === "pdf"
+      ? `${pdfHeight}px`
+      : isFullMode
+        ? "calc(100vh - 3.5rem)"
         : "auto";
 
   const isDay = theme === "day";
@@ -246,9 +269,17 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             ) : project.assetType === "pdf" ? (
               <iframe
-                src={project.targetUrl}
+                src={
+                  project.targetUrl?.includes("#")
+                    ? project.targetUrl
+                    : `${project.targetUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
+                }
                 title={project.title}
-                className="w-full min-h-[850px] border-none select-none"
+                className="w-full border-none select-none block"
+                style={{
+                  height: `${pdfHeight}px`,
+                  minHeight: `${pdfHeight}px`,
+                }}
               />
             ) : (
               <iframe
@@ -287,6 +318,19 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 }}
               />
             ))}
+
+            {/* Pending Draft Pin Marker (Visually anchors the pin directly to the content while popover is open) */}
+            {pendingPinCoords && (
+              <div
+                style={{
+                  left: `${pendingPinCoords.xPercent}%`,
+                  top: `${pendingPinCoords.yPercent}%`,
+                }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full z-30 flex items-center justify-center font-mono font-bold text-xs bg-white text-black shadow-[0_0_24px_rgba(255,255,255,0.8)] ring-2 ring-white/60 animate-pulse pointer-events-none select-none"
+              >
+                +
+              </div>
+            )}
 
             {/* Pending New Pin Popover */}
             {pendingPinCoords && (
