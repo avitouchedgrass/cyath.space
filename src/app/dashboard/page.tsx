@@ -614,14 +614,14 @@ export default function DashboardPage() {
 
           <div
             className={`p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 shadow-xl ${isDay
-                ? "bg-white border-stone-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.04)] focus-within:border-stone-400"
-                : "bg-[#0a0a0d] border-white/15 focus-within:border-white/40 focus-within:shadow-[0_0_35px_rgba(255,255,255,0.07)]"
+                ? "bg-white border-stone-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.04)] focus-within:border-stone-900 focus-within:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
+                : "bg-[#0a0a0d] border-white/15 focus-within:border-white/40 focus-within:shadow-[0_0_40px_rgba(255,255,255,0.1)]"
               }`}
           >
             <form onSubmit={handleQuickUrlSubmit} className="flex flex-col md:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
                 <Globe
-                  className={`w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${isDay ? "text-stone-400 group-focus-within:text-stone-900" : "text-zinc-500 group-focus-within:text-white"
+                  className={`w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200 group-focus-within:scale-110 ${isDay ? "text-stone-400 group-focus-within:text-stone-900" : "text-zinc-500 group-focus-within:text-white"
                     }`}
                 />
                 <input
@@ -629,7 +629,7 @@ export default function DashboardPage() {
                   placeholder="Enter website URL (e.g. https://yoursite.com)"
                   value={quickUrl}
                   onChange={(e) => setQuickUrl(e.target.value)}
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border text-xs sm:text-sm font-mono transition-all outline-none ${isDay
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border text-xs sm:text-sm font-mono transition-all duration-200 outline-none ${isDay
                       ? "bg-stone-50 border-stone-200 focus:border-stone-900 focus:bg-white text-stone-900 placeholder:text-stone-400"
                       : "bg-black border-white/10 focus:border-white/30 text-white placeholder:text-zinc-600"
                     }`}
@@ -639,13 +639,13 @@ export default function DashboardPage() {
 
               <div className="flex items-center gap-2 w-full md:w-auto">
                 <label
-                  className={`flex-1 md:flex-initial px-4 py-3 rounded-xl border text-xs font-mono flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${isDay
-                      ? "border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-800"
-                      : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/25 text-zinc-300 hover:text-white"
+                  className={`flex-1 md:flex-initial px-4 py-3 rounded-xl border text-xs font-mono flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${isDay
+                      ? "border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-800 hover:border-stone-400"
+                      : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/30 text-zinc-300 hover:text-white"
                     }`}
                   title="Upload image or PDF"
                 >
-                  <UploadCloud className={`w-3.5 h-3.5 ${isDay ? "text-stone-500" : "text-zinc-400"}`} />
+                  <UploadCloud className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 ${isDay ? "text-stone-500" : "text-zinc-400"}`} />
                   <span>Upload File</span>
                   <input
                     type="file"
@@ -658,7 +658,7 @@ export default function DashboardPage() {
                 <button
                   type="submit"
                   disabled={!quickUrl.trim()}
-                  className={`flex-1 md:flex-initial px-5 py-3 rounded-xl text-xs font-mono font-semibold tracking-wider transition-all duration-200 whitespace-nowrap cursor-pointer disabled:opacity-30 hover:scale-[1.02] active:scale-[0.98] ${isDay
+                  className={`flex-1 md:flex-initial px-5 py-3 rounded-xl text-xs font-mono font-semibold tracking-wider transition-all duration-200 whitespace-nowrap cursor-pointer disabled:opacity-30 hover:scale-[1.03] active:scale-[0.97] ${isDay
                       ? "bg-stone-900 text-white hover:bg-stone-800 shadow-sm"
                       : "bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)]"
                     }`}
@@ -1225,10 +1225,10 @@ function ViewfinderCard({
 
   return (
     <div
-      className={`group rounded-2xl border transition-all duration-300 flex flex-col overflow-hidden relative shadow-xl hover:-translate-y-1 ${isLocked ? "grayscale opacity-85 hover:grayscale-0 hover:opacity-100" : ""
+      className={`group rounded-2xl border transition-all duration-300 flex flex-col overflow-hidden relative shadow-xl hover:-translate-y-1.5 hover:shadow-2xl active:scale-[0.995] card-stagger ${isLocked ? "grayscale opacity-85 hover:grayscale-0 hover:opacity-100" : ""
         } ${isDay
-          ? "bg-white border-stone-200/90 hover:border-stone-300 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] text-stone-900"
-          : "bg-[#0a0a0d] border-white/12 hover:border-white/25 hover:shadow-[0_12px_40px_rgba(0,0,0,0.8)] text-white shadow-black/40"
+          ? "bg-white border-stone-200/90 hover:border-stone-400 hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] text-stone-900"
+          : "bg-[#0a0a0d] border-white/12 hover:border-white/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.85)] text-white shadow-black/40"
         }`}
     >
       <Link
