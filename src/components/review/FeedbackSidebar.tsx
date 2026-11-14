@@ -254,7 +254,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       </div>
 
       {/* Pins List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar">
         {displayedPins.length === 0 ? (
           <div className={`h-48 flex flex-col items-center justify-center text-center p-4 ${isDay ? "text-stone-400" : "text-zinc-600"}`}>
             <CheckCircle2 className="w-8 h-8 mb-2 stroke-1 opacity-60" />

@@ -782,7 +782,22 @@ export async function GET(req: NextRequest) {
 </script>`;
 
     const stageSyncStyle = `<style id="cyath-stage-sync">
-html, body { overflow-y: visible !important; height: auto !important; min-height: 100% !important; }
+html, body {
+  overflow-y: visible !important;
+  height: auto !important;
+  min-height: 100% !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
 @keyframes cyathPinPulse {
   0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.4); transform: translate(-50%, -50%) scale(0.92); }
   60% { box-shadow: 0 0 0 10px rgba(255,255,255,0), 0 0 25px rgba(255,255,255,0.25); transform: translate(-50%, -50%) scale(1.06); }

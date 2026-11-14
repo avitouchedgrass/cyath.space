@@ -330,7 +330,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     <div
       className={`flex-1 flex justify-center items-start selection:bg-stone-300 selection:text-black transition-all duration-300 ${
         isDay ? "bg-[#ECE8DE]" : "bg-[#000000]"
-      } ${isFullMode ? "p-0 h-screen w-screen overflow-hidden" : "p-3 sm:p-6 min-h-[calc(100vh-3.5rem)] overflow-y-auto"}`}
+      } ${isFullMode ? "p-0 h-screen w-screen overflow-hidden" : "p-3 sm:p-6 h-[calc(100vh-3.5rem)] overflow-hidden"}`}
     >
       <div
         className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${
@@ -446,7 +446,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           className={`w-full bg-white relative transition-all duration-300 ease-in-out ${
             isFullMode
               ? "h-screen w-screen overflow-hidden"
-              : "overflow-y-auto overflow-x-hidden max-h-[calc(100vh-9.5rem)] rounded-b-2xl"
+              : "overflow-y-auto overflow-x-hidden max-h-[calc(100vh-9.5rem)] rounded-b-2xl no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           } ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"}`}
         >
           {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
@@ -470,6 +470,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                     : `${project.targetUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
                 }
                 title={project.title}
+                scrolling="no"
                 className="w-full border-none select-none block pointer-events-none"
                 style={{
                   height: `${pdfHeight}px`,
@@ -485,6 +486,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                     : project.targetUrl
                 }
                 title={project.title}
+                scrolling="no"
                 className="w-full border-none select-none block max-w-full"
                 style={{
                   height: isFullMode ? "100vh" : `${frameHeight}px`,

@@ -448,7 +448,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
 
   return (
     <div
-      className={`h-screen flex flex-col transition-colors duration-200 selection:bg-stone-300 selection:text-black relative overflow-hidden ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
+      className={`h-screen flex flex-col transition-colors duration-200 selection:bg-stone-300 selection:text-black relative overflow-hidden no-scrollbar ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
         }`}
     >
       {/* Vertical Floating Icon Rail with Warm Tooltips (Hidden in Fullscreen) */}
