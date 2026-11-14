@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { ExternalLink } from "lucide-react";
-import { DeviceMode, InteractionMode, Pin, Project } from "@/types";
+import { DeviceMode, InteractionMode, Pin, Project, DomAnchor } from "@/types";
 import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
 import { calculateNormalizedCoords } from "@/lib/coordinates";
@@ -27,7 +27,8 @@ interface ReviewStageProps {
     pageUrl?: string,
     widthPercent?: number,
     heightPercent?: number,
-    annotationType?: "point" | "box"
+    annotationType?: "point" | "box",
+    domAnchor?: DomAnchor
   ) => void;
   onAddComment: (pinId: string, content: string, authorName: string) => void;
   onToggleResolve: (pinId: string) => void;
@@ -60,6 +61,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     widthPercent?: number;
     heightPercent?: number;
     annotationType?: "point" | "box";
+    domAnchor?: DomAnchor;
   } | null>(null);
   const [drawingBox, setDrawingBox] = useState<{
     xPercent: number;
@@ -105,7 +107,19 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     }
   }, [isAudioMuted]);
 
-  // Listen to height, wheel, and navigation messages from proxy iframe bridge
+  // Synchronize interaction mode with child proxy iframe
+  useEffect(() => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          { type: "CYATH_SET_MODE", mode: interactionMode },
+          "*"
+        );
+      } catch { }
+    }
+  }, [interactionMode]);
+
+  // Listen to height, wheel, element pin, and navigation messages from proxy iframe bridge
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "CYATH_STAGE_RESIZE" && typeof event.data.height === "number") {
@@ -120,11 +134,26 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         setFrameHeight(900);
         onPageNavigated?.(event.data.url);
       }
+      if (event.data?.type === "CYATH_PIN_SELECTED" && typeof event.data.pinId === "string") {
+        setPendingPinCoords(null);
+        onSelectPin(event.data.pinId);
+      }
+      if (event.data?.type === "CYATH_ELEMENT_PIN_DROPPED") {
+        setPendingPinCoords({
+          xPercent: event.data.xPercent,
+          yPercent: event.data.yPercent,
+          widthPercent: event.data.widthPercent,
+          heightPercent: event.data.heightPercent,
+          annotationType: event.data.annotationType || "point",
+          domAnchor: event.data.domAnchor,
+        });
+        onSelectPin(null);
+      }
     };
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [onPageNavigated]);
+  }, [onPageNavigated, onSelectPin]);
 
   // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
@@ -202,7 +231,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       currentPageUrl,
       pendingPinCoords.widthPercent,
       pendingPinCoords.heightPercent,
-      pendingPinCoords.annotationType
+      pendingPinCoords.annotationType,
+      pendingPinCoords.domAnchor
     );
     setPendingPinCoords(null);
   };
@@ -221,6 +251,22 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     return pinPageLabel === currentStagePageLabel;
   });
   const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
+
+  // Synchronize active pins and activePinId with child proxy iframe
+  useEffect(() => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          {
+            type: "CYATH_SYNC_PINS",
+            pins: activeDevicePins,
+            activePinId: activePinId,
+          },
+          "*"
+        );
+      } catch { }
+    }
+  }, [activeDevicePins, activePinId]);
 
   // Estimate PDF height so multi-page documents render continuously in stage scroll
   const pdfPageCount = React.useMemo(() => {
@@ -371,18 +417,20 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Annotation Overlay Layer (Supports both single-click pin and drag-to-draw box) */}
-            <div
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              className={`absolute inset-0 z-10 ${
-                interactionMode === "comment" ? "pointer-events-auto cursor-crosshair select-none" : "pointer-events-none"
-              }`}
-            />
+            {/* Annotation Overlay Layer (Active on images & PDFs, web URLs use native DOM inspector) */}
+            {!isWebUrl && (
+              <div
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                className={`absolute inset-0 z-10 ${
+                  interactionMode === "comment" ? "pointer-events-auto cursor-crosshair select-none" : "pointer-events-none"
+                }`}
+              />
+            )}
 
-            {/* Live Dragging Box Preview */}
-            {drawingBox && (
+            {/* Live Dragging Box Preview (Images & PDFs) */}
+            {!isWebUrl && drawingBox && (
               <div
                 style={{
                   left: `${drawingBox.xPercent}%`,
@@ -394,8 +442,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Active Pins & Boxes (Strictly scoped to current device viewport and sticky to content pixels) */}
-            {activeDevicePins.map((pin) => (
+            {/* Active Pins & Boxes for static assets (web URLs render them inside the iframe DOM) */}
+            {!isWebUrl && activeDevicePins.map((pin) => (
               <PinMarker
                 key={pin.id}
                 pin={pin}

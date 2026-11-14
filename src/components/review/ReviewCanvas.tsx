@@ -398,10 +398,11 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
     pageUrl?: string,
     widthPercent?: number,
     heightPercent?: number,
-    annotationType?: "point" | "box"
+    annotationType?: "point" | "box",
+    domAnchor?: import("@/types").DomAnchor
   ) => {
     const telemetry = captureClientTelemetry(activeDeviceMode);
-    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl, widthPercent, heightPercent, annotationType);
+    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl, widthPercent, heightPercent, annotationType, domAnchor);
   };
 
   const handleAddComment = (pinId: string, content: string, authorName: string) => {

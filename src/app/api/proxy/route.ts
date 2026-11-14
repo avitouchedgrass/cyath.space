@@ -398,6 +398,237 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
   }
   [200, 600, 1200, 2500, 5000].forEach(function(t) { setTimeout(sendHeight, t); });
+
+  // --- CYATH MARKUP.IO ELEMENT ANCHOR ENGINE ---
+  var currentInteractionMode = 'browse';
+  var stagedPins = [];
+  var activePinId = null;
+  var pinsLayer = null;
+  var hoverInspector = null;
+
+  function initPinsLayer() {
+    if (!document.body) return null;
+    if (pinsLayer && document.body.contains(pinsLayer)) return pinsLayer;
+    pinsLayer = document.createElement('div');
+    pinsLayer.id = 'cyath-pins-layer';
+    pinsLayer.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2147483640;overflow:visible;';
+    document.body.appendChild(pinsLayer);
+
+    hoverInspector = document.createElement('div');
+    hoverInspector.id = 'cyath-hover-inspector';
+    hoverInspector.style.cssText = 'position:absolute;pointer-events:none;z-index:2147483630;display:none;border:1.5px dashed #ffffff;background:rgba(255,255,255,0.06);border-radius:4px;box-shadow:0 0 16px rgba(255,255,255,0.25);';
+    document.body.appendChild(hoverInspector);
+    return pinsLayer;
+  }
+
+  function getCssSelector(el) {
+    if (!el || el === document.body || el === document.documentElement) return 'body';
+    if (el.id && !el.id.startsWith('cyath-')) {
+      try { return '#' + CSS.escape(el.id); } catch(e) { return '#' + el.id; }
+    }
+    var path = [];
+    var curr = el;
+    while (curr && curr.nodeType === 1 && curr !== document.body && curr !== document.documentElement) {
+      var tag = curr.tagName.toLowerCase();
+      var parent = curr.parentElement;
+      if (parent) {
+        var siblings = Array.prototype.filter.call(parent.children, function(c) {
+          return c.tagName === curr.tagName;
+        });
+        if (siblings.length > 1) {
+          var idx = Array.prototype.indexOf.call(siblings, curr) + 1;
+          tag += ':nth-of-type(' + idx + ')';
+        }
+      }
+      path.unshift(tag);
+      curr = parent;
+    }
+    return path.join(' > ');
+  }
+
+  function renderPins() {
+    if (!document.body) return;
+    initPinsLayer();
+    if (!pinsLayer) return;
+    pinsLayer.innerHTML = '';
+
+    stagedPins.forEach(function(pin) {
+      if (!pin) return;
+      var isResolved = pin.status === 'resolved';
+      var isActive = pin.id === activePinId;
+      var isBox = pin.annotationType === 'box' && typeof pin.widthPercent === 'number';
+
+      var pinEl = document.createElement('div');
+      pinEl.className = 'cyath-dom-pin';
+      pinEl.dataset.pinId = pin.id;
+
+      // MarkUp.io Element Binding lookup
+      var targetEl = null;
+      if (pin.domAnchor && pin.domAnchor.selector) {
+        try { targetEl = document.querySelector(pin.domAnchor.selector); } catch(e) {}
+      }
+
+      var posX = 0;
+      var posY = 0;
+      var scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+      var scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      if (targetEl && targetEl.offsetParent !== null) {
+        var rect = targetEl.getBoundingClientRect();
+        var elOffX = typeof pin.domAnchor.elementOffsetXPercent === 'number' ? pin.domAnchor.elementOffsetXPercent : 50;
+        var elOffY = typeof pin.domAnchor.elementOffsetYPercent === 'number' ? pin.domAnchor.elementOffsetYPercent : 50;
+        posX = rect.left + scrollX + (rect.width * elOffX / 100);
+        posY = rect.top + scrollY + (rect.height * elOffY / 100);
+      } else if (typeof pin.domAnchor === 'object' && typeof pin.domAnchor.docX === 'number' && typeof pin.domAnchor.docY === 'number') {
+        posX = pin.domAnchor.docX;
+        posY = pin.domAnchor.docY;
+      } else {
+        var docW = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, window.innerWidth);
+        var docH = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
+        posX = (pin.xPercent / 100) * docW;
+        posY = (pin.yPercent / 100) * docH;
+      }
+
+      if (isBox) {
+        var docW = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, window.innerWidth);
+        var docH = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
+        var boxW = (pin.widthPercent / 100) * docW;
+        var boxH = (pin.heightPercent / 100) * docH;
+
+        pinEl.style.cssText = 'position:absolute;left:' + posX + 'px;top:' + posY + 'px;width:' + boxW + 'px;height:' + boxH + 'px;pointer-events:auto;cursor:pointer;border:' + (isActive ? '2px solid #ffffff' : isResolved ? '1px dashed rgba(255,255,255,0.3)' : '1.5px dashed rgba(255,255,255,0.7)') + ';background:' + (isActive ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.25)') + ';border-radius:6px;box-shadow:' + (isActive ? '0 0 24px rgba(255,255,255,0.5)' : 'none') + ';z-index:' + (isActive ? 2147483647 : 2147483642) + ';';
+        
+        var badge = document.createElement('div');
+        badge.style.cssText = 'position:absolute;top:-10px;left:-10px;width:20px;height:20px;border-radius:50%;background:' + (isActive ? '#ffffff' : '#000000') + ';color:' + (isActive ? '#000000' : '#ffffff') + ';border:1.5px solid #ffffff;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:10px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.8);';
+        badge.innerText = isResolved ? '✓' : pin.number;
+        pinEl.appendChild(badge);
+      } else {
+        pinEl.style.cssText = 'position:absolute;left:' + posX + 'px;top:' + posY + 'px;transform:translate(-50%, -50%);width:' + (isActive ? '28px' : '24px') + ';height:' + (isActive ? '28px' : '24px') + ';border-radius:50%;pointer-events:auto;cursor:pointer;background:' + (isActive ? '#ffffff' : '#000000') + ';color:' + (isActive ? '#000000' : '#ffffff') + ';border:2px solid #ffffff;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:' + (isActive ? '12px' : '11px') + ';font-weight:bold;box-shadow:0 4px 14px rgba(0,0,0,0.85);z-index:' + (isActive ? 2147483647 : 2147483642) + ';transition:transform 0.15s ease-out;';
+        pinEl.innerText = isResolved ? '✓' : pin.number;
+      }
+
+      pinEl.onclick = function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'CYATH_PIN_SELECTED', pinId: pin.id }, '*');
+        }
+      };
+
+      pinsLayer.appendChild(pinEl);
+    });
+  }
+
+  // Hover element inspector for comment mode
+  document.addEventListener('mousemove', function(e) {
+    if (currentInteractionMode !== 'comment') {
+      if (hoverInspector) hoverInspector.style.display = 'none';
+      return;
+    }
+    var target = document.elementFromPoint(e.clientX, e.clientY);
+    if (!target || target === document.body || target === document.documentElement || target.id === 'cyath-hover-inspector' || target.closest('#cyath-pins-layer')) {
+      if (hoverInspector) hoverInspector.style.display = 'none';
+      return;
+    }
+    initPinsLayer();
+    if (!hoverInspector) return;
+    var rect = target.getBoundingClientRect();
+    var scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    hoverInspector.style.display = 'block';
+    hoverInspector.style.left = (rect.left + scrollX) + 'px';
+    hoverInspector.style.top = (rect.top + scrollY) + 'px';
+    hoverInspector.style.width = rect.width + 'px';
+    hoverInspector.style.height = rect.height + 'px';
+  }, true);
+
+  // Click / Drag to drop element-anchored pin in comment mode
+  var dragStartCoords = null;
+  document.addEventListener('mousedown', function(e) {
+    if (currentInteractionMode !== 'comment') return;
+    if (e.target && (e.target.closest('#cyath-pins-layer') || e.target.id === 'cyath-hover-inspector')) return;
+    dragStartCoords = { x: e.clientX, y: e.clientY };
+  }, true);
+
+  document.addEventListener('mouseup', function(e) {
+    if (currentInteractionMode !== 'comment' || !dragStartCoords) return;
+    var target = document.elementFromPoint(e.clientX, e.clientY);
+    if (!target || target.closest('#cyath-pins-layer')) {
+      dragStartCoords = null;
+      return;
+    }
+
+    var dx = Math.abs(e.clientX - dragStartCoords.x);
+    var dy = Math.abs(e.clientY - dragStartCoords.y);
+    var rect = target.getBoundingClientRect();
+    var scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+    var selector = getCssSelector(target);
+    var offsetXPercent = rect.width > 0 ? ((e.clientX - rect.left) / rect.width) * 100 : 50;
+    var offsetYPercent = rect.height > 0 ? ((e.clientY - rect.top) / rect.height) * 100 : 50;
+
+    var docW = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth, window.innerWidth);
+    var docH = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
+
+    var docX = e.clientX + scrollX;
+    var docY = e.clientY + scrollY;
+
+    var isBox = dx > 15 && dy > 15;
+    var boxX = Math.min(dragStartCoords.x, e.clientX) + scrollX;
+    var boxY = Math.min(dragStartCoords.y, e.clientY) + scrollY;
+    var boxW = dx;
+    var boxH = dy;
+
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'CYATH_ELEMENT_PIN_DROPPED',
+        annotationType: isBox ? 'box' : 'point',
+        xPercent: Math.max(0, Math.min(100, Math.round(((isBox ? boxX : docX) / (docW || 1)) * 1000) / 10)),
+        yPercent: Math.max(0, Math.min(100, Math.round(((isBox ? boxY : docY) / (docH || 1)) * 1000) / 10)),
+        widthPercent: isBox ? Math.max(1, Math.round((boxW / (docW || 1)) * 1000) / 10) : undefined,
+        heightPercent: isBox ? Math.max(1, Math.round((boxH / (docH || 1)) * 1000) / 10) : undefined,
+        domAnchor: {
+          selector: selector,
+          tagName: target.tagName,
+          textContent: (target.innerText || '').slice(0, 50).trim(),
+          elementOffsetXPercent: Math.round(offsetXPercent * 10) / 10,
+          elementOffsetYPercent: Math.round(offsetYPercent * 10) / 10,
+          docX: Math.round(docX),
+          docY: Math.round(docY)
+        }
+      }, '*');
+    }
+
+    if (hoverInspector) hoverInspector.style.display = 'none';
+    dragStartCoords = null;
+    e.preventDefault();
+    e.stopPropagation();
+  }, true);
+
+  // Re-anchor pins dynamically on scroll, resize, and mutations (MarkUp.io dynamic tracking)
+  function trackBoundElements() {
+    if (pinsLayer && stagedPins.length > 0) {
+      renderPins();
+    }
+  }
+
+  window.addEventListener('scroll', trackBoundElements, { passive: true });
+  window.addEventListener('resize', trackBoundElements);
+
+  window.addEventListener('message', function(ev) {
+    if (!ev.data) return;
+    if (ev.data.type === 'CYATH_SET_MODE') {
+      currentInteractionMode = ev.data.mode || 'browse';
+      if (hoverInspector && currentInteractionMode !== 'comment') {
+        hoverInspector.style.display = 'none';
+      }
+    }
+    if (ev.data.type === 'CYATH_SYNC_PINS') {
+      stagedPins = Array.isArray(ev.data.pins) ? ev.data.pins : [];
+      activePinId = ev.data.activePinId || null;
+      renderPins();
+    }
+  });
 })();
 </script>`;
 

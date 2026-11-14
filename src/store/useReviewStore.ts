@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { nanoid } from "nanoid";
-import { Project, Pin, PinStatus, DeviceMode, InteractionMode, ClientTelemetry, AssetType } from "@/types";
+import { Project, Pin, PinStatus, DeviceMode, InteractionMode, ClientTelemetry, AssetType, DomAnchor } from "@/types";
 
 function syncCanvasToServer(project: Project) {
   if (!project || !project.shareId) return;
@@ -47,7 +47,8 @@ interface ReviewState {
     pageUrl?: string,
     widthPercent?: number,
     heightPercent?: number,
-    annotationType?: "point" | "box"
+    annotationType?: "point" | "box",
+    domAnchor?: DomAnchor
   ) => void;
   addComment: (
     projectId: string,
@@ -150,7 +151,7 @@ export const useReviewStore = create<ReviewState>()(
         return get().projects.find((p) => p.shareId === shareId);
       },
 
-      addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName, pageUrl, widthPercent, heightPercent, annotationType) => {
+      addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName, pageUrl, widthPercent, heightPercent, annotationType, domAnchor) => {
         const pinId = nanoid();
         set((state) => {
           let updatedTargetProject: Project | null = null;
@@ -167,6 +168,7 @@ export const useReviewStore = create<ReviewState>()(
               annotationType: annotationType || (widthPercent && heightPercent ? "box" : "point"),
               widthPercent: widthPercent || undefined,
               heightPercent: heightPercent || undefined,
+              domAnchor: domAnchor || undefined,
               status: "open",
               deviceMode: state.activeDeviceMode,
               pageUrl: pageUrl || proj.targetUrl,

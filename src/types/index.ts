@@ -24,6 +24,17 @@ export interface Comment {
   createdAt: string;
 }
 
+export interface DomAnchor {
+  selector: string;
+  xpath?: string;
+  tagName: string;
+  textContent?: string;
+  elementOffsetXPercent: number;
+  elementOffsetYPercent: number;
+  docX: number;
+  docY: number;
+}
+
 export interface Pin {
   id: string;
   projectId: string;
@@ -33,6 +44,7 @@ export interface Pin {
   annotationType?: AnnotationType;
   widthPercent?: number;
   heightPercent?: number;
+  domAnchor?: DomAnchor;
   status: PinStatus;
   deviceMode: DeviceMode;
   pageUrl: string;
