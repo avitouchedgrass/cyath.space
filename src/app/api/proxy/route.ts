@@ -63,10 +63,15 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    let clientAccept = req.headers.get("accept") || "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
+    if (clientAccept.includes("text/x-component") && !clientAccept.includes("*/*")) {
+      clientAccept = clientAccept + ", */*";
+    }
+
     const forwardedHeaders: Record<string, string> = {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      Accept: req.headers.get("accept") || "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      Accept: clientAccept,
       "Accept-Language": req.headers.get("accept-language") || "en-US,en;q=0.9",
     };
 
@@ -148,19 +153,24 @@ export async function GET(req: NextRequest) {
   var targetOrigin = ${JSON.stringify(targetOrigin)};
   var currentTargetUrl = initialTargetUrl;
   var isAudioMuted = ${shouldMuteAudio ? "true" : "false"};
-  // Fix SPA router 404: correct pathname before client-side router boots
-  try { history.replaceState(null, '', ${JSON.stringify(new URL(finalUrl).pathname || "/")}); } catch(e) {}
-  window.__cyathAudioContexts = [];
-
   // Synchronize location pathname for client-side routers (React Router, Next.js, Vue Router)
   // Prevents SPAs (like shivayur.com) from falling into a 404 catch-all route when seeing /api/proxy
   try {
     var targetUrlObj = new URL(initialTargetUrl);
     var targetPath = (targetUrlObj.pathname || '/') + (targetUrlObj.search || '') + (targetUrlObj.hash || '');
-    if (window.location.pathname.indexOf('/api/proxy') !== -1) {
-      history.replaceState(null, '', targetPath);
-    }
+    history.replaceState(null, '', targetPath);
   } catch(e) {}
+  window.__cyathAudioContexts = [];
+
+  // Suppress third-party tracker unhandled rejections that could trip root error boundaries
+  window.addEventListener('unhandledrejection', function(event) {
+    if (event && event.reason) {
+      var reasonStr = (event.reason.message || event.reason.stack || String(event.reason)).toLowerCase();
+      if (reasonStr.includes('analytics') || reasonStr.includes('gtm') || reasonStr.includes('sentry') || reasonStr.includes('datadog') || reasonStr.includes('segment')) {
+        event.preventDefault();
+      }
+    }
+  });
 
   // Audio silencing protocol for preview cards and muted canvases
   function applyAudioMute(muted) {

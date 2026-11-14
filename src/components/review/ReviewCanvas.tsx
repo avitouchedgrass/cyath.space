@@ -74,6 +74,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
     deletePin,
     toggleResolvePin,
     approveProject,
+    revokeApproval,
     hydrateProject,
   } = useReviewStore();
 
@@ -396,10 +397,12 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
     widthPercent?: number,
     heightPercent?: number,
     annotationType?: "point" | "box",
-    domAnchor?: import("@/types").DomAnchor
+    domAnchor?: import("@/types").DomAnchor,
+    audioUrl?: string,
+    audioDurationSeconds?: number
   ) => {
     const telemetry = captureClientTelemetry(activeDeviceMode);
-    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl, widthPercent, heightPercent, annotationType, domAnchor);
+    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl, widthPercent, heightPercent, annotationType, domAnchor, audioUrl, audioDurationSeconds);
   };
 
   const handleAddComment = (pinId: string, content: string, authorName: string) => {
@@ -924,7 +927,12 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
       {showApprovalModal && (
         <ApprovalModal
           project={project}
+          theme={theme}
           onApprove={handleApprove}
+          onRevoke={() => {
+            revokeApproval(project.id);
+            setShowApprovalModal(false);
+          }}
           onClose={() => setShowApprovalModal(false)}
         />
       )}

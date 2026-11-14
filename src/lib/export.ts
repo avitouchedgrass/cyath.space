@@ -22,6 +22,9 @@ export function exportProjectAsMarkdown(project: Project): string {
         : `${pin.deviceMode}`;
       md += `- [ ] **#${pin.number}** (${telemetryInfo})\n`;
       md += `  > ${firstComment}\n`;
+      if (pin.audioUrl) {
+        md += `  _Voice note attached (${pin.audioDurationSeconds || 5}s)_\n`;
+      }
       if (Array.isArray(pin.comments) && pin.comments.length > 1) {
         md += `  _(${pin.comments.length - 1} follow-up replies)_\n`;
       }

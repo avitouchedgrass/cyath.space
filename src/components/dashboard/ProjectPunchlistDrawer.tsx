@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, CheckCircle2, Clock, Globe, Copy, Check, ExternalLink, Monitor, Smartphone, Tablet } from "lucide-react";
+import { X, CheckCircle2, Clock, Globe, Copy, Check, ExternalLink, Monitor, Smartphone, Tablet, Volume2 } from "lucide-react";
 import { Project, Pin } from "@/types";
 import { useReviewStore } from "@/store/useReviewStore";
 
@@ -54,6 +54,9 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
         ? `${pin.telemetry.viewportWidth || "—"}×${pin.telemetry.viewportHeight || "—"} • ${pin.telemetry.browser || ""} • ${pin.telemetry.os || ""}`
         : `${pin.deviceMode}`;
       md += `- **Device:** ${devInfo}\n`;
+      if (pin.audioUrl) {
+        md += `- **Voice Note:** Attached (${pin.audioDurationSeconds || 5}s audio)\n`;
+      }
       md += `- **Created:** ${pin.createdAt}\n\n`;
 
       if (pin.comments.length > 0) {
@@ -227,6 +230,12 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
                       <span className="font-mono text-[11px] font-medium text-zinc-400">
                         {pin.deviceMode} · ({pin.xPercent}%, {pin.yPercent}%)
                       </span>
+                      {pin.audioUrl && (
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono border border-white/20 bg-white/5 text-zinc-300 flex items-center gap-1">
+                          <Volume2 className="w-2.5 h-2.5" />
+                          <span>Voice Note</span>
+                        </span>
+                      )}
                     </div>
 
                     <button

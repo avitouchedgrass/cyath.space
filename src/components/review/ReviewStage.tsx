@@ -28,7 +28,9 @@ interface ReviewStageProps {
     widthPercent?: number,
     heightPercent?: number,
     annotationType?: "point" | "box",
-    domAnchor?: DomAnchor
+    domAnchor?: DomAnchor,
+    audioUrl?: string,
+    audioDurationSeconds?: number
   ) => void;
   onAddComment: (pinId: string, content: string, authorName: string) => void;
   onToggleResolve: (pinId: string) => void;
@@ -243,7 +245,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     dragStartRef.current = null;
   };
 
-  const handleSaveNewPin = (comment: string, authorName: string) => {
+  const handleSaveNewPin = (comment: string, authorName: string, audioUrl?: string, audioDurationSeconds?: number) => {
     if (!pendingPinCoords) return;
     onAddPin(
       pendingPinCoords.xPercent,
@@ -254,7 +256,9 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       pendingPinCoords.widthPercent,
       pendingPinCoords.heightPercent,
       pendingPinCoords.annotationType,
-      pendingPinCoords.domAnchor
+      pendingPinCoords.domAnchor,
+      audioUrl,
+      audioDurationSeconds
     );
     setPendingPinCoords(null);
   };

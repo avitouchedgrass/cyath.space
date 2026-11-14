@@ -48,7 +48,9 @@ interface ReviewState {
     widthPercent?: number,
     heightPercent?: number,
     annotationType?: "point" | "box",
-    domAnchor?: DomAnchor
+    domAnchor?: DomAnchor,
+    audioUrl?: string,
+    audioDurationSeconds?: number
   ) => void;
   addComment: (
     projectId: string,
@@ -60,6 +62,7 @@ interface ReviewState {
   deletePin: (projectId: string, pinId: string) => void;
   toggleResolvePin: (projectId: string, pinId: string, resolvedBy?: string) => void;
   approveProject: (projectId: string, approverName: string, organization?: string) => void;
+  revokeApproval: (projectId: string) => void;
   activatePro: () => void;
   cancelPro: () => void;
   setActivePinId: (pinId: string | null) => void;
@@ -155,7 +158,7 @@ export const useReviewStore = create<ReviewState>()(
         return get().projects.find((p) => p.shareId === shareId);
       },
 
-      addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName, pageUrl, widthPercent, heightPercent, annotationType, domAnchor) => {
+      addPin: (projectId, xPercent, yPercent, telemetry, initialComment, authorName, pageUrl, widthPercent, heightPercent, annotationType, domAnchor, audioUrl, audioDurationSeconds) => {
         const pinId = nanoid();
         set((state) => {
           let updatedTargetProject: Project | null = null;
@@ -177,6 +180,8 @@ export const useReviewStore = create<ReviewState>()(
               deviceMode: state.activeDeviceMode,
               pageUrl: pageUrl || proj.targetUrl,
               telemetry,
+              audioUrl: audioUrl || undefined,
+              audioDurationSeconds: audioDurationSeconds || undefined,
               createdAt: new Date().toISOString(),
               comments: [
                 {
@@ -311,6 +316,28 @@ export const useReviewStore = create<ReviewState>()(
               approvedAt: new Date().toISOString(),
               approvedBy: signature,
               approvalSignature: signature,
+            };
+            updatedTargetProject = updatedProj;
+            return updatedProj;
+          });
+          if (updatedTargetProject) {
+            syncCanvasToServer(updatedTargetProject);
+          }
+          return { projects: updatedProjects };
+        });
+      },
+
+      revokeApproval: (projectId) => {
+        set((state) => {
+          let updatedTargetProject: Project | null = null;
+          const updatedProjects = state.projects.map((proj) => {
+            if (proj.id !== projectId && proj.shareId !== projectId) return proj;
+            const updatedProj = {
+              ...proj,
+              isApproved: false,
+              approvedAt: undefined,
+              approvedBy: undefined,
+              approvalSignature: undefined,
             };
             updatedTargetProject = updatedProj;
             return updatedProj;

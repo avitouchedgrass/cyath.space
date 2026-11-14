@@ -783,11 +783,11 @@ export default function DashboardPage() {
                 );
               })}
 
-              {/* Free Tier Balance Placeholder Card: Subtle ghost slot filling empty grid space */}
+              {/* Free Tier Balance Placeholder Card: Subtle ghost slots covering 2/3 spots on the right */}
               {!isUserPro && userProjects.length === 1 && (
                 <div
                   onClick={() => setShowUpgradeModal(true)}
-                  className={`group rounded-2xl border border-dashed transition-all duration-300 flex flex-col overflow-hidden relative cursor-pointer active:scale-[0.995] hover:-translate-y-1 ${
+                  className={`md:col-span-1 lg:col-span-2 group rounded-2xl border border-dashed transition-all duration-300 flex flex-col overflow-hidden relative cursor-pointer active:scale-[0.995] hover:-translate-y-1 ${
                     isDay
                       ? "border-stone-300 bg-stone-50/70 hover:bg-stone-100/90 text-stone-900 shadow-xs hover:border-stone-400"
                       : "border-white/15 bg-white/[0.015] hover:bg-white/[0.035] text-white hover:border-white/30 shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
@@ -803,8 +803,8 @@ export default function DashboardPage() {
                       <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
                       <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
                       <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
-                      <span className={`text-[10px] font-mono truncate max-w-[130px] ml-1.5 opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                        pro-canvas-slot.cyath
+                      <span className={`text-[10px] font-mono truncate max-w-[200px] ml-1.5 opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
+                        slots-02-03.pro-cluster.cyath
                       </span>
                     </div>
 
@@ -813,54 +813,71 @@ export default function DashboardPage() {
                         ? "border-stone-300 bg-white text-stone-700 font-medium"
                         : "border-white/15 bg-white/5 text-zinc-400"
                     }`}>
-                      Studio Pro
+                      Studio Pro Slots
                     </span>
                   </div>
 
-                  {/* Viewport Preview Stage Placeholder with Blueprint Grid */}
+                  {/* Dual Blueprint Viewport Stages covering the 2 spots */}
                   <div
-                    className={`relative w-full aspect-[16/10] overflow-hidden border-b border-dashed flex flex-col items-center justify-center p-6 text-center transition-colors ${
+                    className={`relative w-full overflow-hidden border-b border-dashed p-6 transition-colors ${
                       isDay ? "bg-stone-100/40 border-stone-200" : "bg-black/40 border-white/10"
                     }`}
                   >
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
-                    
-                    <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-105 ${
-                      isDay
-                        ? "border-stone-300 bg-white text-stone-800 shadow-xs"
-                        : "border-white/20 bg-white/5 text-white shadow-[0_0_20px_rgba(255,255,255,0.08)]"
-                    }`}>
-                      <Plus className="w-5 h-5 opacity-80" />
-                    </div>
 
-                    <div className="text-xs font-sans font-semibold tracking-tight mb-1 relative z-10">
-                      Add a 2nd canvas on Pro
+                    <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+                      {/* Slot 02 Ghost Box */}
+                      <div className={`p-4 rounded-xl border border-dashed flex flex-col items-center justify-center text-center transition-all ${
+                        isDay ? "border-stone-200 bg-white/60 hover:bg-white" : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
+                      }`}>
+                        <div className={`w-9 h-9 rounded-xl border flex items-center justify-center mb-2.5 transition-transform duration-300 group-hover:scale-105 ${
+                          isDay ? "border-stone-300 bg-white text-stone-800 shadow-xs" : "border-white/20 bg-white/5 text-white"
+                        }`}>
+                          <Plus className="w-4 h-4 opacity-80" />
+                        </div>
+                        <div className="text-xs font-sans font-semibold tracking-tight mb-0.5">
+                          Add 2nd Canvas
+                        </div>
+                        <p className={`text-[10px] font-sans max-w-[180px] leading-relaxed ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
+                          Concurrent staging link with live client annotations & device viewports.
+                        </p>
+                      </div>
+
+                      {/* Slot 03 Ghost Box */}
+                      <div className={`p-4 rounded-xl border border-dashed flex flex-col items-center justify-center text-center transition-all ${
+                        isDay ? "border-stone-200 bg-white/60 hover:bg-white" : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
+                      }`}>
+                        <div className={`w-9 h-9 rounded-xl border flex items-center justify-center mb-2.5 transition-transform duration-300 group-hover:scale-105 ${
+                          isDay ? "border-stone-300 bg-white text-stone-800 shadow-xs" : "border-white/20 bg-white/5 text-white"
+                        }`}>
+                          <Plus className="w-4 h-4 opacity-80" />
+                        </div>
+                        <div className="text-xs font-sans font-semibold tracking-tight mb-0.5">
+                          Add 3rd Canvas
+                        </div>
+                        <p className={`text-[10px] font-sans max-w-[180px] leading-relaxed ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
+                          Autonomous MCP agent sync, client milestone sign-offs & unlimited storage.
+                        </p>
+                      </div>
                     </div>
-                    <p className={`text-[11px] font-sans max-w-[210px] leading-relaxed relative z-10 ${
-                      isDay ? "text-stone-500" : "text-zinc-500"
-                    }`}>
-                      Concurrent staging links, multi-device viewports & autonomous agent sync.
-                    </p>
                   </div>
 
                   {/* Bottom Metadata & Controls */}
-                  <div className="p-4 flex flex-col justify-between flex-1 gap-3">
+                  <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between flex-1 gap-3">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-0.5">
                         <span className={`text-xs font-sans font-semibold ${isDay ? "text-stone-800" : "text-zinc-200"}`}>
-                          Staging Slot 02
+                          Unlock Unlimited Review Canvases
                         </span>
                       </div>
                       <div className={`text-[11px] font-mono truncate opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                        unlock-unlimited-canvases
+                        upgrade to cyath pro for infinite simultaneous client links
                       </div>
                     </div>
 
-                    <div className={`flex items-center justify-between pt-2 border-t border-dashed ${
-                      isDay ? "border-stone-200" : "border-white/10"
-                    }`}>
-                      <span className={`text-[10px] font-mono uppercase tracking-wider ${isDay ? "text-stone-500 font-medium" : "text-zinc-500"}`}>
-                        Unlimited Canvases
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                      <span className={`text-[10px] font-mono uppercase tracking-wider hidden md:inline ${isDay ? "text-stone-500 font-medium" : "text-zinc-500"}`}>
+                        Instant Activation
                       </span>
 
                       <span className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all duration-150 flex items-center gap-1.5 shadow-sm active:scale-[0.96] ${
@@ -868,7 +885,7 @@ export default function DashboardPage() {
                           ? "bg-stone-900 text-white group-hover:bg-stone-800 shadow-stone-300"
                           : "bg-white text-black group-hover:bg-zinc-200 shadow-[0_0_16px_rgba(255,255,255,0.2)]"
                       }`}>
-                        <span>Upgrade</span>
+                        <span>Upgrade to Pro</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </span>
                     </div>

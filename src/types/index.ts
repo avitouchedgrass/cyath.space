@@ -53,6 +53,8 @@ export interface Pin {
   createdAt: string;
   resolvedAt?: string;
   resolvedBy?: string;
+  audioUrl?: string;
+  audioDurationSeconds?: number;
 }
 
 export interface Project {
