@@ -29,10 +29,6 @@ export function startDashboardTour(onComplete?: () => void) {
     id: "welcome",
     title: "Cyath Staging Workspace",
     text: "Welcome to your review cockpit. Clients leave hardware-anchored notes on live deployments with exact screen telemetry attached.",
-    attachTo: {
-      element: "#tour-sidebar",
-      on: "right",
-    },
     buttons: [
       {
         text: "Skip Tour",
@@ -40,7 +36,7 @@ export function startDashboardTour(onComplete?: () => void) {
         action: () => tour.complete(),
       },
       {
-        text: "Next",
+        text: "Start Tour →",
         classes: "shepherd-button-primary",
         action: () => tour.next(),
       },
@@ -75,7 +71,29 @@ export function startDashboardTour(onComplete?: () => void) {
     text: "Each card displays a live preview viewport, client notes counter, and instant share link. Click to open the review canvas.",
     attachTo: {
       element: "#tour-projects-section",
-      on: "top",
+      on: "bottom",
+    },
+    buttons: [
+      {
+        text: "Back",
+        classes: "shepherd-button-secondary",
+        action: () => tour.back(),
+      },
+      {
+        text: "Next",
+        classes: "shepherd-button-primary",
+        action: () => tour.next(),
+      },
+    ],
+  });
+
+  tour.addStep({
+    id: "navigation",
+    title: "Workspace Navigation",
+    text: "Access your project canvases, team settings, AI agent keys, and plan settings anytime from the left rail.",
+    attachTo: {
+      element: "#tour-sidebar-projects",
+      on: "right",
     },
     buttons: [
       {
@@ -93,10 +111,10 @@ export function startDashboardTour(onComplete?: () => void) {
 
   tour.addStep({
     id: "plans",
-    title: "Active Canvas Quota",
+    title: "Active Canvas Quota & MCP",
     text: "Free accounts include 1 active review canvas. Upgrade to Pro for unlimited canvases, team punchlists, and MCP agent sync.",
     attachTo: {
-      element: "#tour-plans-link",
+      element: "#tour-sidebar-plans",
       on: "right",
     },
     buttons: [

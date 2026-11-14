@@ -148,6 +148,20 @@ export default function DashboardPage() {
     };
   }, [router, supabase]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("startTour") === "1") {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("startTour");
+        window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
+        setTimeout(() => {
+          startDashboardTour();
+        }, 400);
+      }
+    }
+  }, []);
+
   const handleSignOut = async () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("cyath_guest_session");

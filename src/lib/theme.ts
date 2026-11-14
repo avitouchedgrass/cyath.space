@@ -50,3 +50,4 @@ export function useTheme() {
 
   return { theme, isDay: theme === "day", toggle };
 }
+

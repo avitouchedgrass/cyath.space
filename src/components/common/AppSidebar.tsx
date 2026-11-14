@@ -132,6 +132,7 @@ export function AppSidebar({
 
   return (
     <aside
+      id="tour-sidebar"
       className={`w-64 border-r flex flex-col justify-between p-5 select-none shrink-0 transition-colors duration-200 z-30 ${
         isDay
           ? "bg-[#F4F1EA] border-stone-200 text-stone-900"

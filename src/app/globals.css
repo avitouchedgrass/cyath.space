@@ -335,11 +335,13 @@ button, a, input, select, textarea {
 }
 
 .shepherd-modal-overlay-container {
-  opacity: 0.75 !important;
+  z-index: 99998 !important;
+  opacity: 0.65 !important;
   backdrop-filter: blur(4px) !important;
 }
 
 .shepherd-element.cyath-shepherd-theme {
+  z-index: 100000 !important;
   background: #0c0c0e !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 16px !important;
@@ -349,6 +351,15 @@ button, a, input, select, textarea {
   max-width: 380px !important;
   padding: 16px !important;
   outline: none !important;
+}
+
+.shepherd-element.shepherd-centered {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 100000 !important;
 }
 
 .cyath-shepherd-theme .shepherd-content {
