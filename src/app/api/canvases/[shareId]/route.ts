@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import os from "os";
 
 // In-memory runtime cache
 const canvasMemoryStore = new Map<string, any>();
 
 function getStorageDir() {
-  const tmpDir = path.join("/tmp", "cyath_canvases");
   try {
-    if (!fs.existsSync(tmpDir)) {
-      fs.mkdirSync(tmpDir, { recursive: true });
+    const localDir = path.join(process.cwd(), ".cyath_data");
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
     }
-    return tmpDir;
+    return localDir;
   } catch {
-    return null;
+    const tmpDir = path.join(os.tmpdir(), "cyath_canvases");
+    try {
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+      return tmpDir;
+    } catch {
+      return null;
+    }
   }
 }
 
@@ -83,8 +92,30 @@ export async function POST(
 
   try {
     const body = await req.json();
+
+    // Check existing stored data to prevent clobbering pins when anonymous visitors mount
+    let existingData = canvasMemoryStore.get(shareId);
+    if (!existingData) {
+      const storageDir = getStorageDir();
+      if (storageDir) {
+        const filePath = path.join(storageDir, `${shareId}.json`);
+        if (fs.existsSync(filePath)) {
+          try {
+            existingData = JSON.parse(fs.readFileSync(filePath, "utf8"));
+          } catch {}
+        }
+      }
+    }
+
+    const incomingPins = Array.isArray(body.pins) ? body.pins : [];
+    const existingPins = Array.isArray(existingData?.pins) ? existingData.pins : [];
+    const resolvedPins =
+      incomingPins.length > 0 ? incomingPins : body._explicitEmpty ? [] : existingPins;
+
     const data = {
+      ...(existingData || {}),
       ...body,
+      pins: resolvedPins,
       shareId,
       updatedAt: new Date().toISOString(),
     };

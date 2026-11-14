@@ -71,7 +71,6 @@ body {
   font-family: var(--font-sans);
   font-weight: 500;
   overflow-x: hidden;
-  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .font-mono, [class*="font-mono"] {
@@ -220,6 +219,28 @@ button, a, input, select, textarea {
 .page-enter {
   animation: pageEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity, transform;
+}
+
+/* Pin Popover Validation Shake & Expand-to-Pin Collapse Keyframes */
+@keyframes modalShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-modal-shake {
+  animation: modalShake 0.4s ease-in-out;
+}
+
+@keyframes pinCollapse {
+  0% { transform: scale(1); opacity: 1; }
+  35% { transform: scale(1.05); opacity: 0.95; }
+  100% { transform: scale(0.08); opacity: 0; filter: blur(3px); }
+}
+
+.animate-pin-collapse {
+  animation: pinCollapse 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: top left;
 }
 
 /* ReactBits StarBorder travelling light keyframes */

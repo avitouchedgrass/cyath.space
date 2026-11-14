@@ -10,7 +10,7 @@ import {
   Copy,
   Check,
   Building,
-  Sun,
+  SunMedium,
   Moon,
   User,
   Key,
@@ -23,6 +23,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
 import { AppSidebar } from "@/components/common/AppSidebar";
+import { useTheme, setThemeGlobally } from "@/lib/theme";
 
 type SettingsTab = "profile" | "keys" | "firm" | "billing" | "preferences";
 
@@ -38,26 +39,9 @@ function SettingsContent() {
   const [isSaved, setIsSaved] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedConfig, setCopiedConfig] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"night" | "day">("night");
+  const { theme, isDay, toggle: toggleTheme } = useTheme();
 
   const { isPro, projects } = useReviewStore();
-
-  useEffect(() => {
-    const saved = localStorage.getItem("cyath_theme") as "night" | "day";
-    if (saved) {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    document.documentElement.setAttribute("data-theme", next);
-  };
-
-  const isDay = theme === "day";
 
   useEffect(() => {
     const supabase = createClient();
@@ -590,11 +574,7 @@ function SettingsContent() {
                     </label>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => {
-                          setTheme("night");
-                          localStorage.setItem("cyath_theme", "night");
-                          document.documentElement.setAttribute("data-theme", "night");
-                        }}
+                        onClick={() => setThemeGlobally("night")}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono border transition-all duration-150 active:scale-[0.96] cursor-pointer ${
                           !isDay ? "bg-white text-black font-semibold border-white" : "border-stone-300 text-stone-700 hover:bg-stone-100"
                         }`}
@@ -603,16 +583,12 @@ function SettingsContent() {
                         <span>Night</span>
                       </button>
                       <button
-                        onClick={() => {
-                          setTheme("day");
-                          localStorage.setItem("cyath_theme", "day");
-                          document.documentElement.setAttribute("data-theme", "day");
-                        }}
+                        onClick={() => setThemeGlobally("day")}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono border transition-all duration-150 active:scale-[0.96] cursor-pointer ${
                           isDay ? "bg-stone-900 text-white font-semibold border-stone-900" : "border-white/20 text-zinc-300 hover:bg-white/10"
                         }`}
                       >
-                        <Sun className="w-3.5 h-3.5" />
+                        <SunMedium className="w-3.5 h-3.5" />
                         <span>Day</span>
                       </button>
                     </div>

@@ -128,7 +128,9 @@ export const useReviewStore = create<ReviewState>()(
             };
             const updated = [...currentProjects];
             updated[existingIndex] = merged;
-            syncCanvasToServer(merged);
+            if (incomingPins.length > 0) {
+              syncCanvasToServer(merged);
+            }
             return { projects: updated };
           }
           const sanitizedProject: Project = {
@@ -136,7 +138,9 @@ export const useReviewStore = create<ReviewState>()(
             agencyName: project.agencyName || "Independent Firm",
             pins: incomingPins,
           };
-          syncCanvasToServer(sanitizedProject);
+          if (incomingPins.length > 0) {
+            syncCanvasToServer(sanitizedProject);
+          }
           return { projects: [sanitizedProject, ...currentProjects] };
         });
       },

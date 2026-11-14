@@ -380,17 +380,6 @@ export async function GET(req: NextRequest) {
     }
   }, true);
 
-  // Forward mouse wheel events so stage container and pins scroll in sync
-  window.addEventListener('wheel', function(e) {
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({
-        type: 'CYATH_WHEEL',
-        deltaY: e.deltaY,
-        deltaX: e.deltaX
-      }, '*');
-    }
-  }, { passive: true });
-
   // Dynamic stage height synchronizer with anti-runaway clamping & debouncing
   var lastSentHeight = 0;
   var resizeDebounceTimer = null;

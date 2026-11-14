@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X, Maximize2, Minimize2, MousePointer2, MessageSquarePlus, Square, Volume2, VolumeX, CheckCircle2, Monitor, Tablet, Smartphone, ChevronRight, PanelLeftClose, Share2, Sun, Moon, Sliders, Check } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X, Maximize2, Minimize2, MousePointer2, MessageSquarePlus, Square, Volume2, VolumeX, CheckCircle2, Monitor, Tablet, Smartphone, ChevronRight, PanelLeftClose, Share2, SunMedium, Moon, Sliders, Check } from "lucide-react";
 import { formatPageLabel } from "@/lib/colors";
 import { useReviewStore } from "@/store/useReviewStore";
 import { ReviewStage } from "@/components/review/ReviewStage";
@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 import { TesseractMark } from "@/components/common/Logo";
 import { WarmTooltip } from "@/components/common/WarmTooltip";
 import { Project } from "@/types";
+import { useTheme } from "@/lib/theme";
 
 interface ReviewCanvasProps {
   shareId: string;
@@ -36,29 +37,8 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
   const [currentPageUrl, setCurrentPageUrl] = useState<string>("");
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
-  const [theme, setTheme] = useState<"night" | "day">("night");
+  const { theme, isDay, toggle: toggleTheme } = useTheme();
   const hydratedShareIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("cyath_theme") as "night" | "day";
-      if (saved === "day" || saved === "night") {
-        setTheme(saved);
-        document.documentElement.setAttribute("data-theme", saved);
-      }
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", next);
-    }
-  };
-
-  const isDay = theme === "day";
 
   const toggleNativeFullscreen = () => {
     if (typeof document === "undefined") return;
@@ -233,6 +213,14 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
     }
 
     fetchFromSupabase();
+
+    const interval = setInterval(fetchServerCanvas, 3500);
+    const handleFocus = () => fetchServerCanvas();
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [shareId, searchParams, hydrateProject, setClientAuthorName]);
 
   // Keyboard hotkeys: C (Comment), V (Browse), 1/2/3/4 (Devices), Esc (Deselect)
@@ -534,7 +522,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
               }`}
               title="Toggle Theme"
             >
-              {isDay ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              {isDay ? <Moon className="w-4 h-4" /> : <SunMedium className="w-4 h-4" />}
             </button>
           </WarmTooltip>
 
@@ -686,7 +674,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
                 >
                   <span>Appearance</span>
                   <span className="flex items-center gap-1.5 text-[11px]">
-                    {isDay ? <><Sun className="w-3.5 h-3.5" /> Day</> : <><Moon className="w-3.5 h-3.5" /> Night</>}
+                    {isDay ? <><SunMedium className="w-3.5 h-3.5" /> Day</> : <><Moon className="w-3.5 h-3.5" /> Night</>}
                   </span>
                 </button>
 

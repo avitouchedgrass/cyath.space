@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Check, Send, Trash2, Copy } from "lucide-react";
 import { Pin } from "@/types";
+import { HoldButton } from "@/components/common/HoldButton";
 
 interface PinPopoverProps {
   pin?: Pin;
@@ -34,10 +35,31 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   onClose,
 }) => {
   const isDay = theme === "day";
+  const popoverRef = useRef<HTMLDivElement>(null);
   const [commentText, setCommentText] = useState("");
   const [name, setName] = useState(initialAuthorName || "Guest Reviewer");
   const [replyText, setReplyText] = useState("");
   const [copiedIssue, setCopiedIssue] = useState(false);
+  const [isVibrating, setIsVibrating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isCollapsing, setIsCollapsing] = useState(false);
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    const t = setTimeout(() => {
+      document.addEventListener("mousedown", handleOutside);
+      document.addEventListener("touchstart", handleOutside);
+    }, 80);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
+  }, [onClose]);
 
   const handleCopyIssue = () => {
     if (!pin) return;
@@ -101,11 +123,20 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
 
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
-    if (onSaveNewPin) {
-      onSaveNewPin(commentText.trim(), name.trim() || "Guest Reviewer");
-      setCommentText("");
+    if (!commentText.trim()) {
+      setIsVibrating(true);
+      setErrorMessage("write something");
+      setTimeout(() => setIsVibrating(false), 400);
+      setTimeout(() => setErrorMessage(""), 1500);
+      return;
     }
+    setIsCollapsing(true);
+    setTimeout(() => {
+      if (onSaveNewPin) {
+        onSaveNewPin(commentText.trim(), name.trim() || "Guest Reviewer");
+        setCommentText("");
+      }
+    }, 220);
   };
 
   const handleReplySubmit = (e: React.FormEvent) => {
@@ -143,12 +174,16 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
 
   return (
     <div
+      ref={popoverRef}
       onClick={(e) => e.stopPropagation()}
       style={popoverStyle}
-      className={`border rounded-xl shadow-2xl p-4 text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl font-sans cursor-default ${isDay
+      className={`border rounded-xl shadow-2xl p-4 text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl font-sans cursor-default ${
+        isVibrating ? "animate-modal-shake" : ""
+      } ${isCollapsing ? "animate-pin-collapse" : ""} ${
+        isDay
           ? "bg-white border-stone-300 text-stone-900 shadow-[0_20px_60px_rgba(0,0,0,0.16)] selection:bg-stone-200"
           : "bg-[#0a0a0a] border-white/20 text-white shadow-2xl selection:bg-white selection:text-black"
-        }`}
+      }`}
     >
       {/* Header */}
       <div className={`flex items-center justify-between border-b pb-2.5 mb-3 ${isDay ? "border-stone-200" : "border-white/[0.08]"}`}>
@@ -198,19 +233,17 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           )}
 
           {!isNew && pin && onDeletePin && (
-            <button
-              onClick={() => {
-                if (window.confirm(`Delete Pin #${pin.number}?`)) {
-                  onDeletePin(pin.id);
-                  onClose();
-                }
+            <HoldButton
+              onHoldComplete={() => {
+                onDeletePin(pin.id);
+                onClose();
               }}
+              title="Hold to delete this pin"
               className={`p-1 rounded transition-colors cursor-pointer ${isDay ? "text-stone-400 hover:text-rose-600 hover:bg-rose-50" : "text-zinc-500 hover:text-white hover:bg-white/10"
                 }`}
-              title="Delete this pin"
             >
               <Trash2 className="w-3.5 h-3.5" />
-            </button>
+            </HoldButton>
           )}
 
           <button
@@ -247,26 +280,36 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             <label className={`block text-[11px] font-medium mb-1 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
               Feedback / Change Request
             </label>
-            <textarea
-              autoFocus
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  if (commentText.trim()) {
+            <div className="relative">
+              <textarea
+                autoFocus
+                value={commentText}
+                onChange={(e) => {
+                  setCommentText(e.target.value);
+                  if (errorMessage) setErrorMessage("");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
                     handleCreateSubmit(e);
                   }
-                }
-              }}
-              rows={3}
-              placeholder="What needs to change here?"
-              className={`w-full rounded-lg p-2.5 text-xs focus:outline-none resize-none font-sans border ${isDay
-                  ? "bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-stone-900"
-                  : "bg-white/[0.04] border-white/10 text-white placeholder:text-zinc-600 focus:border-white/50"
+                }}
+                rows={3}
+                placeholder={errorMessage ? "" : "What needs to change here?"}
+                className={`w-full rounded-lg p-2.5 text-xs focus:outline-none resize-none font-sans border transition-colors ${
+                  errorMessage
+                    ? "border-red-500/70 bg-red-500/[0.04]"
+                    : isDay
+                      ? "bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-stone-900"
+                      : "bg-white/[0.04] border-white/10 text-white placeholder:text-zinc-600 focus:border-white/50"
                 }`}
-              required
-            />
+              />
+              {errorMessage && (
+                <div className="absolute inset-0 p-2.5 pointer-events-none flex items-start text-red-500 font-sans font-medium text-xs animate-in fade-in duration-150">
+                  {errorMessage}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center justify-between pt-1">

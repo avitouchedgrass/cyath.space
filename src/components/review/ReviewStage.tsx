@@ -151,9 +151,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         const clamped = Math.min(16000, Math.max(800, Math.round(event.data.height)));
         setFrameHeight(clamped);
       }
-      if (event.data?.type === "CYATH_WHEEL" && typeof event.data.deltaY === "number" && scrollViewportRef.current) {
-        scrollViewportRef.current.scrollTop += event.data.deltaY;
-      }
       if (event.data?.type === "CYATH_PAGE_NAVIGATED" && typeof event.data.url === "string") {
         setLocalPageUrl(event.data.url);
         setFrameHeight(900);
@@ -327,21 +324,24 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   return (
     <div
-      className={`flex-1 overflow-hidden flex justify-center items-start min-h-[calc(100vh-3.5rem)] selection:bg-stone-300 selection:text-black transition-all duration-300 ${isDay ? "bg-[#ECE8DE]" : "bg-[#000000]"
-        } ${isFullMode ? "p-0" : "p-3 sm:p-6"}`}
+      className={`flex-1 flex justify-center items-start selection:bg-stone-300 selection:text-black transition-all duration-300 ${
+        isDay ? "bg-[#ECE8DE]" : "bg-[#000000]"
+      } ${isFullMode ? "p-0 h-screen w-screen overflow-hidden" : "p-3 sm:p-6 min-h-[calc(100vh-3.5rem)] overflow-y-auto"}`}
     >
       <div
-        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${isFullMode
-            ? "rounded-none border-transparent shadow-none"
+        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${
+          isFullMode
+            ? "h-screen w-screen rounded-none border-0 shadow-none overflow-hidden"
             : isDay
-              ? "rounded-2xl border border-stone-300/80 shadow-[0_15px_45px_rgba(0,0,0,0.08)] bg-white"
-              : "rounded-xl border border-white/[0.08] shadow-2xl bg-[#0a0a0a]"
-          } relative`}
+              ? "rounded-2xl border border-stone-300/80 shadow-[0_15px_45px_rgba(0,0,0,0.08)] bg-white overflow-hidden"
+              : "rounded-2xl border border-white/[0.08] shadow-2xl bg-[#0a0a0a] overflow-hidden"
+        } relative`}
       >
         {/* Architectural Browser Chrome (Smooth animated collapse when entering Full Mode) */}
         <div
-          className={`transition-all duration-300 overflow-hidden ${isFullMode ? "max-h-0 opacity-0 pointer-events-none" : "max-h-10 opacity-100"
-            }`}
+          className={`transition-all duration-300 overflow-hidden ${
+            isFullMode ? "max-h-0 opacity-0 pointer-events-none" : "max-h-10 opacity-100"
+          }`}
         >
           <div
             className={`h-10 border-b px-4 flex items-center justify-between select-none shrink-0 ${isDay ? "bg-[#F5F2EA] border-stone-200" : "bg-[#050505] border-white/[0.08]"
@@ -439,15 +439,17 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               } catch {}
             }
           }}
-          className={`w-full overflow-y-auto overflow-x-hidden bg-white relative transition-all duration-300 ease-in-out ${isFullMode ? "h-[calc(100vh-3.5rem)]" : "max-h-[calc(100vh-9.5rem)]"
-            } ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
-            }`}
+          className={`w-full bg-white relative transition-all duration-300 ease-in-out ${
+            isFullMode
+              ? "h-screen w-screen overflow-hidden"
+              : "overflow-y-auto overflow-x-hidden max-h-[calc(100vh-9.5rem)] rounded-b-2xl"
+          } ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"}`}
         >
           {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
           <div
             ref={containerRef}
             className="relative w-full max-w-full overflow-x-hidden"
-            style={{ minHeight: stageMinHeight }}
+            style={{ minHeight: isFullMode ? "100vh" : stageMinHeight }}
           >
             {/* Content renderer based on assetType */}
             {project.assetType === "image" ? (
@@ -464,7 +466,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                     : `${project.targetUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
                 }
                 title={project.title}
-                className="w-full border-none select-none block"
+                className="w-full border-none select-none block pointer-events-none"
                 style={{
                   height: `${pdfHeight}px`,
                   minHeight: `${pdfHeight}px`,
@@ -481,8 +483,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 title={project.title}
                 className="w-full border-none select-none block max-w-full"
                 style={{
-                  height: isFullMode ? `${Math.max(frameHeight, 800)}px` : `${frameHeight}px`,
-                  minHeight: isFullMode ? "calc(100vh - 3.5rem)" : "800px",
+                  height: isFullMode ? "100vh" : `${frameHeight}px`,
+                  minHeight: isFullMode ? "100vh" : "800px",
                 }}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-presentation"
                 allow="camera 'none'; microphone 'none'"
@@ -544,16 +546,21 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               </div>
             )}
 
-            {/* Pending Draft Marker: Point Pin */}
+            {/* Pending Draft Marker: Point Pin with Ultra High Contrast Dual Rings & Radar Ping */}
             {pendingPinCoords && pendingPinCoords.annotationType !== "box" && (
               <div
                 style={{
                   left: `${pendingPinCoords.xPercent}%`,
                   top: `${pendingPinCoords.yPercent}%`,
                 }}
-                className="absolute -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full z-30 flex items-center justify-center font-mono font-bold text-xs bg-white text-black shadow-[0_0_24px_rgba(255,255,255,0.8)] ring-2 ring-white/60 animate-pulse pointer-events-none select-none"
+                className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-30"
               >
-                +
+                {/* Outer high-contrast radar ping */}
+                <div className="absolute inset-0 -m-1 rounded-full border border-black/80 ring-2 ring-white animate-ping opacity-60" />
+                {/* Solid Dual-Ring High-Contrast Pin Marker */}
+                <div className="relative w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs bg-black text-white border-2 border-white shadow-[0_4px_14px_rgba(0,0,0,0.6)] ring-1 ring-black">
+                  +
+                </div>
               </div>
             )}
 

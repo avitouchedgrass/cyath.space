@@ -9,7 +9,7 @@ import {
   Sliders,
   CreditCard,
   LogOut,
-  Sun,
+  SunMedium,
   Moon,
   FolderGit2,
 } from "lucide-react";
@@ -18,6 +18,7 @@ import { TesseractMark } from "@/components/common/Logo";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { startDashboardTour } from "@/lib/dashboardTour";
+import { useTheme } from "@/lib/theme";
 
 interface AppSidebarProps {
   activeItem: "projects" | "settings" | "plans";
@@ -32,34 +33,13 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const router = useRouter();
   const supabase = createClient();
-  const [theme, setTheme] = useState<"night" | "day">("night");
+  const { theme, isDay, toggle: toggleTheme } = useTheme();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [agencyName, setAgencyName] = useState("Studio");
 
   const { projects, isPro, proCancelled } = useReviewStore();
   const isUserPro = !proCancelled && (isPro || (typeof window !== "undefined" && localStorage.getItem("cyath_pro_member") === "true"));
   const userProjects = Array.isArray(projects) ? projects.filter(Boolean) : [];
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem("cyath_theme") as "night" | "day";
-      if (savedTheme === "day" || savedTheme === "night") {
-        setTheme(savedTheme);
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      }
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", next);
-    }
-  };
-
-  const isDay = theme === "day";
 
   useEffect(() => {
     let isCancelled = false;
@@ -190,14 +170,14 @@ export function AppSidebar({
 
           <button
             onClick={toggleTheme}
-            className={`p-1.5 rounded-lg border transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+            className={`p-1.5 rounded-lg transition-all duration-150 cursor-pointer active:scale-[0.92] ${
               isDay
-                ? "border-stone-300 text-stone-700 hover:text-stone-950 hover:bg-stone-200/70"
-                : "border-white/10 text-zinc-400 hover:text-white hover:bg-white/[0.06]"
+                ? "text-stone-600 hover:text-stone-950 hover:bg-stone-200/60"
+                : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
             }`}
-            title="Toggle theme"
+            title={isDay ? "Switch to Night Mode" : "Switch to Day Mode"}
           >
-            {isDay ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+            {isDay ? <Moon className="w-4 h-4" /> : <SunMedium className="w-4 h-4" />}
           </button>
         </div>
 

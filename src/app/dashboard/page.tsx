@@ -39,13 +39,15 @@ import { StudioUpgradeModal } from "@/components/dashboard/StudioUpgradeModal";
 import { startDashboardTour } from "@/lib/dashboardTour";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { StarBorder } from "@/components/common/StarBorder";
+import { HoldButton } from "@/components/common/HoldButton";
+import { useTheme } from "@/lib/theme";
 
 export default function DashboardPage() {
   const router = useRouter();
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [theme, setTheme] = useState<"night" | "day">("night");
+  const { theme, isDay } = useTheme();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -61,27 +63,6 @@ export default function DashboardPage() {
 
   const { projects, createProject, deleteProject, isPro, proCancelled } = useReviewStore();
   const isUserPro = !proCancelled && (isPro || (typeof window !== "undefined" && localStorage.getItem("cyath_pro_member") === "true"));
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem("cyath_theme");
-      if (savedTheme === "day" || savedTheme === "night") {
-        setTheme(savedTheme);
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      }
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", next);
-    }
-  };
-
-  const isDay = theme === "day";
 
   useEffect(() => {
     let isCancelled = false;
@@ -676,18 +657,13 @@ export default function DashboardPage() {
                           className="w-full h-full object-cover object-top opacity-100 group-hover:scale-[1.02] transition-all duration-300 pointer-events-none"
                         />
                       ) : isPdf ? (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-white/[0.02]">
-                          <div className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-2 group-hover:scale-105 transition-transform ${
-                            isDay ? "bg-stone-100 border-stone-300 text-stone-700" : "bg-white/5 border-white/10 text-zinc-400"
-                          }`}>
-                            <FileText className="w-6 h-6" />
-                          </div>
-                          <span className={`text-xs font-mono font-semibold ${isDay ? "text-stone-900" : "text-zinc-300"}`}>
-                            PDF Document
-                          </span>
-                          <span className={`text-[10px] font-mono mt-0.5 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                            Multi-Page Proofing Stage
-                          </span>
+                        <div className="relative w-full h-full overflow-hidden select-none pointer-events-none bg-stone-900">
+                          <iframe
+                            src={`${project.targetUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                            title={project.title}
+                            tabIndex={-1}
+                            className="w-[355%] h-[355%] origin-top-left scale-[0.2817] border-none pointer-events-none"
+                          />
                         </div>
                       ) : (
                         /* Web Preview Iframe Frame */
@@ -760,17 +736,18 @@ export default function DashboardPage() {
                             )}
                           </button>
 
-                          <button
-                            onClick={() => deleteProject(project.id)}
+                          <HoldButton
+                            onHoldComplete={() => deleteProject(project.id)}
+                            fillColor="#ff153e"
+                            title="Hold to delete project"
                             className={`p-1.5 rounded-lg border border-transparent transition-all cursor-pointer active:scale-[0.96] ${
                               isDay
                                 ? "text-stone-500 hover:text-stone-900 hover:border-stone-300 hover:bg-stone-100"
                                 : "text-zinc-400 hover:text-white hover:border-white/20 hover:bg-white/5"
                             }`}
-                            title="Delete Project"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          </HoldButton>
                         </div>
                       </div>
                     </div>

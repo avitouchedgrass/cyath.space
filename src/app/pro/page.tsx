@@ -16,6 +16,7 @@ import {
 import { useReviewStore } from "@/store/useReviewStore";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { Footer } from "@/components/common/Footer";
+import { useTheme } from "@/lib/theme";
 
 export default function ProPricingPage() {
   const router = useRouter();
@@ -23,17 +24,7 @@ export default function ProPricingPage() {
   const [billingCycle, setBillingCycle] = useState<"annual" | "monthly">("annual");
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
-  const [theme, setTheme] = useState<"night" | "day">("night");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("cyath_theme") as "night" | "day";
-    if (saved) {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    }
-  }, []);
-
-  const isDay = theme === "day";
+  const { theme, isDay } = useTheme();
 
   const handleActivatePro = () => {
     setIsActivating(true);
