@@ -23,6 +23,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
 import { Footer } from "@/components/common/Footer";
+import { AppSidebar } from "@/components/common/AppSidebar";
 
 type SettingsTab = "profile" | "keys" | "firm" | "billing" | "preferences";
 
@@ -157,76 +158,31 @@ function SettingsContent() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-200 font-sans flex flex-col selection:bg-stone-300 selection:text-black ${
+      className={`min-h-screen font-sans flex flex-col md:flex-row transition-colors duration-200 selection:bg-stone-300 selection:text-black ${
         isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
       }`}
     >
-      {/* Unified Top Navigation */}
-      <header
-        className={`border-b backdrop-blur-xl sticky top-0 z-40 transition-colors ${
-          isDay ? "border-stone-200/80 bg-[#FBF9F4]/90" : "border-white/[0.08] bg-[#000000]/80"
-        }`}
-      >
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/dashboard"
-            prefetch={true}
-            className="flex items-center gap-2.5 group p-1 transition-transform active:scale-[0.96]"
-          >
-            <TesseractMark
-              size={24}
-              className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
-                isDay ? "text-stone-900" : "text-white"
-              }`}
-            />
-            <span
-              className={`font-sans font-bold text-[19px] tracking-[-0.04em] leading-none transition-colors ${
-                isDay ? "text-[#1C1A18] group-hover:text-black" : "text-white"
-              }`}
-            >
-              cyath
-            </span>
-            <span
-              className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border ml-1 ${
-                isDay ? "border-stone-300 text-stone-600 bg-stone-100" : "border-white/20 text-zinc-400 bg-white/5"
-              }`}
-            >
-              Settings
-            </span>
-          </Link>
+      {/* Shared Persistent Left Sidebar */}
+      <AppSidebar activeItem="settings" />
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                isDay ? "text-stone-700 hover:text-stone-950 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/[0.06]"
-              }`}
-              title="Toggle theme"
-            >
-              {isDay ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-            </button>
-
-            <Link
-              href="/dashboard"
-              prefetch={true}
-              className={`px-3.5 py-1.5 rounded-lg border text-xs font-mono transition-all duration-150 active:scale-[0.96] flex items-center gap-2 ${
-                isDay
-                  ? "bg-white border-stone-200 text-stone-700 hover:text-stone-950 hover:bg-stone-50 shadow-xs"
-                  : "bg-white/[0.04] border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.08]"
-              }`}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Dashboard</span>
-            </Link>
+      {/* Main Settings Area with Smooth Fast Fade */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto relative page-enter">
+        <div className="max-w-6xl w-full mx-auto px-6 py-8 space-y-8 flex-1">
+          {/* Header Title matching Dashboard "Projects" */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-white/[0.08]">
+            <div>
+              <h1
+                className="text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight"
+                style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
+              >
+                Settings
+              </h1>
+            </div>
           </div>
-        </div>
-      </header>
 
-      {/* Modal Layout Model: Left Navigation Column + Right Content Area */}
-      <main className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-          {/* Left Navigation Column */}
-          <aside className="md:col-span-3 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            {/* Left Navigation Column */}
+            <aside className="md:col-span-3 space-y-6">
             <div className="space-y-1">
               <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 px-3 py-1.5">
                 Account
@@ -628,6 +584,7 @@ function SettingsContent() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </main>
 

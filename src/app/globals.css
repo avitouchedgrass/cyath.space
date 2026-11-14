@@ -4,7 +4,7 @@
   font-family: 'Breite Grotesk';
   src: url('/fonts/breite-grotesk.woff2') format('woff2'),
        url('/fonts/breite-grotesk.woff') format('woff');
-  font-weight: 400 700;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -13,14 +13,18 @@
   --font-sans: 'Breite Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Breite Grotesk', sans-serif;
   --font-serif: 'Oranienbaum', Georgia, serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Breite Grotesk', -apple-system, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+  --font-wordmark: 'Space Grotesk', -apple-system, sans-serif;
 }
 
 :root {
   --font-sans: 'Breite Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Breite Grotesk', sans-serif;
   --font-serif: 'Oranienbaum', Georgia, serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Breite Grotesk', -apple-system, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+  --font-wordmark: 'Space Grotesk', -apple-system, sans-serif;
 
   /* Surfaces — Night mode (Default) */
   --surface-canvas: #000000;
@@ -65,8 +69,21 @@ body {
   background-color: var(--surface-canvas);
   color: var(--text-primary);
   font-family: var(--font-sans);
+  font-weight: 500;
   overflow-x: hidden;
   transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.font-mono, [class*="font-mono"] {
+  font-family: var(--font-mono) !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.02em;
+}
+
+code, pre, .font-code, .mcp-terminal, .terminal-cmd, pre code {
+  font-family: var(--font-code) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0;
 }
 
 ::selection {
@@ -172,20 +189,77 @@ button, a, input, select, textarea {
   }
 }
 
-/* Smooth route transition with natural deceleration */
+/* Smooth route transition with natural fast fade */
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(5px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .page-enter {
-  animation: pageEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pageEnter 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ReactBits StarBorder travelling light keyframes */
+@keyframes star-movement-bottom {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100%, 0%);
+    opacity: 0;
+  }
+}
+
+@keyframes star-movement-top {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100%, 0%);
+    opacity: 0;
+  }
+}
+
+.animate-star-movement-bottom {
+  animation: star-movement-bottom 6s linear infinite alternate;
+}
+
+.animate-star-movement-top {
+  animation: star-movement-top 6s linear infinite alternate;
+}
+
+/* Landing Page Style Animated Dashed Border for Pro Pricing Card */
+@keyframes dash-animation {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.animated-dashed-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.animated-dashed-border rect {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 6;
+  animation: dash-animation 2s linear infinite;
+}
+
+[data-theme="day"] .animated-dashed-border rect {
+  stroke: #1c1917;
 }
 
 /* Accessible Reduced Motion Path */
@@ -205,7 +279,26 @@ button, a, input, select, textarea {
   }
 }
 
-/* Shepherd.js Dark Monochrome Theme */
+/* Shepherd.js Dark Monochrome Theme & Spotlight */
+.shepherd-target,
+.shepherd-enabled {
+  position: relative !important;
+  z-index: 99999 !important;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 45px rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+[data-theme="day"] .shepherd-target,
+[data-theme="day"] .shepherd-enabled {
+  box-shadow: 0 0 0 2px #1c1917, 0 0 45px rgba(28, 25, 23, 0.3) !important;
+  border-color: #1c1917 !important;
+}
+
+.shepherd-modal-overlay-container {
+  opacity: 0.75 !important;
+  backdrop-filter: blur(4px) !important;
+}
+
 .shepherd-element.cyath-shepherd-theme {
   background: #0c0c0e !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -301,7 +394,43 @@ button, a, input, select, textarea {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-.shepherd-modal-overlay-container {
-  opacity: 0.65 !important;
-  backdrop-filter: blur(4px) !important;
+/* Light mode support for Shepherd dialog */
+[data-theme="day"] .shepherd-element.cyath-shepherd-theme {
+  background: #ffffff !important;
+  border: 1px solid rgba(28, 25, 23, 0.18) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(28, 25, 23, 0.08) !important;
+  color: #1c1917 !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-title {
+  color: #1c1917 !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-text {
+  color: #57534e !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-button-secondary {
+  border: 1px solid rgba(28, 25, 23, 0.18) !important;
+  color: #57534e !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-button-secondary:hover {
+  background: rgba(28, 25, 23, 0.05) !important;
+  color: #1c1917 !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-button-primary {
+  background: #1c1917 !important;
+  border: 1px solid #1c1917 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-button-primary:hover {
+  background: #292524 !important;
+}
+
+[data-theme="day"] .cyath-shepherd-theme .shepherd-arrow::before {
+  background: #ffffff !important;
+  border: 1px solid rgba(28, 25, 23, 0.18) !important;
 }

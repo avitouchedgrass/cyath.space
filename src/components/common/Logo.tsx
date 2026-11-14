@@ -86,7 +86,13 @@ export const CyathLogo: React.FC<LogoProps> = ({
 
       {showWordmark && (
         <span
-          className={`font-sans font-bold text-[19px] tracking-[-0.04em] transition-colors leading-none ${
+          style={{
+            fontFamily: "var(--font-wordmark, 'Space Grotesk', -apple-system, sans-serif)",
+            fontWeight: 700,
+            fontSize: "19px",
+            letterSpacing: "-0.04em",
+          }}
+          className={`transition-colors leading-none ${
             wordmarkClassName
               ? wordmarkClassName
               : theme === "day"

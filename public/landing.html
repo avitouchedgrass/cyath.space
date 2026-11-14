@@ -22,13 +22,24 @@
 <script src="/vendor/lenis.min.js"></script>
 <script src="/vendor/pattern-waves.min.js"></script>
 <style>
+@font-face {
+  font-family: 'Breite Grotesk';
+  src: url('/fonts/breite-grotesk.woff2') format('woff2'),
+       url('/fonts/breite-grotesk.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    ARCHITECTURAL TOKENS: PURE PITCH BLACK & ARCHIVAL VELLUM
    ══════════════════════════════════════════════════════════════════ */
 :root {
   --font-serif: 'Oranienbaum', Georgia, serif;
-  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Breite Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Breite Grotesk', -apple-system, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+  --font-wordmark: 'Space Grotesk', -apple-system, sans-serif;
   --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
@@ -95,11 +106,23 @@ html {
 
 body {
   font-family: var(--font-sans);
+  font-weight: 500;
   background-color: var(--bg-page);
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
   transition: var(--transition-theme);
+}
+
+.font-mono, [class*="mono"], .hero-badge, .nav-segment, .comp-badge, .receipt-hash, .status-badge, .meta-chip, .pricing-plan-badge, .pricing-term {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+code, pre, .terminal-body, .mcp-code {
+  font-family: var(--font-code) !important;
+  font-weight: 400 !important;
 }
 
 /* Custom Minimalist Scrollbar */
@@ -193,10 +216,10 @@ html[data-theme="day"] .site-nav.scrolled {
 }
 
 .brand-wordmark {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 19px;
-  letter-spacing: -0.04em;
+  font-family: var(--font-wordmark) !important;
+  font-weight: 700 !important;
+  font-size: 19px !important;
+  letter-spacing: -0.04em !important;
   color: var(--text-primary);
 }
 

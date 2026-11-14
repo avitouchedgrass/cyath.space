@@ -426,6 +426,19 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         {/* Viewport Frame Container with Scroll Anchoring & Animated Height Scaling */}
         <div
           ref={scrollViewportRef}
+          onScroll={(e) => {
+            if (iframeRef.current && iframeRef.current.contentWindow) {
+              try {
+                iframeRef.current.contentWindow.postMessage(
+                  {
+                    type: "CYATH_PARENT_SCROLL",
+                    scrollTop: e.currentTarget.scrollTop,
+                  },
+                  "*"
+                );
+              } catch {}
+            }
+          }}
           className={`w-full overflow-y-auto overflow-x-hidden bg-white relative transition-all duration-300 ease-in-out ${isFullMode ? "h-[calc(100vh-3.5rem)]" : "max-h-[calc(100vh-9.5rem)]"
             } ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"
             }`}

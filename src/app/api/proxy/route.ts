@@ -115,6 +115,14 @@ export async function GET(req: NextRequest) {
     const muteParam = req.nextUrl.searchParams.get("mute");
     const shouldMuteAudio = muteParam === "1" || muteParam === "true";
 
+    // 3. Rewrite root-relative <script src="/..."> and <link href="/..."> to route through Cyath proxy
+    html = html.replace(/(<(?:script|link)[^>]+(?:src|href)=["'])\/([^"'>]+)(["'][^>]*>)/gi, (match, prefix, path, suffix) => {
+      if (path.startsWith("/")) return match;
+      const fullAssetUrl = `${targetOrigin}/${path}`;
+      const proxied = `/api/proxy?url=${encodeURIComponent(fullAssetUrl)}${shouldMuteAudio ? "&mute=1" : ""}`;
+      return `${prefix}${proxied}${suffix}`;
+    });
+
     const hasViewport = /<meta[^>]*name=["']viewport["'][^>]*>/i.test(html);
     const viewportMetaTag = hasViewport ? "" : '\n  <meta name="viewport" content="width=device-width, initial-scale=1">';
 
@@ -684,6 +692,17 @@ export async function GET(req: NextRequest) {
     e.stopPropagation();
   }, true);
 
+  // Prevent button/link clicks inside staging site when in Comment mode
+  document.addEventListener('click', function(e) {
+    if (currentInteractionMode === 'comment') {
+      if (e.target && e.target.closest('#cyath-pins-layer')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return false;
+    }
+  }, true);
+
   // Re-anchor pins dynamically on scroll, resize, and mutations (MarkUp.io dynamic tracking)
   function trackBoundElements() {
     if (pinsLayer && stagedPins.length > 0) {
@@ -696,6 +715,11 @@ export async function GET(req: NextRequest) {
 
   window.addEventListener('message', function(ev) {
     if (!ev.data) return;
+    if (ev.data.type === 'CYATH_PARENT_SCROLL') {
+      window.__cyathParentScrollTop = ev.data.scrollTop || 0;
+      window.dispatchEvent(new Event('scroll'));
+      document.dispatchEvent(new Event('scroll'));
+    }
     if (ev.data.type === 'CYATH_NAV_BACK') {
       try { history.back(); } catch(e) {}
     }

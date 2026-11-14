@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X, Maximize2, Minimize2, MousePointer2, MessageSquarePlus, Square, Volume2, VolumeX, CheckCircle2, Monitor, Tablet, Smartphone, ChevronRight, PanelLeftClose, Share2, Sun, Moon } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X, Maximize2, Minimize2, MousePointer2, MessageSquarePlus, Square, Volume2, VolumeX, CheckCircle2, Monitor, Tablet, Smartphone, ChevronRight, PanelLeftClose, Share2, Sun, Moon, Sliders, Check } from "lucide-react";
 import { formatPageLabel } from "@/lib/colors";
 import { useReviewStore } from "@/store/useReviewStore";
 import { ReviewStage } from "@/components/review/ReviewStage";
@@ -12,6 +12,7 @@ import { ApprovalModal } from "@/components/review/ApprovalModal";
 import { captureClientTelemetry } from "@/lib/telemetry";
 import { createClient } from "@/lib/supabase/client";
 import { TesseractMark } from "@/components/common/Logo";
+import { WarmTooltip } from "@/components/common/WarmTooltip";
 import { Project } from "@/types";
 
 interface ReviewCanvasProps {
@@ -459,27 +460,116 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
       className={`h-screen flex flex-col transition-colors duration-200 selection:bg-stone-300 selection:text-black relative overflow-hidden ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
         }`}
     >
-      {/* Floating Collapsible Project Sidebar Trigger Pill (Hidden in Fullscreen) */}
+      {/* Vertical Floating Icon Rail with Warm Tooltips (Hidden in Fullscreen) */}
       {!isFullMode && !isNativeFullscreen && (
-        <div className="fixed top-4 left-4 z-40">
-          <button
-            onClick={() => setProjectSidebarOpen(true)}
-            className={`group flex items-center gap-2.5 px-3 py-1.5 rounded-full border shadow-xl backdrop-blur-2xl transition-all duration-200 cursor-pointer active:scale-[0.96] ${
-              isDay
-                ? "bg-white/90 border-stone-200 hover:bg-white text-stone-900 shadow-stone-200/60"
-                : "bg-[#0a0a0c]/85 border-white/10 hover:border-white/25 text-white shadow-2xl"
-            }`}
-            title="Open Project Details & Menu"
-          >
-            <TesseractMark size={16} className={isDay ? "text-stone-900" : "text-white"} />
-            <span className="font-sans font-bold text-xs tracking-tight">cyath</span>
-            <span className={isDay ? "text-stone-300" : "text-white/20"}>/</span>
-            <span className="font-serif text-xs truncate max-w-[130px] sm:max-w-[200px] text-zinc-300 group-hover:text-white transition-colors">
-              {project.title}
-            </span>
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-          </button>
-        </div>
+        <aside
+          className={`fixed left-3 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-1.5 p-1.5 rounded-2xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 select-none ${
+            isDay
+              ? "bg-white/95 border-stone-300 text-stone-900 shadow-stone-300/50"
+              : "bg-[#0a0a0d]/90 border-white/15 text-white shadow-black/80"
+          }`}
+        >
+          {/* Logo & Return to Dashboard */}
+          <WarmTooltip content="Return to Dashboard" theme={theme} position="right">
+            <Link
+              href="/dashboard"
+              prefetch={true}
+              className={`p-2 rounded-xl transition-all duration-150 active:scale-[0.92] ${
+                isDay ? "hover:bg-stone-200 text-stone-900" : "hover:bg-white/10 text-white"
+              }`}
+            >
+              <TesseractMark size={20} className={isDay ? "text-stone-900" : "text-white"} />
+            </Link>
+          </WarmTooltip>
+
+          <div className={`w-5 h-px ${isDay ? "bg-stone-300" : "bg-white/15"} my-0.5`} />
+
+          {/* Expand Drawer Button */}
+          <WarmTooltip content="Project Details & Controls" theme={theme} position="right">
+            <button
+              onClick={() => setProjectSidebarOpen(true)}
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.92] ${
+                isDay ? "hover:bg-stone-200 text-stone-700 hover:text-stone-950" : "hover:bg-white/10 text-zinc-300 hover:text-white"
+              }`}
+              title="Expand Details"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
+          </WarmTooltip>
+
+          {/* Share Link */}
+          <WarmTooltip content={copiedLink ? "Link Copied!" : "Copy Share Link"} theme={theme} position="right">
+            <button
+              onClick={handleCopyProjectLink}
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.92] ${
+                isDay ? "hover:bg-stone-200 text-stone-700 hover:text-stone-950" : "hover:bg-white/10 text-zinc-300 hover:text-white"
+              }`}
+              title="Copy Share Link"
+            >
+              {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+            </button>
+          </WarmTooltip>
+
+          {/* Audio Toggle (if web URL) */}
+          {project.assetType === "url" && (
+            <WarmTooltip content={isAudioMuted ? "Unmute Preview Audio" : "Mute Preview Audio"} theme={theme} position="right">
+              <button
+                onClick={() => setIsAudioMuted((m) => !m)}
+                className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.92] ${
+                  isDay ? "hover:bg-stone-200 text-stone-700 hover:text-stone-950" : "hover:bg-white/10 text-zinc-300 hover:text-white"
+                }`}
+                title="Toggle Audio"
+              >
+                {isAudioMuted ? <VolumeX className="w-4 h-4 text-zinc-500" /> : <Volume2 className="w-4 h-4 text-white font-semibold" />}
+              </button>
+            </WarmTooltip>
+          )}
+
+          {/* Theme Switcher */}
+          <WarmTooltip content={isDay ? "Switch to Night Mode" : "Switch to Day Mode"} theme={theme} position="right">
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.92] ${
+                isDay ? "hover:bg-stone-200 text-stone-700 hover:text-stone-950" : "hover:bg-white/10 text-zinc-300 hover:text-white"
+              }`}
+              title="Toggle Theme"
+            >
+              {isDay ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </button>
+          </WarmTooltip>
+
+          {/* Fullscreen Toggle */}
+          <WarmTooltip content={isNativeFullscreen ? "Exit Fullscreen" : "Fullscreen Stage"} theme={theme} position="right">
+            <button
+              onClick={toggleNativeFullscreen}
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.92] ${
+                isDay ? "hover:bg-stone-200 text-stone-700 hover:text-stone-950" : "hover:bg-white/10 text-zinc-300 hover:text-white"
+              }`}
+              title="Toggle Fullscreen"
+            >
+              {isNativeFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+          </WarmTooltip>
+
+          <div className={`w-5 h-px ${isDay ? "bg-stone-300" : "bg-white/15"} my-0.5`} />
+
+          {/* Sign Off Quick Action */}
+          <WarmTooltip content={project.isApproved ? "Approved Milestone" : "Sign Off Project"} theme={theme} position="right">
+            <button
+              onClick={() => setShowApprovalModal(true)}
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.92] ${
+                project.isApproved
+                  ? "bg-white text-black shadow-md"
+                  : isDay
+                  ? "hover:bg-stone-200 text-stone-700 hover:text-stone-950"
+                  : "hover:bg-white/10 text-zinc-300 hover:text-white"
+              }`}
+              title="Client Sign-Off"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+            </button>
+          </WarmTooltip>
+        </aside>
       )}
 
       {/* Floating Collapsible Project Sidebar Drawer (Hidden in Fullscreen) */}
@@ -664,15 +754,27 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
           />
         )}
 
-        {/* Enlarged Figma-style Floating Bottom Dock with Micro-Animations */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 py-2 px-3.5 rounded-full bg-[#0a0a0a]/92 border border-white/[0.14] shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-2xl transition-all duration-200 select-none">
+        {/* Enlarged Floating Bottom Dock with High Contrast & Micro-Animations */}
+        <div
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2.5 py-2.5 px-4 rounded-2xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 select-none ${
+            isDay
+              ? "bg-white/95 border-stone-300 text-stone-900 shadow-stone-300/40"
+              : "bg-[#0a0a0d]/95 border-white/[0.14] text-white shadow-black/80"
+          }`}
+        >
           {/* Interaction Mode Switchers */}
-          <div className="flex items-center gap-1 bg-white/[0.05] p-1 rounded-full border border-white/[0.06]">
+          <div className={`flex items-center gap-1 p-1 rounded-xl border ${
+            isDay ? "bg-stone-100 border-stone-200" : "bg-white/[0.05] border-white/[0.06]"
+          }`}>
             <button
               onClick={() => setInteractionMode("browse")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
                 interactionMode === "browse"
-                  ? "bg-white text-black font-semibold shadow-md"
+                  ? isDay
+                    ? "bg-stone-900 text-white font-semibold shadow-sm"
+                    : "bg-white text-black font-semibold shadow-md"
+                  : isDay
+                  ? "text-stone-600 hover:text-stone-900 hover:bg-stone-200/60"
                   : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
               }`}
               title="Browse Mode (Interact with website buttons and links)"
@@ -682,28 +784,32 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             </button>
             <button
               onClick={() => setInteractionMode("comment")}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
                 interactionMode === "comment"
-                  ? "bg-white text-black font-semibold shadow-md"
+                  ? isDay
+                    ? "bg-stone-900 text-white font-semibold shadow-sm"
+                    : "bg-white text-black font-semibold shadow-md"
+                  : isDay
+                  ? "text-stone-600 hover:text-stone-900 hover:bg-stone-200/60"
                   : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
               }`}
-              title="Comment Mode (Click to pin or drag to draw box)"
+              title="Comment Mode (Click to pin notes or drag boxes)"
             >
               <MessageSquarePlus className="w-4 h-4" />
               <span className="hidden sm:inline">Comment</span>
             </button>
           </div>
 
-          <div className="w-px h-5 bg-white/20 mx-0.5" />
+          <div className={`w-px h-5 mx-0.5 ${isDay ? "bg-stone-300" : "bg-white/20"}`} />
 
           {/* Viewport Selectors */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => setActiveDeviceMode("desktop")}
-              className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.96] ${
                 activeDeviceMode === "desktop"
-                  ? "bg-white text-black shadow-md"
-                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+                  ? isDay ? "bg-stone-900 text-white shadow-sm" : "bg-white text-black shadow-md"
+                  : isDay ? "text-stone-600 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
               }`}
               title="Desktop (1440px)"
             >
@@ -711,10 +817,10 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             </button>
             <button
               onClick={() => setActiveDeviceMode("tablet")}
-              className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.96] ${
                 activeDeviceMode === "tablet"
-                  ? "bg-white text-black shadow-md"
-                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+                  ? isDay ? "bg-stone-900 text-white shadow-sm" : "bg-white text-black shadow-md"
+                  : isDay ? "text-stone-600 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
               }`}
               title="Tablet (768px)"
             >
@@ -722,10 +828,10 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             </button>
             <button
               onClick={() => setActiveDeviceMode("mobile")}
-              className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.96] ${
                 activeDeviceMode === "mobile"
-                  ? "bg-white text-black shadow-md"
-                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+                  ? isDay ? "bg-stone-900 text-white shadow-sm" : "bg-white text-black shadow-md"
+                  : isDay ? "text-stone-600 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
               }`}
               title="Mobile (375px)"
             >
@@ -733,10 +839,10 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             </button>
             <button
               onClick={() => setActiveDeviceMode(isFullMode ? "desktop" : "full")}
-              className={`p-2 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.96] ${
                 isFullMode
-                  ? "bg-white text-black shadow-md"
-                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+                  ? isDay ? "bg-stone-900 text-white shadow-sm" : "bg-white text-black shadow-md"
+                  : isDay ? "text-stone-600 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
               }`}
               title={isFullMode ? "Exit Full View" : "Full Stage Mode"}
             >
@@ -744,13 +850,15 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             </button>
           </div>
 
-          <div className="w-px h-5 bg-white/20 mx-0.5" />
+          <div className={`w-px h-5 mx-0.5 ${isDay ? "bg-stone-300" : "bg-white/20"}`} />
 
           {/* Audio Mute Indicator */}
           {project.assetType === "url" && (
             <button
               onClick={() => setIsAudioMuted((m) => !m)}
-              className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-all duration-150 cursor-pointer active:scale-[0.96]"
+              className={`p-2 rounded-xl transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                isDay ? "text-stone-600 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
               title={isAudioMuted ? "Unmute preview audio" : "Mute preview audio"}
             >
               {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -764,7 +872,11 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
                 setFullSidebarOpen(true);
               }
             }}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 hover:text-white text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96]"
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              isDay
+                ? "bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200"
+                : "bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 hover:text-white"
+            }`}
             title="Feedback threads"
           >
             <MessageSquare className="w-4 h-4" />
@@ -774,9 +886,13 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
           {/* Sign-off Approval Trigger */}
           <button
             onClick={() => setShowApprovalModal(true)}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-medium transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-mono font-medium transition-all duration-150 cursor-pointer active:scale-[0.96] ${
               project.isApproved
-                ? "bg-white text-black font-semibold shadow-md border border-white"
+                ? isDay
+                  ? "bg-stone-900 text-white font-semibold shadow-md"
+                  : "bg-white text-black font-semibold shadow-md border border-white"
+                : isDay
+                ? "bg-stone-900 text-white hover:bg-stone-800 shadow-sm"
                 : "bg-white text-black hover:bg-zinc-200 shadow-sm"
             }`}
             title="Client Sign-Off"
