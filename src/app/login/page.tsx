@@ -28,7 +28,6 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [agencyName, setAgencyName] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
@@ -242,9 +241,6 @@ export default function LoginPage() {
           password,
           options: {
             emailRedirectTo: `${origin}/auth/confirm?email=${encodeURIComponent(email.trim())}`,
-            data: {
-              agency_name: agencyName.trim() || "Independent Studio",
-            },
           },
         });
 
@@ -261,7 +257,6 @@ export default function LoginPage() {
                 body: JSON.stringify({
                   email: email.trim(),
                   password,
-                  agencyName: agencyName.trim() || "Independent Studio",
                 }),
               });
 
@@ -633,28 +628,6 @@ export default function LoginPage() {
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
-                {mode === "signup" && (
-                  <div>
-                    <label className="block text-[11px] font-mono font-medium mb-1.5 uppercase tracking-wider text-zinc-400">
-                      Firm / Company Name
-                    </label>
-                    <div className="relative">
-                      <Building2 className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" />
-                      <input
-                        type="text"
-                        required
-                        value={agencyName}
-                        onChange={(e) => setAgencyName(e.target.value)}
-                        placeholder="e.g. North Creative Studio"
-                        className={`w-full rounded-lg pl-9 pr-3 py-2 text-xs transition-colors focus:outline-none ${isDay
-                            ? "bg-white border border-black/15 text-black placeholder-zinc-400 focus:border-black"
-                            : "bg-black border border-white/10 text-white placeholder-zinc-600 focus:border-[#38BDF8]"
-                          }`}
-                      />
-                    </div>
-                  </div>
-                )}
-
                 <div>
                   <label className="block text-[11px] font-mono font-medium mb-1.5 uppercase tracking-wider text-zinc-400">
                     Work Email

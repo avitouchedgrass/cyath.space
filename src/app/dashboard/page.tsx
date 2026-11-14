@@ -52,6 +52,8 @@ export default function DashboardPage() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [onboardingFirmInput, setOnboardingFirmInput] = useState("");
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [selectedPunchlistProject, setSelectedPunchlistProject] = useState<Project | null>(null);
@@ -117,8 +119,13 @@ export default function DashboardPage() {
         }
       } else {
         setCurrentUser(user);
-        const savedAgency = (user.user_metadata?.agency_name as string) || "My Studio";
-        setAgencyInput(savedAgency);
+        const userFirm = user.user_metadata?.agency_name;
+        if (!userFirm) {
+          setShowOnboardingModal(true);
+          setAgencyInput("My Studio");
+        } else {
+          setAgencyInput(userFirm);
+        }
         setMounted(true);
       }
     });
@@ -219,6 +226,14 @@ export default function DashboardPage() {
 
     reader.readAsDataURL(file);
     e.target.value = "";
+  };
+
+  const handleOnboardingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const chosenName = onboardingFirmInput.trim() || "My Studio";
+    await handleUpdateAgencyName(chosenName);
+    setShowOnboardingModal(false);
+    setShowWalkthrough(true);
   };
 
   const handleUpdateAgencyName = async (newName: string) => {
@@ -1069,6 +1084,69 @@ export default function DashboardPage() {
                     }`}
                 >
                   Deploy Canvas →
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Onboarding Firm Name Modal (For new accounts before dashboard) */}
+      {showOnboardingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div
+            className={`w-full max-w-md p-6 sm:p-8 rounded-2xl border shadow-2xl relative animate-in zoom-in-95 duration-200 ${
+              isDay
+                ? "bg-[#FBF9F4] border-stone-200 text-stone-900 shadow-stone-900/10"
+                : "bg-[#0b0b0e] border-white/15 text-white shadow-black/80"
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <TesseractMark size={22} className={isDay ? "text-stone-900" : "text-white"} />
+              <span className="font-serif tracking-tight font-medium text-lg">cyath</span>
+            </div>
+
+            <h2 className="text-xl sm:text-2xl font-serif font-medium tracking-tight mb-2">
+              What is your firm or company name?
+            </h2>
+            <p className={`text-xs leading-relaxed mb-6 ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
+              This will be displayed on staging links, milestone sign-off deeds, and client review banners.
+            </p>
+
+            <form onSubmit={handleOnboardingSubmit} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-mono uppercase tracking-wider mb-2 text-zinc-400">
+                  Firm / Studio / Company Name
+                </label>
+                <div className="relative">
+                  <Building className={`w-4 h-4 absolute left-3.5 top-3 ${isDay ? "text-stone-400" : "text-zinc-500"}`} />
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    value={onboardingFirmInput}
+                    onChange={(e) => setOnboardingFirmInput(e.target.value)}
+                    placeholder="e.g. Acme Design Studio"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-xs sm:text-sm font-sans outline-none transition-colors ${
+                      isDay
+                        ? "bg-white border-stone-300 focus:border-stone-900 text-stone-900 placeholder:text-stone-400"
+                        : "bg-black border-white/15 focus:border-white/40 text-white placeholder:text-zinc-600"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end">
+                <button
+                  type="submit"
+                  className={`px-5 py-2.5 rounded-xl font-sans font-semibold text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 ${
+                    isDay
+                      ? "bg-stone-900 text-white hover:bg-stone-800"
+                      : "bg-white text-black hover:bg-zinc-200"
+                  }`}
+                >
+                  <span>Next</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>

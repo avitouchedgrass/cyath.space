@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       const { error: updateErr } = await adminClient.auth.admin.updateUserById(existing.id, {
         email_confirm: true,
         password,
-        user_metadata: { agency_name: agencyName || "Independent Studio" },
+        user_metadata: agencyName ? { agency_name: agencyName } : {},
       });
 
       if (updateErr) {
@@ -46,9 +46,7 @@ export async function POST(request: Request) {
       email,
       password,
       email_confirm: true,
-      user_metadata: {
-        agency_name: agencyName || "Independent Studio",
-      },
+      user_metadata: agencyName ? { agency_name: agencyName } : {},
     });
 
     if (error) {
