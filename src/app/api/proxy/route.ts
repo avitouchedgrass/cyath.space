@@ -63,14 +63,37 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const forwardedHeaders: Record<string, string> = {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      Accept: req.headers.get("accept") || "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Language": req.headers.get("accept-language") || "en-US,en;q=0.9",
+    };
+
+    // Forward crucial SPA and Next.js App Router headers
+    const headersToForward = [
+      "rsc",
+      "next-router-state-tree",
+      "next-router-prefetch",
+      "next-url",
+      "content-type",
+      "authorization",
+      "x-requested-with",
+    ];
+
+    for (const h of headersToForward) {
+      const val = req.headers.get(h);
+      if (val) {
+        forwardedHeaders[h] = val;
+      }
+    }
+
+    if (req.nextUrl.searchParams.has("_rsc") || req.headers.get("rsc") === "1") {
+      forwardedHeaders["RSC"] = "1";
+    }
+
     const response = await fetch(targetUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-      },
+      headers: forwardedHeaders,
       redirect: "follow",
     });
 
@@ -220,6 +243,16 @@ export async function GET(req: NextRequest) {
     return rawUrl;
   }
 
+  function isSameDomainOrSubdomain(u1, u2) {
+    try {
+      var h1 = new URL(u1).hostname.toLowerCase().replace(/^www\./, '');
+      var h2 = new URL(u2).hostname.toLowerCase().replace(/^www\./, '');
+      return h1 === h2 || h1.endsWith('.' + h2) || h2.endsWith('.' + h1);
+    } catch(e) {
+      return false;
+    }
+  }
+
   // Helper to route relative and targetOrigin API/asset requests through Cyath proxy (defeats CORS errors & SPA 404s)
   function toProxiedUrl(raw) {
     if (!raw) return raw;
@@ -239,8 +272,8 @@ export async function GET(req: NextRequest) {
 
       var resolved = new URL(strUrl, currentTargetUrl).href;
       if (resolved.startsWith('http://') || resolved.startsWith('https://')) {
-        // If the request is for the target website origin, proxy it
-        if (resolved.startsWith(targetOrigin)) {
+        // If the request is for the target website origin or subdomains, proxy it
+        if (isSameDomainOrSubdomain(resolved, targetOrigin)) {
           var proxied = window.location.origin + '/api/proxy?url=' + encodeURIComponent(resolved) + (isAudioMuted ? '&mute=1' : '');
           if (typeof raw === 'object' && raw instanceof Request) {
             return new Request(proxied, raw);
@@ -251,6 +284,33 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
     return raw;
   }
+
+  // Intercept window.location.assign and replace to prevent escaping proxy into Cyath routes
+  try {
+    var origAssign = window.Location ? window.Location.prototype.assign : null;
+    var origReplace = window.Location ? window.Location.prototype.replace : null;
+    if (origAssign) {
+      window.Location.prototype.assign = function(url) {
+        var proxied = toProxiedUrl(url);
+        return origAssign.call(this, proxied);
+      };
+    }
+    if (origReplace) {
+      window.Location.prototype.replace = function(url) {
+        var proxied = toProxiedUrl(url);
+        return origReplace.call(this, proxied);
+      };
+    }
+  } catch(e) {}
+
+  // Stub ServiceWorker registration to prevent foreign service workers caching localhost
+  try {
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.register = function() {
+        return Promise.reject(new Error("ServiceWorkers disabled in review stage"));
+      };
+    }
+  } catch(e) {}
 
   // Intercept dynamic Image src assignments (fixes relative images & rotating plates)
   try {

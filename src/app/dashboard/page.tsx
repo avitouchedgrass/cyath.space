@@ -782,6 +782,99 @@ export default function DashboardPage() {
                   </div>
                 );
               })}
+
+              {/* Free Tier Balance Placeholder Card: Subtle ghost slot filling empty grid space */}
+              {!isUserPro && userProjects.length === 1 && (
+                <div
+                  onClick={() => setShowUpgradeModal(true)}
+                  className={`group rounded-2xl border border-dashed transition-all duration-300 flex flex-col overflow-hidden relative cursor-pointer active:scale-[0.995] hover:-translate-y-1 ${
+                    isDay
+                      ? "border-stone-300 bg-stone-50/70 hover:bg-stone-100/90 text-stone-900 shadow-xs hover:border-stone-400"
+                      : "border-white/15 bg-white/[0.015] hover:bg-white/[0.035] text-white hover:border-white/30 shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
+                  }`}
+                >
+                  {/* Top Window Bar */}
+                  <div
+                    className={`h-8 border-b border-dashed px-3.5 flex items-center justify-between select-none ${
+                      isDay ? "bg-stone-100/60 border-stone-200" : "bg-white/[0.02] border-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+                      <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+                      <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+                      <span className={`text-[10px] font-mono truncate max-w-[130px] ml-1.5 opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
+                        pro-canvas-slot.cyath
+                      </span>
+                    </div>
+
+                    <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full border ${
+                      isDay
+                        ? "border-stone-300 bg-white text-stone-700 font-medium"
+                        : "border-white/15 bg-white/5 text-zinc-400"
+                    }`}>
+                      Studio Pro
+                    </span>
+                  </div>
+
+                  {/* Viewport Preview Stage Placeholder with Blueprint Grid */}
+                  <div
+                    className={`relative w-full aspect-[16/10] overflow-hidden border-b border-dashed flex flex-col items-center justify-center p-6 text-center transition-colors ${
+                      isDay ? "bg-stone-100/40 border-stone-200" : "bg-black/40 border-white/10"
+                    }`}
+                  >
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
+                    
+                    <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-105 ${
+                      isDay
+                        ? "border-stone-300 bg-white text-stone-800 shadow-xs"
+                        : "border-white/20 bg-white/5 text-white shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+                    }`}>
+                      <Plus className="w-5 h-5 opacity-80" />
+                    </div>
+
+                    <div className="text-xs font-sans font-semibold tracking-tight mb-1 relative z-10">
+                      Add a 2nd canvas on Pro
+                    </div>
+                    <p className={`text-[11px] font-sans max-w-[210px] leading-relaxed relative z-10 ${
+                      isDay ? "text-stone-500" : "text-zinc-500"
+                    }`}>
+                      Concurrent staging links, multi-device viewports & autonomous agent sync.
+                    </p>
+                  </div>
+
+                  {/* Bottom Metadata & Controls */}
+                  <div className="p-4 flex flex-col justify-between flex-1 gap-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-xs font-sans font-semibold ${isDay ? "text-stone-800" : "text-zinc-200"}`}>
+                          Staging Slot 02
+                        </span>
+                      </div>
+                      <div className={`text-[11px] font-mono truncate opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
+                        unlock-unlimited-canvases
+                      </div>
+                    </div>
+
+                    <div className={`flex items-center justify-between pt-2 border-t border-dashed ${
+                      isDay ? "border-stone-200" : "border-white/10"
+                    }`}>
+                      <span className={`text-[10px] font-mono uppercase tracking-wider ${isDay ? "text-stone-500 font-medium" : "text-zinc-500"}`}>
+                        Unlimited Canvases
+                      </span>
+
+                      <span className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all duration-150 flex items-center gap-1.5 shadow-sm active:scale-[0.96] ${
+                        isDay
+                          ? "bg-stone-900 text-white group-hover:bg-stone-800 shadow-stone-300"
+                          : "bg-white text-black group-hover:bg-zinc-200 shadow-[0_0_16px_rgba(255,255,255,0.2)]"
+                      }`}>
+                        <span>Upgrade</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
