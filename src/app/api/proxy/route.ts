@@ -153,20 +153,92 @@ export async function GET(req: NextRequest) {
   var targetOrigin = ${JSON.stringify(targetOrigin)};
   var currentTargetUrl = initialTargetUrl;
   var isAudioMuted = ${shouldMuteAudio ? "true" : "false"};
-  // Synchronize location pathname for client-side routers (React Router, Next.js, Vue Router)
-  // Prevents SPAs (like shivayur.com) from falling into a 404 catch-all route when seeing /api/proxy
-  try {
-    var targetUrlObj = new URL(initialTargetUrl);
-    var targetPath = (targetUrlObj.pathname || '/') + (targetUrlObj.search || '') + (targetUrlObj.hash || '');
-    history.replaceState(null, '', targetPath);
-  } catch(e) {}
   window.__cyathAudioContexts = [];
 
-  // Suppress third-party tracker unhandled rejections that could trip root error boundaries
+  function extractTargetUrl(rawUrl) {
+    if (!rawUrl) return currentTargetUrl;
+    try {
+      var u = new URL(rawUrl, window.location.origin);
+      if (u.pathname.includes('/api/proxy')) {
+        var inner = u.searchParams.get('url');
+        if (inner) return inner;
+      }
+    } catch(e) {}
+    return rawUrl;
+  }
+
+  function notifyParentNavigation(url) {
+    try {
+      if (!url) url = currentTargetUrl;
+      var cleanUrl = extractTargetUrl(url);
+      var parsed = new URL(cleanUrl, targetOrigin);
+      currentTargetUrl = parsed.href;
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'CYATH_PAGE_NAVIGATED',
+          url: parsed.href,
+          pathname: parsed.pathname || '/'
+        }, '*');
+      }
+    } catch(e) {}
+  }
+
+  // Hook history.pushState and history.replaceState immediately
+  // CRITICAL: Resolves relative URLs to window.location.origin so browser <base> tag never triggers SecurityError
+  var origPushState = history.pushState ? history.pushState.bind(history) : function() {};
+  var origReplaceState = history.replaceState ? history.replaceState.bind(history) : function() {};
+
+  function makeSafeHistoryUrl(rawUrl) {
+    if (!rawUrl) return window.location.href;
+    try {
+      var resolved = new URL(rawUrl, currentTargetUrl);
+      return window.location.origin + (resolved.pathname || '/') + (resolved.search || '') + (resolved.hash || '');
+    } catch(e) {
+      return window.location.href;
+    }
+  }
+
+  history.pushState = function(state, title, url) {
+    try {
+      if (url) {
+        var nextTarget = new URL(url, currentTargetUrl).href;
+        currentTargetUrl = nextTarget;
+        notifyParentNavigation(nextTarget);
+        return origPushState(state, title, makeSafeHistoryUrl(url));
+      }
+      return origPushState(state, title, url);
+    } catch(err) {}
+  };
+
+  history.replaceState = function(state, title, url) {
+    try {
+      if (url) {
+        var nextTarget = new URL(url, currentTargetUrl).href;
+        currentTargetUrl = nextTarget;
+        notifyParentNavigation(nextTarget);
+        return origReplaceState(state, title, makeSafeHistoryUrl(url));
+      }
+      return origReplaceState(state, title, url);
+    } catch(err) {}
+  };
+
+  // Synchronize location pathname for client-side routers (React Router, Next.js, Vue Router)
+  try {
+    history.replaceState(null, '', initialTargetUrl);
+  } catch(e) {}
+
+  // Suppress third-party tracker unhandled errors and rejections that could trip root error boundaries
+  window.addEventListener('error', function(event) {
+    if (event && (event.error && event.error.name === 'SecurityError' || String(event.message).includes('SecurityError') || String(event.message).includes('Usercentrics') || String(event.message).includes('usercentrics'))) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+
   window.addEventListener('unhandledrejection', function(event) {
     if (event && event.reason) {
       var reasonStr = (event.reason.message || event.reason.stack || String(event.reason)).toLowerCase();
-      if (reasonStr.includes('analytics') || reasonStr.includes('gtm') || reasonStr.includes('sentry') || reasonStr.includes('datadog') || reasonStr.includes('segment')) {
+      if (reasonStr.includes('analytics') || reasonStr.includes('gtm') || reasonStr.includes('sentry') || reasonStr.includes('datadog') || reasonStr.includes('segment') || reasonStr.includes('usercentrics') || reasonStr.includes('securityerror')) {
         event.preventDefault();
       }
     }
@@ -364,48 +436,6 @@ export async function GET(req: NextRequest) {
       }
     } catch(e) {}
     return origOpen.apply(this, arguments);
-  };
-
-  // Notify parent about current page URL and pathname for multi-page pin tagging
-  function notifyParentNavigation(url) {
-    try {
-      if (!url) url = currentTargetUrl;
-      var cleanUrl = extractTargetUrl(url);
-      var parsed = new URL(cleanUrl, targetOrigin);
-      currentTargetUrl = parsed.href;
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-          type: 'CYATH_PAGE_NAVIGATED',
-          url: parsed.href,
-          pathname: parsed.pathname || '/'
-        }, '*');
-      }
-    } catch(e) {}
-  }
-
-  // Hook history pushState and replaceState
-  var origPushState = history.pushState;
-  history.pushState = function(state, title, url) {
-    if (url) {
-      try {
-        var nextTarget = new URL(url, currentTargetUrl).href;
-        currentTargetUrl = nextTarget;
-        notifyParentNavigation(nextTarget);
-      } catch(e) {}
-    }
-    return origPushState.apply(this, arguments);
-  };
-
-  var origReplaceState = history.replaceState;
-  history.replaceState = function(state, title, url) {
-    if (url) {
-      try {
-        var nextTarget = new URL(url, currentTargetUrl).href;
-        currentTargetUrl = nextTarget;
-        notifyParentNavigation(nextTarget);
-      } catch(e) {}
-    }
-    return origReplaceState.apply(this, arguments);
   };
 
   // In Comment mode: completely disable website button clicks, links, and forms
