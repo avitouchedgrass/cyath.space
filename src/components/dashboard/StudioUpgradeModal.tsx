@@ -16,7 +16,7 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose,
   const [isSuccess, setIsSuccess] = useState(false);
 
   const isDay = theme === "day";
-  const price = billingCycle === "annual" ? "12" : "15";
+  const price = billingCycle === "annual" ? "19" : "24";
 
   const handleUpgrade = () => {
     setIsSuccess(true);

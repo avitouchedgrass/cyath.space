@@ -267,7 +267,7 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
             {isAudioMuted ? (
               <VolumeX className="w-3.5 h-3.5" />
             ) : (
-              <Volume2 className="w-3.5 h-3.5 text-emerald-500" />
+              <Volume2 className="w-3.5 h-3.5 text-white" />
             )}
             <span className="hidden lg:inline text-[11px]">{isAudioMuted ? "Muted" : "Audio On"}</span>
           </button>

@@ -585,7 +585,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
             onClick={() => setShowApprovalModal(true)}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium transition-all duration-150 cursor-pointer active:scale-[0.96] ${
               project.isApproved
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
+                ? "bg-white text-black font-semibold shadow-md border border-white"
                 : "bg-white text-black hover:bg-zinc-200"
             }`}
             title="Client Sign-Off"

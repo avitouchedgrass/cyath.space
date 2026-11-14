@@ -222,7 +222,7 @@ export default function ProPricingPage() {
               <ul className="space-y-3 text-xs mb-8">
                 <li className="flex items-start gap-2.5">
                   <Check className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
-                  <span>Up to 5 active review links</span>
+                  <span>1 active review canvas</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
@@ -456,7 +456,7 @@ export default function ProPricingPage() {
               <tbody className="divide-y divide-white/[0.06]">
                 <tr>
                   <td className="py-3.5 px-6 font-medium">Active Canvases</td>
-                  <td className="py-3.5 px-6 text-zinc-400">5 links</td>
+                  <td className="py-3.5 px-6 text-zinc-400">1 canvas</td>
                   <td className="py-3.5 px-6 font-medium text-white">Unlimited</td>
                   <td className="py-3.5 px-6">Unlimited</td>
                 </tr>
