@@ -82,14 +82,17 @@ export default function DashboardPage() {
   const isDay = theme === "day";
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        const isGuest =
-          typeof window !== "undefined" &&
-          (localStorage.getItem("cyath_guest_session") === "true" ||
-            new URLSearchParams(window.location.search).get("demo") === "true");
+    let isCancelled = false;
 
-        if (isGuest) {
+    const verifyAuth = async () => {
+      // 1. Check guest bypass
+      const isGuest =
+        typeof window !== "undefined" &&
+        (localStorage.getItem("cyath_guest_session") === "true" ||
+          new URLSearchParams(window.location.search).get("demo") === "true");
+
+      if (isGuest) {
+        if (!isCancelled) {
           setCurrentUser({
             id: "guest-user",
             email: "guest@cyath.space",
@@ -99,10 +102,27 @@ export default function DashboardPage() {
             created_at: new Date().toISOString(),
           } as User);
           setAgencyInput("Studio");
-        } else {
-          router.replace("/login");
         }
-      } else {
+        return;
+      }
+
+      // 2. Check cached session first for instant response
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user && !isCancelled) {
+        setCurrentUser(session.user);
+        const userFirm = session.user.user_metadata?.agency_name;
+        if (!userFirm) {
+          setShowOnboardingModal(true);
+          setAgencyInput("Studio");
+        } else {
+          setAgencyInput(userFirm);
+        }
+        return;
+      }
+
+      // 3. Fallback to getUser() verification
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && !isCancelled) {
         setCurrentUser(user);
         const userFirm = user.user_metadata?.agency_name;
         if (!userFirm) {
@@ -111,8 +131,38 @@ export default function DashboardPage() {
         } else {
           setAgencyInput(userFirm);
         }
+        return;
+      }
+
+      // 4. Truly not authenticated: clear stale auth flags to prevent infinite redirect loops
+      if (!isCancelled) {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cyath_auth_active");
+          localStorage.removeItem("cyath_guest_session");
+        }
+        router.replace("/login");
+      }
+    };
+
+    verifyAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (isCancelled) return;
+      if (event === "SIGNED_OUT") {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cyath_auth_active");
+          localStorage.removeItem("cyath_guest_session");
+        }
+        router.replace("/login");
+      } else if (session?.user) {
+        setCurrentUser(session.user);
       }
     });
+
+    return () => {
+      isCancelled = true;
+      subscription.unsubscribe();
+    };
   }, [router, supabase]);
 
   const handleSignOut = async () => {

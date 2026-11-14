@@ -10,22 +10,7 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isGuest = localStorage.getItem("cyath_guest_session") === "true";
-      const hasAuth = localStorage.getItem("cyath_auth_active") === "true";
-      let hasSbToken = false;
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && (key.startsWith("sb-") && key.endsWith("-auth-token"))) {
-            const raw = localStorage.getItem(key);
-            if (raw && raw.length > 20) {
-              hasSbToken = true;
-              break;
-            }
-          }
-        }
-      } catch { }
-
-      if (isGuest || hasAuth || hasSbToken) {
+      if (isGuest) {
         router.replace("/dashboard");
         return;
       }
@@ -33,7 +18,7 @@ export default function Home() {
 
     const supabase = createClient();
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+      if (session?.user) {
         try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
         router.replace("/dashboard");
       }

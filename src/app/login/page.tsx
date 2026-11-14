@@ -75,35 +75,43 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    // 1. If explicit guest session is active, allow direct access
     if (typeof window !== "undefined") {
       const isGuest = localStorage.getItem("cyath_guest_session") === "true";
-      const hasAuth = localStorage.getItem("cyath_auth_active") === "true";
-      let hasSbToken = false;
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && (key.startsWith("sb-") && key.endsWith("-auth-token"))) {
-            const raw = localStorage.getItem(key);
-            if (raw && raw.length > 20) {
-              hasSbToken = true;
-              break;
-            }
-          }
-        }
-      } catch { }
-
-      if (isGuest || hasAuth || hasSbToken) {
+      if (isGuest) {
         router.replace("/dashboard");
         return;
       }
     }
 
+    // 2. Validate session against Supabase before navigating
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+      if (session?.user) {
         try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
         router.replace("/dashboard");
+      } else {
+        // Clear stale flags to prevent any ping-pong redirect loop
+        try {
+          localStorage.removeItem("cyath_auth_active");
+        } catch { }
       }
     });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
+        router.replace("/dashboard");
+      } else if (event === "SIGNED_OUT") {
+        try {
+          localStorage.removeItem("cyath_auth_active");
+          localStorage.removeItem("cyath_guest_session");
+        } catch { }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [router, supabase]);
 
   // Active Cross-Window / Cross-Device Listener for Email Verification
