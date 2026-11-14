@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
 import { DeviceMode, InteractionMode, Pin, Project, DomAnchor } from "@/types";
 import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
@@ -118,6 +118,31 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       } catch { }
     }
   }, [interactionMode]);
+
+  // Navigation handlers for proxy iframe staging site
+  const handleNavBack = () => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage({ type: "CYATH_NAV_BACK" }, "*");
+      } catch { }
+    }
+  };
+
+  const handleNavForward = () => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage({ type: "CYATH_NAV_FORWARD" }, "*");
+      } catch { }
+    }
+  };
+
+  const handleNavReload = () => {
+    if (iframeRef.current?.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage({ type: "CYATH_NAV_RELOAD" }, "*");
+      } catch { }
+    }
+  };
 
   // Listen to height, wheel, element pin, and navigation messages from proxy iframe bridge
   useEffect(() => {
@@ -322,10 +347,44 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
             className={`h-10 border-b px-4 flex items-center justify-between select-none shrink-0 ${isDay ? "bg-[#F5F2EA] border-stone-200" : "bg-[#050505] border-white/[0.08]"
               }`}
           >
-            <div className="flex items-center gap-1.5">
-              <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-400" : "bg-white/20"}`} />
-              <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
-              <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-400" : "bg-white/20"}`} />
+                <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+                <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
+              </div>
+
+              {isWebUrl && (
+                <div className={`flex items-center gap-0.5 ml-2 pl-2 border-l ${isDay ? "border-stone-300" : "border-white/10"}`}>
+                  <button
+                    onClick={handleNavBack}
+                    className={`p-1 rounded transition-colors cursor-pointer ${
+                      isDay ? "hover:bg-stone-200 text-stone-600" : "hover:bg-white/10 text-zinc-400 hover:text-white"
+                    }`}
+                    title="Back in history"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={handleNavForward}
+                    className={`p-1 rounded transition-colors cursor-pointer ${
+                      isDay ? "hover:bg-stone-200 text-stone-600" : "hover:bg-white/10 text-zinc-400 hover:text-white"
+                    }`}
+                    title="Forward in history"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={handleNavReload}
+                    className={`p-1 rounded transition-colors cursor-pointer ${
+                      isDay ? "hover:bg-stone-200 text-stone-600" : "hover:bg-white/10 text-zinc-400 hover:text-white"
+                    }`}
+                    title="Reload page"
+                  >
+                    <RotateCw className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex-1 max-w-sm mx-4 flex items-center justify-center gap-1.5">

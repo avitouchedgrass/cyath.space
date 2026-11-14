@@ -27,7 +27,7 @@ import {
   FolderGit2,
   CreditCard,
   MessageSquare,
-  Sparkles as UnusedSparkles, // Not used per user rule
+  Zap,
 } from "lucide-react";
 import { useReviewStore } from "@/store/useReviewStore";
 import { TesseractMark } from "@/components/common/Logo";
@@ -523,30 +523,44 @@ export default function DashboardPage() {
 
         <div className="max-w-6xl w-full mx-auto px-6 py-8 space-y-8 flex-1 relative z-10">
           {/* Workspace Title & Telemetry Header (Harvey AI Style) */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-white/[0.08]">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-white/[0.08]">
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
-                {agencyInput || "Independent Studio"} / Reviews
-              </div>
               <h1
-                className="text-2xl sm:text-3xl font-serif font-medium tracking-tight"
+                className="text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight"
                 style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
               >
                 Projects
               </h1>
             </div>
 
-            {/* Quick Monochrome Telemetry Badges */}
-            <div className="flex items-center gap-2 font-mono text-xs">
-              <span className="px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] text-zinc-300">
+            {/* Quick Monochrome Telemetry Badges & Alluring Upgrade Button */}
+            <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
+              <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] text-zinc-200">
                 {userProjects.length} Active {userProjects.length === 1 ? "Review" : "Reviews"}
               </span>
-              <span className="px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] text-zinc-300">
+              <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] text-zinc-200">
                 {totalNotesCount} Open {totalNotesCount === 1 ? "Note" : "Notes"}
               </span>
-              <span className="px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.03] text-zinc-300">
+              <span className="px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] text-zinc-200">
                 {isUserPro ? "Pro Plan" : "Free Plan (1/1)"}
               </span>
+
+              {!isUserPro && (
+                <button
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="relative group p-[1px] rounded-full overflow-hidden cursor-pointer active:scale-[0.96] transition-transform shadow-[0_0_20px_rgba(255,255,255,0.18)] hover:shadow-[0_0_28px_rgba(255,255,255,0.35)]"
+                  title="Unlock Unlimited Staging Canvases"
+                >
+                  <span className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0_340deg,#ffffff_360deg)] animate-[spin_3s_linear_infinite]" />
+                  <span className={`relative flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-mono font-medium border transition-colors ${
+                    isDay ? "bg-white text-stone-900 border-stone-200" : "bg-black text-white border-white/20"
+                  }`}>
+                    <Zap className="w-3.5 h-3.5 text-white fill-white" />
+                    <span>Upgrade to Pro</span>
+                    <ArrowUpRight className="w-3 h-3 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -561,13 +575,13 @@ export default function DashboardPage() {
           >
             <form onSubmit={handleQuickUrlSubmit} className="space-y-3.5">
               <div className="flex items-center gap-3">
-                <Globe className="w-4 h-4 text-zinc-500 shrink-0" />
+                <Globe className="w-4 h-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
                   value={quickUrl}
                   onChange={(e) => setQuickUrl(e.target.value)}
                   placeholder="Paste any live website URL to start review (e.g. preview.acmecorp.com)..."
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-600 font-sans"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-zinc-400 font-sans text-white"
                 />
               </div>
 
@@ -613,7 +627,7 @@ export default function DashboardPage() {
           >
             <div className="flex items-center gap-2.5">
               <span className="font-sans font-semibold text-sm">Review Canvases</span>
-              <span className="text-xs font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-zinc-400">
+              <span className="text-xs font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-zinc-300">
                 {filteredProjects.length}
               </span>
             </div>
@@ -621,16 +635,16 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <div
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs ${
-                  isDay ? "bg-white border-stone-200 text-stone-900" : "bg-white/[0.04] border-white/10 text-zinc-300"
+                  isDay ? "bg-white border-stone-200 text-stone-900" : "bg-white/[0.04] border-white/10 text-zinc-200"
                 }`}
               >
-                <Search className="w-3.5 h-3.5 text-zinc-500" />
+                <Search className="w-3.5 h-3.5 text-zinc-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter by title or url..."
-                  className="bg-transparent outline-none text-xs w-40 placeholder:text-zinc-600 font-sans"
+                  className="bg-transparent outline-none text-xs w-40 placeholder:text-zinc-400 font-sans"
                 />
               </div>
 
@@ -638,7 +652,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setStatusFilter("all")}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                    statusFilter === "all" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-500 hover:text-white"
+                    statusFilter === "all" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   All
@@ -646,7 +660,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setStatusFilter("active")}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                    statusFilter === "active" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-500 hover:text-white"
+                    statusFilter === "active" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   Active
@@ -654,7 +668,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setStatusFilter("signed_off")}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                    statusFilter === "signed_off" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-500 hover:text-white"
+                    statusFilter === "signed_off" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   Approved
@@ -807,7 +821,7 @@ export default function DashboardPage() {
                             {project.title}
                           </h4>
                         </div>
-                        <p className="text-[11px] font-mono text-zinc-500 truncate">
+                        <p className="text-[11px] font-mono text-zinc-400 truncate">
                           {project.targetUrl}
                         </p>
                       </div>

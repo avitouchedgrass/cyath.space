@@ -220,7 +220,7 @@ export async function GET(req: NextRequest) {
     return rawUrl;
   }
 
-  // Helper to route relative and targetOrigin API/asset requests through Cyath proxy (defeats CORS errors)
+  // Helper to route relative and targetOrigin API/asset requests through Cyath proxy (defeats CORS errors & SPA 404s)
   function toProxiedUrl(raw) {
     if (!raw) return raw;
     try {
@@ -228,10 +228,19 @@ export async function GET(req: NextRequest) {
       if (!strUrl) return raw;
       if (strUrl.indexOf('/api/proxy') !== -1) return raw;
 
+      var currentOrigin = window.location.origin;
+
+      // If URL points to Cyath's host origin but is not /api/proxy, rewrite to targetOrigin
+      if (strUrl.startsWith(currentOrigin)) {
+        strUrl = targetOrigin + strUrl.slice(currentOrigin.length);
+      } else if (strUrl.startsWith('/')) {
+        strUrl = targetOrigin + strUrl;
+      }
+
       var resolved = new URL(strUrl, currentTargetUrl).href;
       if (resolved.startsWith('http://') || resolved.startsWith('https://')) {
-        // If the request is for the target website origin or relative path, proxy it
-        if (resolved.startsWith(targetOrigin) || strUrl.startsWith('/')) {
+        // If the request is for the target website origin, proxy it
+        if (resolved.startsWith(targetOrigin)) {
           var proxied = '/api/proxy?url=' + encodeURIComponent(resolved) + (isAudioMuted ? '&mute=1' : '');
           if (typeof raw === 'object' && raw instanceof Request) {
             return new Request(proxied, raw);
@@ -243,19 +252,67 @@ export async function GET(req: NextRequest) {
     return raw;
   }
 
-  // Intercept dynamic Image src assignments (fixes rotating canvas images and plates)
+  // Intercept dynamic Image src assignments (fixes relative images & rotating plates)
   try {
     var imgDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
     if (imgDesc && imgDesc.set) {
       var origImgSet = imgDesc.set;
       Object.defineProperty(HTMLImageElement.prototype, 'src', {
         set: function(val) {
-          if (typeof val === 'string' && val.startsWith('/') && !val.startsWith('//') && !val.startsWith('/api/proxy')) {
-            val = targetOrigin + val;
+          if (typeof val === 'string' && !val.includes('/api/proxy')) {
+            if (val.startsWith('/') && !val.startsWith('//')) {
+              val = targetOrigin + val;
+            } else if (val.startsWith(window.location.origin)) {
+              val = targetOrigin + val.slice(window.location.origin.length);
+            }
           }
           return origImgSet.call(this, val);
         },
         get: imgDesc.get,
+        configurable: true
+      });
+    }
+  } catch(e) {}
+
+  // Intercept dynamic script loading (fixes Next.js, Webpack, Nuxt, Vite chunk 404s)
+  try {
+    var scriptDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+    if (scriptDesc && scriptDesc.set) {
+      var origScriptSet = scriptDesc.set;
+      Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+        set: function(val) {
+          if (typeof val === 'string' && !val.includes('/api/proxy')) {
+            if (val.startsWith('/')) {
+              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val);
+            } else if (val.startsWith(window.location.origin)) {
+              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val.slice(window.location.origin.length));
+            }
+          }
+          return origScriptSet.call(this, val);
+        },
+        get: scriptDesc.get,
+        configurable: true
+      });
+    }
+  } catch(e) {}
+
+  // Intercept dynamic stylesheet / link loading
+  try {
+    var linkDesc = Object.getOwnPropertyDescriptor(HTMLLinkElement.prototype, 'href');
+    if (linkDesc && linkDesc.set) {
+      var origLinkSet = linkDesc.set;
+      Object.defineProperty(HTMLLinkElement.prototype, 'href', {
+        set: function(val) {
+          if (typeof val === 'string' && !val.includes('/api/proxy')) {
+            if (val.startsWith('/')) {
+              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val);
+            } else if (val.startsWith(window.location.origin)) {
+              val = '/api/proxy?url=' + encodeURIComponent(targetOrigin + val.slice(window.location.origin.length));
+            }
+          }
+          return origLinkSet.call(this, val);
+        },
+        get: linkDesc.get,
         configurable: true
       });
     }
@@ -325,8 +382,21 @@ export async function GET(req: NextRequest) {
     return origReplaceState.apply(this, arguments);
   };
 
-  // Handle standard link clicks
+  // In Comment mode: completely disable website button clicks, links, and forms
+  // In Browse mode: handle standard link navigations through proxy
   document.addEventListener('click', function(e) {
+    if (currentInteractionMode === 'comment') {
+      // If clicking directly on an existing cyath pin or inspector, allow selection
+      if (e.target && (e.target.closest('#cyath-pins-layer') || e.target.id === 'cyath-hover-inspector')) {
+        return;
+      }
+      // Stop all website buttons, links, inputs, and toggles from triggering
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return;
+    }
+
     try {
       if (e.defaultPrevented) return;
       var a = e.target.closest('a');
@@ -344,7 +414,15 @@ export async function GET(req: NextRequest) {
         }
       }
     } catch(err) {}
-  }, false);
+  }, true);
+
+  document.addEventListener('submit', function(e) {
+    if (currentInteractionMode === 'comment') {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  }, true);
 
   // Forward mouse wheel events so stage container and pins scroll in sync
   window.addEventListener('wheel', function(e) {
@@ -617,6 +695,15 @@ export async function GET(req: NextRequest) {
 
   window.addEventListener('message', function(ev) {
     if (!ev.data) return;
+    if (ev.data.type === 'CYATH_NAV_BACK') {
+      try { history.back(); } catch(e) {}
+    }
+    if (ev.data.type === 'CYATH_NAV_FORWARD') {
+      try { history.forward(); } catch(e) {}
+    }
+    if (ev.data.type === 'CYATH_NAV_RELOAD') {
+      try { window.location.reload(); } catch(e) {}
+    }
     if (ev.data.type === 'CYATH_SET_MODE') {
       currentInteractionMode = ev.data.mode || 'browse';
       if (hoverInspector && currentInteractionMode !== 'comment') {
