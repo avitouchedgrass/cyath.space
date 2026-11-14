@@ -19,7 +19,16 @@ interface ReviewStageProps {
   theme?: "day" | "night";
   onPageNavigated?: (url: string) => void;
   onSelectPin: (pinId: string | null) => void;
-  onAddPin: (xPercent: number, yPercent: number, comment: string, authorName: string, pageUrl?: string) => void;
+  onAddPin: (
+    xPercent: number,
+    yPercent: number,
+    comment: string,
+    authorName: string,
+    pageUrl?: string,
+    widthPercent?: number,
+    heightPercent?: number,
+    annotationType?: "point" | "box"
+  ) => void;
   onAddComment: (pinId: string, content: string, authorName: string) => void;
   onToggleResolve: (pinId: string) => void;
   onDeletePin?: (pinId: string) => void;
@@ -45,7 +54,20 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const [pendingPinCoords, setPendingPinCoords] = useState<{ xPercent: number; yPercent: number } | null>(null);
+  const [pendingPinCoords, setPendingPinCoords] = useState<{
+    xPercent: number;
+    yPercent: number;
+    widthPercent?: number;
+    heightPercent?: number;
+    annotationType?: "point" | "box";
+  } | null>(null);
+  const [drawingBox, setDrawingBox] = useState<{
+    xPercent: number;
+    yPercent: number;
+    widthPercent: number;
+    heightPercent: number;
+  } | null>(null);
+  const dragStartRef = useRef<{ clientX: number; clientY: number } | null>(null);
   const [frameHeight, setFrameHeight] = useState<number>(1000);
   const [localPageUrl, setLocalPageUrl] = useState<string>(project.targetUrl || "");
   const currentPageUrl = externalPageUrl || localPageUrl;
@@ -119,19 +141,69 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     }
   };
 
-  const handleStageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (interactionMode !== "comment") return;
+    if (!containerRef.current) return;
+    dragStartRef.current = { clientX: e.clientX, clientY: e.clientY };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (interactionMode !== "comment") return;
+    if (!dragStartRef.current || !containerRef.current) return;
+    const dx = Math.abs(e.clientX - dragStartRef.current.clientX);
+    const dy = Math.abs(e.clientY - dragStartRef.current.clientY);
+    if (dx > 4 || dy > 4) {
+      const start = calculateNormalizedCoords(
+        { clientX: dragStartRef.current.clientX, clientY: dragStartRef.current.clientY } as unknown as React.MouseEvent<HTMLElement>,
+        containerRef.current
+      );
+      const current = calculateNormalizedCoords(e, containerRef.current);
+      setDrawingBox({
+        xPercent: Math.min(start.xPercent, current.xPercent),
+        yPercent: Math.min(start.yPercent, current.yPercent),
+        widthPercent: Math.max(1.5, Math.abs(current.xPercent - start.xPercent)),
+        heightPercent: Math.max(1.5, Math.abs(current.yPercent - start.yPercent)),
+      });
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
     if (interactionMode !== "comment") return;
     if (!containerRef.current) return;
 
-    const coords = calculateNormalizedCoords(e, containerRef.current);
-
-    setPendingPinCoords(coords);
-    onSelectPin(null);
+    if (drawingBox && drawingBox.widthPercent > 2 && drawingBox.heightPercent > 2) {
+      setPendingPinCoords({
+        xPercent: drawingBox.xPercent,
+        yPercent: drawingBox.yPercent,
+        widthPercent: drawingBox.widthPercent,
+        heightPercent: drawingBox.heightPercent,
+        annotationType: "box",
+      });
+      onSelectPin(null);
+    } else if (dragStartRef.current) {
+      const coords = calculateNormalizedCoords(e, containerRef.current);
+      setPendingPinCoords({
+        ...coords,
+        annotationType: "point",
+      });
+      onSelectPin(null);
+    }
+    setDrawingBox(null);
+    dragStartRef.current = null;
   };
 
   const handleSaveNewPin = (comment: string, authorName: string) => {
     if (!pendingPinCoords) return;
-    onAddPin(pendingPinCoords.xPercent, pendingPinCoords.yPercent, comment, authorName, currentPageUrl);
+    onAddPin(
+      pendingPinCoords.xPercent,
+      pendingPinCoords.yPercent,
+      comment,
+      authorName,
+      currentPageUrl,
+      pendingPinCoords.widthPercent,
+      pendingPinCoords.heightPercent,
+      pendingPinCoords.annotationType
+    );
     setPendingPinCoords(null);
   };
 
@@ -256,7 +328,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
           <div
             ref={containerRef}
-            onClick={handleStageClick}
             className="relative w-full max-w-full overflow-x-hidden"
             style={{ minHeight: stageMinHeight }}
           >
@@ -300,13 +371,30 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Annotation Overlay Layer */}
+            {/* Annotation Overlay Layer (Supports both single-click pin and drag-to-draw box) */}
             <div
-              className={`absolute inset-0 z-10 ${interactionMode === "comment" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none"
-                }`}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              className={`absolute inset-0 z-10 ${
+                interactionMode === "comment" ? "pointer-events-auto cursor-crosshair select-none" : "pointer-events-none"
+              }`}
             />
 
-            {/* Active Pins (Strictly scoped to current device viewport and sticky to content pixels) */}
+            {/* Live Dragging Box Preview */}
+            {drawingBox && (
+              <div
+                style={{
+                  left: `${drawingBox.xPercent}%`,
+                  top: `${drawingBox.yPercent}%`,
+                  width: `${drawingBox.widthPercent}%`,
+                  height: `${drawingBox.heightPercent}%`,
+                }}
+                className="absolute border-2 border-dashed border-white bg-white/10 z-30 pointer-events-none rounded transition-none shadow-[0_0_24px_rgba(255,255,255,0.35)]"
+              />
+            )}
+
+            {/* Active Pins & Boxes (Strictly scoped to current device viewport and sticky to content pixels) */}
             {activeDevicePins.map((pin) => (
               <PinMarker
                 key={pin.id}
@@ -319,8 +407,25 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             ))}
 
-            {/* Pending Draft Pin Marker (Visually anchors the pin directly to the content while popover is open) */}
-            {pendingPinCoords && (
+            {/* Pending Draft Marker: Area Box */}
+            {pendingPinCoords && pendingPinCoords.annotationType === "box" && (
+              <div
+                style={{
+                  left: `${pendingPinCoords.xPercent}%`,
+                  top: `${pendingPinCoords.yPercent}%`,
+                  width: `${pendingPinCoords.widthPercent}%`,
+                  height: `${pendingPinCoords.heightPercent}%`,
+                }}
+                className="absolute border-2 border-solid border-white bg-white/15 z-30 pointer-events-none rounded shadow-[0_0_24px_rgba(255,255,255,0.4)] animate-in fade-in zoom-in-95 duration-150"
+              >
+                <div className="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-white text-black font-mono font-bold text-xs flex items-center justify-center shadow-lg ring-2 ring-white/60">
+                  +
+                </div>
+              </div>
+            )}
+
+            {/* Pending Draft Marker: Point Pin */}
+            {pendingPinCoords && pendingPinCoords.annotationType !== "box" && (
               <div
                 style={{
                   left: `${pendingPinCoords.xPercent}%`,

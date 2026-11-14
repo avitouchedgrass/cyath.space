@@ -1,6 +1,7 @@
 export type DeviceMode = "desktop" | "tablet" | "mobile" | "full";
 export type PinStatus = "open" | "in_progress" | "resolved";
 export type InteractionMode = "browse" | "comment";
+export type AnnotationType = "point" | "box";
 export type AssetType = "url" | "image" | "pdf";
 
 export interface ClientTelemetry {
@@ -29,6 +30,9 @@ export interface Pin {
   number: number;
   xPercent: number;
   yPercent: number;
+  annotationType?: AnnotationType;
+  widthPercent?: number;
+  heightPercent?: number;
   status: PinStatus;
   deviceMode: DeviceMode;
   pageUrl: string;

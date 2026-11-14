@@ -522,7 +522,7 @@ export default function LoginPage() {
                 </h1>
                 <p className={`text-xs ${isDay ? "text-zinc-600" : "text-zinc-400"}`}>
                   {mode === "signin"
-                    ? "Access your staging canvases, punchlists, and client sign-off seals."
+                    ? "Access your reviews, punchlists, and client sign-offs."
                     : "Start free on your current project. Upgrade only when handling multiple rollouts."}
                 </p>
               </div>
@@ -729,7 +729,7 @@ export default function LoginPage() {
                     className={`text-[11px] font-mono transition-colors cursor-pointer inline-flex items-center gap-1.5 ${isDay ? "text-zinc-500 hover:text-black" : "text-zinc-500 hover:text-white"
                       }`}
                   >
-                    <span>Explore Studio Workbench as Guest</span>
+                    <span>Continue as Guest</span>
                     <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>

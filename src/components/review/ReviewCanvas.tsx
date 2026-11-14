@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X, Maximize2, Minimize2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Globe, MessageSquare, X, Maximize2, Minimize2, MousePointer2, MessageSquarePlus, Square, Volume2, VolumeX, CheckCircle2, Monitor, Tablet, Smartphone } from "lucide-react";
 import { formatPageLabel } from "@/lib/colors";
 import { useReviewStore } from "@/store/useReviewStore";
 import { ReviewHeader } from "@/components/review/ReviewHeader";
@@ -329,23 +329,23 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
           </div>
 
           <h1 className="text-xl font-serif font-medium text-white mb-2">
-            Connect Staging Canvas
+            Connect Project URL
           </h1>
           <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
-            This shareable canvas link has not yet cached a deployment URL. Enter the staging target to mount this review session immediately.
+            This review link does not have a cached target URL. Enter the project or preview URL to load this session.
           </p>
 
           <form onSubmit={handleManualMount} className="space-y-4 text-left">
             <div>
               <label className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
-                Staging / Preview URL
+                Preview or Production URL
               </label>
               <div className="relative">
                 <input
                   type="text"
                   required
                   autoFocus
-                  placeholder="https://interior-sample.deploy.vercel.app"
+                  placeholder="https://preview.domain.com"
                   value={manualUrl}
                   onChange={(e) => setManualUrl(e.target.value)}
                   className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 font-mono"
@@ -360,7 +360,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
               </label>
               <input
                 type="text"
-                placeholder="e.g. Maison Élara Staging"
+                placeholder="e.g. Client Web Redesign"
                 value={manualTitle}
                 onChange={(e) => setManualTitle(e.target.value)}
                 className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20"
@@ -369,9 +369,9 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
 
             <button
               type="submit"
-              className="w-full py-2.5 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+              className="w-full py-2.5 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.96]"
             >
-              <span>Mount Staging Viewport</span>
+              <span>Open Project Review</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </form>
@@ -395,10 +395,13 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
     yPercent: number,
     comment: string,
     authorName: string,
-    pageUrl?: string
+    pageUrl?: string,
+    widthPercent?: number,
+    heightPercent?: number,
+    annotationType?: "point" | "box"
   ) => {
     const telemetry = captureClientTelemetry(activeDeviceMode);
-    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl);
+    addPin(project.id, xPercent, yPercent, telemetry, comment, authorName, pageUrl, widthPercent, heightPercent, annotationType);
   };
 
   const handleAddComment = (pinId: string, content: string, authorName: string) => {
@@ -470,53 +473,127 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
           />
         )}
 
-        {/* Floating Cinematic HUD Island in Full Mode */}
-        {isFullMode && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-1.5 rounded-full bg-[#09090c]/90 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.95)] backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-5 duration-300 select-none">
-            {/* Mode beacon badge */}
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              <span>Full View</span>
-            </div>
-
-            {/* Current Subpage Indicator */}
-            <span className="text-zinc-400 text-xs font-mono truncate max-w-[150px] px-1 hidden sm:inline">
-              {formatPageLabel(currentPageUrl || project.targetUrl)}
-            </span>
-
-            {/* Open Notes Trigger */}
+        {/* Figma-style Floating Bottom Dock with Micro-Animations */}
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 p-1.5 rounded-full bg-[#0a0a0a]/90 border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-all duration-200 select-none">
+          {/* Interaction Mode Switchers */}
+          <div className="flex items-center gap-1 bg-white/[0.05] p-0.5 rounded-full border border-white/[0.06]">
             <button
-              onClick={() => setFullSidebarOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white text-xs font-mono transition-colors cursor-pointer"
-              title="Open Feedback Thread"
+              onClick={() => setInteractionMode("browse")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                interactionMode === "browse"
+                  ? "bg-white text-black font-semibold shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
+              title="Browse Mode (Interact with page)"
             >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>{Array.isArray(project.pins) ? project.pins.filter(Boolean).filter((p) => p.status !== "resolved").length : 0} notes</span>
+              <MousePointer2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Browse</span>
             </button>
-
-            {/* Monitor Fullscreen toggle */}
             <button
-              onClick={toggleNativeFullscreen}
-              className="p-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white transition-colors cursor-pointer"
-              title={isNativeFullscreen ? "Exit Display Fullscreen" : "Enter Display Fullscreen"}
+              onClick={() => setInteractionMode("comment")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                interactionMode === "comment"
+                  ? "bg-white text-black font-semibold shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
+              title="Comment Mode (Click to pin, or drag to draw box)"
             >
-              {isNativeFullscreen ? (
-                <Minimize2 className="w-3.5 h-3.5" />
-              ) : (
-                <Maximize2 className="w-3.5 h-3.5" />
-              )}
-            </button>
-
-            {/* Exit Full Mode Pill */}
-            <button
-              onClick={() => setActiveDeviceMode("desktop")}
-              className="px-3 py-1 rounded-full bg-white text-black font-semibold text-xs font-mono hover:bg-zinc-200 transition-colors cursor-pointer"
-              title="Exit Full View (Hotkey: Esc or F)"
-            >
-              Exit Full
+              <MessageSquarePlus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Comment</span>
             </button>
           </div>
-        )}
+
+          <div className="w-px h-4 bg-white/15 mx-0.5" />
+
+          {/* Viewport Selectors */}
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => setActiveDeviceMode("desktop")}
+              className={`p-1.5 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                activeDeviceMode === "desktop"
+                  ? "bg-white text-black shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
+              title="Desktop (1440px)"
+            >
+              <Monitor className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setActiveDeviceMode("tablet")}
+              className={`p-1.5 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                activeDeviceMode === "tablet"
+                  ? "bg-white text-black shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
+              title="Tablet (768px)"
+            >
+              <Tablet className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setActiveDeviceMode("mobile")}
+              className={`p-1.5 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                activeDeviceMode === "mobile"
+                  ? "bg-white text-black shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
+              title="Mobile (375px)"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setActiveDeviceMode(isFullMode ? "desktop" : "full")}
+              className={`p-1.5 rounded-full transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+                isFullMode
+                  ? "bg-white text-black shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.08]"
+              }`}
+              title={isFullMode ? "Exit Full View" : "Full Stage Mode"}
+            >
+              {isFullMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
+          <div className="w-px h-4 bg-white/15 mx-0.5" />
+
+          {/* Audio Mute Indicator */}
+          {project.assetType === "url" && (
+            <button
+              onClick={() => setIsAudioMuted((m) => !m)}
+              className="p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-all duration-150 cursor-pointer active:scale-[0.96]"
+              title={isAudioMuted ? "Unmute preview audio" : "Mute preview audio"}
+            >
+              {isAudioMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            </button>
+          )}
+
+          {/* Notes Counter Pill */}
+          <button
+            onClick={() => {
+              if (isFullMode) {
+                setFullSidebarOpen(true);
+              }
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96]"
+            title="Feedback threads"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>{Array.isArray(project.pins) ? project.pins.filter(Boolean).filter((p) => p.status !== "resolved").length : 0}</span>
+          </button>
+
+          {/* Sign-off Approval Trigger */}
+          <button
+            onClick={() => setShowApprovalModal(true)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium transition-all duration-150 cursor-pointer active:scale-[0.96] ${
+              project.isApproved
+                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
+                : "bg-white text-black hover:bg-zinc-200"
+            }`}
+            title="Client Sign-Off"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>{project.isApproved ? "Approved" : "Sign Off"}</span>
+          </button>
+        </div>
 
         {/* Slide-out Sidebar Drawer when triggered from Full Mode HUD */}
         {isFullMode && fullSidebarOpen && (

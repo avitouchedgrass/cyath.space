@@ -73,7 +73,7 @@ export const StudioUpgradeModal: React.FC<StudioUpgradeModalProps> = ({ onClose,
               </h3>
 
               <p className={`text-xs font-sans leading-relaxed ${isDay ? "text-stone-600" : "text-zinc-300"}`}>
-                Connect Cursor, Claude Code, and Antigravity directly to your staging canvas via our native Model Context Protocol (MCP) server.
+                Connect Cursor, Claude Code, and Antigravity directly to your projects via our native Model Context Protocol (MCP) server.
               </p>
             </div>
 
