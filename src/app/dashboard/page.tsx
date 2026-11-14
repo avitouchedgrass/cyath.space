@@ -359,10 +359,14 @@ export default function DashboardPage() {
 
         <div className="max-w-6xl w-full mx-auto px-6 py-8 space-y-8 flex-1 relative z-10">
           {/* Workspace Title & Telemetry Header (Harvey AI Style) */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b border-white/[0.08]">
+          <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b ${
+            isDay ? "border-stone-200" : "border-white/[0.08]"
+          }`}>
             <div>
               <h1
-                className="text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight"
+                className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight ${
+                  isDay ? "text-stone-900" : "text-white"
+                }`}
                 style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
               >
                 Projects
@@ -503,8 +507,14 @@ export default function DashboardPage() {
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2"
           >
             <div className="flex items-center gap-2.5">
-              <span className="font-sans font-semibold text-sm">Review Canvases</span>
-              <span className="text-xs font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-zinc-300">
+              <span className={`font-sans font-semibold text-sm ${isDay ? "text-stone-900" : "text-white"}`}>
+                Review Canvases
+              </span>
+              <span className={`text-xs font-mono px-2 py-0.5 rounded-full border ${
+                isDay
+                  ? "border-stone-300 bg-stone-200/80 text-stone-800 font-semibold"
+                  : "border-white/10 bg-white/5 text-zinc-300"
+              }`}>
                 {filteredProjects.length}
               </span>
             </div>
@@ -529,7 +539,13 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setStatusFilter("all")}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                    statusFilter === "all" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-400 hover:text-white"
+                    statusFilter === "all"
+                      ? isDay
+                        ? "bg-white text-black font-semibold shadow-xs"
+                        : "bg-white text-black font-semibold"
+                      : isDay
+                      ? "text-stone-600 hover:text-stone-900"
+                      : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   All
@@ -537,7 +553,13 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setStatusFilter("active")}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                    statusFilter === "active" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-400 hover:text-white"
+                    statusFilter === "active"
+                      ? isDay
+                        ? "bg-white text-black font-semibold shadow-xs"
+                        : "bg-white text-black font-semibold"
+                      : isDay
+                      ? "text-stone-600 hover:text-stone-900"
+                      : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   Active
@@ -545,7 +567,13 @@ export default function DashboardPage() {
                 <button
                   onClick={() => setStatusFilter("signed_off")}
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                    statusFilter === "signed_off" ? (isDay ? "bg-white text-black font-semibold shadow-xs" : "bg-white text-black font-semibold") : "text-zinc-400 hover:text-white"
+                    statusFilter === "signed_off"
+                      ? isDay
+                        ? "bg-white text-black font-semibold shadow-xs"
+                        : "bg-white text-black font-semibold"
+                      : isDay
+                      ? "text-stone-600 hover:text-stone-900"
+                      : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   Approved

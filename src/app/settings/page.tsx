@@ -535,7 +535,7 @@ function SettingsContent() {
                       {isPro ? "Studio Pro" : "Free Plan"}
                     </div>
                     <div className={`text-xs mt-1 ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
-                      {isPro ? "Unlimited canvases & MCP server access" : "Up to 5 review canvases"}
+                      {isPro ? "Unlimited canvases & MCP server access" : "1 active review canvas"}
                     </div>
                   </div>
 

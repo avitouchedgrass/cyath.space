@@ -53,9 +53,9 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: "pro",
     badge: "AI Agent Sync",
-    title: "Pro Milestones & MCP Server",
+    title: "Canvas Quota & MCP Sync",
     content:
-      "Connect Cursor, Claude Code, or Codex directly to your reviews with our MCP server. Autonomous agents read client notes and ship patches in one command.",
+      "Free accounts include 1 active staging canvas. Upgrade to Pro for unlimited canvases, team punchlists, and native Model Context Protocol (MCP) agent patching.",
     selector: "#tour-sidebar-plans",
     placement: "right",
   },
@@ -177,9 +177,9 @@ export function DashboardTour() {
 
   if (!isOpen) return null;
 
-  // Compute Card Positioning
+  // Adaptive Card Positioning with Collision Flipping and Viewport Clamping
   const cardWidth = 400;
-  const cardHeight = 250;
+  const cardHeight = cardRef.current?.offsetHeight || 260;
   let cardStyle: React.CSSProperties = {};
 
   if (currentStep.placement === "center" || !targetRect) {
@@ -189,26 +189,48 @@ export function DashboardTour() {
       top: "50%",
       transform: "translate(-50%, -50%)",
       width: `min(${cardWidth}px, calc(100vw - 32px))`,
+      maxHeight: "calc(100vh - 40px)",
       zIndex: 100000,
     };
   } else if (currentStep.placement === "bottom") {
     const left = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, targetRect.left + (targetRect.width - cardWidth) / 2));
-    const top = Math.min(window.innerHeight - cardHeight - 20, targetRect.bottom + 16);
+    
+    // Check if bottom fits; if targetRect.bottom + cardHeight + 24 > window.innerHeight, flip to top
+    const fitsBelow = targetRect.bottom + cardHeight + 24 <= window.innerHeight;
+    const fitsAbove = targetRect.top - cardHeight - 24 >= 0;
+
+    let top: number;
+    if (fitsBelow) {
+      top = targetRect.bottom + 16;
+    } else if (fitsAbove) {
+      top = targetRect.top - cardHeight - 16;
+    } else {
+      top = Math.max(20, Math.min(window.innerHeight - cardHeight - 20, targetRect.bottom + 16));
+    }
+
     cardStyle = {
       position: "fixed",
       left: `${left}px`,
       top: `${top}px`,
       width: `min(${cardWidth}px, calc(100vw - 32px))`,
+      maxHeight: "calc(100vh - 40px)",
       zIndex: 100000,
     };
   } else if (currentStep.placement === "right") {
-    const left = Math.min(window.innerWidth - cardWidth - 20, targetRect.right + 20);
+    const fitsRight = targetRect.right + cardWidth + 24 <= window.innerWidth;
+    let left: number;
+    if (fitsRight) {
+      left = targetRect.right + 20;
+    } else {
+      left = Math.max(16, targetRect.left - cardWidth - 20);
+    }
     const top = Math.max(20, Math.min(window.innerHeight - cardHeight - 20, targetRect.top + (targetRect.height - cardHeight) / 2));
     cardStyle = {
       position: "fixed",
       left: `${left}px`,
       top: `${top}px`,
       width: `min(${cardWidth}px, calc(100vw - 32px))`,
+      maxHeight: "calc(100vh - 40px)",
       zIndex: 100000,
     };
   }
