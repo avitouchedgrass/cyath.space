@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // In-memory IP rate limiter (shortcut: in-memory limiter, upgrade to Redis when multi-region edge scale > 500 req/s)
 const ipRateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -982,7 +984,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
         "Content-Type": "text/html; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
         "Cross-Origin-Resource-Policy": "cross-origin",
-        "Cache-Control": "public, max-age=60, s-maxage=60",
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
       },
     });
   } catch (err: any) {
