@@ -71,9 +71,8 @@ Workflow:
 
   return (
     <div
-      className={`min-h-screen font-sans flex flex-col md:flex-row transition-colors duration-200 selection:bg-stone-300 selection:text-black ${
-        isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
-      }`}
+      className={`min-h-screen font-sans flex flex-col md:flex-row transition-colors duration-200 selection:bg-stone-300 selection:text-black ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
+        }`}
     >
       {/* Shared Persistent Left Sidebar */}
       <AppSidebar activeItem="plans" />
@@ -84,9 +83,8 @@ Workflow:
           {/* Subtitle & Billing Switcher */}
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <h1
-              className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight leading-[1.15] ${
-                isDay ? "text-stone-950" : "text-white"
-              }`}
+              className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight leading-[1.15] ${isDay ? "text-stone-950" : "text-white"
+                }`}
               style={{ fontFamily: "var(--font-serif, 'Oranienbaum', Georgia, serif)" }}
             >
               Fair pricing. Zero lock-in.
@@ -96,33 +94,30 @@ Workflow:
             </p>
 
             {/* Interactive Billing Frequency Switcher */}
-            <div className={`mt-6 inline-flex items-center p-1 rounded-full border shadow-sm transition-colors ${
-              isDay ? "bg-stone-200/80 border-stone-300" : "bg-white/[0.04] border-white/15"
-            }`}>
+            <div className={`mt-6 inline-flex items-center p-1 rounded-full border shadow-sm transition-colors ${isDay ? "bg-stone-200/80 border-stone-300" : "bg-white/[0.04] border-white/15"
+              }`}>
               <button
                 type="button"
                 onClick={() => setBillingCycle("annual")}
-                className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] flex items-center gap-2 ${
-                  billingCycle === "annual"
-                    ? isDay
-                      ? "bg-stone-900 text-white font-semibold shadow-xs"
-                      : "bg-white text-black font-semibold shadow-xs"
-                    : isDay
+                className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] flex items-center gap-2 ${billingCycle === "annual"
+                  ? isDay
+                    ? "bg-stone-900 text-white font-semibold shadow-xs"
+                    : "bg-white text-black font-semibold shadow-xs"
+                  : isDay
                     ? "text-stone-700 hover:text-stone-950"
                     : "text-zinc-400 hover:text-white"
-                }`}
+                  }`}
               >
                 <span>Billed Annually</span>
                 <span
-                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                    billingCycle === "annual"
-                      ? isDay
-                        ? "bg-stone-800 text-stone-200"
-                        : "bg-zinc-200 text-black"
-                      : isDay
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${billingCycle === "annual"
+                    ? isDay
+                      ? "bg-stone-800 text-stone-200"
+                      : "bg-zinc-200 text-black"
+                    : isDay
                       ? "bg-stone-300 text-stone-800"
                       : "bg-white/10 text-zinc-300"
-                  }`}
+                    }`}
                 >
                   Save 20%
                 </span>
@@ -130,15 +125,14 @@ Workflow:
               <button
                 type="button"
                 onClick={() => setBillingCycle("monthly")}
-                className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${
-                  billingCycle === "monthly"
-                    ? isDay
-                      ? "bg-stone-900 text-white font-semibold shadow-xs"
-                      : "bg-white text-black font-semibold shadow-xs"
-                    : isDay
+                className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all duration-150 cursor-pointer active:scale-[0.96] ${billingCycle === "monthly"
+                  ? isDay
+                    ? "bg-stone-900 text-white font-semibold shadow-xs"
+                    : "bg-white text-black font-semibold shadow-xs"
+                  : isDay
                     ? "text-stone-700 hover:text-stone-950"
                     : "text-zinc-400 hover:text-white"
-                }`}
+                  }`}
               >
                 Billed Monthly ($15)
               </button>
@@ -149,16 +143,14 @@ Workflow:
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {/* Card 1: SOLO FREELANCER */}
             <div
-              className={`rounded-2xl border p-7 flex flex-col justify-between transition-all duration-200 relative ${
-                isDay
-                  ? "bg-white border-stone-300 text-stone-900 shadow-sm"
-                  : "bg-[#0a0a0d] border-white/[0.12] text-white"
-              }`}
+              className={`rounded-2xl border p-7 flex flex-col justify-between transition-all duration-200 relative ${isDay
+                ? "bg-white border-stone-300 text-stone-900 shadow-sm"
+                : "bg-[#0a0a0d] border-white/[0.12] text-white"
+                }`}
             >
               <div>
-                <div className={`text-[11px] font-mono uppercase tracking-widest font-semibold mb-3 ${
-                  isDay ? "text-stone-600" : "text-zinc-400"
-                }`}>
+                <div className={`text-[11px] font-mono uppercase tracking-widest font-semibold mb-3 ${isDay ? "text-stone-600" : "text-zinc-400"
+                  }`}>
                   SOLO FREELANCER
                 </div>
 
@@ -202,11 +194,10 @@ Workflow:
               <Link
                 href="/dashboard"
                 prefetch={true}
-                className={`w-full py-2.5 rounded-xl border font-mono text-xs font-semibold text-center block transition-all duration-150 active:scale-[0.96] cursor-pointer ${
-                  isDay
-                    ? "border-stone-300 text-stone-900 bg-stone-100 hover:bg-stone-200"
-                    : "border-white/20 text-white bg-white/[0.04] hover:bg-white/10"
-                }`}
+                className={`w-full py-2.5 rounded-xl border font-mono text-xs font-semibold text-center block transition-all duration-150 active:scale-[0.96] cursor-pointer ${isDay
+                  ? "border-stone-300 text-stone-900 bg-stone-100 hover:bg-stone-200"
+                  : "border-white/20 text-white bg-white/[0.04] hover:bg-white/10"
+                  }`}
               >
                 Start Free
               </Link>
@@ -214,11 +205,10 @@ Workflow:
 
             {/* Card 2: PRO (With Animated Dashed Border) */}
             <div
-              className={`rounded-2xl border p-7 flex flex-col justify-between transition-all duration-200 relative overflow-hidden shadow-2xl ${
-                isDay
-                  ? "bg-white border-stone-400 text-stone-900 shadow-stone-200/60"
-                  : "bg-[#0c0c10] border-white/30 text-white shadow-black/80"
-              }`}
+              className={`rounded-2xl border p-7 flex flex-col justify-between transition-all duration-200 relative overflow-hidden shadow-2xl ${isDay
+                ? "bg-white border-stone-400 text-stone-900 shadow-stone-200/60"
+                : "bg-[#0c0c10] border-white/30 text-white shadow-black/80"
+                }`}
             >
               {/* Landing Page Style Animated Dashed Border */}
               <svg className="animated-dashed-border" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -227,14 +217,12 @@ Workflow:
 
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
-                  <span className={`text-[11px] font-mono uppercase tracking-widest font-bold ${
-                    isDay ? "text-stone-900" : "text-white"
-                  }`}>
+                  <span className={`text-[11px] font-mono uppercase tracking-widest font-bold ${isDay ? "text-stone-900" : "text-white"
+                    }`}>
                     PRO
                   </span>
-                  <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                    isDay ? "bg-stone-900 text-white" : "bg-white text-black"
-                  }`}>
+                  <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isDay ? "bg-stone-900 text-white" : "bg-white text-black"
+                    }`}>
                     Recommended
                   </span>
                 </div>
@@ -291,13 +279,12 @@ Workflow:
                 type="button"
                 onClick={handleActivatePro}
                 disabled={isPro || isActivating}
-                className={`w-full py-2.5 rounded-xl font-mono text-xs font-bold transition-all duration-150 active:scale-[0.96] text-center cursor-pointer relative z-10 ${
-                  isPro
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default"
-                    : isDay
+                className={`w-full py-2.5 rounded-xl font-mono text-xs font-bold transition-all duration-150 active:scale-[0.96] text-center cursor-pointer relative z-10 ${isPro
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default"
+                  : isDay
                     ? "bg-stone-900 text-white hover:bg-stone-800 shadow-md"
                     : "bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                }`}
+                  }`}
               >
                 {isActivating ? "Activating..." : isPro ? "Active Pro Member" : "Upgrade to Pro"}
               </button>
@@ -305,16 +292,14 @@ Workflow:
 
             {/* Card 3: ENTERPRISE */}
             <div
-              className={`rounded-2xl border p-7 flex flex-col justify-between transition-all duration-200 relative ${
-                isDay
-                  ? "bg-white border-stone-300 text-stone-900 shadow-sm"
-                  : "bg-[#0a0a0d] border-white/[0.12] text-white"
-              }`}
+              className={`rounded-2xl border p-7 flex flex-col justify-between transition-all duration-200 relative ${isDay
+                ? "bg-white border-stone-300 text-stone-900 shadow-sm"
+                : "bg-[#0a0a0d] border-white/[0.12] text-white"
+                }`}
             >
               <div>
-                <div className={`text-[11px] font-mono uppercase tracking-widest font-semibold mb-3 ${
-                  isDay ? "text-stone-600" : "text-zinc-400"
-                }`}>
+                <div className={`text-[11px] font-mono uppercase tracking-widest font-semibold mb-3 ${isDay ? "text-stone-600" : "text-zinc-400"
+                  }`}>
                   ENTERPRISE
                 </div>
 
@@ -363,11 +348,10 @@ Workflow:
 
               <a
                 href="mailto:enterprise@cyath.space?subject=Cyath%20Enterprise%20Tier%20Inquiry"
-                className={`w-full py-2.5 rounded-xl border font-mono text-xs font-semibold text-center block transition-all duration-150 active:scale-[0.96] cursor-pointer ${
-                  isDay
-                    ? "border-stone-300 text-stone-900 bg-stone-100 hover:bg-stone-200"
-                    : "border-white/20 text-white bg-white/[0.04] hover:bg-white/10"
-                }`}
+                className={`w-full py-2.5 rounded-xl border font-mono text-xs font-semibold text-center block transition-all duration-150 active:scale-[0.96] cursor-pointer ${isDay
+                  ? "border-stone-300 text-stone-900 bg-stone-100 hover:bg-stone-200"
+                  : "border-white/20 text-white bg-white/[0.04] hover:bg-white/10"
+                  }`}
               >
                 Enquire
               </a>
@@ -376,9 +360,8 @@ Workflow:
 
           {/* Developer Integration Console Block with Copy AI Prompt */}
           <div
-            className={`border rounded-2xl p-6 sm:p-8 transition-all ${
-              isDay ? "bg-white border-stone-300 shadow-sm" : "bg-[#08080a] border-white/10"
-            }`}
+            className={`border rounded-2xl p-6 sm:p-8 transition-all ${isDay ? "bg-white border-stone-300 shadow-sm" : "bg-[#08080a] border-white/10"
+              }`}
           >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div>
@@ -396,27 +379,25 @@ Workflow:
               <button
                 type="button"
                 onClick={copyAiPrompt}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all duration-150 active:scale-[0.96] cursor-pointer shadow-sm ${
-                  copiedPrompt
-                    ? "bg-emerald-500 text-white border border-emerald-500"
-                    : isDay
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all duration-150 active:scale-[0.96] cursor-pointer shadow-sm ${copiedPrompt
+                  ? "bg-emerald-500 text-white border border-emerald-500"
+                  : isDay
                     ? "bg-stone-900 text-white hover:bg-stone-800"
                     : "bg-white text-black hover:bg-zinc-200"
-                }`}
+                  }`}
               >
                 <Copy className="w-3.5 h-3.5" />
                 <span>{copiedPrompt ? "Copied AI Prompt!" : "Copy AI Prompt"}</span>
               </button>
             </div>
 
-            <div className={`p-4 rounded-xl font-mono text-xs overflow-x-auto border ${
-              isDay ? "bg-stone-100 border-stone-300 text-stone-800" : "bg-black/80 border-white/10 text-zinc-300"
-            }`}>
+            <div className={`p-4 rounded-xl font-mono text-xs overflow-x-auto border ${isDay ? "bg-stone-100 border-stone-300 text-stone-800" : "bg-black/80 border-white/10 text-zinc-300"
+              }`}>
               <div className="text-[10px] text-zinc-500 uppercase tracking-wider mb-2 font-semibold">
                 Prompt Preview for AI Coding Agents
               </div>
               <pre className="whitespace-pre-wrap leading-relaxed select-all font-code">
-{`You are assisting me as an autonomous AI software engineer.
+                {`You are assisting me as an autonomous AI software engineer.
 I have connected Cyath (https://cyath.space), our visual staging and client review platform.
 Please configure and connect to the Cyath MCP server to inspect open visual review notes and client feedback.
 

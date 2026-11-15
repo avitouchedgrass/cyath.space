@@ -51,6 +51,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   const [audioDuration, setAudioDuration] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [playbackTime, setPlaybackTime] = useState(0);
+  const [isTranscribing, setIsTranscribing] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -105,6 +106,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
         reader.onloadend = () => {
           const base64data = reader.result as string;
           setRecordedAudioUrl(base64data);
+          handleTranscribeAudio(base64data);
         };
         reader.readAsDataURL(audioBlob);
         setAudioDuration(durationTrackerRef.current);
@@ -150,6 +152,28 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
     if (audioElementRef.current) {
       audioElementRef.current.pause();
       setIsPlayingAudio(false);
+    }
+  };
+
+  const handleTranscribeAudio = async (base64data: string) => {
+    try {
+      setIsTranscribing(true);
+      const res = await fetch("/api/ai/transcribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ audioUrl: base64data }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.transcript) {
+          const aiText = `"${data.transcript}"\n\nAction item: ${data.actionItem}`;
+          setCommentText((prev) => (prev.trim() ? `${prev}\n\n${aiText}` : aiText));
+        }
+      }
+    } catch (err) {
+      console.warn("AI transcription error:", err);
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -416,9 +440,17 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           </div>
 
           <div>
-            <label className={`block text-[11px] font-medium mb-1 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
-              Feedback / Change Request
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className={`block text-[11px] font-medium ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
+                Feedback / Change Request
+              </label>
+              {isTranscribing && (
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-500 animate-pulse">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span>Transcribing with Gemini...</span>
+                </div>
+              )}
+            </div>
             <div className="relative">
               <textarea
                 autoFocus
