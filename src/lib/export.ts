@@ -45,3 +45,16 @@ export function exportProjectAsMarkdown(project: Project): string {
   return md;
 }
 
+export function getLinearExportUrl(project: Project): string {
+  const title = encodeURIComponent(`Staging Feedback: ${project.title || "Review Session"}`);
+  const description = encodeURIComponent(exportProjectAsMarkdown(project));
+  return `https://linear.app/issue/new?title=${title}&description=${description}`;
+}
+
+export function getGitHubExportUrl(project: Project): string {
+  const title = encodeURIComponent(`Staging Feedback: ${project.title || "Review Session"}`);
+  const body = encodeURIComponent(exportProjectAsMarkdown(project));
+  return `https://github.com/issues/new?title=${title}&body=${body}`;
+}
+
+

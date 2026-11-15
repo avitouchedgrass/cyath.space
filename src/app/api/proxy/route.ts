@@ -1,5 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// In-memory IP rate limiter (shortcut: in-memory limiter, upgrade to Redis when multi-region edge scale > 500 req/s)
+const ipRateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(req: NextRequest): boolean {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "client-ip";
+  const now = Date.now();
+  const record = ipRateLimitMap.get(ip);
+  if (!record || now > record.resetTime) {
+    ipRateLimitMap.set(ip, { count: 1, resetTime: now + 60000 });
+    return true;
+  }
+  if (record.count >= 180) {
+    return false;
+  }
+  record.count += 1;
+  return true;
+}
+
+function isSafeUrl(urlStr: string): boolean {
+  try {
+    const parsed = new URL(urlStr);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
+    const host = parsed.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "0.0.0.0") return false;
+    if (host.startsWith("169.254.") || host.startsWith("10.") || host.startsWith("192.168.")) return false;
+    if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) return false;
+    if (host.endsWith(".internal") || host.endsWith(".local")) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
@@ -12,6 +45,10 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!checkRateLimit(req)) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  }
+
   const urlParam = req.nextUrl.searchParams.get("url");
   if (!urlParam) {
     return new NextResponse("Missing url parameter", { status: 400 });
@@ -20,6 +57,10 @@ export async function POST(req: NextRequest) {
   let targetUrl = urlParam;
   if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
     targetUrl = "https://" + targetUrl;
+  }
+
+  if (!isSafeUrl(targetUrl)) {
+    return NextResponse.json({ error: "Restricted URL target" }, { status: 403 });
   }
 
   try {
@@ -52,6 +93,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  if (!checkRateLimit(req)) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  }
+
   const urlParam = req.nextUrl.searchParams.get("url");
   if (!urlParam) {
     return new NextResponse("Missing url parameter", { status: 400 });
@@ -60,6 +105,10 @@ export async function GET(req: NextRequest) {
   let targetUrl = urlParam;
   if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
     targetUrl = "https://" + targetUrl;
+  }
+
+  if (!isSafeUrl(targetUrl)) {
+    return NextResponse.json({ error: "Restricted URL target" }, { status: 403 });
   }
 
   try {

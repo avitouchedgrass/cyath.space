@@ -8,12 +8,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!serviceRoleKey) {
       return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY not configured" }, { status: 500 });
     }
+
+    try {
+      const payload = JSON.parse(Buffer.from(serviceRoleKey.split(".")[1], "base64").toString("utf8"));
+      if (payload?.ref) {
+        supabaseUrl = `https://${payload.ref}.supabase.co`;
+      }
+    } catch {}
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey, {
       auth: {

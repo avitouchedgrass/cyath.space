@@ -35,6 +35,7 @@ interface ReviewState {
     ownerEmail?: string
   ) => string;
   hydrateProject: (project: Project) => void;
+  syncFromServer: (project: Project) => void;
   deleteProject: (projectId: string) => void;
   getProject: (shareId: string) => Project | undefined;
   addPin: (
@@ -145,6 +146,27 @@ export const useReviewStore = create<ReviewState>()(
             syncCanvasToServer(sanitizedProject);
           }
           return { projects: [sanitizedProject, ...currentProjects] };
+        });
+      },
+
+      syncFromServer: (project: Project) => {
+        set((state) => {
+          const currentProjects = Array.isArray(state.projects) ? state.projects.filter(Boolean) : [];
+          const incomingPins = Array.isArray(project.pins) ? project.pins.filter(Boolean) : [];
+          const existingIndex = currentProjects.findIndex(
+            (p) => p && (p.shareId === project.shareId || p.id === project.id)
+          );
+          if (existingIndex >= 0) {
+            const existing = currentProjects[existingIndex];
+            const updated = [...currentProjects];
+            updated[existingIndex] = {
+              ...existing,
+              ...project,
+              pins: incomingPins.length > 0 ? incomingPins : existing.pins,
+            };
+            return { projects: updated };
+          }
+          return { projects: [project, ...currentProjects] };
         });
       },
 

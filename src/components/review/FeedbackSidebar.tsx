@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, CheckCircle2, Download, MessageSquare, ArrowUpDown, Globe } from "lucide-react";
+import { Check, CheckCircle2, Download, MessageSquare, ArrowUpDown, Globe, ExternalLink, ChevronDown } from "lucide-react";
 import { DeviceMode, Pin, Project } from "@/types";
-import { exportProjectAsMarkdown } from "@/lib/export";
+import { exportProjectAsMarkdown, getLinearExportUrl, getGitHubExportUrl } from "@/lib/export";
 import { getPageColor, formatPageLabel } from "@/lib/colors";
 
 interface FeedbackSidebarProps {
@@ -34,6 +34,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
   const [pageFilter, setPageFilter] = useState<string>("all");
   const [isCopied, setIsCopied] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const isDay = theme === "day";
 
@@ -101,17 +102,65 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
           <MessageSquare className={`w-4 h-4 ${isDay ? "text-stone-600" : "text-zinc-400"}`} />
           <h2 className={`font-sans font-semibold text-sm ${isDay ? "text-stone-900" : "text-zinc-100"}`}>Feedback Thread</h2>
         </div>
-        <button
-          onClick={handleExportMarkdown}
-          className={`text-xs px-2.5 py-1 rounded-md border flex items-center gap-1.5 transition-colors font-sans cursor-pointer ${isDay
-              ? "border-stone-200 bg-white hover:bg-stone-50 text-stone-700 shadow-xs"
-              : "border-white/[0.08] hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300"
-            }`}
-          title="Export notes as Markdown for GitHub / Linear"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>{isCopied ? "Copied MD!" : "Export MD"}</span>
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setShowExportMenu((v) => !v)}
+            className={`text-xs px-2.5 py-1 rounded-md border flex items-center gap-1.5 transition-colors font-sans cursor-pointer ${isDay
+                ? "border-stone-200 bg-white hover:bg-stone-50 text-stone-700 shadow-xs"
+                : "border-white/[0.08] hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300"
+              }`}
+            title="Export feedback to Linear, GitHub, or Markdown"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>{isCopied ? "Copied!" : "Export"}</span>
+            <ChevronDown className="w-3 h-3 opacity-60" />
+          </button>
+
+          {showExportMenu && (
+            <div
+              className={`absolute right-0 mt-1.5 w-44 rounded-xl border p-1 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150 ${isDay
+                  ? "bg-white border-stone-200 text-stone-900 shadow-stone-200/50"
+                  : "bg-[#0d0d10] border-white/15 text-zinc-200 shadow-black/80"
+                }`}
+            >
+              <button
+                onClick={() => {
+                  handleExportMarkdown();
+                  setShowExportMenu(false);
+                }}
+                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-sans flex items-center justify-between cursor-pointer transition-colors ${isDay ? "hover:bg-stone-100" : "hover:bg-white/10"
+                  }`}
+              >
+                <span>Copy Markdown</span>
+                <span className="text-[10px] font-mono opacity-50">MD</span>
+              </button>
+
+              <a
+                href={getLinearExportUrl(project)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowExportMenu(false)}
+                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-sans flex items-center justify-between cursor-pointer transition-colors ${isDay ? "hover:bg-stone-100" : "hover:bg-white/10"
+                  }`}
+              >
+                <span>Push to Linear</span>
+                <ExternalLink className="w-3 h-3 opacity-50" />
+              </a>
+
+              <a
+                href={getGitHubExportUrl(project)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowExportMenu(false)}
+                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-sans flex items-center justify-between cursor-pointer transition-colors ${isDay ? "hover:bg-stone-100" : "hover:bg-white/10"
+                  }`}
+              >
+                <span>Push to GitHub</span>
+                <ExternalLink className="w-3 h-3 opacity-50" />
+              </a>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Scope & Sort Controls */}

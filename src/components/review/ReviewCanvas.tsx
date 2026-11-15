@@ -151,7 +151,7 @@ export function ReviewCanvas({ shareId }: ReviewCanvasProps) {
         if (res.ok) {
           const serverProject = await res.json();
           if (serverProject && serverProject.shareId) {
-            hydrateProject(serverProject);
+            useReviewStore.getState().syncFromServer(serverProject);
             return;
           }
         }
