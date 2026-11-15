@@ -28,6 +28,7 @@ export function exportProjectAsMarkdown(project: Project): string {
       if (Array.isArray(pin.comments) && pin.comments.length > 1) {
         md += `  _(${pin.comments.length - 1} follow-up replies)_\n`;
       }
+      md += `  <!-- cyath:{"shareId":"${project.shareId}","pinId":"${pin.id}","pinNumber":${pin.number}} -->\n`;
     });
     md += `\n`;
   }

@@ -66,13 +66,36 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.arrayBuffer();
     const contentType = req.headers.get("content-type") || "application/json";
-    const response = await fetch(targetUrl, {
+
+    let fetchUrl = targetUrl;
+    const postHeaders: Record<string, string> = {
+      "Content-Type": contentType,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    };
+
+    // Extract basic auth credentials if embedded in URL
+    try {
+      const parsedUrl = new URL(targetUrl);
+      if (parsedUrl.username || parsedUrl.password) {
+        const creds = `${decodeURIComponent(parsedUrl.username)}:${decodeURIComponent(parsedUrl.password)}`;
+        postHeaders["Authorization"] = `Basic ${Buffer.from(creds).toString("base64")}`;
+        parsedUrl.username = "";
+        parsedUrl.password = "";
+        fetchUrl = parsedUrl.toString();
+      }
+    } catch {}
+
+    const customAuth = req.nextUrl.searchParams.get("auth") || req.headers.get("x-cyath-auth");
+    if (customAuth && !postHeaders["Authorization"]) {
+      postHeaders["Authorization"] = customAuth.startsWith("Basic ") || customAuth.startsWith("Bearer ")
+        ? customAuth
+        : `Basic ${Buffer.from(customAuth).toString("base64")}`;
+    }
+
+    const response = await fetch(fetchUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": contentType,
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      },
+      headers: postHeaders,
       body,
     });
 
@@ -146,7 +169,38 @@ export async function GET(req: NextRequest) {
       forwardedHeaders["RSC"] = "1";
     }
 
-    const response = await fetch(targetUrl, {
+    // Extract basic auth credentials if embedded in URL
+    let fetchUrl = targetUrl;
+    try {
+      const parsedUrl = new URL(targetUrl);
+      if (parsedUrl.username || parsedUrl.password) {
+        const creds = `${decodeURIComponent(parsedUrl.username)}:${decodeURIComponent(parsedUrl.password)}`;
+        forwardedHeaders["Authorization"] = `Basic ${Buffer.from(creds).toString("base64")}`;
+        parsedUrl.username = "";
+        parsedUrl.password = "";
+        fetchUrl = parsedUrl.toString();
+      }
+    } catch {}
+
+    // Support explicit staging auth params / headers (e.g. Cloudflare Access, Basic Auth)
+    const customAuth = req.nextUrl.searchParams.get("auth") || req.headers.get("x-cyath-auth");
+    if (customAuth && !forwardedHeaders["Authorization"]) {
+      forwardedHeaders["Authorization"] = customAuth.startsWith("Basic ") || customAuth.startsWith("Bearer ")
+        ? customAuth
+        : `Basic ${Buffer.from(customAuth).toString("base64")}`;
+    }
+
+    const customHeader = req.nextUrl.searchParams.get("customHeader") || req.headers.get("x-cyath-custom-header");
+    if (customHeader) {
+      const colonIdx = customHeader.indexOf(":");
+      if (colonIdx > 0) {
+        const hk = customHeader.slice(0, colonIdx).trim();
+        const hv = customHeader.slice(colonIdx + 1).trim();
+        forwardedHeaders[hk] = hv;
+      }
+    }
+
+    const response = await fetch(fetchUrl, {
       headers: forwardedHeaders,
       redirect: "follow",
     });
@@ -692,7 +746,21 @@ export async function GET(req: NextRequest) {
   }
 
   // Hover element inspector for comment mode
+  var lastCursorTime = 0;
   document.addEventListener('mousemove', function(e) {
+    var now = Date.now();
+    if (now - lastCursorTime > 40) {
+      lastCursorTime = now;
+      try {
+        var bodyWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 1);
+        var bodyHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight || 1);
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        var curX = (e.clientX / bodyWidth) * 100;
+        var curY = ((e.clientY + scrollY) / bodyHeight) * 100;
+        window.parent.postMessage({ type: 'CYATH_CURSOR_MOVE', xPercent: curX, yPercent: curY }, '*');
+      } catch(err) {}
+    }
+
     if (currentInteractionMode !== 'comment') {
       if (hoverInspector) hoverInspector.style.display = 'none';
       return;

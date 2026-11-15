@@ -7,6 +7,7 @@ import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
 import { calculateNormalizedCoords } from "@/lib/coordinates";
 import { formatPageLabel } from "@/lib/colors";
+import { useLiveCursors } from "@/hooks/useLiveCursors";
 
 interface ReviewStageProps {
   project: Project;
@@ -77,6 +78,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const currentPageUrl = externalPageUrl || localPageUrl;
 
   const allPins = Array.isArray(project?.pins) ? project.pins.filter(Boolean) : [];
+  const { cursors, sendCursorPosition } = useLiveCursors(project.shareId, clientAuthorName);
 
   // Auto-scroll viewport to pin when activePinId changes
   useEffect(() => {
@@ -162,6 +164,9 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
         setPendingPinCoords(null);
         onSelectPin(event.data.pinId);
       }
+      if (event.data?.type === "CYATH_CURSOR_MOVE" && typeof event.data.xPercent === "number") {
+        sendCursorPosition(event.data.xPercent, event.data.yPercent);
+      }
       if (event.data?.type === "CYATH_ELEMENT_PIN_DROPPED") {
         setPendingPinCoords({
           xPercent: event.data.xPercent,
@@ -201,6 +206,10 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (containerRef.current) {
+      const coords = calculateNormalizedCoords(e, containerRef.current);
+      sendCursorPosition(coords.xPercent, coords.yPercent);
+    }
     if (interactionMode !== "comment") return;
     if (!dragStartRef.current || !containerRef.current) return;
     const dx = Math.abs(e.clientX - dragStartRef.current.clientX);
@@ -521,6 +530,34 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 className="absolute border-2 border-dashed border-white bg-white/10 z-30 pointer-events-none rounded transition-none shadow-[0_0_24px_rgba(255,255,255,0.35)]"
               />
             )}
+
+            {/* Live Collaborative Peer Cursors */}
+            {Object.values(cursors).map((cursor) => (
+              <div
+                key={cursor.id}
+                style={{
+                  left: `${cursor.xPercent}%`,
+                  top: `${cursor.yPercent}%`,
+                  transition: "left 60ms linear, top 60ms linear",
+                }}
+                className="absolute pointer-events-none z-50 -translate-x-1 -translate-y-1 select-none"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="drop-shadow-md">
+                  <path
+                    d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7841 12.3673H5.65376Z"
+                    fill={cursor.color}
+                    stroke="#ffffff"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+                <div
+                  style={{ backgroundColor: cursor.color }}
+                  className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium text-white shadow-lg whitespace-nowrap ml-3 -mt-2 inline-block border border-white/20"
+                >
+                  {cursor.name}
+                </div>
+              </div>
+            ))}
 
             {/* Active Pins & Boxes for static assets (web URLs render them inside the iframe DOM) */}
             {!isWebUrl && activeDevicePins.map((pin) => (

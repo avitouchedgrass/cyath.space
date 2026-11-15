@@ -158,3 +158,63 @@ export async function POST(
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ shareId: string }> }
+) {
+  const { shareId } = await params;
+  try {
+    const { pinId, status, resolvedBy } = await req.json();
+    if (!shareId || !pinId) {
+      return NextResponse.json({ error: "Missing shareId or pinId" }, { status: 400 });
+    }
+
+    let canvas = canvasMemoryStore.get(shareId);
+    const blobUrl = getBlobPublicUrl(shareId);
+    if (!canvas && blobUrl) {
+      try {
+        const res = await fetch(blobUrl, { cache: "no-store" });
+        if (res.ok) canvas = await res.json();
+      } catch {}
+    }
+
+    if (!canvas) {
+      return NextResponse.json({ error: "Canvas not found" }, { status: 404 });
+    }
+
+    canvas.pins = (canvas.pins || []).map((p: any) => {
+      if (p.id === pinId || String(p.number) === String(pinId)) {
+        return {
+          ...p,
+          status: status || "resolved",
+          resolvedAt: new Date().toISOString(),
+          resolvedBy: resolvedBy || "Webhook Automation",
+        };
+      }
+      return p;
+    });
+    canvas.updatedAt = new Date().toISOString();
+
+    canvasMemoryStore.set(shareId, canvas);
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (token) {
+      try {
+        await fetch(`https://blob.vercel-storage.com/canvases/${shareId}.json`, {
+          method: "PUT",
+          headers: {
+            authorization: `Bearer ${token}`,
+            "x-api-version": "7",
+            "content-type": "application/json",
+            "x-add-random-suffix": "0",
+          },
+          body: JSON.stringify(canvas),
+        });
+      } catch {}
+    }
+
+    return NextResponse.json({ success: true, canvas });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
