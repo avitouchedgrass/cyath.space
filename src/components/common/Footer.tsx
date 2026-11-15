@@ -104,6 +104,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenGuide, className = "", the
           >
             Terms
           </Link>
+          <a
+            href="mailto:ask@cyath.space"
+            className={`transition-colors ${isDay ? "text-stone-600 hover:text-stone-950" : "text-zinc-400 hover:text-white"}`}
+          >
+            Contact
+          </a>
           {onOpenGuide ? (
             <button
               onClick={onOpenGuide}

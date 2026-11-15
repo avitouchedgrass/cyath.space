@@ -167,8 +167,8 @@ export default function TermsOfServicePage() {
             </h2>
             <p>
               These Terms shall be governed by standard commercial laws. For enterprise agreements or terms inquiries, contact us at{" "}
-              <a href="mailto:avitouchedgrass@gmail.com" className="underline underline-offset-4 font-mono text-xs">
-                avitouchedgrass@gmail.com
+              <a href="mailto:ask@cyath.space" className="underline underline-offset-4 font-mono text-xs">
+                ask@cyath.space
               </a>.
             </p>
           </section>

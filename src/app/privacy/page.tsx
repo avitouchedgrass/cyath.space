@@ -164,8 +164,8 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p>
               For privacy inquiries, data deletion requests, or enterprise compliance queries, contact us directly at{" "}
-              <a href="mailto:avitouchedgrass@gmail.com" className="underline underline-offset-4 font-mono text-xs">
-                avitouchedgrass@gmail.com
+              <a href="mailto:ask@cyath.space" className="underline underline-offset-4 font-mono text-xs">
+                ask@cyath.space
               </a>.
             </p>
           </section>

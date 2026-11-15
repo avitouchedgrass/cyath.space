@@ -362,7 +362,7 @@ Workflow:
               </div>
 
               <a
-                href="mailto:avitouchedgrass@gmail.com?subject=Cyath%20Enterprise%20Tier%20Inquiry"
+                href="mailto:enterprise@cyath.space?subject=Cyath%20Enterprise%20Tier%20Inquiry"
                 className={`w-full py-2.5 rounded-xl border font-mono text-xs font-semibold text-center block transition-all duration-150 active:scale-[0.96] cursor-pointer ${
                   isDay
                     ? "border-stone-300 text-stone-900 bg-stone-100 hover:bg-stone-200"
