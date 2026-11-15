@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
 // In-memory IP rate limiter (shortcut: in-memory limiter, upgrade to Redis when multi-region edge scale > 500 req/s)
 const ipRateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -961,6 +959,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
 }
 .cyath-active-pulse { animation: cyathPinPulse 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 </style>`;
+    // Neutralize frame-busting scripts in target HTML before injecting bridge
+    html = html.replace(/window\.top\s*!==\s*window\.self/g, "false");
+    html = html.replace(/top\.location\s*=/g, "/* frame-neutralized */ void ");
+    html = html.replace(/parent\.location\s*=/g, "/* frame-neutralized */ void ");
+
     const injectedTags = `${baseTag}\n  ${stageSyncStyle}\n  ${bridgeScript}`;
 
     if (/<head[^>]*>/i.test(html)) {
@@ -970,13 +973,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
     } else {
       html = `${injectedTags}\n${html}`;
     }
-
-    // Neutralize frame-busting scripts
-    html = html.replace(/window\.top\s*!==\s*window\.self/g, "false");
-    html = html.replace(/top\.location\s*=/g, "/* frame-neutralized */ void ");
-    html = html.replace(/parent\.location\s*=/g, "/* frame-neutralized */ void ");
-    html = html.replace(/<script[^>]*149e9513-01fa-4fb0-aad4-566afd725d1b[^>]*>[\s\S]*?<\/script>/gi, "");
-    html = html.replace(/<script[^>]*>[\s\S]*?KPSDK[\s\S]*?<\/script>/gi, "");
 
     return new NextResponse(html, {
       status: response.status,
