@@ -442,7 +442,7 @@ export async function GET(req: NextRequest) {
   function toProxiedUrl(raw) {
     if (!raw) return raw;
     try {
-      var strUrl = typeof raw === 'string' ? raw : raw && raw.url ? raw.url : null;
+      var strUrl = typeof raw === 'string' ? raw : (raw instanceof URL ? raw.href : (raw && raw.url ? raw.url : null));
       if (!strUrl) return raw;
       if (strUrl.indexOf('/api/proxy') !== -1) return raw;
 
@@ -486,6 +486,43 @@ export async function GET(req: NextRequest) {
         return origReplace.call(this, proxied);
       };
     }
+  } catch(e) {}
+
+  // Modern Navigation API interceptor to catch programmatic redirects, origin enforcers, and framebusting
+  try {
+    if (typeof window.navigation !== 'undefined' && window.navigation.addEventListener) {
+      window.navigation.addEventListener('navigate', function(event) {
+        try {
+          var dest = event.destination ? event.destination.url : '';
+          if (!dest) return;
+          if (dest.startsWith('#') || dest.startsWith('about:')) return;
+
+          var currentOrigin = window.location.origin;
+          var isProxied = dest.indexOf('/api/proxy') !== -1;
+
+          if (!isProxied) {
+            var parsedDest = new URL(dest, currentTargetUrl);
+            if (parsedDest.origin === targetOrigin || isSameDomainOrSubdomain(parsedDest.href, targetOrigin)) {
+              event.preventDefault();
+              if (event.userInitiated) {
+                currentTargetUrl = parsedDest.href;
+                notifyParentNavigation(parsedDest.href);
+                window.location.href = currentOrigin + '/api/proxy?url=' + encodeURIComponent(parsedDest.href) + (isAudioMuted ? '&mute=1' : '');
+              }
+            }
+          }
+        } catch(navErr) {}
+      });
+    }
+  } catch(e) {}
+
+  // Mock Kasada anti-bot SDK so it does not throw or trigger redirects
+  try {
+    window.KPSDK = {
+      configure: function() {},
+      load: function() { return Promise.resolve(); },
+      getChallenge: function() { return Promise.resolve(''); }
+    };
   } catch(e) {}
 
   // Stub ServiceWorker registration to prevent foreign service workers caching localhost
@@ -935,6 +972,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
     // Neutralize frame-busting scripts
     html = html.replace(/window\.top\s*!==\s*window\.self/g, "false");
     html = html.replace(/top\.location\s*=/g, "/* frame-neutralized */ void ");
+    html = html.replace(/parent\.location\s*=/g, "/* frame-neutralized */ void ");
+    html = html.replace(/<script[^>]*149e9513-01fa-4fb0-aad4-566afd725d1b[^>]*>[\s\S]*?<\/script>/gi, "");
+    html = html.replace(/<script[^>]*>[\s\S]*?KPSDK[\s\S]*?<\/script>/gi, "");
 
     return new NextResponse(html, {
       status: response.status,
