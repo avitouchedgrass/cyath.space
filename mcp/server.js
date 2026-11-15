@@ -9,7 +9,7 @@
 
 const readline = require("readline");
 
-const DEFAULT_API_BASE = process.env.CYATH_API_URL || "https://cyath-space.vercel.app";
+const DEFAULT_API_BASE = process.env.CYATH_API_URL || "https://cyath.space";
 
 function generateId() {
   return Math.random().toString(36).substring(2, 10);
@@ -140,7 +140,7 @@ async function verifyProAccess() {
     throw new Error(
       "CYATH_API_KEY environment variable is missing.\n" +
       "The Cyath MCP Server is an exclusive Cyath Pro feature.\n" +
-      "To unlock, upgrade to Pro at https://cyath-space.vercel.app/pro, copy your key from Settings, and add it to your MCP configuration:\n\n" +
+      "To unlock, upgrade to Pro at https://cyath.space/pro, copy your key from Settings, and add it to your MCP configuration:\n\n" +
       '  "env": { "CYATH_API_KEY": "cyath_pro_..." }'
     );
   }
@@ -148,7 +148,7 @@ async function verifyProAccess() {
   if (!API_KEY.startsWith("cyath_pro_") && !API_KEY.startsWith("cyath_live_")) {
     throw new Error(
       "Invalid CYATH_API_KEY. Cyath Pro keys begin with 'cyath_pro_'.\n" +
-      "Obtain your key from Settings at https://cyath-space.vercel.app/settings?tab=mcp."
+      "Obtain your key from Settings at https://cyath.space/settings?tab=mcp."
     );
   }
 

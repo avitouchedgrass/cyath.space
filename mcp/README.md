@@ -2,7 +2,7 @@
 
 The **Cyath MCP Server** connects your live client feedback threads directly to AI coding agents (Cursor, Claude Code, Antigravity, Windsurf).
 
-> **Studio Pro Exclusive**: The MCP server requires an active Studio Pro membership and a valid `CYATH_API_KEY` (`cyath_pro_...`), available under **Studio Settings** at [cyath-space.vercel.app/dashboard](https://cyath-space.vercel.app/dashboard).
+> **Studio Pro Exclusive**: The MCP server requires an active Studio Pro membership and a valid `CYATH_API_KEY` (`cyath_pro_...`), available under **Studio Settings** at [cyath.space/dashboard](https://cyath.space/dashboard).
 
 ---
 
