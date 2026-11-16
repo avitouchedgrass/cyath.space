@@ -47,3 +47,7 @@ next-env.d.ts
 vercel.exe
 .env*
 .codex/
+
+demo-video/
+.agents/
+skills-lock.json

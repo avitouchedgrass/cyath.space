@@ -1,7 +1,5 @@
-.next
-node_modules
-scratch
-*.exe
-*.log
-.git
-
+demo-video/
+.agents/
+skills-lock.json
+*.mp4
+*.wav
