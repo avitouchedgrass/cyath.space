@@ -19,7 +19,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/fonts/") ||
     pathname === "/favicon.ico" ||
     pathname === "/favicon.svg" ||
-    pathname === "/landing.html";
+    pathname === "/landing.html" ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/robots.txt";
 
   if (!isCyathRoute) {
     const referer = request.headers.get("referer");
@@ -58,6 +60,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|landing.html).*)",
+    "/((?!_next/static|_next/image|favicon.ico|landing.html|sitemap.xml|robots.txt).*)",
   ],
 };
