@@ -51,3 +51,10 @@ vercel.exe
 demo-video/
 .agents/
 skills-lock.json
+
+# cloudflare & opennext
+.open-next/
+.wrangler/
+.dev.vars*
+cloudflare-env.d.ts
+
