@@ -6,6 +6,7 @@ import { DeviceMode, Pin, Project } from "@/types";
 import { exportProjectAsMarkdown, getLinearExportUrl, getGitHubExportUrl } from "@/lib/export";
 import { getPageColor, formatPageLabel } from "@/lib/colors";
 import { SprintDigestModal } from "./SprintDigestModal";
+import { GitHubExportModal } from "./GitHubExportModal";
 
 interface FeedbackSidebarProps {
   project: Project;
@@ -37,6 +38,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showDigestModal, setShowDigestModal] = useState(false);
+  const [showGitHubModal, setShowGitHubModal] = useState(false);
 
   const isDay = theme === "day";
 
@@ -163,17 +165,18 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 <ExternalLink className="w-3 h-3 opacity-50" />
               </a>
 
-              <a
-                href={getGitHubExportUrl(project)}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setShowExportMenu(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExportMenu(false);
+                  setShowGitHubModal(true);
+                }}
                 className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-sans flex items-center justify-between cursor-pointer transition-colors ${isDay ? "hover:bg-stone-100" : "hover:bg-white/10"
                   }`}
               >
                 <span>Push to GitHub</span>
                 <ExternalLink className="w-3 h-3 opacity-50" />
-              </a>
+              </button>
             </div>
           )}
         </div>
@@ -434,6 +437,13 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         isOpen={showDigestModal}
         theme={theme}
         onClose={() => setShowDigestModal(false)}
+      />
+
+      <GitHubExportModal
+        project={project}
+        isOpen={showGitHubModal}
+        isDay={isDay}
+        onClose={() => setShowGitHubModal(false)}
       />
     </aside>
   );

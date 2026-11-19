@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, Check, Copy, ExternalLink, Cpu, RefreshCw, FileText } from "lucide-react";
 import { Project } from "@/types";
 import { getLinearExportUrl, getGitHubExportUrl } from "@/lib/export";
+import { GitHubExportModal } from "./GitHubExportModal";
 
 interface SprintDigestModalProps {
   project: Project;
@@ -22,6 +23,7 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
   const [digest, setDigest] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showGitHubModal, setShowGitHubModal] = useState(false);
 
   const fetchDigest = async () => {
     setIsLoading(true);
@@ -159,10 +161,9 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
               <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
 
-            <a
-              href={getGitHubExportUrl(project)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => setShowGitHubModal(true)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-sans font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
                 isDay
                   ? "border-stone-300 bg-white hover:bg-stone-100 text-stone-800"
@@ -171,10 +172,17 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
             >
               <span>Push to GitHub</span>
               <ExternalLink className="w-3 h-3 opacity-60" />
-            </a>
+            </button>
           </div>
         </div>
       </div>
+
+      <GitHubExportModal
+        project={project}
+        isOpen={showGitHubModal}
+        isDay={isDay}
+        onClose={() => setShowGitHubModal(false)}
+      />
     </div>
   );
 };
