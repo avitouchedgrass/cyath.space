@@ -9,5 +9,11 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
+  },
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://cyath.space",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndndmdsaWdqZ2Zsa2dxcWdja2NnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNTAxMjMsImV4cCI6MjEwODkyNjEyM30.WFHH6AjlCfK2uVO7K3s_ubx5ka6GMKT44fjfikyT1kY",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_zpfbCFTfeUeUTPWPGEZN1Q_ewX5yMwf",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://wgvgligjgflkgqqgckcg.supabase.co"
   }
 }
