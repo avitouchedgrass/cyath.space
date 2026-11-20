@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:mcp": "npm run build && node --test tests/review-mcp.test.mjs",
     "build:cf": "opennextjs-cloudflare build",
     "preview:cf": "opennextjs-cloudflare build && wrangler dev",
     "deploy:cf": "opennextjs-cloudflare build && wrangler deploy"

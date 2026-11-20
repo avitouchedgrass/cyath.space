@@ -1,10 +1,12 @@
 import { ClientTelemetry, DeviceMode } from "@/types";
 
-export function captureClientTelemetry(deviceMode: DeviceMode): ClientTelemetry {
+export function captureClientTelemetry(
+  deviceMode: DeviceMode, viewportWidth: number, viewportHeight: number, scrollDepthPercent: number,
+): ClientTelemetry {
   if (typeof window === "undefined") {
     return {
-      viewportWidth: 1440,
-      viewportHeight: 900,
+      viewportWidth,
+      viewportHeight,
       devicePixelRatio: 1,
       deviceType: deviceMode,
       browser: "Unknown",
@@ -15,27 +17,28 @@ export function captureClientTelemetry(deviceMode: DeviceMode): ClientTelemetry 
   }
 
   const userAgent = navigator.userAgent;
-  let browser = "Chrome";
-  if (userAgent.includes("Firefox")) browser = "Firefox";
-  else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browser = "Safari";
-  else if (userAgent.includes("Edg")) browser = "Edge";
+  const browserPatterns = [
+    ["Edge", /Edg(?:A|iOS)?\/([\d.]+)/],
+    ["Firefox", /(?:Firefox|FxiOS)\/([\d.]+)/],
+    ["Chromium", /(?:Chrome|CriOS)\/([\d.]+)/],
+    ["Safari", /Version\/([\d.]+).*Safari/],
+  ] as const;
+  const matched = browserPatterns.find(([, pattern]) => pattern.test(userAgent));
 
   let os = "Desktop";
-  if (userAgent.includes("Mac")) os = "macOS";
+  if (/iPhone|iPad|iPod/.test(userAgent)) os = "iOS";
+  else if (userAgent.includes("Android")) os = "Android";
+  else if (userAgent.includes("Mac")) os = "macOS";
   else if (userAgent.includes("Win")) os = "Windows";
   else if (userAgent.includes("Linux")) os = "Linux";
-  else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) os = "iOS";
-  else if (userAgent.includes("Android")) os = "Android";
-
-  const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
-  const scrollDepthPercent = scrollTotal > 0 ? Math.round((window.scrollY / scrollTotal) * 100) : 0;
 
   return {
-    viewportWidth: window.innerWidth,
-    viewportHeight: window.innerHeight,
+    viewportWidth,
+    viewportHeight,
     devicePixelRatio: window.devicePixelRatio || 1,
     deviceType: deviceMode,
-    browser,
+    browser: matched?.[0] ?? "Unknown",
+    browserVersion: matched ? userAgent.match(matched[1])?.[1] : undefined,
     os,
     scrollDepthPercent,
     timestamp: new Date().toISOString(),

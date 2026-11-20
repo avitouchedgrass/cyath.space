@@ -17,55 +17,42 @@ import { useReviewStore } from "@/store/useReviewStore";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { Footer } from "@/components/common/Footer";
 import { useTheme } from "@/lib/theme";
+import { openBilling, reviewErrorMessage, ReviewRequestError } from "@/lib/reviews/client";
 
 export default function ProPricingPage() {
   const router = useRouter();
-  const { isPro, activatePro } = useReviewStore();
+  const { isPro, refreshPro } = useReviewStore();
   const [billingCycle, setBillingCycle] = useState<"annual" | "monthly">("annual");
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const { theme, isDay } = useTheme();
 
-  const handleActivatePro = () => {
+  const [billingError, setBillingError] = useState("");
+  useEffect(() => {
+    void refreshPro().catch(error => setBillingError(reviewErrorMessage(error)));
+  }, [refreshPro]);
+
+  const handleBilling = async () => {
     setIsActivating(true);
-    setTimeout(() => {
-      activatePro();
+    setBillingError("");
+    try {
+      await openBilling(isPro ? "manage" : billingCycle);
+    } catch (error) {
+      if (error instanceof ReviewRequestError && error.status === 401) router.push("/login");
+      else setBillingError(reviewErrorMessage(error));
+    } finally {
       setIsActivating(false);
-      router.push("/dashboard");
-    }, 600);
+    }
   };
 
-  const copyAiPrompt = () => {
-    const aiPrompt = `You are assisting me as an autonomous AI software engineer.
-I have connected Cyath (https://cyath.space), our visual staging and client review platform.
-Please configure and connect to the Cyath MCP server to inspect open visual review notes and client feedback directly.
-
-MCP Configuration:
-\`\`\`json
-{
-  "mcpServers": {
-    "cyath": {
-      "command": "npx",
-      "args": ["-y", "cyath-mcp@latest"],
-      "env": {
-        "CYATH_API_KEY": "${isPro ? "cyath_live_mcp_k994f0e21a81bc" : "cyath_preview_mcp_key"}",
-        "CYATH_STAGING_ENDPOINT": "https://cyath.space/api/mcp"
-      }
-    }
-  }
-}
-\`\`\`
-
-Workflow:
-1. Call \`cyath_list_open_pins\` or \`cyath_get_project_notes\` to fetch all open client feedback.
-2. Inspect the DOM selector, viewport resolution, device mode, and snapshot attached to each note.
-3. Locate corresponding code files in our repository, resolve the requested UX/UI or copy changes, and verify fixes.
-4. Mark the items as resolved with a concise changelog comment.`;
-
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(aiPrompt);
+  const prompt = "Use Cyath MCP to list open pins with cyath_get_pins, fix and verify the feedback in the repository, then call cyath_resolve_pin with a brief explanation. Set up the server and key from Cyath Settings first.";
+  const copyAiPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(prompt);
       setCopiedPrompt(true);
       setTimeout(() => setCopiedPrompt(false), 2500);
+    } catch {
+      setBillingError("Could not copy the prompt. Select and copy it below.");
     }
   };
 
@@ -139,6 +126,7 @@ Workflow:
             </div>
           </div>
 
+          {billingError && <p role="alert" className="text-center text-sm text-red-500">{billingError}</p>}
           {/* 3 Tier Pricing Cards Styled Exactly Like Landing Page */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {/* Card 1: SOLO FREELANCER */}
@@ -266,19 +254,19 @@ Workflow:
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="font-mono text-zinc-400 shrink-0 select-none">—</span>
-                    <span className={isDay ? "text-stone-700" : "text-zinc-300"}>One-click client milestone approval & audit deed</span>
+                    <span className={isDay ? "text-stone-700" : "text-zinc-300"}>Client approval receipts</span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="font-mono text-zinc-400 shrink-0 select-none">—</span>
-                    <span className={isDay ? "text-stone-700" : "text-zinc-300"}>Instant punchlist sync to Linear, GitHub Issues & Markdown</span>
+                    <span className={isDay ? "text-stone-700" : "text-zinc-300"}>Export the punchlist to Linear, GitHub Issues & Markdown</span>
                   </li>
                 </ul>
               </div>
 
               <button
                 type="button"
-                onClick={handleActivatePro}
-                disabled={isPro || isActivating}
+                onClick={handleBilling}
+                disabled={isActivating}
                 className={`w-full py-2.5 rounded-xl font-mono text-xs font-bold transition-all duration-150 active:scale-[0.96] text-center cursor-pointer relative z-10 ${isPro
                   ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-default"
                   : isDay
@@ -286,7 +274,7 @@ Workflow:
                     : "bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
                   }`}
               >
-                {isActivating ? "Activating..." : isPro ? "Active Pro Member" : "Upgrade to Pro"}
+                {isActivating ? "Opening billing…" : isPro ? "Manage subscription" : "Upgrade to Pro"}
               </button>
             </div>
 
@@ -397,18 +385,7 @@ Workflow:
                 Prompt Preview for AI Coding Agents
               </div>
               <pre className="whitespace-pre-wrap leading-relaxed select-all font-code">
-                {`You are assisting me as an autonomous AI software engineer.
-I have connected Cyath (https://cyath.space), our visual staging and client review platform.
-Please configure and connect to the Cyath MCP server to inspect open visual review notes and client feedback.
-
-MCP Configuration:
-npx -y cyath-mcp@latest --endpoint https://cyath.space/api/mcp
-
-Workflow:
-1. Fetch all open pins on our active canvas using Cyath MCP.
-2. Inspect exact DOM element selectors, viewport dimensions, and annotated screenshots.
-3. Locate corresponding codebase files and resolve the client's requested changes.
-4. Mark notes as resolved with verification evidence.`}
+                {prompt}
               </pre>
             </div>
           </div>

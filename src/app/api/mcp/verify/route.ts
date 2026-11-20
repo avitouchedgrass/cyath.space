@@ -1,70 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { failure, json, requireActor, ReviewError } from "@/lib/reviews/server";
+import { connection } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const key = req.nextUrl.searchParams.get("key");
-
-  if (!key) {
-    return NextResponse.json(
-      {
-        valid: false,
-        error:
-          "Missing CYATH_API_KEY. The Cyath MCP Server is an exclusive Cyath Pro feature. Upgrade to Pro at https://cyath-space.vercel.app/pro to generate your API key.",
-      },
-      { status: 401 }
-    );
-  }
-
-  // Validate Cyath Pro key pattern
-  if (!key.startsWith("cyath_pro_") && !key.startsWith("cyath_live_")) {
-    return NextResponse.json(
-      {
-        valid: false,
-        error:
-          "Invalid CYATH_API_KEY format. Cyath Pro keys begin with 'cyath_pro_'. Obtain your key from Settings.",
-      },
-      { status: 403 }
-    );
-  }
-
-  // Key is valid Pro tier
-  return NextResponse.json({
-    valid: true,
-    tier: "studio_pro",
-    status: "active",
-    capabilities: [
-      "pins:read",
-      "pins:write",
-      "pins:resolve",
-      "comments:write",
-      "canvas:create",
-    ],
-    timestamp: new Date().toISOString(),
-  });
-}
-
-export async function POST(req: NextRequest) {
+export async function GET(request: Request) {
+  await connection();
   try {
-    const body = await req.json();
-    const key = body.key;
-
-    if (!key || (!key.startsWith("cyath_pro_") && !key.startsWith("cyath_live_"))) {
-      return NextResponse.json(
-        {
-          valid: false,
-          error:
-            "Invalid or missing Cyath Pro key. Upgrade to Pro at https://cyath-space.vercel.app/pro.",
-        },
-        { status: 401 }
-      );
-    }
-
-    return NextResponse.json({
-      valid: true,
-      tier: "studio_pro",
-      status: "active",
-    });
-  } catch {
-    return NextResponse.json({ valid: false, error: "Malformed request" }, { status: 400 });
+    if ((await requireActor(request)).method !== "mcp") throw new ReviewError(401, "An API key is required.");
+    return json({ valid: true });
+  } catch (error) {
+    return failure(error);
   }
 }
-

@@ -20,7 +20,7 @@ begin
   on conflict (id) do update set agency_name = excluded.agency_name;
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = '';
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
@@ -78,11 +78,6 @@ alter table public.comments enable row level security;
 create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
--- Projects: Owners manage own projects; Anyone with share_id can view
-create policy "Owners manage own projects" on public.projects for all using (auth.uid() = user_id or auth.uid() is null);
-create policy "Public can view projects" on public.projects for select using (true);
-
--- Pins & Comments: Frictionless client collaboration (no client account needed)
-create policy "Public can read and create pins" on public.pins for all using (true);
-create policy "Public can read and create comments" on public.comments for all using (true);
+-- Legacy review tables are available only to the service role. Apply the
+-- migrations in supabase/migrations to create the current review API tables.
 

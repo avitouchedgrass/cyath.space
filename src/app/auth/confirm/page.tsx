@@ -45,9 +45,7 @@ function AuthConfirmContent() {
         const token_hash = searchParams.get("token_hash");
         const type = searchParams.get("type") as EmailOtpType | null;
         const code = searchParams.get("code");
-        const emailParam = searchParams.get("email");
-
-        let verifiedEmail = emailParam;
+        let verifiedEmail: string | null = null;
 
         // 1. Verify OTP token_hash (Standard Supabase email confirmation)
         if (token_hash && type) {
@@ -97,6 +95,7 @@ function AuthConfirmContent() {
           }
         }
 
+        if (!verifiedEmail) throw new Error("Open a valid verification link from the email Cyath sent you.");
         if (isCancelled) return;
 
         setUserEmail(verifiedEmail || null);

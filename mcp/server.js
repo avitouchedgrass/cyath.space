@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports -- The CLI runs as CommonJS on Node.js 20 and later. */
 
 /**
  * Cyath MCP Server
@@ -7,34 +8,58 @@
  * and resolve visual feedback pins directly from the terminal or editor.
  */
 
-const readline = require("readline");
+const readline = require("node:readline");
+const { randomUUID } = require("node:crypto");
 
-const DEFAULT_API_BASE = process.env.CYATH_API_URL || "https://cyath.space";
+const apiBase = new URL(process.env.CYATH_API_URL || "https://cyath.space");
+const isLoopback = ["127.0.0.1", "localhost", "[::1]"].includes(apiBase.hostname);
+if ((apiBase.protocol !== "https:" && !(isLoopback && apiBase.protocol === "http:")) ||
+    apiBase.username || apiBase.password || apiBase.pathname !== "/" || apiBase.search || apiBase.hash) {
+  throw new Error("CYATH_API_URL must be an HTTPS origin or a local HTTP origin.");
+}
+const API_KEY = process.env.CYATH_API_KEY;
 
-function generateId() {
-  return Math.random().toString(36).substring(2, 10);
+function canvasPath(shareId) {
+  if (typeof shareId !== "string" || !/^[A-Za-z0-9_-]{8,64}$/.test(shareId)) {
+    throw new Error("Enter a valid Cyath share ID.");
+  }
+  return "/api/canvases/" + encodeURIComponent(shareId);
 }
 
-async function fetchCanvas(shareId) {
-  const url = `${DEFAULT_API_BASE}/api/canvases/${shareId}`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch canvas "${shareId}" (Status: ${res.status})`);
+async function request(path, method = "GET", body) {
+  if (!API_KEY) throw new Error("Generate a Cyath Pro API key in Settings and set CYATH_API_KEY.");
+  let response;
+  try {
+    response = await fetch(new URL(path, apiBase), {
+      method,
+      headers: {
+        Authorization: "Bearer " + API_KEY,
+        ...(body ? { "Content-Type": "application/json" } : {}),
+      },
+      redirect: "error",
+      signal: AbortSignal.timeout(15000),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error("Could not reach the Cyath API. Check CYATH_API_URL and try again.");
   }
-  return await res.json();
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(data?.error || "Cyath API returned HTTP " + response.status);
+  }
+  if (!data) throw new Error("Cyath API returned an unexpected response.");
+  return data;
 }
 
-async function saveCanvas(shareId, canvasData) {
-  const url = `${DEFAULT_API_BASE}/api/canvases/${shareId}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(canvasData),
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to save canvas "${shareId}" (Status: ${res.status})`);
-  }
-  return await res.json();
+function fetchCanvas(shareId) {
+  return request(canvasPath(shareId));
+}
+
+function selectPin(canvas, input) {
+  if (typeof input !== "string") throw new Error("Enter a pin ID or number.");
+  const pin = canvas.pins.find(p => p.id === input || String(p.number) === input.replace(/^#/, ""));
+  if (!pin) throw new Error("That pin could not be found on the canvas.");
+  return pin;
 }
 
 const TOOLS = [
@@ -46,7 +71,7 @@ const TOOLS = [
       properties: {
         shareId: {
           type: "string",
-          description: "The 8-character share ID of the review canvas (e.g. 'T6X6leLv')",
+          description: "The share ID from a Cyath review link owned by your account",
         },
         status: {
           type: "string",
@@ -133,49 +158,11 @@ const TOOLS = [
   },
 ];
 
-const API_KEY = process.env.CYATH_API_KEY;
-
-async function verifyProAccess() {
-  if (!API_KEY) {
-    throw new Error(
-      "CYATH_API_KEY environment variable is missing.\n" +
-      "The Cyath MCP Server is an exclusive Cyath Pro feature.\n" +
-      "To unlock, upgrade to Pro at https://cyath.space/pro, copy your key from Settings, and add it to your MCP configuration:\n\n" +
-      '  "env": { "CYATH_API_KEY": "cyath_pro_..." }'
-    );
-  }
-
-  if (!API_KEY.startsWith("cyath_pro_") && !API_KEY.startsWith("cyath_live_")) {
-    throw new Error(
-      "Invalid CYATH_API_KEY. Cyath Pro keys begin with 'cyath_pro_'.\n" +
-      "Obtain your key from Settings at https://cyath.space/settings?tab=mcp."
-    );
-  }
-
-  try {
-    const authUrl = `${DEFAULT_API_BASE}/api/mcp/verify?key=${encodeURIComponent(API_KEY)}`;
-    const authRes = await fetch(authUrl, { cache: "no-store" });
-    if (!authRes.ok) {
-      const errJson = await authRes.json().catch(() => ({}));
-      throw new Error(errJson.error || "Cyath Pro authentication failed.");
-    }
-  } catch (err) {
-    if (err.message && (err.message.includes("Cyath Pro") || err.message.includes("CYATH_API_KEY"))) {
-      throw err;
-    }
-    // Fallback if offline
-    if (!API_KEY.startsWith("cyath_pro_")) {
-      throw new Error("Cyath Pro authentication failed.");
-    }
-  }
-}
-
 async function handleToolCall(name, args) {
-  await verifyProAccess();
-
   if (name === "cyath_get_pins") {
     const { shareId, status = "open" } = args;
     const canvas = await fetchCanvas(shareId);
+    if (!["open", "resolved", "all"].includes(status)) throw new Error("Choose open, resolved, or all.");
     let pins = canvas.pins || [];
 
     if (status === "open") {
@@ -208,6 +195,7 @@ async function handleToolCall(name, args) {
       if (pin.telemetry) {
         lines.push(`- Browser / OS: ${pin.telemetry.browser || "Unknown"} on ${pin.telemetry.os || "Unknown"} (${pin.telemetry.viewportWidth || "—"}x${pin.telemetry.viewportHeight || "—"})`);
       }
+      if (pin.domAnchor?.selector) lines.push(`- Element: ${pin.domAnchor.selector}`);
       lines.push(`- Created: ${pin.createdAt}`);
       lines.push(`\n**Comments & Notes:**`);
       (pin.comments || []).forEach((c) => {
@@ -221,200 +209,83 @@ async function handleToolCall(name, args) {
 
   if (name === "cyath_resolve_pin") {
     const { shareId, pinId, resolutionComment, resolvedBy = "AI Assistant" } = args;
-    const canvas = await fetchCanvas(shareId);
-    const pins = canvas.pins || [];
-
-    const pin = pins.find(
-      (p) => p.id === pinId || String(p.number) === String(pinId)
-    );
-
-    if (!pin) {
-      throw new Error(`Pin "${pinId}" not found on canvas "${shareId}".`);
-    }
-
-    pin.status = "resolved";
-    pin.resolvedAt = new Date().toISOString();
-    pin.resolvedBy = resolvedBy;
-
-    if (resolutionComment) {
-      pin.comments = pin.comments || [];
-      pin.comments.push({
-        id: generateId(),
-        pinId: pin.id,
-        authorName: resolvedBy,
-        authorRole: "developer",
-        content: resolutionComment,
-        createdAt: new Date().toISOString(),
-      });
-    }
-
-    await saveCanvas(shareId, canvas);
-
-    return {
-      text: `Successfully resolved Pin #${pin.number} ("${pin.comments[0]?.content || "Note"}") on canvas ${shareId}.${resolutionComment ? ` Added comment: "${resolutionComment}"` : ""}`,
-    };
+    const pin = selectPin(await fetchCanvas(shareId), pinId);
+    await request(canvasPath(shareId), "PATCH", {
+      type: "status", pinId: pin.id, status: "resolved", name: resolvedBy,
+      comment: resolutionComment || undefined, id: randomUUID(),
+    });
+    return { text: "Resolved pin #" + pin.number + (resolutionComment ? " and saved the explanation." : ".") };
   }
 
   if (name === "cyath_add_comment") {
     const { shareId, pinId, comment, authorName = "Developer" } = args;
-    const canvas = await fetchCanvas(shareId);
-    const pins = canvas.pins || [];
-
-    const pin = pins.find(
-      (p) => p.id === pinId || String(p.number) === String(pinId)
-    );
-
-    if (!pin) {
-      throw new Error(`Pin "${pinId}" not found on canvas "${shareId}".`);
-    }
-
-    pin.comments = pin.comments || [];
-    pin.comments.push({
-      id: generateId(),
-      pinId: pin.id,
-      authorName,
-      authorRole: "developer",
-      content: comment,
-      createdAt: new Date().toISOString(),
+    if (typeof comment !== "string" || !comment.trim()) throw new Error("Enter a reply before sending.");
+    const pin = selectPin(await fetchCanvas(shareId), pinId);
+    await request(canvasPath(shareId), "PATCH", {
+      type: "reply", pinId: pin.id, id: randomUUID(), content: comment, name: authorName,
     });
-
-    await saveCanvas(shareId, canvas);
-
-    return {
-      text: `Added comment to Pin #${pin.number}: "${comment}"`,
-    };
+    return { text: "Added a reply to pin #" + pin.number + "." };
   }
 
   if (name === "cyath_create_canvas") {
-    const { targetUrl, title, agencyName = "My Company" } = args;
-    const shareId = generateId();
-
-    let formattedUrl = targetUrl.trim();
-    if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
-      formattedUrl = "https://" + formattedUrl;
-    }
-
-    const canvasTitle = title || new URL(formattedUrl).hostname.replace(/^www\./, "");
-
-    const newCanvas = {
-      id: generateId(),
-      shareId,
-      title: canvasTitle,
-      targetUrl: formattedUrl,
-      agencyName,
-      assetType: "url",
-      isApproved: false,
-      createdAt: new Date().toISOString(),
-      pins: [],
-    };
-
-    await saveCanvas(shareId, newCanvas);
-
-    const fullUrl = `${DEFAULT_API_BASE}/r/${shareId}?u=${encodeURIComponent(formattedUrl)}&t=${encodeURIComponent(canvasTitle)}&a=${encodeURIComponent(agencyName)}`;
-
-    return {
-      text: `Staging Canvas Created!\n- Title: ${canvasTitle}\n- Share ID: ${shareId}\n- Live Review URL: ${fullUrl}`,
-    };
+    const { targetUrl, title, agencyName } = args;
+    const canvas = await request("/api/canvases", "POST", { targetUrl, title, agencyName, requestId: randomUUID() });
+    return { text: "Created " + canvas.title + "\nShare ID: " + canvas.shareId +
+      "\nReview URL: " + new URL("/r/" + canvas.shareId, apiBase) };
   }
 
   throw new Error(`Unknown tool: ${name}`);
 }
 
-// Set up STDIO JSON-RPC reader
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false,
-});
+const protocolVersions = new Set(["2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"]);
 
-function sendResponse(id, result, error = null) {
-  const response = {
-    jsonrpc: "2.0",
-    id,
-  };
-  if (error) {
-    response.error = {
-      code: error.code || -32603,
-      message: error.message || "Internal error",
-    };
-  } else {
-    response.result = result;
-  }
-  process.stdout.write(JSON.stringify(response) + "\n");
+const rl = readline.createInterface({ input: process.stdin, terminal: false });
+
+function send(id, result, error) {
+  process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id, ...(error ? { error } : { result }) }) + "\n");
 }
 
-rl.on("line", async (line) => {
-  const trimmed = line.trim();
-  if (!trimmed) return;
-
+rl.on("line", async line => {
+  if (!line.trim()) return;
+  let message;
   try {
-    const request = JSON.parse(trimmed);
-    const { id, method, params } = request;
+    message = JSON.parse(line);
+  } catch {
+    send(null, null, { code: -32700, message: "Invalid JSON." });
+    return;
+  }
+  if (!message || message.jsonrpc !== "2.0" || typeof message.method !== "string" ||
+      (message.id !== undefined && typeof message.id !== "string" && typeof message.id !== "number")) {
+    send(null, null, { code: -32600, message: "Invalid JSON-RPC request." });
+    return;
+  }
 
-    if (method === "initialize") {
-      sendResponse(id, {
-        protocolVersion: "2024-11-05",
-        capabilities: {
-          tools: {},
-        },
-        serverInfo: {
-          name: "cyath-mcp",
-          version: "1.0.0",
-        },
-      });
-      return;
-    }
+  const { id, method, params } = message;
+  if (id === undefined) return;
 
-    if (method === "notifications/initialized") {
-      // Client confirmed initialization
-      return;
-    }
-
-    if (method === "tools/list") {
-      sendResponse(id, {
-        tools: TOOLS,
-      });
-      return;
-    }
-
-    if (method === "tools/call") {
-      const { name, arguments: toolArgs } = params;
-      try {
-        const result = await handleToolCall(name, toolArgs || {});
-        sendResponse(id, {
-          content: [
-            {
-              type: "text",
-              text: result.text,
-            },
-          ],
-        });
-      } catch (toolErr) {
-        sendResponse(id, null, {
-          code: -32000,
-          message: toolErr.message,
-        });
-      }
-      return;
-    }
-
-    if (method === "ping") {
-      sendResponse(id, {});
-      return;
-    }
-
-    // Unrecognized method
-    if (id !== undefined) {
-      sendResponse(id, null, {
-        code: -32601,
-        message: `Method not found: ${method}`,
-      });
-    }
-  } catch (err) {
-    sendResponse(null, null, {
-      code: -32700,
-      message: `Parse error: ${err.message}`,
+  if (method === "initialize") {
+    send(id, {
+      protocolVersion: protocolVersions.has(params?.protocolVersion) ? params.protocolVersion : "2025-11-25",
+      capabilities: { tools: {} },
+      serverInfo: { name: "cyath-mcp", version: "1.1.0" },
     });
+  } else if (method === "ping") {
+    send(id, {});
+  } else if (method === "tools/list") {
+    send(id, { tools: TOOLS });
+  } else if (method === "tools/call") {
+    if (!params || !TOOLS.some(tool => tool.name === params.name) ||
+        (params.arguments !== undefined && (!params.arguments || typeof params.arguments !== "object" || Array.isArray(params.arguments)))) {
+      send(id, null, { code: -32602, message: "Unknown tool or invalid arguments." });
+      return;
+    }
+    try {
+      const result = await handleToolCall(params.name, params.arguments ?? {});
+      send(id, { content: [{ type: "text", text: result.text }] });
+    } catch (error) {
+      send(id, { isError: true, content: [{ type: "text", text: error.message }] });
+    }
+  } else {
+    send(id, null, { code: -32601, message: "Method not found: " + method });
   }
 });
-

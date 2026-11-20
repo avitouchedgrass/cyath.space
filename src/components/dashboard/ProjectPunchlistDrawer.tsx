@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X, CheckCircle2, Clock, Globe, Copy, Check, ExternalLink, Monitor, Smartphone, Tablet, Volume2 } from "lucide-react";
 import { Project, Pin } from "@/types";
 import { useReviewStore } from "@/store/useReviewStore";
+import { reviewErrorMessage } from "@/lib/reviews/client";
 
 interface ProjectPunchlistDrawerProps {
   project: Project | null;
@@ -12,9 +13,10 @@ interface ProjectPunchlistDrawerProps {
 }
 
 export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunchlistDrawerProps) {
-  const { toggleResolvePin } = useReviewStore();
+  const { setPinStatus } = useReviewStore();
   const [filter, setFilter] = useState<"all" | "open" | "resolved">("all");
   const [copiedExport, setCopiedExport] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   if (!project) return null;
 
@@ -194,6 +196,7 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {actionError && <p role="alert" className="text-sm text-red-500">{actionError}</p>}
           {filteredPins.length === 0 ? (
             <div className="py-12 text-center font-mono text-xs opacity-50 space-y-1 text-zinc-400">
               <p>No notes found.</p>
@@ -238,8 +241,12 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
                       )}
                     </div>
 
-                    <button
-                      onClick={() => toggleResolvePin(project.id, pin.id)}
+                    {!project.isApproved && <button
+                      onClick={() => {
+                        setActionError("");
+                        void setPinStatus(project.shareId, pin.id, isResolved ? "open" : "resolved")
+                          .catch(error => setActionError(reviewErrorMessage(error)));
+                      }}
                       className={`px-2 py-1 rounded text-[10px] font-mono border transition-all flex items-center gap-1 cursor-pointer ${
                         isResolved
                           ? "border-white/20 text-zinc-400 hover:text-white"
@@ -247,8 +254,8 @@ export function ProjectPunchlistDrawer({ project, onClose, theme }: ProjectPunch
                       }`}
                     >
                       <Check className="w-3 h-3" />
-                      <span>{isResolved ? "Resolved" : "Mark Resolved"}</span>
-                    </button>
+                      <span>{isResolved ? "Reopen" : "Mark Resolved"}</span>
+                    </button>}
                   </div>
 
                   {pin.comments.map((comment) => (

@@ -1,47 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { configuredPreviewOrigin } from "@/lib/preview-origin";
 
 export async function proxy(request: NextRequest) {
-  const { pathname, search } = request.nextUrl;
+  const { pathname, origin } = request.nextUrl;
 
-  // Transparently route foreign subresources (e.g. /assets/chunk.js, /cdn-cgi/...) from proxy iframe
-  const isCyathRoute =
-    pathname === "/" ||
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/pro") ||
-    pathname.startsWith("/settings") ||
-    pathname.startsWith("/terms") ||
-    pathname.startsWith("/privacy") ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/r/") ||
-    pathname.startsWith("/api/") ||
-    pathname.startsWith("/fonts/") ||
-    pathname === "/favicon.ico" ||
-    pathname === "/favicon.svg" ||
-    pathname === "/landing.html" ||
-    pathname === "/sitemap.xml" ||
-    pathname === "/robots.txt";
-
-  if (!isCyathRoute) {
-    const referer = request.headers.get("referer");
-    if (referer) {
-      try {
-        const refUrl = new URL(referer);
-        const proxyUrlParam = refUrl.searchParams.get("url");
-        const reviewUrlParam = refUrl.searchParams.get("u");
-        const targetStr = proxyUrlParam || reviewUrlParam;
-
-        if (targetStr && (targetStr.startsWith("http://") || targetStr.startsWith("https://"))) {
-          const targetOrigin = new URL(targetStr).origin;
-          const fullTarget = `${targetOrigin}${pathname}${search}`;
-          return NextResponse.rewrite(
-            new URL(`/api/proxy?url=${encodeURIComponent(fullTarget)}`, request.url)
-          );
-        }
-      } catch {}
-    }
+  if (origin === configuredPreviewOrigin()) {
+    return pathname === "/api/proxy"
+      ? NextResponse.next()
+      : new NextResponse("Not found", { status: 404 });
   }
+  // API handlers authenticate and authorize at the point of use.
+  if (pathname.startsWith("/api/")) return NextResponse.next();
 
   if (pathname === "/") {
     const cookies = request.cookies.getAll();
@@ -60,6 +30,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|landing.html|sitemap.xml|robots.txt).*)",
+    "/((?!_next/|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

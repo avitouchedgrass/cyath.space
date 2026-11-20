@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useId } from "react";
+import { nanoid } from "nanoid";
 import { X, Check, Send, Trash2, Copy, Mic, Square, Play, Pause, Volume2 } from "lucide-react";
 import { Pin } from "@/types";
-import { HoldButton } from "@/components/common/HoldButton";
+import { DeleteButton } from "@/components/common/DeleteButton";
 
 interface PinPopoverProps {
   pin?: Pin;
@@ -13,8 +14,10 @@ interface PinPopoverProps {
   isNew?: boolean;
   theme?: "day" | "night";
   authorName: string;
-  onSaveNewPin?: (comment: string, authorName: string, audioUrl?: string, audioDuration?: number) => void;
-  onAddComment?: (pinId: string, content: string, authorName: string) => void;
+  canExport?: boolean;
+  transcriptionReview?: string;
+  onSaveNewPin?: (comment: string, authorName: string, audioUrl?: string, audioDuration?: number, requestId?: string) => Promise<void>;
+  onAddComment?: (pinId: string, content: string, authorName: string, requestId?: string) => Promise<void>;
   onToggleResolve?: (pinId: string) => void;
   onDeletePin?: (pinId: string) => void;
   onClose: () => void;
@@ -28,6 +31,8 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   isNew = false,
   theme = "night",
   authorName: initialAuthorName,
+  canExport = false,
+  transcriptionReview,
   onSaveNewPin,
   onAddComment,
   onToggleResolve,
@@ -42,7 +47,9 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   const [copiedIssue, setCopiedIssue] = useState(false);
   const [isVibrating, setIsVibrating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isCollapsing, setIsCollapsing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const requestId = useRef<string | undefined>(undefined);
+  const fieldId = useId();
 
   // Instant Audio State
   const [isRecording, setIsRecording] = useState(false);
@@ -106,7 +113,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
         reader.onloadend = () => {
           const base64data = reader.result as string;
           setRecordedAudioUrl(base64data);
-          handleTranscribeAudio(base64data);
         };
         reader.readAsDataURL(audioBlob);
         setAudioDuration(durationTrackerRef.current);
@@ -126,7 +132,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
         durationTrackerRef.current += 1;
         setRecordingSeconds((prev) => prev + 1);
       }, 1000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn("Audio recording failed:", err);
       setErrorMessage("Microphone permission denied");
       setTimeout(() => setErrorMessage(""), 2000);
@@ -156,12 +162,13 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   };
 
   const handleTranscribeAudio = async (base64data: string) => {
+    if (!transcriptionReview) return;
     try {
       setIsTranscribing(true);
       const res = await fetch("/api/ai/transcribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ audioUrl: base64data }),
+        body: JSON.stringify({ audioUrl: base64data, shareId: transcriptionReview }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -201,6 +208,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   };
 
   useEffect(() => {
+    if (isNew || isSaving) return;
     const handleOutside = (e: MouseEvent | TouchEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
         onClose();
@@ -215,7 +223,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
       document.removeEventListener("mousedown", handleOutside);
       document.removeEventListener("touchstart", handleOutside);
     };
-  }, [onClose]);
+  }, [isNew, isSaving, onClose]);
 
   const handleCopyIssue = () => {
     if (!pin) return;
@@ -250,10 +258,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
     }
   };
 
-  useEffect(() => {
-    setName(initialAuthorName || "Guest Reviewer");
-  }, [initialAuthorName]);
-
   const [windowWidth, setWindowWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1024
   );
@@ -266,48 +270,54 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !isSaving) {
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [isSaving, onClose]);
 
   const isSmallScreen = windowWidth < 640;
   const isMobileLayout = deviceMode === "mobile" || isSmallScreen;
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving || !onSaveNewPin) return;
     if (!commentText.trim() && !recordedAudioUrl) {
       setIsVibrating(true);
-      setErrorMessage("write or record something");
+      setErrorMessage("Write a note or record audio before saving.");
       setTimeout(() => setIsVibrating(false), 400);
-      setTimeout(() => setErrorMessage(""), 1500);
       return;
     }
     const finalComment = commentText.trim() || `Voice Note (${audioDuration || recordingSeconds || 5}s)`;
-    setIsCollapsing(true);
-    setTimeout(() => {
-      if (onSaveNewPin) {
-        onSaveNewPin(
-          finalComment,
-          name.trim() || "Guest Reviewer",
-          recordedAudioUrl || undefined,
-          audioDuration || recordingSeconds || undefined
-        );
-        setCommentText("");
-        setRecordedAudioUrl(null);
-      }
-    }, 220);
+    setIsSaving(true);
+    setErrorMessage("");
+    requestId.current ??= nanoid();
+    try {
+      await onSaveNewPin(finalComment, name.trim() || "Guest Reviewer", recordedAudioUrl || undefined,
+        audioDuration || recordingSeconds || undefined, requestId.current);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Could not save the note. Try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleReplySubmit = (e: React.FormEvent) => {
+  const handleReplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyText.trim() || !pin) return;
-    if (onAddComment) {
-      onAddComment(pin.id, replyText.trim(), name.trim() || "Guest Reviewer");
+    if (!replyText.trim() || !pin || !onAddComment || isSaving) return;
+    setIsSaving(true);
+    setErrorMessage("");
+    requestId.current ??= nanoid();
+    try {
+      await onAddComment(pin.id, replyText.trim(), name.trim() || "Guest Reviewer", requestId.current);
+      requestId.current = undefined;
       setReplyText("");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Could not save the reply. Try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -316,12 +326,14 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
 
   const popoverStyle: React.CSSProperties = isMobileLayout
     ? {
-      position: "absolute",
+      position: "fixed",
       bottom: "12px",
       left: "12px",
       right: "12px",
       width: "calc(100% - 24px)",
       maxWidth: "none",
+      maxHeight: "calc(100dvh - 2rem)",
+      overflowY: "auto",
       zIndex: 50,
     }
     : {
@@ -342,7 +354,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
       style={popoverStyle}
       className={`border rounded-xl shadow-2xl p-4 text-xs transition-all animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl font-sans cursor-default ${
         isVibrating ? "animate-modal-shake" : ""
-      } ${isCollapsing ? "animate-pin-collapse" : ""} ${
+      } ${
         isDay
           ? "bg-white border-stone-300 text-stone-900 shadow-[0_20px_60px_rgba(0,0,0,0.16)] selection:bg-stone-200"
           : "bg-[#0a0a0a] border-white/20 text-white shadow-2xl selection:bg-white selection:text-black"
@@ -361,7 +373,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
         </div>
 
         <div className="flex items-center gap-1">
-          {!isNew && pin && (
+          {!isNew && pin && canExport && (
             <button
               onClick={handleCopyIssue}
               className={`p-1 rounded text-xs transition-colors flex items-center gap-1 cursor-pointer ${copiedIssue
@@ -396,21 +408,25 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           )}
 
           {!isNew && pin && onDeletePin && (
-            <HoldButton
-              onHoldComplete={() => {
+            <DeleteButton
+              onDelete={() => {
                 onDeletePin(pin.id);
                 onClose();
               }}
-              title="Hold to delete this pin"
+              label="Delete pin"
+              confirmation="Delete this pin and its discussion?"
               className={`p-1 rounded transition-colors cursor-pointer ${isDay ? "text-stone-400 hover:text-rose-600 hover:bg-rose-50" : "text-zinc-500 hover:text-white hover:bg-white/10"
                 }`}
             >
               <Trash2 className="w-3.5 h-3.5" />
-            </HoldButton>
+            </DeleteButton>
           )}
 
           <button
             onClick={onClose}
+            type="button"
+            aria-label="Close feedback"
+            disabled={isSaving}
             className={`p-1 rounded transition-colors cursor-pointer ${isDay ? "text-stone-400 hover:text-stone-900 hover:bg-stone-100" : "text-zinc-400 hover:text-white hover:bg-white/10"
               }`}
           >
@@ -423,10 +439,11 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
       {isNew ? (
         <form onSubmit={handleCreateSubmit} className="space-y-3">
           <div>
-            <label className={`block text-[11px] font-medium mb-1 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
+            <label htmlFor={`${fieldId}-name`} className={`block text-sm font-medium mb-1 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
               Your Name
             </label>
             <input
+              id={`${fieldId}-name`}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -441,7 +458,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className={`block text-[11px] font-medium ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
+              <label htmlFor={`${fieldId}-comment`} className={`block text-sm font-medium ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
                 Feedback / Change Request
               </label>
               {isTranscribing && (
@@ -453,6 +470,9 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             </div>
             <div className="relative">
               <textarea
+                id={`${fieldId}-comment`}
+                aria-invalid={!!errorMessage}
+                aria-describedby={errorMessage ? `${fieldId}-error` : undefined}
                 autoFocus
                 value={commentText}
                 onChange={(e) => {
@@ -466,7 +486,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
                   }
                 }}
                 rows={3}
-                placeholder={errorMessage ? "" : "What needs to change here?"}
+                placeholder="What needs to change here?"
                 className={`w-full rounded-lg p-2.5 text-xs focus:outline-none resize-none font-sans border transition-colors ${
                   errorMessage
                     ? "border-red-500/70 bg-red-500/[0.04]"
@@ -476,9 +496,9 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
                 }`}
               />
               {errorMessage && (
-                <div className="absolute inset-0 p-2.5 pointer-events-none flex items-start text-red-500 font-sans font-medium text-xs animate-in fade-in duration-150">
+                <p id={`${fieldId}-error`} role="alert" className="mt-1 text-sm font-medium text-red-500">
                   {errorMessage}
-                </div>
+                </p>
               )}
             </div>
           </div>
@@ -557,6 +577,11 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             </button>
           )}
 
+          {transcriptionReview && recordedAudioUrl && !isTranscribing && (
+            <button type="button" className="text-sm underline" onClick={() => void handleTranscribeAudio(recordedAudioUrl)}>
+              Transcribe recording
+            </button>
+          )}
           <div className="flex items-center justify-between pt-1">
             <span className={`text-[11px] ${isDay ? "text-stone-500" : "text-zinc-500"}`}>Enter ↵ to drop</span>
             <div className="flex items-center gap-2">
@@ -569,12 +594,13 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
               </button>
               <button
                 type="submit"
+                disabled={isSaving}
                 className={`px-3.5 py-1.5 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1 shadow-sm cursor-pointer ${isDay
                     ? "bg-stone-900 hover:bg-stone-800 text-white"
                     : "bg-white hover:bg-zinc-200 text-black"
                   }`}
               >
-                <span>Drop Pin</span>
+                <span>{isSaving ? "Saving…" : "Save note"}</span>
               </button>
             </div>
           </div>
@@ -649,12 +675,14 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           </div>
 
           {/* Reply Form */}
-          <form onSubmit={handleReplySubmit} className={`pt-2 border-t flex items-center gap-2 ${isDay ? "border-stone-200" : "border-white/[0.08]"}`}>
+          {errorMessage && <p role="alert" className="text-sm text-red-500">{errorMessage}</p>}
+          {onAddComment && <form onSubmit={handleReplySubmit} className={`pt-2 border-t flex items-center gap-2 ${isDay ? "border-stone-200" : "border-white/[0.08]"}`}>
             <input
               type="text"
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Reply to thread..."
+              aria-label="Reply to feedback"
               className={`flex-1 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none font-sans border ${isDay
                   ? "bg-stone-50 border-stone-200 text-stone-900 placeholder:text-stone-400 focus:border-stone-900"
                   : "bg-white/[0.04] border-white/10 text-white placeholder:text-zinc-600 focus:border-white/50"
@@ -662,7 +690,8 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             />
             <button
               type="submit"
-              disabled={!replyText.trim()}
+              aria-label="Send reply"
+              disabled={isSaving || !replyText.trim()}
               className={`p-2 rounded-lg transition-colors cursor-pointer disabled:opacity-30 ${isDay
                   ? "bg-stone-900 hover:bg-stone-800 text-white"
                   : "bg-white hover:bg-zinc-200 text-black"
@@ -670,7 +699,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             >
               <Send className="w-3.5 h-3.5" />
             </button>
-          </form>
+          </form>}
         </div>
       )}
     </div>

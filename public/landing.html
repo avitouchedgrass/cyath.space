@@ -104,6 +104,15 @@ html {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 body {
   font-family: var(--font-sans);
   font-weight: 500;
@@ -1719,14 +1728,14 @@ html.over-pin-demo .fluid-cursor,
   <div class="section-grid">
     <div class="section-text">
       <div class="section-number">03 / SIGN-OFF</div>
-      <h2 class="section-heading">The approval receipt that ends scope creep.</h2>
+      <h2 class="section-heading">Give client reviews a clear finish.</h2>
       <p class="section-body">
-        Once you check off every item on the punchlist, your client receives a single-click approval screen. When they approve, Cyath generates a timestamped milestone certificate. No more "I never agreed to this" disputes.
+        Resolve the open notes and send your client a separate approval link. Cyath records their name, the approval time, and the review revision.
       </p>
       <ul class="section-bullets">
-        <li class="section-bullet-item"><span class="bullet-dash">—</span> Cryptographic SHA-256 build fingerprint locks the approved revision.</li>
-        <li class="section-bullet-item"><span class="bullet-dash">—</span> Clear digital audit trail with signatory IP, timestamp, and signed scope.</li>
-        <li class="section-bullet-item"><span class="bullet-dash">—</span> Protects your agency from endless unbilled revisions before final launch.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Send an approval link that expires after seven days.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Print the approval receipt for your project records.</li>
+        <li class="section-bullet-item"><span class="bullet-dash">—</span> Reopen the review when the project needs more changes.</li>
       </ul>
     </div>
 
@@ -1734,10 +1743,10 @@ html.over-pin-demo .fluid-cursor,
       <div class="cert-box">
         <div class="cert-header">
           <div>
-            <div class="cert-title">Certificate of Approval</div>
+            <div class="cert-title">Example approval receipt</div>
             <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Milestone Release Acceptance</div>
           </div>
-          <span class="cert-badge">LOCKED & ARCHIVED</span>
+          <span class="cert-badge">APPROVED</span>
         </div>
         <div class="cert-rows">
           <div class="cert-row">
@@ -1749,7 +1758,7 @@ html.over-pin-demo .fluid-cursor,
             <span class="cert-val">v1.0 Design & Staging Freeze</span>
           </div>
           <div class="cert-row">
-            <span class="cert-label">Signatory</span>
+            <span class="cert-label">Approved by</span>
             <span class="cert-val">Elena Vance (Managing Director)</span>
           </div>
           <div class="cert-row">
@@ -1758,7 +1767,7 @@ html.over-pin-demo .fluid-cursor,
           </div>
         </div>
         <div class="cert-hash">
-          HASH: 8f92c10b77e4a11f2389d5bc40986e82a39b9c
+          REVIEW REVISION: 4
         </div>
         <div class="cert-stamp-badge" id="certStamp" aria-hidden="true">
           <svg width="76" height="76" viewBox="0 0 100 100" class="stamp-svg">
@@ -1769,7 +1778,7 @@ html.over-pin-demo .fluid-cursor,
               <textPath href="#stampCurveArch" startOffset="50%" text-anchor="middle">MILESTONE SIGNED</textPath>
             </text>
             <polygon points="50,38 58,42 58,52 50,56 42,52 42,42" fill="none" stroke="currentColor" stroke-width="1.8"/>
-            <text x="50" y="72" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle" fill="currentColor" letter-spacing="1.5">SHA-256</text>
+            <text x="50" y="72" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" text-anchor="middle" fill="currentColor" letter-spacing="1.5">CYATH</text>
           </svg>
           <div class="stamp-ink-ripple"></div>
         </div>
@@ -1879,7 +1888,7 @@ html.over-pin-demo .fluid-cursor,
           <li class="price-feature-item"><span class="bullet-dash">—</span> Unlimited review canvases (Live Sites, Staging, PDFs)</li>
           <li class="price-feature-item"><span class="bullet-dash">—</span> Isolated viewports (Full Page, Desktop, Tablet, Mobile)</li>
           <li class="price-feature-item"><span class="bullet-dash">—</span> One-click client milestone approval & audit deed</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Instant punchlist sync to Linear, GitHub Issues & Markdown</li>
+          <li class="price-feature-item"><span class="bullet-dash">—</span> Export the punchlist to Linear, GitHub Issues & Markdown</li>
         </ul>
       </div>
       <a href="/login" target="_top" class="btn-primary" style="text-align: center; justify-content: center;">Upgrade to Pro</a>
@@ -2042,7 +2051,8 @@ html.over-pin-demo .fluid-cursor,
   // Micro-Animation 2: Interactive Staging Reviewer Cursor & Pin Drop in 01 / Capture
   const pinDemoBox = document.querySelector('.pin-demo-box');
   const interactiveCursor = document.getElementById('interactiveCursor');
-  if (pinDemoBox && interactiveCursor) {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (pinDemoBox && interactiveCursor && !reduceMotion.matches) {
     let pinCount = 1;
     let targetCurX = 0, targetCurY = 0;
     let curX = 0, curY = 0;
@@ -2086,6 +2096,7 @@ html.over-pin-demo .fluid-cursor,
     });
 
     function renderInteractiveCursor() {
+      if (reduceMotion.matches) return;
       if (isHovered) {
         curX += (targetCurX - curX) * 0.24;
         curY += (targetCurY - curY) * 0.24;
@@ -2745,7 +2756,7 @@ html.over-pin-demo .fluid-cursor,
     postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
     renderer.render(postScene, postCamera);
 
-    requestAnimationFrame(animate);
+    if (!reduceMotion.matches) requestAnimationFrame(animate);
   }
 
   requestAnimationFrame(animate);
@@ -2754,7 +2765,7 @@ html.over-pin-demo .fluid-cursor,
   // LENIS FLUID INERTIAL SCROLL ENGINE (SOTD Butter-Smooth Inertia)
   // ══════════════════════════════════════════════════════════════════
   let lenisInstance = null;
-  if (typeof Lenis !== 'undefined') {
+  if (typeof Lenis !== 'undefined' && !reduceMotion.matches) {
     lenisInstance = new Lenis({
       duration: 1.18,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -2765,6 +2776,11 @@ html.over-pin-demo .fluid-cursor,
     });
 
     function lenisRaf(time) {
+      if (reduceMotion.matches) {
+        lenisInstance.destroy();
+        lenisInstance = null;
+        return;
+      }
       lenisInstance.raf(time);
       requestAnimationFrame(lenisRaf);
     }
@@ -2877,6 +2893,7 @@ html.over-pin-demo .fluid-cursor,
     });
 
     function updateCursor() {
+      if (reduceMotion.matches) return;
       if (isVisible && !isOverDemo) {
         // Snappy, highly responsive fluid spring physics
         beadX += (mouseX - beadX) * 0.38;

@@ -1,5 +1,12 @@
 import { Suspense } from "react";
 import { ReviewCanvas } from "@/components/review/ReviewCanvas";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Review · Cyath",
+  robots: { index: false, follow: false },
+  referrer: "no-referrer",
+};
 
 async function ReviewCanvasFetcher({
   params,

@@ -31,7 +31,7 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
       const res = await fetch("/api/ai/digest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ project }),
+        body: JSON.stringify({ shareId: project.shareId }),
       });
       if (res.ok) {
         const data = await res.json();

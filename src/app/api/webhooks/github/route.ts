@@ -1,37 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { failure, json } from "@/lib/reviews/server";
+import { resolveLinkedPins, verifiedWebhook } from "@/lib/reviews/webhooks";
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const payload = await req.json();
-
-    // GitHub webhook trigger when an issue is closed
-    const isClosed = payload.action === "closed" && payload.issue;
-
-    if (isClosed) {
-      const bodyText = payload.issue?.body || "";
-      const match = bodyText.match(/<!--\s*cyath:({.*?})\s*-->/);
-
-      if (match && match[1]) {
-        try {
-          const { shareId, pinId } = JSON.parse(match[1]);
-          if (shareId && pinId) {
-            const baseUrl = req.nextUrl.origin;
-            await fetch(`${baseUrl}/api/canvases/${shareId}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                pinId,
-                status: "resolved",
-                resolvedBy: "GitHub Sync",
-              }),
-            });
-          }
-        } catch {}
-      }
+    const { owner, payload } = await verifiedWebhook(request, "github");
+    const closedAt = Date.parse(payload.issue?.closed_at ?? "");
+    if (request.headers.get("x-github-event") === "issues" && payload.action === "closed" &&
+        Math.abs(Date.now() - closedAt) < 300000) {
+      await resolveLinkedPins(payload.issue?.body, owner, "GitHub");
     }
-
-    return NextResponse.json({ received: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+    return json({ received: true });
+  } catch (error) {
+    return failure(error);
   }
 }

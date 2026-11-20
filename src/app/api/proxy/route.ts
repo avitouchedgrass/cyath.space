@@ -1,240 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
+import { allowedPreviewUrl, fetchPreview, previewBoundary, readPreviewBody } from "@/lib/reviews/upstream";
 
-// In-memory IP rate limiter (shortcut: in-memory limiter, upgrade to Redis when multi-region edge scale > 500 req/s)
-const ipRateLimitMap = new Map<string, { count: number; resetTime: number }>();
-
-function checkRateLimit(req: NextRequest): boolean {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "client-ip";
-  const now = Date.now();
-  const record = ipRateLimitMap.get(ip);
-  if (!record || now > record.resetTime) {
-    ipRateLimitMap.set(ip, { count: 1, resetTime: now + 60000 });
-    return true;
-  }
-  if (record.count >= 180) {
-    return false;
-  }
-  record.count += 1;
-  return true;
-}
-
-function isSafeUrl(urlStr: string): boolean {
-  try {
-    const parsed = new URL(urlStr);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
-    const host = parsed.hostname.toLowerCase();
-    if (host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "0.0.0.0") return false;
-    if (host.startsWith("169.254.") || host.startsWith("10.") || host.startsWith("192.168.")) return false;
-    if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) return false;
-    if (host.endsWith(".internal") || host.endsWith(".local")) return false;
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD",
-      "Access-Control-Allow-Headers": "*",
-    },
-  });
-}
-
-export async function POST(req: NextRequest) {
-  if (!checkRateLimit(req)) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-  }
-
-  const urlParam = req.nextUrl.searchParams.get("url");
-  if (!urlParam) {
-    return new NextResponse("Missing url parameter", { status: 400 });
-  }
-
-  let targetUrl = urlParam;
-  if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
-    targetUrl = "https://" + targetUrl;
-  }
-
-  if (!isSafeUrl(targetUrl)) {
-    return NextResponse.json({ error: "Restricted URL target" }, { status: 403 });
-  }
-
-  try {
-    const body = await req.arrayBuffer();
-    const contentType = req.headers.get("content-type") || "application/json";
-
-    let fetchUrl = targetUrl;
-    const postHeaders: Record<string, string> = {
-      "Content-Type": contentType,
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    };
-
-    // Extract basic auth credentials if embedded in URL
-    try {
-      const parsedUrl = new URL(targetUrl);
-      if (parsedUrl.username || parsedUrl.password) {
-        const creds = `${decodeURIComponent(parsedUrl.username)}:${decodeURIComponent(parsedUrl.password)}`;
-        postHeaders["Authorization"] = `Basic ${Buffer.from(creds).toString("base64")}`;
-        parsedUrl.username = "";
-        parsedUrl.password = "";
-        fetchUrl = parsedUrl.toString();
-      }
-    } catch {}
-
-    const customAuth = req.nextUrl.searchParams.get("auth") || req.headers.get("x-cyath-auth");
-    if (customAuth && !postHeaders["Authorization"]) {
-      postHeaders["Authorization"] = customAuth.startsWith("Basic ") || customAuth.startsWith("Bearer ")
-        ? customAuth
-        : `Basic ${Buffer.from(customAuth).toString("base64")}`;
-    }
-
-    const response = await fetch(fetchUrl, {
-      method: "POST",
-      headers: postHeaders,
-      body,
-    });
-
-    const resBuffer = await response.arrayBuffer();
-    const resContentType = response.headers.get("content-type") || "application/json";
-    return new NextResponse(resBuffer, {
-      status: response.status,
-      headers: {
-        "Content-Type": resContentType,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD",
-        "Access-Control-Allow-Headers": "*",
-      },
-    });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 502 });
-  }
+function previewHeaders(contentType: string, appOrigin: string, sandbox: string) {
+  return {
+    "Content-Type": contentType,
+    "Cache-Control": "private, no-store",
+    "Content-Security-Policy": "sandbox " + sandbox + "; frame-ancestors " + appOrigin +
+      "; object-src 'none'; worker-src 'none'; form-action 'none'",
+    "Cross-Origin-Resource-Policy": "cross-origin",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "Access-Control-Allow-Origin": "*",
+  };
 }
 
 export async function GET(req: NextRequest) {
-  if (!checkRateLimit(req)) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-  }
+  const boundary = previewBoundary(req);
+  if (!boundary) return new NextResponse("The isolated preview service is unavailable.", { status: 404 });
 
-  const urlParam = req.nextUrl.searchParams.get("url");
-  if (!urlParam) {
-    return new NextResponse("Missing url parameter", { status: 400 });
-  }
-
-  let targetUrl = urlParam;
-  if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
-    targetUrl = "https://" + targetUrl;
-  }
-
-  if (!isSafeUrl(targetUrl)) {
-    return NextResponse.json({ error: "Restricted URL target" }, { status: 403 });
-  }
+  const { appOrigin, sandbox } = boundary;
+  const headers = previewHeaders("text/html; charset=utf-8", appOrigin, sandbox);
+  const failure = (status: number) => new NextResponse(
+    '<!doctype html><title>Preview unavailable</title><body style="background:#09090b;color:#fff;font:16px system-ui;padding:2rem">' +
+    '<h1>Preview unavailable</h1><p>Use Open original preview, or ask the studio for an accessible HTTPS preview or a PDF.</p>',
+    { status, headers },
+  );
 
   try {
-    let clientAccept = req.headers.get("accept") || "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
-    if (clientAccept.includes("text/x-component") && !clientAccept.includes("*/*")) {
-      clientAccept = clientAccept + ", */*";
+    const raw = req.nextUrl.searchParams.get("url");
+    if (!raw || raw.length > 4096) return failure(400);
+    let target: URL;
+    try { target = new URL(raw); } catch { return failure(400); }
+    if (!allowedPreviewUrl(target, appOrigin, req.nextUrl.origin)) return failure(403);
+    const { response, url } = await fetchPreview(target, appOrigin, req.nextUrl.origin,
+      req.headers.get("accept") || "text/html,*/*");
+    if (!response.ok) {
+      await response.body?.cancel();
+      return failure(502);
     }
-
-    const forwardedHeaders: Record<string, string> = {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      Accept: clientAccept,
-      "Accept-Language": req.headers.get("accept-language") || "en-US,en;q=0.9",
-    };
-
-    // Forward crucial SPA and Next.js App Router headers
-    const headersToForward = [
-      "rsc",
-      "next-router-state-tree",
-      "next-router-prefetch",
-      "next-url",
-      "content-type",
-      "authorization",
-      "x-requested-with",
-    ];
-
-    for (const h of headersToForward) {
-      const val = req.headers.get(h);
-      if (val) {
-        forwardedHeaders[h] = val;
-      }
-    }
-
-    if (req.nextUrl.searchParams.has("_rsc") || req.headers.get("rsc") === "1") {
-      forwardedHeaders["RSC"] = "1";
-    }
-
-    // Extract basic auth credentials if embedded in URL
-    let fetchUrl = targetUrl;
-    try {
-      const parsedUrl = new URL(targetUrl);
-      if (parsedUrl.username || parsedUrl.password) {
-        const creds = `${decodeURIComponent(parsedUrl.username)}:${decodeURIComponent(parsedUrl.password)}`;
-        forwardedHeaders["Authorization"] = `Basic ${Buffer.from(creds).toString("base64")}`;
-        parsedUrl.username = "";
-        parsedUrl.password = "";
-        fetchUrl = parsedUrl.toString();
-      }
-    } catch {}
-
-    // Support explicit staging auth params / headers (e.g. Cloudflare Access, Basic Auth)
-    const customAuth = req.nextUrl.searchParams.get("auth") || req.headers.get("x-cyath-auth");
-    if (customAuth && !forwardedHeaders["Authorization"]) {
-      forwardedHeaders["Authorization"] = customAuth.startsWith("Basic ") || customAuth.startsWith("Bearer ")
-        ? customAuth
-        : `Basic ${Buffer.from(customAuth).toString("base64")}`;
-    }
-
-    const customHeader = req.nextUrl.searchParams.get("customHeader") || req.headers.get("x-cyath-custom-header");
-    if (customHeader) {
-      const colonIdx = customHeader.indexOf(":");
-      if (colonIdx > 0) {
-        const hk = customHeader.slice(0, colonIdx).trim();
-        const hv = customHeader.slice(colonIdx + 1).trim();
-        forwardedHeaders[hk] = hv;
-      }
-    }
-
-    const response = await fetch(fetchUrl, {
-      headers: forwardedHeaders,
-      redirect: "follow",
-    });
-
-    const contentType = response.headers.get("content-type") || "text/html";
-
-    // If it's a binary file, stylesheet, script, font, or JSON, pass through as array buffer with wide CORS
-    if (!contentType.includes("text/html")) {
-      const buffer = await response.arrayBuffer();
-      return new NextResponse(buffer, {
-        status: response.status,
-        headers: {
-          "Content-Type": contentType,
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-          "Access-Control-Allow-Headers": "*",
-          "Cross-Origin-Resource-Policy": "cross-origin",
-          "Cache-Control": "public, max-age=300",
-        },
+    const contentType = response.headers.get("content-type") || "application/octet-stream";
+    const content = await readPreviewBody(response);
+    if (!contentType.toLowerCase().includes("text/html")) {
+      return new NextResponse(content.buffer as ArrayBuffer, {
+        headers: previewHeaders(contentType, appOrigin, sandbox),
       });
     }
-
-    // Capture the final URL after any HTTP redirects
-    const finalUrl = response.url || targetUrl;
-    const finalParsed = new URL(finalUrl);
-    const targetOrigin = finalParsed.origin;
-    const basePath =
-      finalParsed.pathname.substring(
-        0,
-        finalParsed.pathname.lastIndexOf("/") + 1
-      ) || "/";
-    const fullBase = `${targetOrigin}${basePath}`;
-
-    let html = await response.text();
+    const finalUrl = url.href;
+    const targetOrigin = url.origin;
+    const fullBase = new URL(".", url).href;
+    let html = new TextDecoder().decode(content);
 
     // 1. Remove existing <base> tags to avoid conflicts
     html = html.replace(/<base[^>]*>/gi, "");
@@ -252,6 +66,7 @@ export async function GET(req: NextRequest) {
     const baseTag = `<base href="${fullBase}">\n  <meta name="referrer" content="no-referrer">${viewportMetaTag}`;
     const bridgeScript = `<script id="cyath-staging-bridge">
 (function() {
+  var parentOrigin = ${JSON.stringify(appOrigin)};
   var initialTargetUrl = ${JSON.stringify(finalUrl)};
   var targetOrigin = ${JSON.stringify(targetOrigin)};
   var currentTargetUrl = initialTargetUrl;
@@ -281,7 +96,7 @@ export async function GET(req: NextRequest) {
           type: 'CYATH_PAGE_NAVIGATED',
           url: parsed.href,
           pathname: parsed.pathname || '/'
-        }, '*');
+        }, parentOrigin);
       }
     } catch(e) {}
   }
@@ -404,7 +219,7 @@ export async function GET(req: NextRequest) {
 
   // Listen for dynamic audio toggle events from parent frame
   window.addEventListener('message', function(ev) {
-    if (ev.data && ev.data.type === 'CYATH_SET_AUDIO_MUTED') {
+    if (ev.source === window.parent && ev.origin === parentOrigin && ev.data && ev.data.type === 'CYATH_SET_AUDIO_MUTED') {
       isAudioMuted = !!ev.data.muted;
       applyAudioMute(isAudioMuted);
     }
@@ -639,7 +454,7 @@ export async function GET(req: NextRequest) {
         var height = Math.min(16000, Math.max(800, rawHeight));
         if (Math.abs(height - lastSentHeight) > 15 && window.parent && window.parent !== window) {
           lastSentHeight = height;
-          window.parent.postMessage({ type: 'CYATH_STAGE_RESIZE', height: height }, '*');
+          window.parent.postMessage({ type: 'CYATH_STAGE_RESIZE', height: height }, parentOrigin);
         }
       } catch(e) {}
     }, 60);
@@ -648,6 +463,7 @@ export async function GET(req: NextRequest) {
   window.addEventListener('DOMContentLoaded', function() {
     sendHeight();
     notifyParentNavigation(currentTargetUrl);
+    window.parent.postMessage({ type: 'CYATH_STAGE_READY' }, parentOrigin);
   });
   window.addEventListener('load', function() {
     sendHeight();
@@ -774,7 +590,7 @@ export async function GET(req: NextRequest) {
         e.stopPropagation();
         e.preventDefault();
         if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'CYATH_PIN_SELECTED', pinId: pin.id }, '*');
+          window.parent.postMessage({ type: 'CYATH_PIN_SELECTED', pinId: pin.id }, parentOrigin);
         }
       };
 
@@ -794,7 +610,7 @@ export async function GET(req: NextRequest) {
         var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
         var curX = (e.clientX / bodyWidth) * 100;
         var curY = ((e.clientY + scrollY) / bodyHeight) * 100;
-        window.parent.postMessage({ type: 'CYATH_CURSOR_MOVE', xPercent: curX, yPercent: curY }, '*');
+        window.parent.postMessage({ type: 'CYATH_CURSOR_MOVE', xPercent: curX, yPercent: curY }, parentOrigin);
       } catch(err) {}
     }
 
@@ -819,16 +635,17 @@ export async function GET(req: NextRequest) {
     hoverInspector.style.height = rect.height + 'px';
   }, true);
 
-  // Click / Drag to drop element-anchored pin in comment mode
+  // Tap, click, or drag to place element-anchored feedback.
   var dragStartCoords = null;
-  document.addEventListener('mousedown', function(e) {
-    if (currentInteractionMode !== 'comment') return;
+  document.addEventListener('pointerdown', function(e) {
+    if (!e.isPrimary || e.button !== 0 || currentInteractionMode !== 'comment') return;
     if (e.target && (e.target.closest('#cyath-pins-layer') || e.target.id === 'cyath-hover-inspector')) return;
     dragStartCoords = { x: e.clientX, y: e.clientY };
   }, true);
 
-  document.addEventListener('mouseup', function(e) {
-    if (currentInteractionMode !== 'comment' || !dragStartCoords) return;
+  document.addEventListener('pointercancel', function() { dragStartCoords = null; }, true);
+  document.addEventListener('pointerup', function(e) {
+    if (!e.isPrimary || currentInteractionMode !== 'comment' || !dragStartCoords) return;
     var target = document.elementFromPoint(e.clientX, e.clientY);
     if (!target || target.closest('#cyath-pins-layer')) {
       dragStartCoords = null;
@@ -837,6 +654,7 @@ export async function GET(req: NextRequest) {
 
     var dx = Math.abs(e.clientX - dragStartCoords.x);
     var dy = Math.abs(e.clientY - dragStartCoords.y);
+    if (e.pointerType === 'touch' && (dx > 12 || dy > 12)) { dragStartCoords = null; return; }
     var rect = target.getBoundingClientRect();
     var scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
     var scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -861,6 +679,9 @@ export async function GET(req: NextRequest) {
       window.parent.postMessage({
         type: 'CYATH_ELEMENT_PIN_DROPPED',
         annotationType: isBox ? 'box' : 'point',
+         viewportWidth: window.innerWidth,
+         viewportHeight: window.innerHeight,
+         scrollDepth: Math.max(0, Math.min(100, Math.round((scrollY / Math.max(1, docH - window.innerHeight)) * 100))),
         xPercent: Math.max(0, Math.min(100, Math.round(((isBox ? boxX : docX) / (docW || 1)) * 1000) / 10)),
         yPercent: Math.max(0, Math.min(100, Math.round(((isBox ? boxY : docY) / (docH || 1)) * 1000) / 10)),
         widthPercent: isBox ? Math.max(1, Math.round((boxW / (docW || 1)) * 1000) / 10) : undefined,
@@ -874,7 +695,7 @@ export async function GET(req: NextRequest) {
           docX: Math.round(docX),
           docY: Math.round(docY)
         }
-      }, '*');
+      }, parentOrigin);
     }
 
     if (hoverInspector) hoverInspector.style.display = 'none';
@@ -905,7 +726,10 @@ export async function GET(req: NextRequest) {
   window.addEventListener('resize', trackBoundElements);
 
   window.addEventListener('message', function(ev) {
-    if (!ev.data) return;
+    if (ev.source !== window.parent || ev.origin !== parentOrigin || !ev.data) return;
+    if (ev.data.type === 'CYATH_PING') {
+      window.parent.postMessage({ type: 'CYATH_STAGE_READY' }, parentOrigin);
+    }
     if (ev.data.type === 'CYATH_PARENT_SCROLL') {
       window.__cyathParentScrollTop = ev.data.scrollTop || 0;
       window.dispatchEvent(new Event('scroll'));
@@ -967,33 +791,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
     const injectedTags = `${baseTag}\n  ${stageSyncStyle}\n  ${bridgeScript}`;
 
     if (/<head[^>]*>/i.test(html)) {
-      html = html.replace(/(<head[^>]*>)/i, `$1\n  ${injectedTags}`);
+      html = html.replace(/(<head[^>]*>)/i, (_, head) => `${head}\n  ${injectedTags}`);
     } else if (/<html[^>]*>/i.test(html)) {
-      html = html.replace(/(<html[^>]*>)/i, `$1\n  <head>${injectedTags}</head>`);
+      html = html.replace(/(<html[^>]*>)/i, (_, root) => `${root}\n  <head>${injectedTags}</head>`);
     } else {
       html = `${injectedTags}\n${html}`;
     }
 
-    return new NextResponse(html, {
-      status: response.status,
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Access-Control-Allow-Origin": "*",
-        "Cross-Origin-Resource-Policy": "cross-origin",
-        "Cache-Control": "private, no-cache, no-store, must-revalidate",
-      },
-    });
-  } catch (err: any) {
-    return new NextResponse(
-      `<!DOCTYPE html><html><body style="background:#09090b;color:#f43f5e;font-family:system-ui,sans-serif;padding:48px 24px;text-align:center;">
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:8px;">Unable to load staging preview</h3>
-        <p style="color:#71717a;font-size:12px;margin-bottom:16px;">Target site refused proxy connection (${err?.message || "Network error"})</p>
-        <a href="${targetUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:8px 16px;background:#27272a;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;">Open live site directly &rarr;</a>
-      </body></html>`,
-      {
-        status: 502,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      }
-    );
+    return new NextResponse(html, { headers });
+  } catch {
+    return failure(502);
   }
 }

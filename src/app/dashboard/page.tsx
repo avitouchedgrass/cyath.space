@@ -39,8 +39,9 @@ import { StudioUpgradeModal } from "@/components/dashboard/StudioUpgradeModal";
 import { DashboardTour } from "@/components/dashboard/DashboardTour";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { StarBorder } from "@/components/common/StarBorder";
-import { HoldButton } from "@/components/common/HoldButton";
+import { DeleteButton } from "@/components/common/DeleteButton";
 import { useTheme } from "@/lib/theme";
+import { reviewErrorMessage } from "@/lib/reviews/client";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -60,9 +61,12 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "signed_off">("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [reloadProjects, setReloadProjects] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
 
-  const { projects, createProject, deleteProject, isPro, proCancelled } = useReviewStore();
-  const isUserPro = !proCancelled && (isPro || (typeof window !== "undefined" && localStorage.getItem("cyath_pro_member") === "true"));
+  const { projects, createProject, deleteProject, loadProjects, isPro: isUserPro } = useReviewStore();
 
   useEffect(() => {
     let isCancelled = false;
@@ -148,89 +152,88 @@ export default function DashboardPage() {
     };
   }, [router, supabase]);
 
-  const handleSignOut = async () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("cyath_guest_session");
-      localStorage.removeItem("cyath_pro_member");
-      localStorage.removeItem("cyath_pro_api_key");
-      localStorage.removeItem("cyath_auth_active");
-    }
-    await supabase.auth.signOut();
-    window.location.href = "/login";
-  };
-
-  const userProjects = useMemo(() => {
-    if (!projects) return [];
-    return projects.filter((p) => {
-      if (!p) return false;
-      if (p.ownerId && currentUser?.id) return p.ownerId === currentUser.id;
-      if (p.ownerEmail && currentUser?.email) return p.ownerEmail.toLowerCase() === currentUser.email.toLowerCase();
-      if (p.agencyName && currentUser?.email && p.agencyName.includes("@")) {
-        return p.agencyName.toLowerCase() === currentUser.email.toLowerCase();
-      }
-      return true;
-    });
-  }, [projects, currentUser]);
-
-  // Strict 1 Canvas limit for Free tier
+  const userProjects = projects;
   const canCreateNewCanvas = isUserPro || userProjects.length < 1;
 
-  const handleQuickUrlSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!quickUrl.trim()) return;
+  useEffect(() => {
+    if (!currentUser || currentUser.id === "guest-user") return;
+    const controller = new AbortController();
+    const load = () => {
+      void loadProjects(controller.signal).then(() => setLoadError("")).catch(error => {
+        if (!controller.signal.aborted) setLoadError(reviewErrorMessage(error));
+      });
+    };
+    load();
+    window.addEventListener("focus", load);
+    return () => {
+      controller.abort();
+      window.removeEventListener("focus", load);
+    };
+  }, [currentUser, loadProjects, reloadProjects]);
 
+  function canStartReview() {
+    if (!currentUser || currentUser.id === "guest-user") {
+      localStorage.removeItem("cyath_guest_session");
+      router.push("/login");
+      return false;
+    }
     if (!canCreateNewCanvas) {
       setShowUpgradeModal(true);
-      return;
+      return false;
     }
+    return !isCreating;
+  }
 
-    let formattedUrl = quickUrl.trim();
-    if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
-      formattedUrl = "https://" + formattedUrl;
-    }
-
-    let parsedTitle = "Review";
-    try {
-      const hostname = new URL(formattedUrl).hostname.replace(/^www\./, "");
-      parsedTitle = hostname.charAt(0).toUpperCase() + hostname.slice(1);
-    } catch {
-      parsedTitle = "Review";
-    }
-
+  async function openNewReview(title: string, target: string, type: Project["assetType"]) {
     const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "Studio";
-    const shareId = createProject(parsedTitle, formattedUrl, agency, "url", currentUser?.id, currentUser?.email);
+    const id = await createProject(title, target, agency, type);
     setQuickUrl("");
-    const params = new URLSearchParams();
-    params.set("u", formattedUrl);
-    params.set("t", parsedTitle);
-    params.set("a", agency);
-    router.push(`/r/${shareId}?${params.toString()}`);
+    router.push("/r/" + id);
+  }
+
+  const handleQuickUrlSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!quickUrl.trim() || !canStartReview()) return;
+    setActionError("");
+    setIsCreating(true);
+    try {
+      const input = quickUrl.trim();
+      const url = new URL(/^[a-z][a-z\d+.-]*:/i.test(input) ? input : "https://" + input);
+      if (url.protocol !== "https:" || url.username || url.password || url.port) {
+        throw new Error("Enter an HTTPS website URL without embedded credentials or a custom port.");
+      }
+      await openNewReview(url.hostname.replace(/^www\./, ""), url.href, "url");
+    } catch (error) {
+      setActionError(error instanceof TypeError ? "Enter a valid website URL." : reviewErrorMessage(error));
+    } finally {
+      setIsCreating(false);
+    }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!canCreateNewCanvas) {
-      setShowUpgradeModal(true);
-      e.target.value = "";
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !canStartReview()) return;
+    setActionError("");
+    if (file.size > 2 * 1024 * 1024) {
+      setActionError("Choose an image or PDF of 2 MB or less.");
       return;
     }
-
-    const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
-    const assetType = isPdf ? "pdf" : "image";
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      const title = file.name.replace(/\.[^/.]+$/, "");
-      const agency = agencyInput.trim() || (currentUser?.user_metadata?.agency_name as string) || "Studio";
-      const shareId = createProject(title, dataUrl, agency, assetType, currentUser?.id, currentUser?.email);
-      router.push(`/r/${shareId}`);
-    };
-
-    reader.readAsDataURL(file);
-    e.target.value = "";
+    setIsCreating(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read the file. Try again."));
+        reader.readAsDataURL(file);
+      });
+      await openNewReview(file.name.replace(/\.[^/.]+$/, "").slice(0, 180), dataUrl,
+        file.type === "application/pdf" ? "pdf" : "image");
+    } catch (error) {
+      setActionError(reviewErrorMessage(error));
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleOnboardingSubmit = async (e: React.FormEvent) => {
@@ -270,35 +273,17 @@ export default function DashboardPage() {
     });
   }, [userProjects, searchQuery, statusFilter]);
 
-  const handleCopyLink = (shareId: string) => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://cyath-space.vercel.app";
-    const proj = userProjects.find((p) => p.shareId === shareId);
-    let fullUrl = `${origin}/r/${shareId}`;
-    if (proj?.targetUrl?.startsWith("http")) {
-      const params = new URLSearchParams();
-      params.set("u", proj.targetUrl);
-      params.set("t", proj.title);
-      params.set("a", proj.agencyName || agencyInput || "Studio");
-      fullUrl += `?${params.toString()}`;
-    }
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(fullUrl);
+  const handleCopyLink = async (shareId: string) => {
+    try {
+      await navigator.clipboard.writeText(new URL("/r/" + shareId, window.location.origin).href);
       setCopiedId(shareId);
       setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      setActionError("Could not copy the review link. Open the review and copy its address.");
     }
   };
 
-  const getCanvasHref = (p: Project) => {
-    let href = `/r/${p.shareId}`;
-    if (p.targetUrl?.startsWith("http")) {
-      const params = new URLSearchParams();
-      params.set("u", p.targetUrl);
-      params.set("t", p.title);
-      params.set("a", p.agencyName || agencyInput || "Studio");
-      href += `?${params.toString()}`;
-    }
-    return href;
-  };
+  const getCanvasHref = (project: Project) => "/r/" + project.shareId;
 
   // Total active notes across all user projects
   const totalNotesCount = useMemo(() => {
@@ -337,17 +322,14 @@ export default function DashboardPage() {
       <AppSidebar
         activeItem="projects"
         onNewReviewClick={() => {
-          if (!canCreateNewCanvas) {
-            setShowUpgradeModal(true);
-          } else {
-            fileInputRef.current?.click();
-          }
+          if (canStartReview()) document.getElementById("tour-create-card")
+            ?.querySelector<HTMLInputElement>("input[type=url], input[type=text]")?.focus();
         }}
       />
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,application/pdf"
+        accept="image/png,image/jpeg,image/gif,image/webp,image/avif,application/pdf"
         className="hidden"
         onChange={handleFileUpload}
       />
@@ -400,7 +382,7 @@ export default function DashboardPage() {
                     : "border-white/15 bg-white/[0.06] text-zinc-100"
                 }`}
               >
-                {isUserPro ? "Pro Plan" : "Free Plan (1/1)"}
+                {isUserPro ? "Pro Plan" : `Free Plan (${userProjects.length}/1)`}
               </span>
 
               {!isUserPro && (
@@ -468,7 +450,7 @@ export default function DashboardPage() {
                       <span>Upload Image or PDF</span>
                       <input
                         type="file"
-                        accept="image/*,application/pdf"
+                        accept="image/png,image/jpeg,image/gif,image/webp,image/avif,application/pdf"
                         className="hidden"
                         onChange={handleFileUpload}
                       />
@@ -482,7 +464,7 @@ export default function DashboardPage() {
 
                   <button
                     type="submit"
-                    disabled={!quickUrl.trim()}
+                    disabled={!quickUrl.trim() || isCreating}
                     className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all duration-150 active:scale-[0.96] flex items-center gap-2 cursor-pointer ${
                       quickUrl.trim()
                         ? isDay
@@ -493,13 +475,17 @@ export default function DashboardPage() {
                         : "bg-white/5 text-zinc-600 cursor-not-allowed"
                     }`}
                   >
-                    <span>Start Review</span>
+                    <span>{isCreating ? "Creating review…" : "Start Review"}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </form>
             </div>
           </StarBorder>
+          {(loadError || actionError) && <div role="alert" className="space-y-2 text-sm text-red-500">
+            <p>{actionError || loadError}</p>
+            {loadError && <button type="button" className="underline" onClick={() => setReloadProjects(value => value + 1)}>Reload reviews</button>}
+          </div>}
 
           {/* Search & Filter Strip */}
           <div
@@ -694,15 +680,8 @@ export default function DashboardPage() {
                           />
                         </div>
                       ) : (
-                        /* Web Preview Iframe Frame */
-                        <div className="relative w-full h-full overflow-hidden select-none pointer-events-none bg-black">
-                          <iframe
-                            src={`/api/proxy?url=${encodeURIComponent(project.targetUrl)}&mute=1`}
-                            title={project.title}
-                            tabIndex={-1}
-                            className="w-[355%] h-[355%] origin-top-left scale-[0.2817] border-none pointer-events-none opacity-100 transition-opacity duration-300"
-                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                          />
+                        <div className={`grid h-full w-full place-items-center ${isDay ? "bg-stone-100 text-stone-700" : "bg-zinc-950 text-zinc-300"}`}>
+                          <Globe aria-hidden="true" className="h-7 w-7" />
                         </div>
                       )}
 
@@ -764,10 +743,13 @@ export default function DashboardPage() {
                             )}
                           </button>
 
-                          <HoldButton
-                            onHoldComplete={() => deleteProject(project.id)}
-                            fillColor="#ff153e"
-                            title="Hold to delete project"
+                          <DeleteButton
+                            onDelete={() => {
+                              setActionError("");
+                              void deleteProject(project.shareId).catch(error => setActionError(reviewErrorMessage(error)));
+                            }}
+                            confirmation="Delete this review and revoke its share link?"
+                            label="Delete review"
                             className={`p-1.5 rounded-lg border border-transparent transition-all cursor-pointer active:scale-[0.96] ${
                               isDay
                                 ? "text-stone-500 hover:text-stone-900 hover:border-stone-300 hover:bg-stone-100"
@@ -775,7 +757,7 @@ export default function DashboardPage() {
                             }`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                          </HoldButton>
+                          </DeleteButton>
                         </div>
                       </div>
                     </div>
@@ -856,7 +838,7 @@ export default function DashboardPage() {
                           Add 3rd Canvas
                         </div>
                         <p className={`text-[10px] font-sans max-w-[180px] leading-relaxed ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                          Autonomous MCP agent sync, client milestone sign-offs & unlimited storage.
+                          MCP access and client approval receipts for more projects.
                         </p>
                       </div>
                     </div>
@@ -908,7 +890,7 @@ export default function DashboardPage() {
       {/* Project Punchlist Drawer */}
       {selectedPunchlistProject && (
         <ProjectPunchlistDrawer
-          project={selectedPunchlistProject}
+          project={projects.find(project => project.shareId === selectedPunchlistProject.shareId) ?? null}
           theme={theme}
           onClose={() => setSelectedPunchlistProject(null)}
         />

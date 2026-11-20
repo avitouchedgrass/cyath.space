@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { ExternalLink, ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
-import { DeviceMode, InteractionMode, Pin, Project, DomAnchor } from "@/types";
+import type { ClientTelemetry, DeviceMode, InteractionMode, Project, DomAnchor } from "@/types";
 import { PinMarker } from "./PinMarker";
 import { PinPopover } from "./PinPopover";
 import { calculateNormalizedCoords } from "@/lib/coordinates";
 import { formatPageLabel } from "@/lib/colors";
 import { useLiveCursors } from "@/hooks/useLiveCursors";
+import { captureClientTelemetry } from "@/lib/telemetry";
+import { configuredPreviewOrigin, previewFrameSource } from "@/lib/preview-origin";
 
 interface ReviewStageProps {
   project: Project;
@@ -18,6 +20,7 @@ interface ReviewStageProps {
   currentPageUrl?: string;
   isAudioMuted?: boolean;
   theme?: "day" | "night";
+  canComment: boolean;
   onPageNavigated?: (url: string) => void;
   onSelectPin: (pinId: string | null) => void;
   onAddPin: (
@@ -31,10 +34,12 @@ interface ReviewStageProps {
     annotationType?: "point" | "box",
     domAnchor?: DomAnchor,
     audioUrl?: string,
-    audioDurationSeconds?: number
-  ) => void;
-  onAddComment: (pinId: string, content: string, authorName: string) => void;
-  onToggleResolve: (pinId: string) => void;
+    audioDurationSeconds?: number,
+    telemetry?: ClientTelemetry,
+    requestId?: string,
+  ) => Promise<void>;
+  onAddComment?: (pinId: string, content: string, authorName: string, requestId?: string) => Promise<void>;
+  onToggleResolve?: (pinId: string) => void;
   onDeletePin?: (pinId: string) => void;
 }
 
@@ -47,6 +52,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   currentPageUrl: externalPageUrl,
   isAudioMuted = true,
   theme = "night",
+  canComment,
   onPageNavigated,
   onSelectPin,
   onAddPin,
@@ -57,6 +63,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const addNoteRef = useRef<HTMLButtonElement>(null);
+  const previewOrigin = configuredPreviewOrigin();
+  const previewSource = previewFrameSource(project.targetUrl);
+  const post = useCallback((message: object) => {
+    iframeRef.current?.contentWindow?.postMessage(message, previewOrigin ?? "*");
+  }, [previewOrigin]);
 
   const [pendingPinCoords, setPendingPinCoords] = useState<{
     xPercent: number;
@@ -65,6 +77,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     heightPercent?: number;
     annotationType?: "point" | "box";
     domAnchor?: DomAnchor;
+    telemetry?: ClientTelemetry;
   } | null>(null);
   const [drawingBox, setDrawingBox] = useState<{
     xPercent: number;
@@ -74,10 +87,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   } | null>(null);
   const dragStartRef = useRef<{ clientX: number; clientY: number } | null>(null);
   const [frameHeight, setFrameHeight] = useState<number>(1000);
+  const [visibleWidth, setVisibleWidth] = useState(0);
+  const [previewReady, setPreviewReady] = useState(false);
   const [localPageUrl, setLocalPageUrl] = useState<string>(project.targetUrl || "");
   const currentPageUrl = externalPageUrl || localPageUrl;
 
-  const allPins = Array.isArray(project?.pins) ? project.pins.filter(Boolean) : [];
+  const allPins = project.pins;
   const { cursors, sendCursorPosition } = useLiveCursors(project.shareId, clientAuthorName);
 
   // Auto-scroll viewport to pin when activePinId changes
@@ -95,39 +110,20 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
     scrollViewportRef.current.scrollTo({
       top: targetScrollY,
-      behavior: "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     });
   }, [activePinId, allPins]);
 
-  // Synchronize audio mute state with child proxy iframe
-  useEffect(() => {
-    if (iframeRef.current?.contentWindow) {
-      try {
-        iframeRef.current.contentWindow.postMessage(
-          { type: "CYATH_SET_AUDIO_MUTED", muted: isAudioMuted },
-          "*"
-        );
-      } catch { }
-    }
-  }, [isAudioMuted]);
-
-  // Synchronize interaction mode with child proxy iframe
-  useEffect(() => {
-    if (iframeRef.current?.contentWindow) {
-      try {
-        iframeRef.current.contentWindow.postMessage(
-          { type: "CYATH_SET_MODE", mode: interactionMode },
-          "*"
-        );
-      } catch { }
-    }
-  }, [interactionMode]);
+  function syncMode() {
+    post({ type: "CYATH_SET_AUDIO_MUTED", muted: isAudioMuted });
+    post({ type: "CYATH_SET_MODE", mode: interactionMode });
+  }
 
   // Navigation handlers for proxy iframe staging site
   const handleNavBack = () => {
     if (iframeRef.current?.contentWindow) {
       try {
-        iframeRef.current.contentWindow.postMessage({ type: "CYATH_NAV_BACK" }, "*");
+        post({ type: "CYATH_NAV_BACK" });
       } catch { }
     }
   };
@@ -135,7 +131,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const handleNavForward = () => {
     if (iframeRef.current?.contentWindow) {
       try {
-        iframeRef.current.contentWindow.postMessage({ type: "CYATH_NAV_FORWARD" }, "*");
+        post({ type: "CYATH_NAV_FORWARD" });
       } catch { }
     }
   };
@@ -143,7 +139,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const handleNavReload = () => {
     if (iframeRef.current?.contentWindow) {
       try {
-        iframeRef.current.contentWindow.postMessage({ type: "CYATH_NAV_RELOAD" }, "*");
+        post({ type: "CYATH_NAV_RELOAD" });
       } catch { }
     }
   };
@@ -151,14 +147,23 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   // Listen to height, wheel, element pin, and navigation messages from proxy iframe bridge
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      if (event.source !== iframeRef.current?.contentWindow || event.origin !== (previewOrigin ?? "null")) return;
+      if (event.data?.type === "CYATH_STAGE_READY") {
+        setPreviewReady(true);
+        post({ type: "CYATH_SET_AUDIO_MUTED", muted: isAudioMuted });
+        post({ type: "CYATH_SET_MODE", mode: interactionMode });
+      }
       if (event.data?.type === "CYATH_STAGE_RESIZE" && typeof event.data.height === "number") {
         const clamped = Math.min(16000, Math.max(800, Math.round(event.data.height)));
         setFrameHeight(clamped);
       }
       if (event.data?.type === "CYATH_PAGE_NAVIGATED" && typeof event.data.url === "string") {
-        setLocalPageUrl(event.data.url);
-        setFrameHeight(900);
-        onPageNavigated?.(event.data.url);
+        try {
+          const url = new URL(event.data.url);
+          if (url.protocol !== "https:" || url.username || url.password || url.href.length > 4096) return;
+          setLocalPageUrl(url.href);
+          onPageNavigated?.(url.href);
+        } catch { return; }
       }
       if (event.data?.type === "CYATH_PIN_SELECTED" && typeof event.data.pinId === "string") {
         setPendingPinCoords(null);
@@ -167,7 +172,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       if (event.data?.type === "CYATH_CURSOR_MOVE" && typeof event.data.xPercent === "number") {
         sendCursorPosition(event.data.xPercent, event.data.yPercent);
       }
-      if (event.data?.type === "CYATH_ELEMENT_PIN_DROPPED") {
+      if (event.data?.type === "CYATH_ELEMENT_PIN_DROPPED" && canComment && interactionMode === "comment" &&
+          [event.data.xPercent, event.data.yPercent].every(value => Number.isFinite(value) && value >= 0 && value <= 100)) {
         setPendingPinCoords({
           xPercent: event.data.xPercent,
           yPercent: event.data.yPercent,
@@ -175,6 +181,12 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           heightPercent: event.data.heightPercent,
           annotationType: event.data.annotationType || "point",
           domAnchor: event.data.domAnchor,
+          telemetry: captureClientTelemetry(
+            deviceMode,
+            iframeRef.current?.clientWidth ?? 0,
+            iframeRef.current?.clientHeight ?? 0,
+            Number.isFinite(event.data.scrollDepth) ? Math.min(100, Math.max(0, event.data.scrollDepth)) : 0,
+          ),
         });
         onSelectPin(null);
       }
@@ -182,7 +194,20 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [onPageNavigated, onSelectPin]);
+  }, [canComment, deviceMode, interactionMode, isAudioMuted, onPageNavigated, onSelectPin, post, previewOrigin, sendCursorPosition]);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => setVisibleWidth(Math.round(entry.contentRect.width)));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    post({ type: "CYATH_SET_AUDIO_MUTED", muted: isAudioMuted });
+    post({ type: "CYATH_SET_MODE", mode: interactionMode });
+  }, [interactionMode, isAudioMuted, post]);
 
   // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
@@ -190,9 +215,9 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       case "full":
         return "w-full max-w-none";
       case "mobile":
-        return "w-[375px]";
+        return "w-full max-w-[375px]";
       case "tablet":
-        return "w-[768px]";
+        return "w-full max-w-[768px]";
       case "desktop":
       default:
         return "w-full max-w-[1440px]";
@@ -254,9 +279,15 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     dragStartRef.current = null;
   };
 
-  const handleSaveNewPin = (comment: string, authorName: string, audioUrl?: string, audioDurationSeconds?: number) => {
+  const handleSaveNewPin = async (comment: string, authorName: string, audioUrl?: string, audioDurationSeconds?: number, requestId?: string) => {
     if (!pendingPinCoords) return;
-    onAddPin(
+    const scroll = scrollViewportRef.current;
+    const total = scroll ? scroll.scrollHeight - scroll.clientHeight : 0;
+    const telemetry = pendingPinCoords.telemetry ?? captureClientTelemetry(deviceMode,
+      iframeRef.current?.clientWidth ?? containerRef.current?.clientWidth ?? 0,
+      iframeRef.current?.clientHeight ?? scroll?.clientHeight ?? 0,
+      total > 0 && scroll ? Math.min(100, Math.max(0, Math.round(scroll.scrollTop / total * 100))) : 0);
+    await onAddPin(
       pendingPinCoords.xPercent,
       pendingPinCoords.yPercent,
       comment,
@@ -267,14 +298,16 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       pendingPinCoords.annotationType,
       pendingPinCoords.domAnchor,
       audioUrl,
-      audioDurationSeconds
+      audioDurationSeconds,
+      telemetry,
+      requestId,
     );
     setPendingPinCoords(null);
   };
 
   // Strictly filter pins for the active device viewport AND current subpage
   const currentStagePageLabel = formatPageLabel(currentPageUrl);
-  const activeDevicePins = allPins.filter((p) => {
+  const activeDevicePins = useMemo(() => allPins.filter((p) => {
     if (!p) return false;
     const deviceMatch =
       p.deviceMode === deviceMode ||
@@ -284,24 +317,24 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
     const pinPageLabel = formatPageLabel(p.pageUrl);
     return pinPageLabel === currentStagePageLabel;
-  });
+  }), [allPins, currentStagePageLabel, deviceMode]);
   const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
 
-  // Synchronize active pins and activePinId with child proxy iframe
-  useEffect(() => {
-    if (iframeRef.current?.contentWindow) {
-      try {
-        iframeRef.current.contentWindow.postMessage(
-          {
-            type: "CYATH_SYNC_PINS",
-            pins: activeDevicePins,
-            activePinId: activePinId,
-          },
-          "*"
-        );
-      } catch { }
-    }
-  }, [activeDevicePins, activePinId]);
+  const syncPins = useCallback(() => {
+    // The reviewed site needs pin geometry, never reviewer names, notes, or recordings.
+    post({
+      type: "CYATH_SYNC_PINS",
+      pins: activeDevicePins.map(({ id, number, xPercent, yPercent, widthPercent, heightPercent, annotationType, status, domAnchor }) => ({
+        id, number, xPercent, yPercent, widthPercent, heightPercent, annotationType, status,
+        domAnchor: domAnchor && {
+          selector: domAnchor.selector, elementOffsetXPercent: domAnchor.elementOffsetXPercent,
+          elementOffsetYPercent: domAnchor.elementOffsetYPercent,
+        },
+      })),
+      activePinId,
+    });
+  }, [activeDevicePins, activePinId, post]);
+  useEffect(() => { syncPins(); }, [previewReady, syncPins]);
 
   // Estimate PDF height so multi-page documents render continuously in stage scroll
   const pdfPageCount = React.useMemo(() => {
@@ -337,37 +370,34 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   return (
     <div
-      className={`flex-1 flex justify-center items-start selection:bg-stone-300 selection:text-black transition-all duration-300 ${
+      className={`flex min-h-0 min-w-0 flex-1 justify-center items-start selection:bg-stone-300 selection:text-black ${
         isDay ? "bg-[#ECE8DE]" : "bg-[#000000]"
-      } ${isFullMode ? "p-0 h-screen w-screen overflow-hidden" : "p-3 sm:p-6 h-[calc(100vh-3.5rem)] overflow-hidden"}`}
+      } ${isFullMode ? "p-0" : "p-2 sm:p-4"} overflow-hidden`}
     >
       <div
-        className={`${getFrameWidthClass()} transition-all duration-300 flex flex-col ${
+        className={`${getFrameWidthClass()} flex h-full min-h-0 min-w-0 flex-col ${
           isFullMode
-            ? "h-screen w-screen rounded-none border-0 shadow-none overflow-hidden"
+            ? "rounded-none border-0 shadow-none overflow-hidden"
             : isDay
               ? "rounded-2xl border border-stone-300/80 shadow-[0_15px_45px_rgba(0,0,0,0.08)] bg-white overflow-hidden"
               : "rounded-2xl border border-white/[0.08] shadow-2xl bg-[#0a0a0a] overflow-hidden"
         } relative`}
       >
-        {/* Architectural Browser Chrome (Smooth animated collapse when entering Full Mode) */}
         <div
-          className={`transition-all duration-300 overflow-hidden ${
-            isFullMode ? "max-h-0 opacity-0 pointer-events-none" : "max-h-10 opacity-100"
-          }`}
+          className="shrink-0"
         >
           <div
-            className={`h-10 border-b px-4 flex items-center justify-between select-none shrink-0 ${isDay ? "bg-[#F5F2EA] border-stone-200" : "bg-[#050505] border-white/[0.08]"
+            className={`flex flex-wrap items-center justify-between gap-1.5 border-b p-2 sm:px-4 ${isDay ? "bg-[#F5F2EA] border-stone-200" : "bg-[#050505] border-white/[0.08]"
               }`}
           >
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
+              <div aria-hidden="true" className="hidden items-center gap-1.5 lg:flex">
                 <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-400" : "bg-white/20"}`} />
                 <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
                 <div className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
               </div>
 
-              {isWebUrl && (
+              {isWebUrl && previewSource && (
                 <div className={`flex items-center gap-0.5 ml-2 pl-2 border-l ${isDay ? "border-stone-300" : "border-white/10"}`}>
                   <button
                     onClick={handleNavBack}
@@ -400,9 +430,9 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               )}
             </div>
 
-            <div className="flex-1 max-w-sm mx-4 flex items-center justify-center gap-1.5">
+            <div className="flex min-w-0 flex-1 items-center justify-center gap-1.5">
               <div
-                className={`border rounded-md px-3 py-1 text-center font-mono text-[11px] truncate flex-1 ${isDay
+                className={`hidden border rounded-md px-3 py-1 text-center font-mono text-xs truncate flex-1 sm:block ${isDay
                     ? "bg-white border-stone-200 text-stone-700 shadow-xs"
                     : "bg-[#000000] border-white/[0.08] text-zinc-400"
                   }`}
@@ -425,38 +455,24 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               )}
             </div>
 
-            <div
-              className={`text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 ${isDay ? "text-stone-500" : "text-zinc-500"
-                }`}
-            >
-              <span>{deviceMode}</span>
-              <span className={isDay ? "text-stone-300" : "text-zinc-700"}>·</span>
-              <span>{activeDevicePins.length} pins</span>
-            </div>
+            <span className={`shrink-0 text-xs ${isDay ? "text-stone-700" : "text-zinc-300"}`}>{visibleWidth ? `${visibleWidth} px` : ""}</span>
+            {canComment && <button ref={addNoteRef} type="button"
+              className={`rounded-md px-2.5 py-2 text-sm font-medium ${isDay ? "bg-stone-900 text-white" : "bg-white text-black"}`}
+              onClick={() => {
+                const scroll = scrollViewportRef.current;
+                const height = containerRef.current?.clientHeight || 1;
+                const y = scroll ? (scroll.scrollTop + scroll.clientHeight / 3) / height * 100 : 20;
+                onSelectPin(null);
+                setPendingPinCoords({ xPercent: 50, yPercent: Math.min(95, y), annotationType: "point" });
+              }}>Add note</button>}
           </div>
         </div>
 
         {/* Viewport Frame Container with Scroll Anchoring & Animated Height Scaling */}
         <div
           ref={scrollViewportRef}
-          onScroll={(e) => {
-            if (iframeRef.current && iframeRef.current.contentWindow) {
-              try {
-                iframeRef.current.contentWindow.postMessage(
-                  {
-                    type: "CYATH_PARENT_SCROLL",
-                    scrollTop: e.currentTarget.scrollTop,
-                  },
-                  "*"
-                );
-              } catch {}
-            }
-          }}
-          className={`w-full bg-white relative transition-all duration-300 ease-in-out ${
-            isFullMode
-              ? "h-screen w-screen overflow-hidden"
-              : "overflow-y-auto overflow-x-hidden max-h-[calc(100vh-9.5rem)] rounded-b-2xl no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-          } ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"}`}
+          onScroll={e => post({ type: "CYATH_PARENT_SCROLL", scrollTop: e.currentTarget.scrollTop })}
+          className={`relative min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden bg-white ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"}`}
         >
           {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
           <div
@@ -486,24 +502,32 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                   minHeight: `${pdfHeight}px`,
                 }}
               />
-            ) : (
+            ) : previewSource ? (
               <iframe
                 ref={iframeRef}
-                src={
-                  project.targetUrl?.startsWith("http://") || project.targetUrl?.startsWith("https://")
-                    ? `/api/proxy?url=${encodeURIComponent(project.targetUrl)}${isAudioMuted ? "&mute=1" : ""}`
-                    : project.targetUrl
-                }
+                src={previewSource}
                 title={project.title}
+                referrerPolicy="no-referrer"
+                onLoad={() => {
+                  setPreviewReady(false);
+                  syncMode();
+                  syncPins();
+                  post({ type: "CYATH_PING" });
+                }}
                 scrolling="no"
                 className="w-full border-none select-none block max-w-full"
                 style={{
                   height: isFullMode ? "100vh" : `${frameHeight}px`,
                   minHeight: isFullMode ? "100vh" : "800px",
                 }}
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-presentation"
+                sandbox={previewOrigin ? "allow-scripts allow-same-origin" : "allow-scripts"}
                 allow="camera 'none'; microphone 'none'"
               />
+            ) : (
+              <div className="space-y-2 bg-[#0a0a0c] p-5 text-white">
+                <h2 className="font-semibold">Live preview unavailable</h2>
+                <p className="text-sm">Open the original site using the link above. You can still add a note here.</p>
+              </div>
             )}
 
             {/* Annotation Overlay Layer (Active on images & PDFs, web URLs use native DOM inspector) */}
@@ -613,21 +637,27 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 xPercent={pendingPinCoords.xPercent}
                 yPercent={pendingPinCoords.yPercent}
                 isNew={true}
+                transcriptionReview={project.access?.canManage ? project.shareId : undefined}
                 theme={theme}
                 authorName={clientAuthorName}
                 deviceMode={deviceMode}
                 onSaveNewPin={handleSaveNewPin}
-                onClose={() => setPendingPinCoords(null)}
+                onClose={() => {
+                  setPendingPinCoords(null);
+                  addNoteRef.current?.focus();
+                }}
               />
             )}
 
             {/* Active Existing Pin Thread Popover */}
             {activePin && (
               <PinPopover
+                key={activePin.id}
                 pin={activePin}
                 xPercent={activePin.xPercent}
                 yPercent={activePin.yPercent}
                 isNew={false}
+                canExport={project.access?.canManage}
                 theme={theme}
                 authorName={clientAuthorName}
                 deviceMode={deviceMode}

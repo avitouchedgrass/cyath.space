@@ -15,7 +15,7 @@ interface FeedbackSidebarProps {
   currentPageUrl?: string;
   theme?: "day" | "night";
   onSelectPin: (pinId: string) => void;
-  onToggleResolve: (pinId: string) => void;
+  onToggleResolve?: (pinId: string) => void;
   onDeviceChange?: (mode: DeviceMode) => void;
 }
 
@@ -97,7 +97,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
 
   return (
     <aside
-      className={`w-80 lg:w-96 border-l flex flex-col h-[calc(100vh-3.5rem)] select-none transition-colors duration-200 ${isDay ? "bg-[#FBF9F4] border-stone-200 text-stone-900" : "bg-[#000000] border-white/[0.08] text-white"
+      className={`h-full w-full min-h-0 border-l flex flex-col ${isDay ? "bg-[#FBF9F4] border-stone-200 text-stone-900" : "bg-[#000000] border-white/[0.08] text-white"
         }`}
     >
       {/* Top Sidebar Header */}
@@ -106,7 +106,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
           <MessageSquare className={`w-4 h-4 ${isDay ? "text-stone-600" : "text-zinc-400"}`} />
           <h2 className={`font-sans font-semibold text-sm ${isDay ? "text-stone-900" : "text-zinc-100"}`}>Feedback Thread</h2>
         </div>
-        <div className="flex items-center gap-1.5">
+        {project.access?.canManage && <div className="flex items-center gap-1.5">
           <button
             onClick={() => setShowDigestModal(true)}
             className={`text-xs px-2 py-1 rounded-md border flex items-center gap-1.5 transition-colors font-sans cursor-pointer ${
@@ -180,7 +180,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </div>}
     </div>
 
       {/* Scope & Sort Controls */}
@@ -222,6 +222,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         <div className="flex items-center gap-1">
           <ArrowUpDown className="w-3 h-3 opacity-60" />
           <select
+            aria-label="Sort feedback"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as SortOrder)}
             className={`border rounded px-1.5 py-0.5 text-[10px] focus:outline-none cursor-pointer ${isDay ? "bg-white border-stone-200 text-stone-800" : "bg-white/[0.05] border-white/10 text-zinc-300"
@@ -325,11 +326,11 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       {/* Pins List */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar">
         {displayedPins.length === 0 ? (
-          <div className={`h-48 flex flex-col items-center justify-center text-center p-4 ${isDay ? "text-stone-400" : "text-zinc-600"}`}>
+          <div className={`h-48 flex flex-col items-center justify-center text-center p-4 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
             <CheckCircle2 className="w-8 h-8 mb-2 stroke-1 opacity-60" />
             <p className="text-xs font-mono">
               {filter === "open"
-                ? `Zero open notes on ${deviceScope === "current" ? activeDeviceMode : "any viewport"}.`
+                ? (project.pins.length ? "There are no open notes in this view." : "Select Add note or click the preview in Comment mode to leave feedback.")
                 : "No pins in this view."}
             </p>
           </div>
@@ -347,12 +348,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
             return (
               <div
                 key={pin.id}
-                onClick={() => {
-                  if (onDeviceChange && pin.deviceMode && pin.deviceMode !== activeDeviceMode) {
-                    onDeviceChange(pin.deviceMode);
-                  }
-                  onSelectPin(pin.id);
-                }}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer text-left ${isActive
                     ? isDay
                       ? "bg-white border-stone-800 shadow-[0_4px_16px_rgba(0,0,0,0.08)] ring-1 ring-stone-800"
@@ -367,7 +362,10 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                   }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2">
+                  <button type="button" className="flex min-w-0 items-center gap-2 text-left focus-visible:outline-2" onClick={() => {
+                    if (pin.deviceMode !== activeDeviceMode) onDeviceChange?.(pin.deviceMode);
+                    onSelectPin(pin.id);
+                  }} aria-label={`Open pin ${pin.number}: ${firstComment}`}>
                     <span
                       className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[10px] ${isActive
                           ? isDay
@@ -385,9 +383,9 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                       {pin.number}
                     </span>
                     <span className={`font-medium text-xs ${isDay ? "text-stone-900" : "text-zinc-200"}`}>{author}</span>
-                  </div>
+                  </button>
 
-                  <button
+                  {onToggleResolve && <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onToggleResolve(pin.id);
@@ -403,7 +401,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                     title={isResolved ? "Mark open" : "Mark resolved"}
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  </button>
+                  </button>}
                 </div>
 
                 {/* Subpage Identification Tag */}

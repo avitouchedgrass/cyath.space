@@ -16,19 +16,6 @@ export default function ReviewError({
     console.error("Cyath review stage error caught by error boundary:", error);
   }, [error]);
 
-  const handleHardReset = () => {
-    try {
-      if (typeof window !== "undefined") {
-        // Sanitize or reset local staging store to eliminate corrupted state
-        localStorage.removeItem("cyath_staging_store");
-      }
-    } catch {}
-    reset();
-    if (typeof window !== "undefined") {
-      window.location.reload();
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center p-6 text-center text-white selection:bg-white selection:text-black font-sans">
       <div className="w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 shadow-2xl relative">
@@ -40,16 +27,16 @@ export default function ReviewError({
           Staging Session Interrupted
         </h1>
         <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
-          The canvas encountered an unexpected rendering condition. Clear the local cache to re-sync this staging session.
+          Cyath couldn't display this review. Try opening it again.
         </p>
 
         <div className="space-y-3">
           <button
-            onClick={handleHardReset}
+            onClick={reset}
             className="w-full py-2.5 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset Cache & Reload Session</span>
+            <span>Try again</span>
           </button>
 
           <Link

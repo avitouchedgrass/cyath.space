@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useReviewStore } from "@/store/useReviewStore";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { reviewErrorMessage, reviewRequest } from "@/lib/reviews/client";
 import { TesseractMark } from "@/components/common/Logo";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { useTheme, setThemeGlobally } from "@/lib/theme";
@@ -33,7 +35,7 @@ function SettingsContent() {
   const initialTab = (searchParams.get("tab") as SettingsTab) || "profile";
 
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [agencyName, setAgencyName] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [isSaved, setIsSaved] = useState(false);
@@ -41,7 +43,7 @@ function SettingsContent() {
   const [copiedConfig, setCopiedConfig] = useState<string | null>(null);
   const { theme, isDay, toggle: toggleTheme } = useTheme();
 
-  const { isPro, projects } = useReviewStore();
+  const { isPro, projects, clearAccount } = useReviewStore();
 
   useEffect(() => {
     const supabase = createClient();
@@ -84,47 +86,48 @@ function SettingsContent() {
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    clearAccount();
     localStorage.removeItem("cyath_auth_active");
     localStorage.removeItem("cyath_guest_session");
     router.push("/login");
   };
 
-  const mcpKey = isPro
-    ? "cyath_live_mcp_k994f0e21a81bc"
-    : "cyath_mcp_preview_license_key";
+  const [mcpKey, setMcpKey] = useState("");
+  const [keyMessage, setKeyMessage] = useState("");
+  const [settingsError, setSettingsError] = useState("");
+  const [keyBusy, setKeyBusy] = useState(false);
 
-  const cursorJson = JSON.stringify(
-    {
-      mcpServers: {
-        cyath: {
-          command: "npx",
-          args: ["-y", "cyath-mcp@latest"],
-          env: {
-            CYATH_API_KEY: mcpKey,
-            CYATH_STAGING_ENDPOINT: "https://cyath-space.vercel.app/api/mcp",
-          },
-        },
+  async function updateKey(revoke: boolean) {
+    setKeyBusy(true);
+    setSettingsError("");
+    setKeyMessage("");
+    try {
+      if (revoke) {
+        await reviewRequest<void>("/api/mcp/key", { method: "DELETE" });
+        setMcpKey("");
+        setKeyMessage("API key revoked.");
+      } else {
+        const { key } = await reviewRequest<{ key: string }>("/api/mcp/key", { method: "POST" });
+        setMcpKey(key);
+        setKeyMessage("New API key generated. Copy it before leaving this page.");
+      }
+    } catch (error) {
+      setSettingsError(reviewErrorMessage(error));
+    } finally {
+      setKeyBusy(false);
+    }
+  }
+
+  const cursorJson = JSON.stringify({
+    mcpServers: {
+      cyath: {
+        command: "node",
+        args: ["/absolute/path/to/cyath/mcp/server.js"],
+        env: { CYATH_API_KEY: mcpKey || "YOUR_CYATH_API_KEY" },
       },
     },
-    null,
-    2
-  );
-
-  const claudeJson = JSON.stringify(
-    {
-      mcpServers: {
-        "cyath-reviews": {
-          command: "npx",
-          args: ["-y", "cyath-mcp@latest"],
-          env: {
-            CYATH_API_KEY: mcpKey,
-          },
-        },
-      },
-    },
-    null,
-    2
-  );
+  }, null, 2);
+  const claudeJson = cursorJson;
 
   const copyToClipboard = (text: string, id: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -357,15 +360,23 @@ function SettingsContent() {
                       </span>
                     ) : (
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-500/20 text-zinc-400 border border-white/10">
-                        Preview Key
+                        Pro required
                       </span>
                     )}
                   </div>
                   <p className={`text-xs ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
-                    Use these keys to connect Cursor, Claude Code, or Antigravity to your review canvases.
+                    Generate a key for the Cyath MCP server. A new key replaces the previous one.
                   </p>
                 </div>
 
+                {settingsError && <p role="alert" className="mb-3 text-sm text-red-500">{settingsError}</p>}
+                <p role="status" className="mb-3 text-sm">{keyMessage}</p>
+                <div className="mb-4 flex flex-wrap gap-2">
+                  {isPro ? <>
+                    <button type="button" disabled={keyBusy} onClick={() => void updateKey(false)} className="rounded-lg border px-3 py-2 text-sm">Generate new key</button>
+                    <button type="button" disabled={keyBusy} onClick={() => void updateKey(true)} className="rounded-lg border px-3 py-2 text-sm">Revoke key</button>
+                  </> : <Link href="/pro" className="underline text-sm">View Pro plans</Link>}
+                </div>
                 <div className="space-y-6">
                   <div>
                     <label className={`block text-xs font-medium mb-1.5 ${isDay ? "text-stone-700 font-semibold" : "text-zinc-400"}`}>
@@ -377,9 +388,10 @@ function SettingsContent() {
                           isDay ? "bg-white border-stone-300 text-stone-900 font-semibold" : "bg-white/[0.04] border-white/15 text-zinc-200"
                         }`}
                       >
-                        {mcpKey}
+                        {mcpKey || "Generate a key to show it here"}
                       </div>
                       <button
+                        disabled={!mcpKey}
                         onClick={() => copyToClipboard(mcpKey, "key")}
                         className={`px-3.5 py-2.5 rounded-xl border text-xs font-mono transition-all duration-150 active:scale-[0.96] flex items-center gap-1.5 cursor-pointer ${
                           copiedKey
@@ -422,7 +434,7 @@ function SettingsContent() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className={`text-xs font-medium ${isDay ? "text-stone-700 font-semibold" : "text-zinc-400"}`}>
-                        Claude Code Configuration (claude_desktop_config.json)
+                        Claude Desktop Configuration (claude_desktop_config.json)
                       </label>
                       <button
                         onClick={() => copyToClipboard(claudeJson, "claude")}

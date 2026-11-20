@@ -11,6 +11,7 @@ export interface ClientTelemetry {
   deviceType: DeviceMode;
   browser: string;
   os: string;
+  browserVersion?: string;
   scrollDepthPercent: number;
   timestamp: string;
 }
@@ -70,6 +71,10 @@ export interface Project {
   approvedAt?: string;
   approvedBy?: string;
   approvalSignature?: string;
+  approvedRevision?: number;
+  revision?: number;
+  nextPinNumber?: number;
+  access?: { canManage: boolean; canApprove: boolean };
   createdAt: string;
   pins: Pin[];
 }

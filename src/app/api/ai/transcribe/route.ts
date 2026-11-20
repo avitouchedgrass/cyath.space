@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { failure, loadCanvas, readJson, requireActor, requireSameOrigin, ReviewError } from "@/lib/reviews/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { audioUrl } = await req.json();
+    requireSameOrigin(req);
+    const actor = await requireActor(req, true);
+    const { audioUrl, shareId } = await readJson(req);
+    if (typeof shareId !== "string") throw new ReviewError(400, "Choose a review.");
+    if (!(await loadCanvas(shareId, actor, null)).access?.canManage) {
+      throw new ReviewError(403, "Only the studio can transcribe a recording.");
+    }
 
-    if (!audioUrl || !audioUrl.startsWith("data:")) {
+    if (typeof audioUrl !== "string" || !audioUrl.startsWith("data:")) {
       return NextResponse.json({ error: "Missing valid base64 audio data URI" }, { status: 400 });
     }
 
@@ -14,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Extract mimeType and raw base64
-    const matches = audioUrl.match(/^data:([a-zA-Z0-9\/\-\_\.]+);base64,(.+)$/);
+    const matches = audioUrl.match(/^data:(audio\/(?:webm|ogg|mpeg|mp4|wav|x-wav))(?:;codecs=[\w.-]+)?;base64,([A-Za-z0-9+/]+={0,2})$/i);
     if (!matches) {
       return NextResponse.json({ error: "Invalid audio DataURL format" }, { status: 400 });
     }
@@ -32,11 +39,14 @@ Format your response strictly as JSON:
   "actionItem": "Concise developer action item"
 }`;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+    const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+    if (!/^gemini-[a-z0-9.-]+$/.test(model)) throw new Error("Invalid AI model configuration.");
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
     const response = await fetch(geminiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      signal: AbortSignal.timeout(20000),
       body: JSON.stringify({
         contents: [
           {
@@ -61,8 +71,7 @@ Format your response strictly as JSON:
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      return NextResponse.json({ error: `Gemini API error: ${errText}` }, { status: 502 });
+      return NextResponse.json({ error: "Could not transcribe the recording. The audio is still available." }, { status: 502 });
     }
 
     const data = await response.json();
@@ -80,7 +89,7 @@ Format your response strictly as JSON:
       transcript: parsed.transcript || "Voice note recorded.",
       actionItem: parsed.actionItem || "Review attached audio memo.",
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (error) {
+    return failure(error);
   }
 }

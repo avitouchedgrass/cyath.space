@@ -37,9 +37,12 @@ export function AppSidebar({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [agencyName, setAgencyName] = useState("Studio");
 
-  const { projects, isPro, proCancelled } = useReviewStore();
-  const isUserPro = !proCancelled && (isPro || (typeof window !== "undefined" && localStorage.getItem("cyath_pro_member") === "true"));
+  const { projects, isPro: isUserPro, refreshPro, clearAccount } = useReviewStore();
   const userProjects = Array.isArray(projects) ? projects.filter(Boolean) : [];
+
+  useEffect(() => {
+    void refreshPro().catch(() => {});
+  }, [refreshPro]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -91,6 +94,7 @@ export function AppSidebar({
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    clearAccount();
     localStorage.removeItem("cyath_auth_active");
     localStorage.removeItem("cyath_guest_session");
     router.push("/login");
