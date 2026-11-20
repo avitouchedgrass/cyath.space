@@ -2,6 +2,7 @@ import "server-only";
 
 import { isIP } from "node:net";
 import { configuredPreviewOrigin } from "@/lib/preview-origin";
+import { requestOrigin } from "@/lib/request-origin";
 
 const defaultHosts = [
   "vercel.app", "webflow.io", "framer.website", "framer.app", "netlify.app",
@@ -10,13 +11,13 @@ const redirects = new Set([301, 302, 303, 307, 308]);
 const maxBody = 8 * 1024 * 1024;
 
 export function previewBoundary(request: Request) {
-  const requestOrigin = new URL(request.url).origin;
+  const origin = requestOrigin(request);
   if (process.env.NODE_ENV === "development" && !configuredPreviewOrigin()) {
-    return { appOrigin: requestOrigin, sandbox: "allow-scripts" };
+    return { appOrigin: origin, sandbox: "allow-scripts" };
   }
   const previewOrigin = configuredPreviewOrigin();
   const appOrigin = new URL(process.env.NEXT_PUBLIC_APP_URL || "https://cyath.space").origin;
-  if (!previewOrigin || previewOrigin === appOrigin || requestOrigin !== previewOrigin) return null;
+  if (!previewOrigin || previewOrigin === appOrigin || origin !== previewOrigin) return null;
   return { appOrigin, sandbox: "allow-scripts allow-same-origin" };
 }
 

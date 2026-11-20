@@ -4,6 +4,7 @@ import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { nanoid } from "nanoid";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { requestOrigin } from "@/lib/request-origin";
 import type { Comment, DeviceMode, DomAnchor, Project } from "@/types";
 
 export class ReviewError extends Error {
@@ -161,7 +162,7 @@ export async function requireActor(request: Request, sessionOnly = false) {
 
 export function requireSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) {
+  if (origin && origin !== requestOrigin(request)) {
     throw new ReviewError(403, "This request must come from Cyath.");
   }
 }

@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { configuredPreviewOrigin } from "@/lib/preview-origin";
+import { requestOrigin } from "@/lib/request-origin";
 
 export async function proxy(request: NextRequest) {
-  const { pathname, origin } = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
-  if (origin === configuredPreviewOrigin()) {
+  if (requestOrigin(request) === configuredPreviewOrigin()) {
     return pathname === "/api/proxy"
       ? NextResponse.next()
       : new NextResponse("Not found", { status: 404 });

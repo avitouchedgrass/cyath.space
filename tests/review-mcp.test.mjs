@@ -176,7 +176,8 @@ test("MCP and guest reviewers share an authorized, revision-safe review API", { 
 
   const edit = (action, key, extra = {}) => fetch(canvasUrl, {
     method: "PATCH", body: JSON.stringify(action),
-    headers: { "Content-Type": "application/json", ...(key ? { Authorization: "Bearer " + key } : {}), ...extra },
+    headers: { "Content-Type": "application/json", Origin: origin,
+      ...(key ? { Authorization: "Bearer " + key } : {}), ...extra },
   });
   const first = randomUUID();
   const second = randomUUID();
