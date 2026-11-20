@@ -279,6 +279,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     dragStartRef.current = null;
   };
 
+  const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));
+
   const handleSaveNewPin = async (comment: string, authorName: string, audioUrl?: string, audioDurationSeconds?: number, requestId?: string) => {
     if (!pendingPinCoords) return;
     const scroll = scrollViewportRef.current;
@@ -292,7 +294,7 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       pendingPinCoords.yPercent,
       comment,
       authorName,
-      currentPageUrl,
+      isWebUrl ? currentPageUrl : undefined,
       pendingPinCoords.widthPercent,
       pendingPinCoords.heightPercent,
       pendingPinCoords.annotationType,
@@ -315,9 +317,8 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
       (deviceMode === "desktop" && p.deviceMode === "full");
     if (!deviceMatch) return false;
 
-    const pinPageLabel = formatPageLabel(p.pageUrl);
-    return pinPageLabel === currentStagePageLabel;
-  }), [allPins, currentStagePageLabel, deviceMode]);
+    return !isWebUrl || formatPageLabel(p.pageUrl) === currentStagePageLabel;
+  }), [allPins, currentStagePageLabel, deviceMode, isWebUrl]);
   const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
 
   const syncPins = useCallback(() => {
@@ -356,7 +357,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
 
   const pdfHeight = Math.max(900, pdfPageCount * 1150);
 
-  const isWebUrl = project.assetType === "url" || (!project.assetType && project.targetUrl?.startsWith("http"));
   const isFullMode = deviceMode === "full";
   const stageMinHeight = isWebUrl
     ? `${frameHeight}px`

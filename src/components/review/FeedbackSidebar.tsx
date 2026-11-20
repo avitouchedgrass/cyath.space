@@ -43,10 +43,15 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   const isDay = theme === "day";
 
   const allPins = Array.isArray(project?.pins) ? project.pins.filter(Boolean) : [];
-  const currentStageLabel = formatPageLabel(currentPageUrl);
+  const pageLabel = (url?: string) => {
+    if (project.assetType === "image") return "Uploaded image";
+    if (project.assetType === "pdf") return "Uploaded PDF";
+    return formatPageLabel(url);
+  };
+  const currentStageLabel = pageLabel(currentPageUrl);
 
   // Identify all unique subpages that have pins
-  const uniquePages = Array.from(new Set(allPins.map((p) => formatPageLabel(p?.pageUrl))));
+  const uniquePages = Array.from(new Set(allPins.map((p) => pageLabel(p.pageUrl))));
 
   // Filter by device scope
   let scopedPins =
@@ -56,7 +61,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
 
   // Filter by subpage if selected
   if (pageFilter !== "all") {
-    scopedPins = scopedPins.filter((p) => p && formatPageLabel(p.pageUrl) === pageFilter);
+    scopedPins = scopedPins.filter((p) => p && pageLabel(p.pageUrl) === pageFilter);
   }
 
   // Filter by status
@@ -78,8 +83,8 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       return timeA - timeB;
     } else if (sortOrder === "page") {
-      const pageA = formatPageLabel(a.pageUrl);
-      const pageB = formatPageLabel(b.pageUrl);
+      const pageA = pageLabel(a.pageUrl);
+      const pageB = pageLabel(b.pageUrl);
       return pageA.localeCompare(pageB);
     }
     return 0;
@@ -343,7 +348,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
             const author = comments[0]?.authorName || "Reviewer";
             const browserName = pin.telemetry?.browser || "Browser";
             const pagePalette = getPageColor(pin.pageUrl);
-            const pageLabel = formatPageLabel(pin.pageUrl);
+            const pinPageLabel = pageLabel(pin.pageUrl);
 
             return (
               <div
@@ -408,7 +413,7 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                 <div className="mb-2">
                   <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[9px] font-mono border ${pagePalette.bg} ${pagePalette.border} ${pagePalette.text}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${pagePalette.dot}`} />
-                    <span className="truncate max-w-[180px]">{pageLabel}</span>
+                    <span className="truncate max-w-[180px]">{pinPageLabel}</span>
                   </div>
                 </div>
 

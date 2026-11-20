@@ -221,4 +221,24 @@ test("MCP and guest reviewers share an authorized, revision-safe review API", { 
   assert.equal(database.rows.get(shareId).approval_digest, null);
   assert.equal((await edit(note(randomUUID(), "Late note"))).status, 409);
   assert.equal((await edit({ type: "reopen" }, keys[0])).status, 200);
+
+  const image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/rfoAAAAASUVORK5CYII=";
+  const imageResponse = await fetch(origin + "/api/canvases", {
+    method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + keys[0] },
+    body: JSON.stringify({ assetType: "image", targetUrl: image }),
+  });
+  assert.ok(imageResponse.ok);
+  const imageReview = await imageResponse.json();
+  const imageUrl = origin + "/api/canvases/" + imageReview.shareId;
+  const savedImageNote = await fetch(imageUrl, {
+    method: "PATCH", headers: { "Content-Type": "application/json", Origin: origin },
+    body: JSON.stringify({ ...note(randomUUID(), "Image note"), pageUrl: image }),
+  });
+  assert.equal(savedImageNote.status, 200);
+  const imagePin = database.rows.get(imageReview.shareId).project.pins[0];
+  assert.equal(imagePin.pageUrl, undefined);
+  imagePin.pageUrl = image;
+  const importedImage = await (await fetch(imageUrl)).json();
+  assert.equal(importedImage.targetUrl, image);
+  assert.equal(importedImage.pins[0].pageUrl, undefined);
 });

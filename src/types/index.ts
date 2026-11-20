@@ -48,7 +48,7 @@ export interface Pin {
   domAnchor?: DomAnchor;
   status: PinStatus;
   deviceMode: DeviceMode;
-  pageUrl: string;
+  pageUrl?: string;
   telemetry: ClientTelemetry;
   comments: Comment[];
   createdAt: string;

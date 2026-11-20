@@ -181,6 +181,10 @@ export async function revokeMcpKey(ownerId: string) {
   if (error) throw new Error("Could not revoke the API key.");
 }
 
+function isDocument(project: Project) {
+  return project.assetType === "image" || project.assetType === "pdf";
+}
+
 function view(row: CanvasRow, actor: Actor | null, approval: string | null = null): Project {
   const canManage = actor?.id === row.owner_id;
   const canApprove = !canManage && !!row.approval_expires_at &&
@@ -188,6 +192,7 @@ function view(row: CanvasRow, actor: Actor | null, approval: string | null = nul
   const project = { ...row.project };
   delete project.ownerEmail;
   delete project.ownerId;
+  if (isDocument(project)) project.pins = project.pins.map(pin => ({ ...pin, pageUrl: undefined }));
   return { ...project, shareId: row.share_id, revision: row.revision, access: { canManage, canApprove } };
 }
 
@@ -324,7 +329,7 @@ export async function changeCanvas(shareId: string, action: Record<string, unkno
           domAnchor: domAnchor(action.anchor),
           status: "open",
           deviceMode: device,
-          pageUrl: project.assetType === "url" && action.pageUrl ? websiteUrl(action.pageUrl) : project.targetUrl,
+          pageUrl: isDocument(project) ? undefined : action.pageUrl ? websiteUrl(action.pageUrl) : project.targetUrl,
           telemetry: {
             viewportWidth: number(telemetry.viewportWidth, 0, 20000, "viewport width"),
             viewportHeight: number(telemetry.viewportHeight, 0, 20000, "viewport height"),
