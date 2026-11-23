@@ -50,10 +50,7 @@ export async function GET(req: NextRequest) {
     const fullBase = new URL(".", url).href;
     let html = new TextDecoder().decode(content);
 
-    // 1. Remove existing <base> tags to avoid conflicts
     html = html.replace(/<base[^>]*>/gi, "");
-
-    // 2. Strip CSP and frame-busting meta headers that block assets, scripts, or fonts
     html = html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi, "");
     html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, "");
 

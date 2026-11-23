@@ -50,28 +50,23 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
   };
   const currentStageLabel = pageLabel(currentPageUrl);
 
-  // Identify all unique subpages that have pins
   const uniquePages = Array.from(new Set(allPins.map((p) => pageLabel(p.pageUrl))));
 
-  // Filter by device scope
   let scopedPins =
     deviceScope === "current"
       ? allPins.filter((p) => p && p.deviceMode === activeDeviceMode)
       : allPins;
 
-  // Filter by subpage if selected
   if (pageFilter !== "all") {
     scopedPins = scopedPins.filter((p) => p && pageLabel(p.pageUrl) === pageFilter);
   }
 
-  // Filter by status
   const openPins = scopedPins.filter((p) => p && p.status !== "resolved");
   const resolvedPins = scopedPins.filter((p) => p && p.status === "resolved");
 
   let displayedPins =
     filter === "open" ? openPins : filter === "resolved" ? resolvedPins : scopedPins;
 
-  // Sort pins
   displayedPins = [...displayedPins].filter(Boolean).sort((a, b) => {
     if (!a || !b) return 0;
     if (sortOrder === "newest") {

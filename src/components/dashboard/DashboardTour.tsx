@@ -85,7 +85,6 @@ export function DashboardTour() {
     if (el) {
       const rect = el.getBoundingClientRect();
       setTargetRect(rect);
-      // Smoothly scroll target element into viewport if outside
       if (rect.top < 40 || rect.bottom > window.innerHeight - 40) {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
@@ -102,7 +101,6 @@ export function DashboardTour() {
 
     window.addEventListener("cyath-open-tour", handleOpen);
 
-    // Auto-check for startTour query param
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("startTour") === "1") {
@@ -134,7 +132,6 @@ export function DashboardTour() {
     };
   }, [isOpen, stepIndex, updateTargetRect]);
 
-  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -177,7 +174,6 @@ export function DashboardTour() {
 
   if (!isOpen) return null;
 
-  // Adaptive Card Positioning with Collision Flipping and Viewport Clamping
   const cardWidth = 400;
   const cardHeight = cardRef.current?.offsetHeight || 260;
   let cardStyle: React.CSSProperties = {};
@@ -195,7 +191,6 @@ export function DashboardTour() {
   } else if (currentStep.placement === "bottom") {
     const left = Math.max(16, Math.min(window.innerWidth - cardWidth - 16, targetRect.left + (targetRect.width - cardWidth) / 2));
     
-    // Check if bottom fits; if targetRect.bottom + cardHeight + 24 > window.innerHeight, flip to top
     const fitsBelow = targetRect.bottom + cardHeight + 24 <= window.innerHeight;
     const fitsAbove = targetRect.top - cardHeight - 24 >= 0;
 

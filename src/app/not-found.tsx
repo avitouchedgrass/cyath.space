@@ -1,22 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { TesseractMark } from "@/components/common/Logo";
+import { useTheme } from "@/lib/theme";
 
 export default function NotFound() {
-  const [theme, setTheme] = useState<"night" | "day">("night");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("cyath_theme") as "night" | "day";
-    if (saved === "day" || saved === "night") {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    }
-  }, []);
-
-  const isDay = theme === "day";
+  const { isDay } = useTheme();
 
   return (
     <main

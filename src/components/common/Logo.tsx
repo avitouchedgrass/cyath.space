@@ -112,8 +112,3 @@ export const CyathLogo: React.FC<LogoProps> = ({
     </div>
   );
 };
-
-// Aliases for compatibility
-export const RefractivePrismMark = TesseractMark;
-export const DualViewportMark = TesseractMark;
-export const MilestoneDial = CyathLogo;

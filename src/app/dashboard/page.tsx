@@ -72,7 +72,6 @@ export default function DashboardPage() {
     let isCancelled = false;
 
     const verifyAuth = async () => {
-      // 1. Check guest bypass
       const isGuest =
         typeof window !== "undefined" &&
         (localStorage.getItem("cyath_guest_session") === "true" ||
@@ -93,7 +92,6 @@ export default function DashboardPage() {
         return;
       }
 
-      // 2. Check cached session first for instant response
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user && !isCancelled) {
         setCurrentUser(session.user);
@@ -107,7 +105,6 @@ export default function DashboardPage() {
         return;
       }
 
-      // 3. Fallback to getUser() verification
       const { data: { user } } = await supabase.auth.getUser();
       if (user && !isCancelled) {
         setCurrentUser(user);
@@ -121,7 +118,6 @@ export default function DashboardPage() {
         return;
       }
 
-      // 4. Truly not authenticated: clear stale auth flags to prevent infinite redirect loops
       if (!isCancelled) {
         if (typeof window !== "undefined") {
           localStorage.removeItem("cyath_auth_active");
@@ -285,7 +281,6 @@ export default function DashboardPage() {
 
   const getCanvasHref = (project: Project) => "/r/" + project.shareId;
 
-  // Total active notes across all user projects
   const totalNotesCount = useMemo(() => {
     return userProjects.reduce((acc, p) => {
       if (!p || !Array.isArray(p.pins)) return acc;

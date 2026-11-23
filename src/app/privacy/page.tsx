@@ -1,30 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { TesseractMark } from "@/components/common/Logo";
 import { Footer } from "@/components/common/Footer";
+import { useTheme } from "@/lib/theme";
 
 export default function PrivacyPolicyPage() {
-  const [theme, setTheme] = useState<"night" | "day">("night");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("cyath_theme") as "night" | "day";
-    if (saved === "day" || saved === "night") {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    document.documentElement.setAttribute("data-theme", next);
-  };
-
-  const isDay = theme === "day";
+  const { isDay, toggle: toggleTheme } = useTheme();
 
   return (
     <div

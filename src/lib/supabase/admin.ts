@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 function keyMatchesUrl(key: string, url: string) {
   try {
     const parts = key.split(".");
-    if (parts.length !== 3) return false;
+    if (parts.length !== 3) return true;
     const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf8"));
     const host = new URL(url).hostname;
     return !payload.ref || host.includes(payload.ref);

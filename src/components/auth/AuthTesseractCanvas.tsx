@@ -31,7 +31,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     const fgVec = isDay ? new THREE.Vector3(28 / 255, 26 / 255, 24 / 255) : new THREE.Vector3(1.0, 1.0, 1.0);
     const bgColor = new THREE.Color().setRGB(bgVec.x, bgVec.y, bgVec.z, THREE.LinearSRGBColorSpace);
 
-    // 1. Renderer & Render Targets
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
@@ -48,7 +47,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
       format: THREE.RGBAFormat,
     });
 
-    // 2. 3D Scene
     const scene = new THREE.Scene();
     scene.background = bgColor;
 
@@ -56,7 +54,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     camera.position.set(0, 1.2, 5.8);
     camera.lookAt(0, 0, 0);
 
-    // Lights
     const ambLight = new THREE.AmbientLight(isDay ? 0xe8e4d8 : 0x4b5563, isDay ? 2.4 : 2.8);
     scene.add(ambLight);
 
@@ -68,13 +65,11 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     rimLight.position.set(-3.5, 2.5, -2.5);
     scene.add(rimLight);
 
-    // 3. 3D Isometric Tesseract
     const tesseractGroup = new THREE.Group();
     const isDesktop = W >= 1024;
     tesseractGroup.position.set(isDesktop ? -2.10 : 0, isDesktop ? 0.05 : 0.65, 0);
     scene.add(tesseractGroup);
 
-    // Architectural scale: compact & balanced, crisp presence
     const edgeRadius = 0.021;
     const sOuter = 0.88;
     const sInner = 0.44;
@@ -170,7 +165,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     }
     tesseractGroup.add(connectingGroup);
 
-    // 4. Exact Landing Page GPU Halftone Shader
     const postScene = new THREE.Scene();
     const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
@@ -282,7 +276,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial);
     postScene.add(postQuad);
 
-    // 5. Interaction State
     let isDragging = false;
     let prevMouseX = 0,
       prevMouseY = 0;
@@ -361,7 +354,6 @@ export function AuthTesseractCanvas({ theme = "night", className = "" }: AuthCan
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
 
-    // 6. Animation Loop
     let lastTime = 0;
     const animate = (time: number) => {
       if (lastTime === 0) {

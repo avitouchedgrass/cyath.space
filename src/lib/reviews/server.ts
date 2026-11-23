@@ -132,7 +132,6 @@ const memoryMcpKeys = new Map<string, string>();
 const memoryOwnerKeys = new Map<string, string>();
 
 export async function hasPro(ownerId: string) {
-  // Free Pro by default
   return true;
 }
 
@@ -180,12 +179,13 @@ export async function rotateMcpKey(ownerId: string) {
   if (!(await hasPro(ownerId))) throw new ReviewError(403, "An active Pro subscription is required.");
   const key = `cyath_pro_${randomBytes(32).toString("base64url")}`;
   const d = digest(key);
+  try {
+    const { error } = await getAdminClient().from("review_mcp_keys")
+      .upsert({ owner_id: ownerId, token_digest: d });
+    if (!error) return key;
+  } catch {}
   memoryMcpKeys.set(d, ownerId);
   memoryOwnerKeys.set(ownerId, d);
-  try {
-    await getAdminClient().from("review_mcp_keys")
-      .upsert({ owner_id: ownerId, token_digest: d });
-  } catch {}
   return key;
 }
 
@@ -298,7 +298,6 @@ export async function createCanvas(input: Record<string, unknown>, actor: Actor)
       p_project: project,
     });
     if (!error && data) {
-      memoryCanvases.set(shareId, data as CanvasRow);
       return view(data as CanvasRow, actor);
     }
   } catch {}
@@ -312,7 +311,6 @@ export async function createCanvas(input: Record<string, unknown>, actor: Actor)
         project,
       }).select("*").maybeSingle();
     if (!error && data) {
-      memoryCanvases.set(shareId, data as CanvasRow);
       return view(data as CanvasRow, actor);
     }
   } catch {}
@@ -477,23 +475,21 @@ export async function changeCanvas(shareId: string, action: Record<string, unkno
         throw new ReviewError(400, "Unknown review change.");
     }
 
-    try {
-      const { data, error } = await client.from("review_canvases")
-        .update({ ...update, project }).eq("share_id", shareId).eq("revision", row.revision).select("*").maybeSingle();
-      if (!error && data) {
-        memoryCanvases.set(shareId, data as CanvasRow);
-        return { project: view(data as CanvasRow, actor, approval), approvalToken };
-      }
-    } catch {}
+    if (memoryCanvases.has(shareId)) {
+      const updatedRow: CanvasRow = {
+        ...row,
+        ...update,
+        project,
+        revision: row.revision + 1,
+      };
+      memoryCanvases.set(shareId, updatedRow);
+      return { project: view(updatedRow, actor, approval), approvalToken };
+    }
 
-    const updatedRow: CanvasRow = {
-      ...row,
-      ...update,
-      project,
-      revision: row.revision + 1,
-    };
-    memoryCanvases.set(shareId, updatedRow);
-    return { project: view(updatedRow, actor, approval), approvalToken };
+    const { data, error } = await client.from("review_canvases")
+      .update({ ...update, project }).eq("share_id", shareId).eq("revision", row.revision).select("*").maybeSingle();
+    if (error) throw new Error("Could not save the review change.");
+    if (data) return { project: view(data as CanvasRow, actor, approval), approvalToken };
   }
   throw new ReviewError(409, "This review changed while you were editing. Try again.");
 }

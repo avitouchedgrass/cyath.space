@@ -6,36 +6,18 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { CheckCircle2, ArrowRight, AlertCircle, Sun, Moon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { CyathLogo } from "@/components/common/Logo";
+import { useTheme } from "@/lib/theme";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
 function AuthConfirmContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const { theme, isDay, toggle: toggleTheme } = useTheme();
 
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [theme, setTheme] = useState<"night" | "day">("night");
-
-  // Sync theme
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("cyath_theme");
-      const active = saved === "day" || saved === "night" ? saved : "night";
-      setTheme(active);
-      document.documentElement.setAttribute("data-theme", active);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", next);
-    }
-  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -47,7 +29,6 @@ function AuthConfirmContent() {
         const code = searchParams.get("code");
         let verifiedEmail: string | null = null;
 
-        // 1. Verify OTP token_hash (Standard Supabase email confirmation)
         if (token_hash && type) {
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash,
@@ -55,7 +36,6 @@ function AuthConfirmContent() {
           });
 
           if (error) {
-            // If already verified or token expired, check if we currently have a session
             const { data: sessionData } = await supabase.auth.getSession();
             if (sessionData.session?.user?.email) {
               verifiedEmail = sessionData.session.user.email;
@@ -65,9 +45,7 @@ function AuthConfirmContent() {
           } else if (data.user?.email) {
             verifiedEmail = data.user.email;
           }
-        }
-        // 2. Exchange PKCE code (if sent as code)
-        else if (code) {
+        } else if (code) {
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) {
             const { data: sessionData } = await supabase.auth.getSession();
@@ -79,14 +57,11 @@ function AuthConfirmContent() {
           } else if (data.user?.email) {
             verifiedEmail = data.user.email;
           }
-        }
-        // 3. Check existing active session or URL hash fragment
-        else {
+        } else {
           const { data: sessionData } = await supabase.auth.getSession();
           if (sessionData.session?.user?.email) {
             verifiedEmail = sessionData.session.user.email;
           } else if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
-            // Supabase client auto-parses hash fragments on mount
             await new Promise((r) => setTimeout(r, 600));
             const { data: hashSession } = await supabase.auth.getSession();
             if (hashSession.session?.user?.email) {
@@ -160,8 +135,6 @@ function AuthConfirmContent() {
       isCancelled = true;
     };
   }, [searchParams, supabase]);
-
-  const isDay = theme === "day";
 
   return (
     <div

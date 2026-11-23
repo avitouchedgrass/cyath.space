@@ -75,26 +75,18 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
   const [isPlaying, setIsPlaying] = useState(true);
   const [elapsedSceneTime, setElapsedSceneTime] = useState(0);
 
-  // Scene 0: Typing simulation
   const [typedUrl, setTypedUrl] = useState("");
   const [isUrlSubmitted, setIsUrlSubmitted] = useState(false);
-
-  // Scene 1: Pin drop simulation
   const [pinDropped, setPinDropped] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
-
-  // Scene 2: Responsive toggle simulation
   const [simulatedDevice, setSimulatedDevice] = useState<"desktop" | "mobile">("desktop");
   const [mobilePinDropped, setMobilePinDropped] = useState(false);
-
-  // Scene 3: Resolution & Approval simulation
   const [noteResolved, setNoteResolved] = useState(false);
   const [milestoneApproved, setMilestoneApproved] = useState(false);
   const [exportedMarkdown, setExportedMarkdown] = useState(false);
 
   const fullUrlTarget = "https://staging.interior-design.com";
 
-  // Main playback loop
   useEffect(() => {
     if (!isOpen || !isPlaying) return;
 
@@ -105,7 +97,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
       setElapsedSceneTime((prev) => {
         const next = prev + intervalTime;
         if (next >= currentDuration) {
-          // Transition to next scene or loop
           setActiveScene((s) => (s + 1) % SCENES.length);
           return 0;
         }
@@ -116,23 +107,19 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
     return () => clearInterval(timer);
   }, [isOpen, isPlaying, activeScene]);
 
-  // Choreographed autonomous animations based on scene and elapsed time
   useEffect(() => {
     if (!isOpen) return;
 
     if (activeScene === 0) {
-      // Scene 0 choreography
       setSimulatedDevice("desktop");
       const progress = Math.min(1, elapsedSceneTime / 3500);
       const charsToShow = Math.floor(progress * fullUrlTarget.length);
       setTypedUrl(fullUrlTarget.slice(0, charsToShow));
       setIsUrlSubmitted(elapsedSceneTime > 4000);
     } else if (activeScene === 1) {
-      // Scene 1 choreography
       setPinDropped(elapsedSceneTime > 1500);
       setPopoverOpen(elapsedSceneTime > 2500);
     } else if (activeScene === 2) {
-      // Scene 2 choreography
       if (elapsedSceneTime < 2500) {
         setSimulatedDevice("desktop");
         setMobilePinDropped(false);
@@ -141,7 +128,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
         setMobilePinDropped(elapsedSceneTime > 4500);
       }
     } else if (activeScene === 3) {
-      // Scene 3 choreography
       setSimulatedDevice("desktop");
       setNoteResolved(elapsedSceneTime > 2000);
       setMilestoneApproved(elapsedSceneTime > 4000);
@@ -149,7 +135,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
     }
   }, [activeScene, elapsedSceneTime, isOpen]);
 
-  // Keyboard controls
   useEffect(() => {
     if (!isOpen) return;
 

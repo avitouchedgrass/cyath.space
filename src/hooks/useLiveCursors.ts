@@ -47,7 +47,6 @@ export function useLiveCursors(shareId: string, clientName: string) {
 
     channelRef.current = channel;
 
-    // Prune cursors inactive for > 3.5 seconds
     const interval = setInterval(() => {
       const now = Date.now();
       setCursors((prev) => {
@@ -75,7 +74,6 @@ export function useLiveCursors(shareId: string, clientName: string) {
   const sendCursorPosition = useCallback(
     (xPercent: number, yPercent: number) => {
       const now = Date.now();
-      // Throttle broadcast to 40ms (~25fps) to preserve bandwidth
       if (now - lastBroadcastRef.current < 40) return;
       lastBroadcastRef.current = now;
 

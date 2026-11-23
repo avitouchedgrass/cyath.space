@@ -95,7 +95,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const allPins = project.pins;
   const { cursors, sendCursorPosition } = useLiveCursors(project.shareId, clientAuthorName);
 
-  // Auto-scroll viewport to pin when activePinId changes
   useEffect(() => {
     if (!activePinId || !scrollViewportRef.current || !containerRef.current) return;
     const pin = allPins.find((p) => p && p.id === activePinId);
@@ -119,7 +118,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     post({ type: "CYATH_SET_MODE", mode: interactionMode });
   }
 
-  // Navigation handlers for proxy iframe staging site
   const handleNavBack = () => {
     if (iframeRef.current?.contentWindow) {
       try {
@@ -144,7 +142,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     }
   };
 
-  // Listen to height, wheel, element pin, and navigation messages from proxy iframe bridge
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.source !== iframeRef.current?.contentWindow || event.origin !== (previewOrigin ?? "null")) return;
@@ -209,7 +206,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     post({ type: "CYATH_SET_MODE", mode: interactionMode });
   }, [interactionMode, isAudioMuted, post]);
 
-  // Compute frame container sizing based on deviceMode
   const getFrameWidthClass = () => {
     switch (deviceMode) {
       case "full":
@@ -307,7 +303,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
     setPendingPinCoords(null);
   };
 
-  // Strictly filter pins for the active device viewport AND current subpage
   const currentStagePageLabel = formatPageLabel(currentPageUrl);
   const activeDevicePins = useMemo(() => allPins.filter((p) => {
     if (!p) return false;
@@ -322,7 +317,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   const activePin = activeDevicePins.find((p) => p && p.id === activePinId);
 
   const syncPins = useCallback(() => {
-    // The reviewed site needs pin geometry, never reviewer names, notes, or recordings.
     post({
       type: "CYATH_SYNC_PINS",
       pins: activeDevicePins.map(({ id, number, xPercent, yPercent, widthPercent, heightPercent, annotationType, status, domAnchor }) => ({
@@ -337,7 +331,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
   }, [activeDevicePins, activePinId, post]);
   useEffect(() => { syncPins(); }, [previewReady, syncPins]);
 
-  // Estimate PDF height so multi-page documents render continuously in stage scroll
   const pdfPageCount = React.useMemo(() => {
     if (project.assetType !== "pdf" || !project.targetUrl) return 1;
     try {

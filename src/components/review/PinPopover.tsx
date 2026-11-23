@@ -51,7 +51,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
   const requestId = useRef<string | undefined>(undefined);
   const fieldId = useId();
 
-  // Instant Audio State
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);

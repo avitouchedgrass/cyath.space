@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
     }
 
-    // Extract mimeType and raw base64
     const matches = audioUrl.match(/^data:(audio\/(?:webm|ogg|mpeg|mp4|wav|x-wav))(?:;codecs=[\w.-]+)?;base64,([A-Za-z0-9+/]+={0,2})$/i);
     if (!matches) {
       return NextResponse.json({ error: "Invalid audio DataURL format" }, { status: 400 });

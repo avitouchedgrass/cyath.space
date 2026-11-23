@@ -19,12 +19,13 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { CyathLogo } from "@/components/common/Logo";
 import { AuthTesseractCanvas } from "@/components/auth/AuthTesseractCanvas";
+import { useTheme } from "@/lib/theme";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { theme, isDay, toggle: toggleTheme } = useTheme();
 
-  const [theme, setTheme] = useState<"night" | "day">("night");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,151 +33,89 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
-  // Cross-Window Email Verification Synchronization State
   const [awaitingEmail, setAwaitingEmail] = useState<string | null>(null);
   const [verifiedSuccess, setVerifiedSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Cooldown timer for resending email
   useEffect(() => {
     if (resendCooldown <= 0) return;
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [resendCooldown]);
 
-  // Sync theme with URL param or localStorage (set by landing page)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const urlTheme = params.get("theme");
-      let active: "day" | "night" = "night";
-      if (urlTheme === "day" || urlTheme === "night") {
-        active = urlTheme;
-      } else {
-        const saved = localStorage.getItem("cyath_theme");
-        if (saved === "day" || saved === "night") {
-          active = saved;
-        }
-      }
-      setTheme(active);
-      document.documentElement.setAttribute("data-theme", active);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === "night" ? "day" : "night";
-    setTheme(next);
-    localStorage.setItem("cyath_theme", next);
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-theme", next);
-    }
-  };
-
-  useEffect(() => {
-    // 1. If explicit guest session is active, allow direct access
-    if (typeof window !== "undefined") {
-      const isGuest = localStorage.getItem("cyath_guest_session") === "true";
-      if (isGuest) {
-        router.replace("/dashboard");
-        return;
-      }
+    if (typeof window !== "undefined" && localStorage.getItem("cyath_guest_session") === "true") {
+      router.replace("/dashboard");
+      return;
     }
 
-    // 2. Validate session against Supabase before navigating
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch {}
         router.replace("/dashboard");
       } else {
-        // Clear stale flags to prevent any ping-pong redirect loop
-        try {
-          localStorage.removeItem("cyath_auth_active");
-        } catch { }
+        try { localStorage.removeItem("cyath_auth_active"); } catch {}
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch {}
         router.replace("/dashboard");
       } else if (event === "SIGNED_OUT") {
         try {
           localStorage.removeItem("cyath_auth_active");
           localStorage.removeItem("cyath_guest_session");
-        } catch { }
+        } catch {}
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [router, supabase]);
 
-  // Active Cross-Window / Cross-Device Listener for Email Verification
   useEffect(() => {
     if (!awaitingEmail) return;
 
-    let isDone = false;
-
+    let resolved = false;
     const handleVerified = () => {
-      if (isDone) return;
-      isDone = true;
+      if (resolved) return;
+      resolved = true;
       setVerifiedSuccess(true);
       setTimeout(() => {
-        try { localStorage.setItem("cyath_auth_active", "true"); } catch { }
+        try { localStorage.setItem("cyath_auth_active", "true"); } catch {}
         router.push("/dashboard");
         router.refresh();
       }, 1200);
     };
 
-    // 1. BroadcastChannel (Same Browser Tab-to-Tab Instant Sync)
     let bc: BroadcastChannel | null = null;
     try {
       bc = new BroadcastChannel("cyath_auth_channel");
       bc.onmessage = (event) => {
-        if (event.data?.type === "AUTH_VERIFIED") {
-          handleVerified();
-        }
+        if (event.data?.type === "AUTH_VERIFIED") handleVerified();
       };
-    } catch {
-      // BroadcastChannel unsupported in older contexts
-    }
+    } catch {}
 
-    // 2. Storage Event (Cross-Tab LocalStorage Event)
     const onStorage = (e: StorageEvent) => {
-      if (e.key === "cyath_auth_verified") {
-        handleVerified();
-      }
+      if (e.key === "cyath_auth_verified") handleVerified();
     };
     window.addEventListener("storage", onStorage);
 
-    // 3. Supabase Realtime Broadcast (Cross-Browser & Cross-Device like Mobile to Desktop)
     const cleanEmail = awaitingEmail.toLowerCase().replace(/[^a-z0-9]/g, "_");
-    const channelId = `auth_sync_${cleanEmail}`;
-    const syncChannel = supabase.channel(channelId);
+    const syncChannel = supabase.channel(`auth_sync_${cleanEmail}`);
     syncChannel
-      .on("broadcast", { event: "verified" }, () => {
-        handleVerified();
-      })
+      .on("broadcast", { event: "verified" }, () => handleVerified())
       .subscribe();
 
-    // 4. Supabase Auth State Change Listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || session) {
-        handleVerified();
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" || session) handleVerified();
     });
 
-    // 5. Gentle Periodic Session Polling (fallback every 3.5s)
     const pollTimer = setInterval(async () => {
       const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        handleVerified();
-      }
+      if (data.session) handleVerified();
     }, 3500);
 
     return () => {
@@ -322,8 +261,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
-  const isDay = theme === "day";
 
   return (
     <div
