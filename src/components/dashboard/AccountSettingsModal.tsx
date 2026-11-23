@@ -68,7 +68,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             args: ["-y", "cyath-mcp@latest"],
             env: {
               CYATH_API_KEY: apiKey,
-              CYATH_STAGING_ENDPOINT: "https://cyath-space.vercel.app/api/mcp",
+              CYATH_STAGING_ENDPOINT: "https://cyath.space/api/mcp",
             },
           },
         },
@@ -97,7 +97,7 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
   }, [apiKey]);
 
   const cliEnvSnippet = useMemo(() => {
-    return `# Export to your environment (.env.local or ~/.bashrc)\nexport CYATH_API_KEY="${apiKey}"\nexport CYATH_STAGING_ENDPOINT="https://cyath-space.vercel.app/api/mcp"\n\n# Run inspector directly\nnpx cyath-mcp --test`;
+    return `# Export to your environment (.env.local or ~/.bashrc)\nexport CYATH_API_KEY="${apiKey}"\nexport CYATH_STAGING_ENDPOINT="https://cyath.space/api/mcp"\n\n# Run inspector directly\nnpx cyath-mcp --test`;
   }, [apiKey]);
 
   const activeSnippet = useMemo(() => {

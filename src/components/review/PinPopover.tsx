@@ -246,7 +246,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
       extraComments ? `\n#### Discussion\n${extraComments}` : "",
       "",
       "---",
-      "*Captured via [Cyath](https://cyath-space.vercel.app)*",
+      "*Captured via [Cyath](https://cyath.space)*",
     ]
       .filter(Boolean)
       .join("\n");
