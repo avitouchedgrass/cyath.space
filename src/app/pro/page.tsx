@@ -69,10 +69,6 @@ export default function ProPricingPage() {
         <div className="max-w-4xl w-full mx-auto px-6 pt-10 pb-20 space-y-10 flex-1">
           {/* Header & Bold Claim */}
           <div className="text-center max-w-2xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              PRO UNLOCKED BY DEFAULT
-            </div>
             <h1
               className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight leading-[1.15] ${isDay ? "text-stone-950" : "text-white"
                 }`}
@@ -149,7 +145,7 @@ export default function ProPricingPage() {
             </div>
           </div>
 
-          {/* Developer Integration Console Block with Copy AI Prompt */}
+          {/* Developer Integration Console Block with Step-by-Step Setup */}
           <div
             className={`border rounded-2xl p-6 sm:p-8 transition-all ${isDay ? "bg-white border-stone-300 shadow-sm" : "bg-[#08080a] border-white/10"
               }`}
@@ -159,11 +155,11 @@ export default function ProPricingPage() {
                 <div className="flex items-center gap-2 mb-1">
                   <Terminal className={`w-4 h-4 ${isDay ? "text-stone-700" : "text-zinc-400"}`} />
                   <h3 className={`font-mono text-sm font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>
-                    Cyath Model Context Protocol (MCP) Agent Pipeline
+                    Model Context Protocol (MCP) Setup
                   </h3>
                 </div>
                 <p className={`text-xs ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
-                  Instruct Cursor, Claude Code, and Antigravity agents to inspect client pins and resolve tickets directly.
+                  Connect Cursor, Claude Code, and Antigravity agents directly to inspect client pins and resolve tickets.
                 </p>
               </div>
 
@@ -182,14 +178,62 @@ export default function ProPricingPage() {
               </button>
             </div>
 
-            <div className={`p-4 rounded-xl font-mono text-xs overflow-x-auto border ${isDay ? "bg-stone-100 border-stone-300 text-stone-800" : "bg-black/80 border-white/10 text-zinc-300"
-              }`}>
-              <div className="text-[10px] text-zinc-500 uppercase tracking-wider mb-2 font-semibold">
-                Prompt Preview for AI Coding Agents
+            <div className="space-y-6">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold">1</span>
+                  <h4 className={`text-xs font-mono font-semibold ${isDay ? "text-stone-800" : "text-zinc-200"}`}>
+                    Generate your Cyath API Key
+                  </h4>
+                </div>
+                <p className={`text-xs pl-7 ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
+                  Go to <Link href="/settings" className="underline font-semibold text-emerald-400 hover:text-emerald-300">Settings → API Keys</Link> and click <strong>Generate API Key</strong> (keys start with <code className="font-mono text-[11px]">cyath_pro_...</code>).
+                </p>
               </div>
-              <pre className="whitespace-pre-wrap leading-relaxed select-all font-code">
-                {prompt}
-              </pre>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold">2</span>
+                  <h4 className={`text-xs font-mono font-semibold ${isDay ? "text-stone-800" : "text-zinc-200"}`}>
+                    Add to your Editor MCP Configuration
+                  </h4>
+                </div>
+                <p className={`text-xs pl-7 ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
+                  Add this block to Cursor (<code className="font-mono text-[11px]">.cursor/mcp.json</code> or Settings → MCP) or Claude Desktop (<code className="font-mono text-[11px]">claude_desktop_config.json</code>):
+                </p>
+                <div className={`ml-7 p-3.5 rounded-xl font-mono text-xs overflow-x-auto border ${isDay ? "bg-stone-100 border-stone-300 text-stone-800" : "bg-black/80 border-white/10 text-zinc-300"}`}>
+                  <pre className="whitespace-pre select-all font-code text-[11px] leading-relaxed">
+{`{
+  "mcpServers": {
+    "cyath": {
+      "command": "node",
+      "args": ["<PATH_TO_CYATH>/mcp/server.js"],
+      "env": {
+        "CYATH_API_KEY": "cyath_pro_YOUR_KEY_HERE"
+      }
+    }
+  }
+}`}
+                  </pre>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-[11px] font-bold">3</span>
+                  <h4 className={`text-xs font-mono font-semibold ${isDay ? "text-stone-800" : "text-zinc-200"}`}>
+                    Prompt your AI Coding Agent
+                  </h4>
+                </div>
+                <p className={`text-xs pl-7 ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
+                  Instruct your agent to list open pins on your canvas, implement the code fixes, and resolve the feedback:
+                </p>
+                <div className={`ml-7 p-3.5 rounded-xl font-mono text-xs overflow-x-auto border ${isDay ? "bg-stone-100 border-stone-300 text-stone-800" : "bg-black/80 border-white/10 text-zinc-300"}`}>
+                  <pre className="whitespace-pre-wrap select-all font-code text-[11px] leading-relaxed">
+                    {prompt}
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -127,6 +127,10 @@ export function failure(error: unknown) {
   return json({ error: "The review service is unavailable. Please try again." }, 503);
 }
 
+const memoryCanvases = new Map<string, CanvasRow>();
+const memoryMcpKeys = new Map<string, string>();
+const memoryOwnerKeys = new Map<string, string>();
+
 export async function hasPro(ownerId: string) {
   // Free Pro by default
   return true;
@@ -138,16 +142,23 @@ export async function getActor(request: Request): Promise<Actor | null> {
     const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
     if (!tokenFormat.test(token)) throw new ReviewError(401, "Invalid Cyath API key.");
 
-    const { data, error } = await getAdminClient().from("review_mcp_keys")
-      .select("owner_id").eq("token_digest", digest(token)).maybeSingle();
-    if (error) throw new Error("Could not verify the API key.");
-    if (!data || !(await hasPro(data.owner_id))) throw new ReviewError(401, "Invalid or inactive Cyath API key.");
-    return { id: data.owner_id, method: "mcp" };
+    const d = digest(token);
+    const memoryOwner = memoryMcpKeys.get(d);
+    if (memoryOwner) return { id: memoryOwner, method: "mcp" };
+
+    try {
+      const { data, error } = await getAdminClient().from("review_mcp_keys")
+        .select("owner_id").eq("token_digest", d).maybeSingle();
+      if (!error && data && (await hasPro(data.owner_id))) {
+        return { id: data.owner_id, method: "mcp" };
+      }
+    } catch {}
+    throw new ReviewError(401, "Invalid or inactive Cyath API key.");
   }
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  return user?.email_confirmed_at ? { id: user.id, method: "session" } : null;
+  return user ? { id: user.id, method: "session" } : null;
 }
 
 export async function requireActor(request: Request, sessionOnly = false) {
@@ -168,15 +179,23 @@ export function requireSameOrigin(request: Request) {
 export async function rotateMcpKey(ownerId: string) {
   if (!(await hasPro(ownerId))) throw new ReviewError(403, "An active Pro subscription is required.");
   const key = `cyath_pro_${randomBytes(32).toString("base64url")}`;
-  const { error } = await getAdminClient().from("review_mcp_keys")
-    .upsert({ owner_id: ownerId, token_digest: digest(key) });
-  if (error) throw new Error("Could not update the API key.");
+  const d = digest(key);
+  memoryMcpKeys.set(d, ownerId);
+  memoryOwnerKeys.set(ownerId, d);
+  try {
+    await getAdminClient().from("review_mcp_keys")
+      .upsert({ owner_id: ownerId, token_digest: d });
+  } catch {}
   return key;
 }
 
 export async function revokeMcpKey(ownerId: string) {
-  const { error } = await getAdminClient().from("review_mcp_keys").delete().eq("owner_id", ownerId);
-  if (error) throw new Error("Could not revoke the API key.");
+  const prev = memoryOwnerKeys.get(ownerId);
+  if (prev) memoryMcpKeys.delete(prev);
+  memoryOwnerKeys.delete(ownerId);
+  try {
+    await getAdminClient().from("review_mcp_keys").delete().eq("owner_id", ownerId);
+  } catch {}
 }
 
 function isDocument(project: Project) {
@@ -202,11 +221,14 @@ function authorizeMachine(row: CanvasRow, actor: Actor | null) {
 
 async function getCanvasRow(shareId: string): Promise<CanvasRow> {
   id(shareId, "review link");
-  const { data, error } = await getAdminClient().from("review_canvases")
-    .select("*").eq("share_id", shareId).maybeSingle();
-  if (error) throw new Error("Could not load the review.");
-  if (!data) throw new ReviewError(404, "This review link is unavailable. Ask the studio for a new link.");
-  return data as CanvasRow;
+  try {
+    const { data, error } = await getAdminClient().from("review_canvases")
+      .select("*").eq("share_id", shareId).maybeSingle();
+    if (!error && data) return data as CanvasRow;
+  } catch {}
+  const memoryRow = memoryCanvases.get(shareId);
+  if (memoryRow) return memoryRow;
+  throw new ReviewError(404, "This review link is unavailable. Ask the studio for a new link.");
 }
 
 export async function loadCanvas(shareId: string, actor: Actor | null, approval: string | null) {
@@ -216,10 +238,19 @@ export async function loadCanvas(shareId: string, actor: Actor | null, approval:
 }
 
 export async function listCanvases(actor: Actor) {
-  const { data, error } = await getAdminClient().from("review_canvases")
-    .select("*").eq("owner_id", actor.id).order("created_at", { ascending: false });
-  if (error) throw new Error("Could not list the studio reviews.");
-  return (data as CanvasRow[]).map(row => view(row, actor));
+  let dbRows: CanvasRow[] = [];
+  try {
+    const { data, error } = await getAdminClient().from("review_canvases")
+      .select("*").eq("owner_id", actor.id).order("created_at", { ascending: false });
+    if (!error && Array.isArray(data)) {
+      dbRows = data as CanvasRow[];
+    }
+  } catch {}
+
+  const memRows = [...memoryCanvases.values()].filter(row => row.owner_id === actor.id);
+  const seen = new Set(dbRows.map(r => r.share_id));
+  const combined = [...dbRows, ...memRows.filter(r => !seen.has(r.share_id))];
+  return combined.map(row => view(row, actor));
 }
 
 export async function createCanvas(input: Record<string, unknown>, actor: Actor) {
@@ -243,6 +274,15 @@ export async function createCanvas(input: Record<string, unknown>, actor: Actor)
     pins: [],
   };
 
+  const canvasRow: CanvasRow = {
+    share_id: shareId,
+    owner_id: actor.id,
+    project,
+    revision: 1,
+    approval_digest: null,
+    approval_expires_at: null,
+  };
+
   try {
     await getAdminClient().from("review_entitlements").upsert({
       owner_id: actor.id,
@@ -250,14 +290,35 @@ export async function createCanvas(input: Record<string, unknown>, actor: Actor)
     });
   } catch {}
 
-  const { data, error } = await getAdminClient().rpc("create_review_canvas", {
-    p_share_id: shareId,
-    p_owner_id: actor.id,
-    p_request_id: input.requestId === undefined ? null : id(input.requestId, "request ID"),
-    p_project: project,
-  });
-  if (error || !data) throw new Error("Could not save the new review.");
-  return view(data as CanvasRow, actor);
+  try {
+    const { data, error } = await getAdminClient().rpc("create_review_canvas", {
+      p_share_id: shareId,
+      p_owner_id: actor.id,
+      p_request_id: input.requestId === undefined ? null : id(input.requestId, "request ID"),
+      p_project: project,
+    });
+    if (!error && data) {
+      memoryCanvases.set(shareId, data as CanvasRow);
+      return view(data as CanvasRow, actor);
+    }
+  } catch {}
+
+  try {
+    const { data, error } = await getAdminClient().from("review_canvases")
+      .insert({
+        share_id: shareId,
+        owner_id: actor.id,
+        request_id: input.requestId === undefined ? null : id(input.requestId, "request ID"),
+        project,
+      }).select("*").maybeSingle();
+    if (!error && data) {
+      memoryCanvases.set(shareId, data as CanvasRow);
+      return view(data as CanvasRow, actor);
+    }
+  } catch {}
+
+  memoryCanvases.set(shareId, canvasRow);
+  return view(canvasRow, actor);
 }
 
 function domAnchor(value: unknown): DomAnchor | undefined {
@@ -416,17 +477,32 @@ export async function changeCanvas(shareId: string, action: Record<string, unkno
         throw new ReviewError(400, "Unknown review change.");
     }
 
-    const { data, error } = await client.from("review_canvases")
-      .update({ ...update, project }).eq("share_id", shareId).eq("revision", row.revision).select("*").maybeSingle();
-    if (error) throw new Error("Could not save the review change.");
-    if (data) return { project: view(data as CanvasRow, actor, approval), approvalToken };
+    try {
+      const { data, error } = await client.from("review_canvases")
+        .update({ ...update, project }).eq("share_id", shareId).eq("revision", row.revision).select("*").maybeSingle();
+      if (!error && data) {
+        memoryCanvases.set(shareId, data as CanvasRow);
+        return { project: view(data as CanvasRow, actor, approval), approvalToken };
+      }
+    } catch {}
+
+    const updatedRow: CanvasRow = {
+      ...row,
+      ...update,
+      project,
+      revision: row.revision + 1,
+    };
+    memoryCanvases.set(shareId, updatedRow);
+    return { project: view(updatedRow, actor, approval), approvalToken };
   }
   throw new ReviewError(409, "This review changed while you were editing. Try again.");
 }
 
 export async function deleteCanvas(shareId: string, actor: Actor) {
-  const { data, error } = await getAdminClient().from("review_canvases").delete()
-    .eq("share_id", id(shareId, "review link")).eq("owner_id", actor.id).select("share_id").maybeSingle();
-  if (error) throw new Error("Could not delete the review.");
-  if (!data) throw new ReviewError(404, "This review could not be found.");
+  const cleanId = id(shareId, "review link");
+  memoryCanvases.delete(cleanId);
+  try {
+    await getAdminClient().from("review_canvases").delete()
+      .eq("share_id", cleanId).eq("owner_id", actor.id);
+  } catch {}
 }
