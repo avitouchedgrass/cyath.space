@@ -148,13 +148,10 @@ function SettingsContent() {
         isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
       }`}
     >
-      {/* Shared Persistent Left Sidebar */}
       <AppSidebar activeItem="settings" />
 
-      {/* Main Settings Area with Smooth Fast Fade */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto relative page-enter">
         <div className="max-w-6xl w-full mx-auto px-6 py-8 space-y-8 flex-1">
-          {/* Header Title matching Dashboard "Projects" */}
           <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b ${
             isDay ? "border-stone-200" : "border-white/[0.08]"
           }`}>
@@ -171,7 +168,6 @@ function SettingsContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            {/* Left Navigation Column */}
             <aside className="md:col-span-3 space-y-6">
             <div className="space-y-1">
               <div className={`text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 ${
@@ -275,9 +271,7 @@ function SettingsContent() {
             </div>
           </aside>
 
-          {/* Right Content Panel */}
           <div className="md:col-span-9">
-            {/* Tab 1: Profile */}
             {activeTab === "profile" && (
               <div
                 className={`border rounded-2xl p-7 transition-all ${
@@ -344,7 +338,6 @@ function SettingsContent() {
               </div>
             )}
 
-            {/* Tab 2: API Keys */}
             {activeTab === "keys" && (
               <div
                 className={`border rounded-2xl p-7 transition-all ${
@@ -458,7 +451,6 @@ function SettingsContent() {
               </div>
             )}
 
-            {/* Tab 3: Firm Details */}
             {activeTab === "firm" && (
               <div
                 className={`border rounded-2xl p-7 transition-all ${
@@ -522,7 +514,6 @@ function SettingsContent() {
               </div>
             )}
 
-            {/* Tab 4: Billing */}
             {activeTab === "billing" && (
               <div
                 className={`border rounded-2xl p-7 transition-all ${
@@ -560,7 +551,6 @@ function SettingsContent() {
               </div>
             )}
 
-            {/* Tab 5: Preferences */}
             {activeTab === "preferences" && (
               <div
                 className={`border rounded-2xl p-7 transition-all ${

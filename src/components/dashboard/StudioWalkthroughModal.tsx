@@ -185,7 +185,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
             : "bg-[#09090c] border-white/15 text-white shadow-2xl"
         }`}
       >
-        {/* Top Floating Control Bar */}
         <div
           className={`h-14 px-5 flex items-center justify-between select-none border-b ${
             isDay ? "bg-[#FBF9F4] border-stone-200" : "bg-black border-white/[0.08]"
@@ -229,7 +228,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
             </div>
           </div>
 
-          {/* Autonomous Scene Chapters (only in walkthrough mode) */}
           {viewMode === "walkthrough" && (
             <div
               className={`hidden sm:flex items-center gap-1.5 p-1 rounded-full border ${
@@ -278,7 +276,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
               </p>
             </div>
 
-            {/* Keyboard Hotkeys Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div className={`p-3.5 rounded-xl border flex items-center justify-between ${isDay ? "border-stone-200 bg-white text-stone-900 shadow-sm" : "border-white/15 bg-black/60 text-white"}`}>
                 <div>
@@ -332,7 +329,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
               </div>
             </div>
 
-            {/* Autonomous MCP Agent Integration Guide */}
             <div className="p-4 rounded-xl border border-white/15 bg-[#0a0a0e] space-y-2.5">
               <div className="flex items-center gap-2 text-xs font-mono font-semibold text-white uppercase tracking-wider">
                 <Terminal className="w-3.5 h-3.5 text-white" />
@@ -356,14 +352,12 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
         <div className="relative aspect-[16/10] sm:aspect-video w-full bg-[#050507] overflow-hidden flex items-center justify-center border-b border-white/[0.08]">
           <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
-          {/* ── SCENE 0: Autonomous Intake & Mounting ── */}
           {activeScene === 0 && (
             <div className="w-full max-w-lg p-6 space-y-5 flex flex-col items-center animate-in fade-in duration-300">
               <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center text-white">
                 <Globe className="w-6 h-6 stroke-[1.8]" />
               </div>
 
-              {/* Simulated Auto-typing Input */}
               <div className="w-full bg-[#0a0a0d] border border-white/20 rounded-xl p-3 flex items-center gap-3 shadow-2xl relative">
                 <Globe className="w-4 h-4 text-zinc-500 shrink-0" />
                 <span className="text-xs font-mono text-white flex-1 text-left truncate">
@@ -381,7 +375,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
                 </span>
               </div>
 
-              {/* Unfolded Canvas Indicator */}
               <div
                 className={`transition-all duration-500 rounded-xl border border-white/10 bg-[#0d0d10] p-4 w-full flex items-center justify-between text-xs font-mono ${
                   isUrlSubmitted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
@@ -396,11 +389,9 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
             </div>
           )}
 
-          {/* ── SCENE 1: Autonomous Pin Dropping & Telemetry ── */}
           {activeScene === 1 && (
             <div className="w-full max-w-xl p-4 sm:p-6 animate-in fade-in duration-300">
               <div className="w-full rounded-xl border border-white/15 bg-[#0a0a0d] p-6 relative shadow-2xl overflow-hidden min-h-[300px]">
-                {/* Browser bar */}
                 <div className="border-b border-white/[0.08] pb-3 mb-6 flex items-center justify-between text-[11px] font-mono text-zinc-400">
                   <span className="font-serif text-sm font-normal text-white">Maison Élara Architecture</span>
                   <span>staging.maison-elara.com</span>
@@ -415,7 +406,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
                   </p>
                 </div>
 
-                {/* Animated Drop Pin */}
                 {pinDropped && (
                   <div className="absolute left-[38%] top-[45%] animate-in zoom-in-75 duration-200">
                     <div className="w-7 h-7 rounded-full bg-white text-black font-mono font-bold text-xs flex items-center justify-center shadow-2xl ring-2 ring-white/40">
@@ -424,7 +414,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
                   </div>
                 )}
 
-                {/* Animated Popover */}
                 {popoverOpen && (
                   <div className="absolute left-[44%] top-[38%] bg-[#08080a] border border-white/25 rounded-xl p-3.5 shadow-2xl w-68 space-y-2 animate-in fade-in slide-in-from-left-2 duration-300">
                     <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
@@ -444,10 +433,8 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
             </div>
           )}
 
-          {/* ── SCENE 2: Responsive Viewport Isolation ── */}
           {activeScene === 2 && (
             <div className="w-full flex flex-col items-center justify-center p-6 space-y-4 animate-in fade-in duration-300">
-              {/* Header viewport pill */}
               <div className="flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-white/[0.04] text-xs font-mono">
                 <span
                   className={`px-3 py-1 rounded-full transition-all flex items-center gap-1.5 ${
@@ -467,7 +454,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
                 </span>
               </div>
 
-              {/* Morphing Device Frame */}
               <div
                 className={`transition-all duration-500 border border-white/15 bg-[#0a0a0d] rounded-xl p-4 shadow-2xl flex flex-col justify-between relative overflow-hidden min-h-[260px] ${
                   simulatedDevice === "desktop" ? "w-full max-w-lg" : "w-64"
@@ -505,7 +491,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
             </div>
           )}
 
-          {/* ── SCENE 3: Resolution & Milestone Sign-Off ── */}
           {activeScene === 3 && (
             <div className="w-full max-w-md p-6 flex flex-col items-center text-center space-y-4 animate-in fade-in duration-300">
               <div className="w-14 h-14 rounded-full border border-white/20 bg-white/[0.03] flex items-center justify-center text-white">
@@ -523,7 +508,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
                 </p>
               </div>
 
-              {/* Status Certificate Pill */}
               <div className="flex items-center gap-2 pt-2">
                 <span
                   className={`px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold transition-all ${
@@ -546,9 +530,7 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
           )}
         </div>
 
-        {/* Bottom Playback Scrubber & Scene Explanation */}
         <div className={`p-5 sm:p-6 border-t transition-colors ${isDay ? "bg-[#FBF9F4] border-stone-200" : "bg-black border-white/10"} space-y-4`}>
-          {/* Progress Bar (Scrubber) */}
           <div className={`w-full h-1.5 rounded-full relative overflow-hidden ${isDay ? "bg-stone-200" : "bg-white/10"}`}>
             <div
               className={`h-full transition-all duration-75 ${isDay ? "bg-stone-900" : "bg-white"}`}
@@ -566,7 +548,6 @@ export function StudioWalkthroughModal({ isOpen, onClose, theme = "night" }: Stu
               </p>
             </div>
 
-            {/* Play / Pause / Next Controls */}
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setIsPlaying(!isPlaying)}

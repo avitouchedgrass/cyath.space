@@ -270,12 +270,10 @@ export default function LoginPage() {
         fontFamily: "'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
-      {/* 1. Full-screen 3D Halftone Dither Canvas (Zero text over dither, fading to plain bg on right) */}
       <div className="fixed inset-0 z-0 pointer-events-auto">
         <AuthTesseractCanvas theme={theme} />
       </div>
 
-      {/* 2. Top Header Bar */}
       <header className="relative z-20 h-16 px-6 sm:px-12 flex items-center justify-between pointer-events-none">
         <div className="pointer-events-auto">
           <Link href="/">
@@ -284,7 +282,6 @@ export default function LoginPage() {
         </div>
 
         <div className="flex items-center gap-3 pointer-events-auto">
-          {/* Day / Night Toggle (Synchronized with landing page) */}
           <button
             onClick={toggleTheme}
             title={`Switch to ${isDay ? "Night" : "Day"} mode`}
@@ -296,7 +293,6 @@ export default function LoginPage() {
             {isDay ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          {/* Simple "X" Close Button */}
           <Link
             href="/"
             title="Close"
@@ -310,7 +306,6 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* 3. Main Body: Card shifted further left, with generous solid-background buffer avoiding dither */}
       <main className="relative z-10 flex-1 flex items-center justify-center lg:justify-end px-6 sm:px-12 lg:pr-72 xl:pr-80 py-8 pointer-events-none">
         <div
           className={`w-full max-w-md rounded-2xl p-7 sm:p-9 transition-all shadow-2xl pointer-events-auto ${isDay
@@ -362,7 +357,6 @@ export default function LoginPage() {
                   {awaitingEmail}
                 </div>
 
-                {/* Real-time synchronization signal card */}
                 <div
                   className={`p-4 rounded-xl border space-y-1.5 text-left ${isDay ? "bg-white/60 border-black/10" : "bg-black/30 border-white/10"
                     }`}
@@ -424,7 +418,6 @@ export default function LoginPage() {
             )
           ) : (
             <>
-              {/* Terminal Title (No eyebrows, no screws) */}
               <div className="mb-6">
                 <h1
                   className="text-[28px] sm:text-[30px] font-normal tracking-[-0.02em] leading-tight mb-2"
@@ -439,7 +432,6 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              {/* Segmented Mode Selector */}
               <div
                 className={`grid grid-cols-2 p-1 rounded-xl border mb-5 text-xs font-medium ${isDay ? "bg-[#DFD9CB] border-black/10" : "bg-black border-white/10"
                   }`}
@@ -482,7 +474,6 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              {/* Google OAuth Bar */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -512,7 +503,6 @@ export default function LoginPage() {
                 <span>Continue with Google</span>
               </button>
 
-              {/* Divider */}
               <div className="relative my-4 flex items-center justify-center">
                 <div className={`w-full border-t ${isDay ? "border-black/10" : "border-white/10"}`} />
                 <span
@@ -523,7 +513,6 @@ export default function LoginPage() {
                 </span>
               </div>
 
-              {/* Error & Info Feedback */}
               {errorMsg && (
                 <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -538,7 +527,6 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-[11px] font-mono font-medium mb-1.5 uppercase tracking-wider text-zinc-400">
@@ -600,7 +588,6 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              {/* Footer switcher note / Forgot Password */}
               <div className="mt-5 text-center">
                 {mode === "signin" ? (
                   <button
@@ -651,7 +638,6 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* 4. Minimal Footer */}
       <footer className="relative z-10 h-10 px-6 sm:px-12 flex items-center justify-end text-[10px] font-mono text-zinc-500 pointer-events-none">
         <span>© 2026 Cyath. All rights reserved.</span>
       </footer>

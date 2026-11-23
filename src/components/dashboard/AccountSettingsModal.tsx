@@ -150,7 +150,6 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             : "bg-[#070709] border-white/20 text-white shadow-[0_25px_90px_rgba(0,0,0,0.95)]"
         }`}
       >
-        {/* Physical Keycard Top Header */}
         <div
           className={`h-12 border-b px-6 flex items-center justify-between select-none ${
             isDay ? "bg-[#FBF9F4] border-stone-200" : "bg-black border-white/15"
@@ -175,7 +174,6 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
         </div>
 
         <div className="p-6 sm:p-8 space-y-6 overflow-y-auto">
-          {/* Member Card Dossier */}
           <div
             className={`p-5 rounded-2xl border relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
               isDay ? "bg-stone-50 border-stone-200" : "bg-[#0d0d12] border-white/15"
@@ -233,7 +231,6 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             </div>
           </div>
 
-          {/* Company Brand Identity Form */}
           <form onSubmit={handleSave} className="space-y-3">
             <label className={`block text-xs font-mono uppercase tracking-wider ${isDay ? "text-stone-700 font-medium" : "text-zinc-300"}`}>
               Company / Agency Name
@@ -262,7 +259,6 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             </div>
           </form>
 
-          {/* Autonomous MCP Agent Station */}
           <div className="p-5 rounded-2xl border border-stone-800 bg-[#121215] space-y-4 text-white">
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">
@@ -300,7 +296,6 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
                   </div>
                 </div>
 
-                {/* Agent Config Drawer */}
                 <div className="space-y-2 pt-2 border-t border-white/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 p-0.5 rounded-lg border border-white/10 bg-white/[0.03] text-[11px] font-mono">
@@ -357,7 +352,6 @@ export const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({
             )}
           </div>
 
-          {/* Backup & Sign Out Footer */}
           <div className={`pt-4 border-t flex items-center justify-between text-xs font-mono ${isDay ? "border-stone-200 text-stone-600" : "border-white/10 text-zinc-400"}`}>
             <button
               onClick={handleExportData}

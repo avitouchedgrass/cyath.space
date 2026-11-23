@@ -74,7 +74,6 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
             : "bg-[#0c0c0e] border-white/15 text-white shadow-black/80"
         }`}
       >
-        {/* Modal Header */}
         <div className={`p-4 border-b flex items-center justify-between shrink-0 ${
           isDay ? "border-stone-200 bg-white" : "border-white/10 bg-[#070709]"
         }`}>
@@ -113,7 +112,6 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
           </div>
         </div>
 
-        {/* Content Body */}
         <div className="flex-1 overflow-y-auto p-5 font-mono text-xs leading-relaxed space-y-4 no-scrollbar">
           {isLoading ? (
             <div className="py-12 flex flex-col items-center justify-center text-center space-y-3 text-zinc-500">
@@ -127,7 +125,6 @@ export const SprintDigestModal: React.FC<SprintDigestModalProps> = ({
           )}
         </div>
 
-        {/* Bottom Actions Toolbar */}
         <div className={`p-4 border-t flex flex-wrap items-center justify-between gap-2 shrink-0 ${
           isDay ? "border-stone-200 bg-stone-50" : "border-white/10 bg-[#08080a]"
         }`}>

@@ -80,7 +80,6 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           : "bg-[#000000]/90 border-white/[0.08] text-white backdrop-blur-md"
         }`}
     >
-      {/* Left: Brand + Project Title */}
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard"
@@ -121,9 +120,7 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
         </div>
       </div>
 
-      {/* Center: Device Switcher & Interaction Mode */}
       <div className="hidden md:flex items-center gap-3">
-        {/* Viewport Toggles with Animated Transitions */}
         <div
           className={`flex items-center p-1 rounded-lg border ${isDay ? "bg-stone-100 border-stone-200" : "bg-white/[0.04] border-white/[0.08]"
             }`}
@@ -210,7 +207,6 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           )}
         </div>
 
-        {/* Comment vs Browse Mode */}
         <div
           className={`flex items-center p-1 rounded-lg border ${isDay ? "bg-stone-100 border-stone-200" : "bg-white/[0.04] border-white/[0.08]"
             }`}
@@ -249,7 +245,6 @@ export const ReviewHeader: React.FC<ReviewHeaderProps> = ({
         </div>
       </div>
 
-      {/* Right: Audio Control, Theme Toggle, Status Counts & Action Buttons */}
       <div className="flex items-center gap-1.5 sm:gap-2.5">
         {onToggleAudioMute && (
           <button

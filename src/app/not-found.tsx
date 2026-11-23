@@ -15,7 +15,6 @@ export default function NotFound() {
         isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
       }`}
     >
-      {/* Background Rotating Dither Receipt Paper */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <div
           className={`relative w-[340px] sm:w-[420px] aspect-[1/1.4] rounded-2xl border p-8 flex flex-col justify-between font-mono text-[11px] shadow-2xl opacity-20 sm:opacity-25 transition-transform duration-1000 animate-[spin_60s_linear_infinite] ${
@@ -24,14 +23,12 @@ export default function NotFound() {
               : "bg-[#0e0e12] border-white/25 text-zinc-300 [background-image:radial-gradient(#ffffff_0.75px,transparent_0.75px)] [background-size:6px_6px]"
           }`}
         >
-          {/* Receipt Top Header */}
           <div className="border-b border-dashed border-current pb-4 text-center space-y-1">
             <p className="tracking-widest uppercase font-bold text-xs">CYATH STAGING DEED</p>
             <p className="opacity-75">ID: REC-404-NULL-VOID</p>
             <p className="opacity-75">TIMESTAMP: 2026-11-13</p>
           </div>
 
-          {/* Receipt Items */}
           <div className="space-y-3 py-6 border-b border-dashed border-current">
             <div className="flex justify-between">
               <span>TARGET ROUTE</span>
@@ -51,7 +48,6 @@ export default function NotFound() {
             </div>
           </div>
 
-          {/* Huge Question Mark Over Receipt */}
           <div className="absolute inset-0 flex items-center justify-center">
             <span
               className={`font-serif text-[180px] sm:text-[240px] font-bold leading-none select-none opacity-90 ${
@@ -62,7 +58,6 @@ export default function NotFound() {
             </span>
           </div>
 
-          {/* Receipt Jagged / Barcode Bottom */}
           <div className="pt-4 flex flex-col items-center gap-1.5 opacity-80">
             <div className="h-6 w-full flex items-center justify-center gap-[2px]">
               {Array.from({ length: 38 }).map((_, i) => (
@@ -78,7 +73,6 @@ export default function NotFound() {
         </div>
       </div>
 
-      {/* Foreground 404 Overlay Content */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-md mx-auto space-y-6">
         <div className="flex items-center gap-2 mb-2">
           <TesseractMark size={24} className={isDay ? "text-stone-900" : "text-white"} />

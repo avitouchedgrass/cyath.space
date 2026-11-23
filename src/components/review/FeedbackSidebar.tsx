@@ -100,7 +100,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       className={`h-full w-full min-h-0 border-l flex flex-col ${isDay ? "bg-[#FBF9F4] border-stone-200 text-stone-900" : "bg-[#000000] border-white/[0.08] text-white"
         }`}
     >
-      {/* Top Sidebar Header */}
       <div className={`p-4 border-b flex items-center justify-between ${isDay ? "border-stone-200 bg-[#FBF9F4]" : "border-white/[0.08] bg-[#000000]"}`}>
         <div className="flex items-center gap-2">
           <MessageSquare className={`w-4 h-4 ${isDay ? "text-stone-600" : "text-zinc-400"}`} />
@@ -183,12 +182,10 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
       </div>}
     </div>
 
-      {/* Scope & Sort Controls */}
       <div
         className={`px-3 py-2 border-b flex items-center justify-between text-[10px] font-mono gap-2 ${isDay ? "bg-stone-50 border-stone-200 text-stone-600" : "bg-[#050507] border-white/[0.06] text-zinc-400"
           }`}
       >
-        {/* Device Scope */}
         <div className="flex items-center gap-1">
           <button
             onClick={() => setDeviceScope("current")}
@@ -218,7 +215,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
           </button>
         </div>
 
-        {/* Sort Selector */}
         <div className="flex items-center gap-1">
           <ArrowUpDown className="w-3 h-3 opacity-60" />
           <select
@@ -235,7 +231,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         </div>
       </div>
 
-      {/* Multi-Page Filter Bar (Shows when multiple pages exist) */}
       {uniquePages.length > 1 && (
         <div
           className={`px-3 py-1.5 border-b flex items-center gap-1.5 overflow-x-auto text-[10px] font-mono ${isDay ? "bg-stone-100/60 border-stone-200" : "bg-[#030304] border-white/[0.06]"
@@ -275,7 +270,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         </div>
       )}
 
-      {/* Status Filter Tabs */}
       <div
         className={`px-3 py-2 border-b flex items-center gap-1 ${isDay ? "bg-stone-100/40 border-stone-200" : "bg-[#050505] border-white/[0.08]"
           }`}
@@ -323,7 +317,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
         </button>
       </div>
 
-      {/* Pins List */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2.5 no-scrollbar">
         {displayedPins.length === 0 ? (
           <div className={`h-48 flex flex-col items-center justify-center text-center p-4 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
@@ -404,7 +397,6 @@ export const FeedbackSidebar: React.FC<FeedbackSidebarProps> = ({
                   </button>}
                 </div>
 
-                {/* Subpage Identification Tag */}
                 <div className="mb-2">
                   <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[9px] font-mono border ${pagePalette.bg} ${pagePalette.border} ${pagePalette.text}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${pagePalette.dot}`} />

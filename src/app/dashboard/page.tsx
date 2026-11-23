@@ -313,7 +313,6 @@ export default function DashboardPage() {
         isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
       }`}
     >
-      {/* Shared Persistent Left Sidebar */}
       <AppSidebar
         activeItem="projects"
         onNewReviewClick={() => {
@@ -329,13 +328,10 @@ export default function DashboardPage() {
         onChange={handleFileUpload}
       />
 
-      {/* Main Stream Area — Elevated with Harvey AI Inspired Spatial Structure */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto relative page-enter">
-        {/* Subtle Depth Background Lighting */}
         <div className="absolute top-0 inset-x-0 h-96 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/[0.04] via-transparent to-transparent pointer-events-none" />
 
         <div className="max-w-6xl w-full mx-auto px-6 py-8 space-y-8 flex-1 relative z-10">
-          {/* Workspace Title & Telemetry Header (Harvey AI Style) */}
           <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-3 border-b ${
             isDay ? "border-stone-200" : "border-white/[0.08]"
           }`}>
@@ -350,7 +346,6 @@ export default function DashboardPage() {
               </h1>
             </div>
 
-            {/* Quick Monochrome Telemetry Badges & Alluring Upgrade Button */}
             <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
               <span
                 className={`px-4 py-2 rounded-full border transition-colors ${
@@ -382,7 +377,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Elevated Intake Bar with StarBorder Travelling Starlight Animation */}
           <StarBorder
             id="tour-create-card"
             color={isDay ? "rgba(28, 25, 23, 0.45)" : "rgba(255, 255, 255, 0.85)"}
@@ -460,7 +454,6 @@ export default function DashboardPage() {
             {loadError && <button type="button" className="underline" onClick={() => setReloadProjects(value => value + 1)}>Reload reviews</button>}
           </div>}
 
-          {/* Search & Filter Strip */}
           <div
             id="tour-projects-section"
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2"
@@ -541,7 +534,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Card Format with Previews (Harvey AI Inspired) */}
           {filteredProjects.length === 0 ? (
             <div
               className={`border rounded-2xl p-14 text-center transition-colors ${
@@ -594,7 +586,6 @@ export default function DashboardPage() {
                         : "bg-[#0a0a0d] border-white/[0.12] hover:border-white/30 text-white shadow-black/60"
                     }`}
                   >
-                    {/* Top Window Bar */}
                     <div
                       className={`h-8 border-b px-3.5 flex items-center justify-between select-none ${
                         isDay ? "bg-stone-100/90 border-stone-200" : "bg-[#0d0d10] border-white/[0.08]"
@@ -609,7 +600,6 @@ export default function DashboardPage() {
                         </span>
                       </div>
 
-                      {/* Pure Monochrome Status Pills */}
                       <div>
                         {project.isApproved ? (
                           <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full bg-white text-black flex items-center gap-1 shadow-sm">
@@ -629,7 +619,6 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Viewport Preview Stage (16:10 Aspect Ratio) */}
                     <Link
                       href={getCanvasHref(project)}
                       prefetch={true}
@@ -658,7 +647,6 @@ export default function DashboardPage() {
                         </div>
                       )}
 
-                      {/* Hover Overlay with Action Button */}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-xs">
                         <span className="px-3.5 py-1.5 rounded-full bg-white text-black font-mono text-xs font-semibold shadow-lg flex items-center gap-1.5 active:scale-[0.96] transition-transform">
                           <span>Open Review</span>
@@ -667,7 +655,6 @@ export default function DashboardPage() {
                       </div>
                     </Link>
 
-                    {/* Bottom Metadata & Controls */}
                     <div className="p-4 flex flex-col justify-between flex-1 gap-3">
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-1">
@@ -680,7 +667,6 @@ export default function DashboardPage() {
                         </p>
                       </div>
 
-                      {/* Card Footer Toolbar */}
                       <div className={`flex items-center justify-between pt-3 border-t text-xs ${isDay ? "border-stone-200" : "border-white/[0.08]"}`}>
                         <div className="flex items-center gap-2">
                           <button
@@ -743,7 +729,6 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Upgrade Modal for 1-Canvas Limit Enforcement */}
       {showUpgradeModal && (
         <StudioUpgradeModal
           theme={theme}
@@ -751,7 +736,6 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Project Punchlist Drawer */}
       {selectedPunchlistProject && (
         <ProjectPunchlistDrawer
           project={projects.find(project => project.shareId === selectedPunchlistProject.shareId) ?? null}
@@ -760,7 +744,6 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Firm Monogram Onboarding Modal */}
       {showOnboardingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
           <div className="w-full max-w-sm rounded-2xl bg-[#0a0a0c] border border-white/15 p-6 shadow-2xl text-white">
@@ -791,7 +774,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Native Interactive Dashboard Walkthrough Guide */}
       <DashboardTour />
     </div>
   );

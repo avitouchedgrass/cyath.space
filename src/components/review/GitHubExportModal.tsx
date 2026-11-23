@@ -138,7 +138,6 @@ export const GitHubExportModal: React.FC<GitHubExportModalProps> = ({
             : "bg-[#0b0c10] border-white/15 text-white shadow-black/90"
         }`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-inherit">
           <div className="flex items-center gap-2.5">
             <svg
@@ -172,7 +171,6 @@ export const GitHubExportModal: React.FC<GitHubExportModalProps> = ({
           </button>
         </div>
 
-        {/* Success View */}
         {createdIssueUrl ? (
           <div className="py-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
@@ -234,7 +232,6 @@ export const GitHubExportModal: React.FC<GitHubExportModalProps> = ({
               </p>
             </div>
 
-            {/* Direct API option toggle */}
             <div>
               <button
                 type="button"
@@ -269,7 +266,6 @@ export const GitHubExportModal: React.FC<GitHubExportModalProps> = ({
               )}
             </div>
 
-            {/* Action Buttons */}
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 border-t border-inherit">
               <button
                 type="button"

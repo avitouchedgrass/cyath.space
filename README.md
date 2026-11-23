@@ -4,7 +4,7 @@ Cyath is a studio workspace for visual feedback and client approval on websites,
 
 ## Local development and verification
 
-Install dependencies with `npm ci` and run `npm run dev`. Configure Supabase Auth and apply the review migration before creating reviews. Generate MCP keys in **Settings → API Keys** for accounts with an active Pro entitlement. Follow the [MCP setup](mcp/README.md) to connect your editor.
+Install dependencies with `npm ci` and run `npm run dev`. Configure Supabase Auth and apply the review migration before creating reviews. Generate MCP keys in Settings → API Keys for accounts with an active Pro entitlement. Follow the [MCP setup](mcp/README.md) to connect your editor.
 
 `npm run test:mcp` builds the app and runs the actual MCP executable against local Next.js routes and an isolated Supabase API fixture. It covers all four MCP tools, authorization, concurrent pins, save failures, and approval. The fixture uses synthetic credentials and does not require a production account.
 

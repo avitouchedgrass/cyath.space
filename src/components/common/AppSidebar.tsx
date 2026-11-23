@@ -144,7 +144,6 @@ export function AppSidebar({
       } ${className}`}
     >
       <div className="space-y-6">
-        {/* Brand Header */}
         <div className="flex items-center justify-between">
           <Link
             href="/dashboard"
@@ -186,7 +185,6 @@ export function AppSidebar({
           </button>
         </div>
 
-        {/* Primary CTA */}
         <button
           id="tour-new-review-btn"
           onClick={handleNewReview}
@@ -200,7 +198,6 @@ export function AppSidebar({
           <span>New Review</span>
         </button>
 
-        {/* Persistent Left Nav Rail */}
         <nav className="space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 px-3 py-1 mb-1">
             Workspace
@@ -296,7 +293,6 @@ export function AppSidebar({
         </nav>
       </div>
 
-      {/* Plan Quota Indicator in Sidebar */}
       <div className="space-y-4">
         <div
           className={`p-3 rounded-xl border text-xs font-mono transition-colors ${
@@ -313,7 +309,6 @@ export function AppSidebar({
           </div>
         </div>
 
-        {/* Bottom User Profile Pill */}
         <div className={`pt-4 border-t ${isDay ? "border-stone-300" : "border-white/[0.08]"}`}>
           <div className="flex items-center justify-between px-2 py-1.5">
             <div className="flex items-center gap-2.5 min-w-0">

@@ -1,9 +1,3 @@
-/**
- * Resend Email Dispatcher
- * Sends transactional emails (verification, milestone freeze receipts, audit exports)
- * via Resend REST API.
- */
-
 export interface SendEmailOptions {
   to: string | string[];
   subject: string;

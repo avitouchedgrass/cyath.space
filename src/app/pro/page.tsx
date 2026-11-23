@@ -61,13 +61,10 @@ export default function ProPricingPage() {
       className={`min-h-screen font-sans flex flex-col md:flex-row transition-colors duration-200 selection:bg-stone-300 selection:text-black ${isDay ? "bg-[#FBF9F4] text-[#1C1917]" : "bg-[#000000] text-white"
         }`}
     >
-      {/* Shared Persistent Left Sidebar */}
       <AppSidebar activeItem="plans" />
 
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto relative page-enter">
         <div className="max-w-4xl w-full mx-auto px-6 pt-10 pb-20 space-y-10 flex-1">
-          {/* Header & Bold Claim */}
           <div className="text-center max-w-2xl mx-auto space-y-4">
             <h1
               className={`text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight leading-[1.15] ${isDay ? "text-stone-950" : "text-white"
@@ -77,11 +74,10 @@ export default function ProPricingPage() {
               100% Free. No paywalls.
             </h1>
             <p className={`text-sm sm:text-base leading-relaxed ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
-              Unlike MarkUp.io or Pastel, there are no 5-project caps, no export fees, and no $29/seat monthly subscriptions. Every studio feature is completely unlocked for solo creators, agencies, and students.
+              Unlike MarkUp or Pastel, there are no 5-project limits, no export fees, and no per-seat subscriptions. Every feature is completely unlocked.
             </p>
           </div>
 
-          {/* Pro Capabilities Feature Card */}
           <div
             className={`rounded-2xl border p-8 transition-all relative overflow-hidden shadow-xl ${isDay
               ? "bg-white border-stone-300 text-stone-900 shadow-stone-200/50"
@@ -145,7 +141,6 @@ export default function ProPricingPage() {
             </div>
           </div>
 
-          {/* Developer Integration Console Block with Step-by-Step Setup */}
           <div
             className={`border rounded-2xl p-6 sm:p-8 transition-all ${isDay ? "bg-white border-stone-300 shadow-sm" : "bg-[#08080a] border-white/10"
               }`}

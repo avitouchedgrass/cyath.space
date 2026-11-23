@@ -461,19 +461,16 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
           </div>
         </div>
 
-        {/* Viewport Frame Container with Scroll Anchoring & Animated Height Scaling */}
         <div
           ref={scrollViewportRef}
           onScroll={e => post({ type: "CYATH_PARENT_SCROLL", scrollTop: e.currentTarget.scrollTop })}
           className={`relative min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden bg-white ${interactionMode === "comment" ? "cursor-crosshair" : "cursor-default"}`}
         >
-          {/* Content Stage (Expands to full asset height, coordinate reference for sticky pins) */}
           <div
             ref={containerRef}
             className="relative w-full max-w-full overflow-x-hidden"
             style={{ minHeight: isFullMode ? "100vh" : stageMinHeight }}
           >
-            {/* Content renderer based on assetType */}
             {project.assetType === "image" ? (
               <img
                 src={project.targetUrl}
@@ -523,7 +520,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               </div>
             )}
 
-            {/* Annotation Overlay Layer (Active on images & PDFs, web URLs use native DOM inspector) */}
             {!isWebUrl && (
               <div
                 onMouseDown={handleMouseDown}
@@ -535,7 +531,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Live Dragging Box Preview (Images & PDFs) */}
             {!isWebUrl && drawingBox && (
               <div
                 style={{
@@ -548,7 +543,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Live Collaborative Peer Cursors */}
             {Object.values(cursors).map((cursor) => (
               <div
                 key={cursor.id}
@@ -576,7 +570,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               </div>
             ))}
 
-            {/* Active Pins & Boxes for static assets (web URLs render them inside the iframe DOM) */}
             {!isWebUrl && activeDevicePins.map((pin) => (
               <PinMarker
                 key={pin.id}
@@ -589,7 +582,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             ))}
 
-            {/* Pending Draft Marker: Area Box */}
             {pendingPinCoords && pendingPinCoords.annotationType === "box" && (
               <div
                 style={{
@@ -606,7 +598,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               </div>
             )}
 
-            {/* Pending Draft Marker: Point Pin with Ultra High Contrast Dual Rings & Radar Ping */}
             {pendingPinCoords && pendingPinCoords.annotationType !== "box" && (
               <div
                 style={{
@@ -615,16 +606,13 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
                 }}
                 className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-30"
               >
-                {/* Outer high-contrast radar ping */}
                 <div className="absolute inset-0 -m-1 rounded-full border border-black/80 ring-2 ring-white animate-ping opacity-60" />
-                {/* Solid Dual-Ring High-Contrast Pin Marker */}
                 <div className="relative w-6 h-6 rounded-full flex items-center justify-center font-mono font-bold text-xs bg-black text-white border-2 border-white shadow-[0_4px_14px_rgba(0,0,0,0.6)] ring-1 ring-black">
                   +
                 </div>
               </div>
             )}
 
-            {/* Pending New Pin Popover */}
             {pendingPinCoords && (
               <PinPopover
                 xPercent={pendingPinCoords.xPercent}
@@ -642,7 +630,6 @@ export const ReviewStage: React.FC<ReviewStageProps> = ({
               />
             )}
 
-            {/* Active Existing Pin Thread Popover */}
             {activePin && (
               <PinPopover
                 key={activePin.id}

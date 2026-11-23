@@ -45,7 +45,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenGuide, className = "", the
       } ${className}`}
     >
       <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-        {/* Brand & Mission */}
         <div className="space-y-2 max-w-sm">
           <Link href="/dashboard" prefetch={true} className="flex items-center gap-2.5 group p-1">
             <TesseractMark
@@ -67,7 +66,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenGuide, className = "", the
           </p>
         </div>
 
-        {/* Links Column */}
         <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-xs font-mono">
           <Link
             href="/dashboard"
@@ -128,7 +126,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenGuide, className = "", the
           )}
         </div>
 
-        {/* Operational System Status & Year */}
         <div className="space-y-1 text-left md:text-right font-mono text-[11px]">
           <div className={`flex items-center md:justify-end gap-2 ${isDay ? "text-stone-700" : "text-zinc-300"}`}>
             <span>Edge Infrastructure Operational</span>

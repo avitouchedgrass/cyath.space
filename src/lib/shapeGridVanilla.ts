@@ -1,6 +1,3 @@
-// Vanilla ShapeGrid implementation matching React Bits ShapeGrid.jsx 1:1
-// Zero React overhead, pure Canvas 2D engine
-
 const SHAPES = ['square', 'tile', 'hexagon', 'triangle', 'diamond', 'circle', 'cross', 'dot'];
 const DIRECTIONS: Record<string, [number, number]> = {
   right: [1, 0],

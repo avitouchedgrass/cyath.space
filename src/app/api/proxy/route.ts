@@ -98,8 +98,6 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
   }
 
-  // Hook history.pushState and history.replaceState immediately
-  // CRITICAL: Resolves relative URLs to window.location.origin so browser <base> tag never triggers SecurityError
   var origPushState = history.pushState ? history.pushState.bind(history) : function() {};
   var origReplaceState = history.replaceState ? history.replaceState.bind(history) : function() {};
 
@@ -137,12 +135,10 @@ export async function GET(req: NextRequest) {
     } catch(err) {}
   };
 
-  // Synchronize location pathname for client-side routers (React Router, Next.js, Vue Router)
   try {
     history.replaceState(null, '', initialTargetUrl);
   } catch(e) {}
 
-  // Suppress third-party tracker unhandled errors and rejections that could trip root error boundaries
   window.addEventListener('error', function(event) {
     if (event && (event.error && event.error.name === 'SecurityError' || String(event.message).includes('SecurityError') || String(event.message).includes('Usercentrics') || String(event.message).includes('usercentrics'))) {
       event.preventDefault();
@@ -159,7 +155,6 @@ export async function GET(req: NextRequest) {
     }
   });
 
-  // Audio silencing protocol for preview cards and muted canvases
   function applyAudioMute(muted) {
     try {
       if (muted) {
@@ -179,7 +174,6 @@ export async function GET(req: NextRequest) {
     } catch(e) {}
   }
 
-  // Intercept Web Audio API
   try {
     var OrigAC = window.AudioContext || window.webkitAudioContext;
     if (OrigAC) {
@@ -202,7 +196,6 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // Intercept HTML5 media elements
   try {
     var origPlay = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function() {
@@ -214,7 +207,6 @@ export async function GET(req: NextRequest) {
     };
   } catch(e) {}
 
-  // Listen for dynamic audio toggle events from parent frame
   window.addEventListener('message', function(ev) {
     if (ev.source === window.parent && ev.origin === parentOrigin && ev.data && ev.data.type === 'CYATH_SET_AUDIO_MUTED') {
       isAudioMuted = !!ev.data.muted;
@@ -250,7 +242,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Helper to route relative and targetOrigin API/asset requests through Cyath proxy (defeats CORS errors & SPA 404s)
   function toProxiedUrl(raw) {
     if (!raw) return raw;
     try {
@@ -260,7 +251,6 @@ export async function GET(req: NextRequest) {
 
       var currentOrigin = window.location.origin;
 
-      // If URL points to Cyath's host origin but is not /api/proxy, rewrite to targetOrigin
       if (strUrl.startsWith(currentOrigin)) {
         strUrl = targetOrigin + strUrl.slice(currentOrigin.length);
       } else if (strUrl.startsWith('/')) {
@@ -269,7 +259,6 @@ export async function GET(req: NextRequest) {
 
       var resolved = new URL(strUrl, currentTargetUrl).href;
       if (resolved.startsWith('http://') || resolved.startsWith('https://')) {
-        // If the request is for the target website origin or subdomains, proxy it
         if (isSameDomainOrSubdomain(resolved, targetOrigin)) {
           var proxied = window.location.origin + '/api/proxy?url=' + encodeURIComponent(resolved) + (isAudioMuted ? '&mute=1' : '');
           if (typeof raw === 'object' && raw instanceof Request) {
@@ -282,7 +271,6 @@ export async function GET(req: NextRequest) {
     return raw;
   }
 
-  // Intercept window.location.assign and replace to prevent escaping proxy into Cyath routes
   try {
     var origAssign = window.Location ? window.Location.prototype.assign : null;
     var origReplace = window.Location ? window.Location.prototype.replace : null;
@@ -300,7 +288,6 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // Modern Navigation API interceptor to catch programmatic redirects, origin enforcers, and framebusting
   try {
     if (typeof window.navigation !== 'undefined' && window.navigation.addEventListener) {
       window.navigation.addEventListener('navigate', function(event) {
@@ -328,7 +315,6 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // Mock Kasada anti-bot SDK so it does not throw or trigger redirects
   try {
     window.KPSDK = {
       configure: function() {},
@@ -337,7 +323,6 @@ export async function GET(req: NextRequest) {
     };
   } catch(e) {}
 
-  // Stub ServiceWorker registration to prevent foreign service workers caching localhost
   try {
     if (navigator.serviceWorker) {
       navigator.serviceWorker.register = function() {
@@ -346,7 +331,6 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // Intercept dynamic Image src assignments (fixes relative images & rotating plates)
   try {
     var imgDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
     if (imgDesc && imgDesc.set) {
@@ -368,7 +352,6 @@ export async function GET(req: NextRequest) {
     }
   } catch(e) {}
 
-  // Intercept window.fetch to route target origin requests through proxy
   var origFetch = window.fetch;
   if (origFetch) {
     window.fetch = function(input, init) {
@@ -379,7 +362,6 @@ export async function GET(req: NextRequest) {
     };
   }
 
-  // Intercept XMLHttpRequest
   var origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url) {
     try {
@@ -390,15 +372,11 @@ export async function GET(req: NextRequest) {
     return origOpen.apply(this, arguments);
   };
 
-  // In Comment mode: completely disable website button clicks, links, and forms
-  // In Browse mode: handle standard link navigations through proxy
   document.addEventListener('click', function(e) {
     if (currentInteractionMode === 'comment') {
-      // If clicking directly on an existing cyath pin or inspector, allow selection
       if (e.target && (e.target.closest('#cyath-pins-layer') || e.target.id === 'cyath-hover-inspector')) {
         return;
       }
-      // Stop all website buttons, links, inputs, and toggles from triggering
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -432,7 +410,6 @@ export async function GET(req: NextRequest) {
     }
   }, true);
 
-  // Dynamic stage height synchronizer with anti-runaway clamping & debouncing
   var lastSentHeight = 0;
   var resizeDebounceTimer = null;
 
@@ -475,7 +452,6 @@ export async function GET(req: NextRequest) {
   }
   [200, 600, 1200, 2500, 5000].forEach(function(t) { setTimeout(sendHeight, t); });
 
-  // --- CYATH MARKUP.IO ELEMENT ANCHOR ENGINE ---
   var currentInteractionMode = 'browse';
   var stagedPins = [];
   var activePinId = null;
@@ -538,7 +514,6 @@ export async function GET(req: NextRequest) {
       pinEl.className = 'cyath-dom-pin';
       pinEl.dataset.pinId = pin.id;
 
-      // MarkUp.io Element Binding lookup
       var targetEl = null;
       if (pin.domAnchor && pin.domAnchor.selector) {
         try { targetEl = document.querySelector(pin.domAnchor.selector); } catch(e) {}
@@ -595,7 +570,6 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // Hover element inspector for comment mode
   var lastCursorTime = 0;
   document.addEventListener('mousemove', function(e) {
     var now = Date.now();
@@ -632,7 +606,6 @@ export async function GET(req: NextRequest) {
     hoverInspector.style.height = rect.height + 'px';
   }, true);
 
-  // Tap, click, or drag to place element-anchored feedback.
   var dragStartCoords = null;
   document.addEventListener('pointerdown', function(e) {
     if (!e.isPrimary || e.button !== 0 || currentInteractionMode !== 'comment') return;
@@ -701,18 +674,6 @@ export async function GET(req: NextRequest) {
     e.stopPropagation();
   }, true);
 
-  // Prevent button/link clicks inside staging site when in Comment mode
-  document.addEventListener('click', function(e) {
-    if (currentInteractionMode === 'comment') {
-      if (e.target && e.target.closest('#cyath-pins-layer')) return;
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      return false;
-    }
-  }, true);
-
-  // Re-anchor pins dynamically on scroll, resize, and mutations (MarkUp.io dynamic tracking)
   function trackBoundElements() {
     if (pinsLayer && stagedPins.length > 0) {
       renderPins();
@@ -780,7 +741,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
 }
 .cyath-active-pulse { animation: cyathPinPulse 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 </style>`;
-    // Neutralize frame-busting scripts in target HTML before injecting bridge
     html = html.replace(/window\.top\s*!==\s*window\.self/g, "false");
     html = html.replace(/top\.location\s*=/g, "/* frame-neutralized */ void ");
     html = html.replace(/parent\.location\s*=/g, "/* frame-neutralized */ void ");

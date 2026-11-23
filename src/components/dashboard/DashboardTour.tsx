@@ -232,7 +232,6 @@ export function DashboardTour() {
 
   return (
     <div className="fixed inset-0 z-[99990] overflow-hidden select-none animate-in fade-in duration-200">
-      {/* Dark Ambient Spotlight Mask Overlay */}
       <svg className="fixed inset-0 w-full h-full pointer-events-none z-[99991]">
         <defs>
           <mask id="cyath-tour-mask">
@@ -259,7 +258,6 @@ export function DashboardTour() {
         />
       </svg>
 
-      {/* Target Element High-Contrast Spotlight Ring */}
       {targetRect && (
         <div
           style={{
@@ -277,7 +275,6 @@ export function DashboardTour() {
         />
       )}
 
-      {/* Interactive Floating Tour Card */}
       <div
         ref={cardRef}
         style={cardStyle}
@@ -288,7 +285,6 @@ export function DashboardTour() {
             : "bg-[#0c0c0e]/98 border-white/20 text-white shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
         }`}
       >
-        {/* Top Header Row */}
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.08]">
           <div className="flex items-center gap-2">
             <TesseractMark size={18} className={isDay ? "text-stone-900" : "text-white"} />
@@ -317,7 +313,6 @@ export function DashboardTour() {
           </div>
         </div>
 
-        {/* Content Body */}
         <div className="space-y-2 mb-6">
           <h3 className="font-sans font-bold text-base tracking-tight">
             {currentStep.title}
@@ -327,7 +322,6 @@ export function DashboardTour() {
           </p>
         </div>
 
-        {/* Action Controls */}
         <div className="flex items-center justify-between pt-1">
           <button
             onClick={closeTour}

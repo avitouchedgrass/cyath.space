@@ -359,7 +359,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           : "bg-[#0a0a0a] border-white/20 text-white shadow-2xl selection:bg-white selection:text-black"
       }`}
     >
-      {/* Header */}
       <div className={`flex items-center justify-between border-b pb-2.5 mb-3 ${isDay ? "border-stone-200" : "border-white/[0.08]"}`}>
         <div className="flex items-center gap-2">
           <div className={`w-5 h-5 rounded-full font-mono font-bold text-[10px] flex items-center justify-center ${isDay ? "bg-stone-900 text-white" : "bg-white text-black"
@@ -434,7 +433,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
         </div>
       </div>
 
-      {/* Mode 1: New Pin Form */}
       {isNew ? (
         <form onSubmit={handleCreateSubmit} className="space-y-3">
           <div>
@@ -502,7 +500,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             </div>
           </div>
 
-          {/* Instant Audio Recorder / Player */}
           {isRecording ? (
             <div className={`p-2.5 rounded-xl border flex items-center justify-between animate-in fade-in duration-150 ${
               isDay ? "bg-red-50/80 border-red-200 text-red-900" : "bg-red-950/30 border-red-500/30 text-red-200"
@@ -605,9 +602,7 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
           </div>
         </form>
       ) : (
-        /* Mode 2: Existing Pin Thread */
         <div className="space-y-3">
-          {/* Telemetry Chip */}
           {pin?.telemetry && (
             <div className={`border rounded-md px-2.5 py-1 text-[10px] font-mono flex items-center justify-between ${isDay ? "bg-stone-50 border-stone-200 text-stone-600" : "bg-white/[0.03] border-white/[0.08] text-zinc-400"
               }`}>
@@ -616,7 +611,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             </div>
           )}
 
-          {/* Attached Voice Note Audio Player */}
           {pin?.audioUrl && (
             <div className={`p-2.5 rounded-xl border flex items-center justify-between ${
               isDay ? "bg-stone-50 border-stone-200" : "bg-white/[0.04] border-white/10"
@@ -654,7 +648,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             </div>
           )}
 
-          {/* Comment Thread List */}
           <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
             {(Array.isArray(pin?.comments) ? pin.comments : []).map((comment) => (
               <div
@@ -673,7 +666,6 @@ export const PinPopover: React.FC<PinPopoverProps> = ({
             ))}
           </div>
 
-          {/* Reply Form */}
           {errorMessage && <p role="alert" className="text-sm text-red-500">{errorMessage}</p>}
           {onAddComment && <form onSubmit={handleReplySubmit} className={`pt-2 border-t flex items-center gap-2 ${isDay ? "border-stone-200" : "border-white/[0.08]"}`}>
             <input

@@ -76,30 +76,22 @@ function AuthConfirmContent() {
         setUserEmail(verifiedEmail || null);
         setStatus("success");
 
-        // Broadcast success to original window
         const payload = {
           type: "AUTH_VERIFIED",
           email: verifiedEmail || null,
           timestamp: Date.now(),
         };
 
-        // Channel A: BroadcastChannel (same browser tab-to-tab)
         try {
           const bc = new BroadcastChannel("cyath_auth_channel");
           bc.postMessage(payload);
           bc.close();
-        } catch {
-          // BroadcastChannel not available in older environments
-        }
+        } catch {}
 
-        // Channel B: LocalStorage storage event
         try {
           localStorage.setItem("cyath_auth_verified", JSON.stringify(payload));
-        } catch {
-          // ignore
-        }
+        } catch {}
 
-        // Channel C: Supabase Realtime broadcast (cross-device/cross-browser support)
         if (verifiedEmail) {
           try {
             const channelId = `auth_sync_${verifiedEmail.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
@@ -116,9 +108,7 @@ function AuthConfirmContent() {
                 }, 2000);
               }
             });
-          } catch {
-            // ignore
-          }
+          } catch {}
         }
       } catch (err: unknown) {
         if (isCancelled) return;
@@ -141,7 +131,6 @@ function AuthConfirmContent() {
       className={`relative min-h-screen w-full flex flex-col transition-colors duration-300 font-sans selection:bg-[#38BDF8]/20 ${isDay ? "bg-[#F5F3EC] text-[#1C1A18]" : "bg-[#141312] text-[#F3F1EC]"
         }`}
     >
-      {/* Precision Drafting Grid Pattern */}
       <div
         className="absolute inset-0 pointer-events-none opacity-40"
         style={{
@@ -152,7 +141,6 @@ function AuthConfirmContent() {
         }}
       />
 
-      {/* Top Header */}
       <header className="relative z-10 h-16 px-6 sm:px-12 flex items-center justify-between pointer-events-none">
         <div className="pointer-events-auto">
           <Link href="/">
@@ -174,7 +162,6 @@ function AuthConfirmContent() {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="relative z-10 flex-1 flex items-center justify-center p-6 sm:p-10">
         <div
           className={`w-full max-w-[440px] rounded-2xl border p-8 sm:p-10 text-center shadow-xl backdrop-blur-md transition-all ${isDay
@@ -192,7 +179,7 @@ function AuthConfirmContent() {
                 Verifying Studio Credentials
               </h2>
               <p className={`text-xs ${isDay ? "text-black/60" : "text-white/60"}`}>
-                Establishing cryptographic session across windows...
+                Confirming session across windows...
               </p>
             </div>
           )}
@@ -231,7 +218,6 @@ function AuthConfirmContent() {
                 </div>
               </div>
 
-              {/* Secondary Fallback Action */}
               <div className="pt-2">
                 <button
                   onClick={() => router.push("/dashboard")}
