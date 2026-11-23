@@ -287,21 +287,11 @@ export function AppSidebar({
           >
             <div className="flex items-center gap-2.5">
               <CreditCard className="w-4 h-4" />
-              <span>Plans</span>
+              <span>Pro Status</span>
             </div>
-            {isUserPro ? (
-              <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
-                isDay ? "bg-stone-900 text-white" : "bg-white text-black"
-              }`}>
-                PRO
-              </span>
-            ) : (
-              <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
-                isDay ? "border-stone-400 text-stone-700 bg-stone-100" : "border-white/20 text-zinc-400 bg-white/[0.02]"
-              }`}>
-                FREE
-              </span>
-            )}
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              FREE
+            </span>
           </Link>
         </nav>
       </div>
@@ -313,32 +303,14 @@ export function AppSidebar({
             isDay ? "bg-stone-200/60 border-stone-300 text-stone-800" : "bg-white/[0.03] border-white/[0.06] text-zinc-200"
           }`}
         >
-          <div className="flex items-center justify-between text-[11px] mb-1.5">
-            <span className={isDay ? "text-stone-600 font-medium" : "text-zinc-400"}>Canvas Quota</span>
-            <span className={`font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>
-              {isUserPro ? "Unlimited" : `${userProjects.length} / 1`}
-            </span>
+          <div className="flex items-center justify-between text-[11px] mb-1">
+            <span className={isDay ? "text-stone-600 font-medium" : "text-zinc-400"}>Studio Plan</span>
+            <span className="font-semibold text-emerald-400">Pro Unlocked</span>
           </div>
-          {!isUserPro && (
-            <div className={`w-full h-1 rounded-full overflow-hidden ${isDay ? "bg-stone-300" : "bg-white/10"}`}>
-              <div
-                className={`h-full transition-all duration-300 ${isDay ? "bg-stone-900" : "bg-white"}`}
-                style={{ width: `${Math.min(100, userProjects.length * 100)}%` }}
-              />
-            </div>
-          )}
-          {!isUserPro && userProjects.length >= 1 && (
-            <Link
-              href="/pro"
-              prefetch={true}
-              onClick={(e) => handlePageNavigation(e, "/pro")}
-              className={`mt-2 text-[10px] underline cursor-pointer block text-left transition-colors ${
-                isDay ? "text-stone-700 hover:text-stone-950 font-medium" : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              Upgrade to Pro for more
-            </Link>
-          )}
+          <div className="flex items-center justify-between text-[10px] text-zinc-500">
+            <span>Canvases</span>
+            <span className={isDay ? "text-stone-800" : "text-zinc-300"}>Unlimited</span>
+          </div>
         </div>
 
         {/* Bottom User Profile Pill */}

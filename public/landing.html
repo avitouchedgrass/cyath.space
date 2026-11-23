@@ -1553,7 +1553,7 @@ html.over-pin-demo .fluid-cursor,
       <div class="nav-divider"></div>
       <a href="#punchlist" class="nav-segment">Punchlist</a>
       <div class="nav-divider"></div>
-      <a href="#pricing" class="nav-segment">Pricing</a>
+      <a href="#zero-paywall" class="nav-segment">100% Free</a>
       <!-- Filled Solid CTA Button attached to the bar -->
       <a href="/login" target="_top" class="nav-cta-filled">Start Free</a>
     </nav>
@@ -1585,7 +1585,7 @@ html.over-pin-demo .fluid-cursor,
       <a href="/login" target="_top" class="btn-primary">Start for Free</a>
       <a href="#how-it-works" class="btn-secondary">See How It Works</a>
     </div>
-    <p class="hero-footnote">No credit card required. No client login needed. One active staging project free forever.</p>
+    <p class="hero-footnote">No credit card required. No client login needed. 100% Free with unlimited canvases — unlike MarkUp or Pastel.</p>
   </div>
 </section>
 
@@ -1825,91 +1825,39 @@ html.over-pin-demo .fluid-cursor,
         <td>Manual ticket filling</td>
         <td>Complex workflow states</td>
       </tr>
+      <tr>
+        <td><strong>MarkUp.io &amp; Pastel</strong></td>
+        <td>5-project caps ($29/mo lock-in)</td>
+        <td>Basic viewport tags</td>
+        <td>Exports locked behind paywall</td>
+      </tr>
       <tr class="row-cyath">
-        <td class="col-cyath"><strong>Cyath</strong> <span class="cyath-badge-pill">ACTIVE</span></td>
+        <td class="col-cyath"><strong>Cyath</strong> <span class="cyath-badge-pill">100% FREE PRO</span></td>
         <td class="col-cyath">Zero setup (one link)</td>
-        <td class="col-cyath">Automated viewport & browser tag</td>
-        <td class="col-cyath">Timestamped milestone certificate</td>
+        <td class="col-cyath">Automated viewport &amp; DOM anchor tag</td>
+        <td class="col-cyath">Free timestamped milestone audit deed</td>
       </tr>
     </tbody>
   </table>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     PRICING SECTION
+     ZERO PAYWALL SECTION
      ══════════════════════════════════════════════════════════════════ -->
-<section id="pricing" class="pricing-section">
-  <div class="section-number">05 / PRICING</div>
-  <h2 class="section-heading">Fair pricing. Zero lock-in.</h2>
+<section id="zero-paywall" class="pricing-section">
+  <div class="section-number">05 / ZERO PAYWALL</div>
+  <h2 class="section-heading">100% Free. Unlike MarkUp or Pastel, zero paywalled traps.</h2>
   <p class="section-body">
-    Start free on your current project. Upgrade to agency tier when you manage multiple concurrent client rollouts.
+    MarkUp.io and Pastel cap your free tier at 1–5 projects, charge $29 per seat per month, and lock audit exports behind subscriptions. Cyath gives you unlimited live review canvases, DOM telemetry, autonomous MCP agent integration, and milestone sign-off deeds—completely free in public beta. No credit cards. No lock-in.
   </p>
 
-  <!-- Interactive Billing Frequency Switcher -->
-  <div class="billing-switcher" aria-label="Billing frequency switcher">
-    <button type="button" class="billing-btn active" id="billingAnnualBtn" onclick="setBilling('annual')">
-      Billed Annually <span class="billing-discount-badge">Save 20%</span>
-    </button>
-    <button type="button" class="billing-btn" id="billingMonthlyBtn" onclick="setBilling('monthly')">
-      Billed Monthly ($15)
-    </button>
-  </div>
-
-  <div class="pricing-grid">
-    <div class="price-card">
-      <div>
-        <div class="price-tier-name">SOLO FREELANCER</div>
-        <div class="price-figure">$0</div>
-        <div class="price-period">Free forever. No credit card required.</div>
-        <p class="price-desc">Perfect for independent developers and designers delivering one client project at a time.</p>
-        <ul class="price-features">
-          <li class="price-feature-item"><span class="bullet-dash">—</span> 1 active staging project</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Unlimited client pin notes</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Automated browser & screen metadata</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> 1-click milestone approval receipts</li>
-        </ul>
-      </div>
-      <a href="/login" target="_top" class="btn-free-tier">Start Free</a>
-    </div>
-
-    <div class="price-card price-card-paid">
-      <svg class="animated-dashed-border" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="16" />
-      </svg>
-      <div>
-        <div class="price-tier-name">PRO</div>
-        <div class="price-figure" id="agencyPriceNum">
-          <span>$</span><span class="ticker-box"><span class="ticker-roller" id="agencyPriceRoller"><span class="ticker-digit">12</span><span class="ticker-digit">15</span></span></span>
-        </div>
-        <div class="price-period" id="agencyPriceNotice">per seat / month · only when billed annually ($144/year)</div>
-        <p class="price-desc">For studios, agencies, and autonomous builders delivering pixel-perfect production rollouts.</p>
-        <ul class="price-features">
-          <li class="price-feature-item"><span class="bullet-dash">—</span> <strong>Autonomous MCP Agent Pipeline</strong> (Cursor, Claude, Antigravity)</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Unlimited review canvases (Live Sites, Staging, PDFs)</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Isolated viewports (Full Page, Desktop, Tablet, Mobile)</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> One-click client milestone approval & audit deed</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Export the punchlist to Linear, GitHub Issues & Markdown</li>
-        </ul>
-      </div>
-      <a href="/login" target="_top" class="btn-primary" style="text-align: center; justify-content: center;">Upgrade to Pro</a>
-    </div>
-
-    <div class="price-card">
-      <div>
-        <div class="price-tier-name">ENTERPRISE</div>
-        <div class="price-figure">Custom</div>
-        <div class="price-period">Flexible deployment for engineering teams.</div>
-        <p class="price-desc">For design engineering orgs and agencies requiring multiple team seats, shared review workspaces, and dedicated agent pipelines.</p>
-        <ul class="price-features">
-          <li class="price-feature-item"><span class="bullet-dash">—</span> <strong>Multi-Seat Team Workspaces</strong> with role-based permissions</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Dedicated MCP API endpoints with custom rate limits</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Centralized team billing & pooled review bandwidth</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Custom domain staging canvases & white-label reviews</li>
-          <li class="price-feature-item"><span class="bullet-dash">—</span> Priority 24/7 engineering SLA & custom onboarding</li>
-        </ul>
-      </div>
-      <a href="mailto:enterprise@cyath.space?subject=Cyath%20Enterprise%20Tier%20Inquiry&amp;body=Hi%20there%2C%0A%0AWe%20are%20interested%20in%20the%20Cyath%20Enterprise%20tier%20for%20our%20team.%20We%20would%20like%20to%20learn%20more%20about%20team%20seat%20allocations%2C%20MCP%20agent%20integrations%2C%20and%20shared%20workspaces.%0A%0ACompany%20Name%3A%20%0ATeam%20Size%3A%20%0AEstimated%20Active%20Projects%3A%20%0A%0AThanks!" target="_top" class="btn-free-tier">Enquire</a>
-    </div>
+  <div style="margin-top: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+    <a href="/login" target="_top" class="btn-primary" style="padding: 16px 40px; font-size: 15px; font-weight: 700; text-align: center;">
+      Launch Free Review Canvas →
+    </a>
+    <p style="font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); margin: 0;">
+      All Pro features unlocked by default · Free for solo developers, agencies &amp; students
+    </p>
   </div>
 </section>
 </main>
@@ -1930,7 +1878,7 @@ html.over-pin-demo .fluid-cursor,
     <a href="#capture" class="footer-link">Capture</a>
     <a href="#punchlist" class="footer-link">Punchlist</a>
     <a href="#approval" class="footer-link">Approval</a>
-    <a href="#pricing" class="footer-link">Pricing</a>
+    <a href="#zero-paywall" class="footer-link">100% Free</a>
     <span>© 2026 Cyath. All rights reserved.</span>
   </div>
 

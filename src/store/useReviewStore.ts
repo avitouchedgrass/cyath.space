@@ -25,7 +25,7 @@ export const useReviewStore = create<ReviewState>((set) => ({
   activePinId: null,
   activeDeviceMode: "desktop",
   interactionMode: "comment",
-  isPro: false,
+  isPro: true,
 
   loadProjects: async (signal) => {
     const { projects } = await reviewRequest<{ projects: Project[] }>("/api/canvases", { signal });
@@ -54,8 +54,7 @@ export const useReviewStore = create<ReviewState>((set) => ({
   },
 
   refreshPro: async () => {
-    const { isPro } = await reviewRequest<{ isPro: boolean }>("/api/billing");
-    set({ isPro });
+    set({ isPro: true });
   },
 
   clearAccount: () => set({ projects: [], isPro: false }),

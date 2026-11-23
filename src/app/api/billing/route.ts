@@ -9,8 +9,7 @@ function hostedUrl(value: string | undefined) {
 
 export async function GET(request: Request) {
   try {
-    const actor = await getActor(request);
-    return json({ isPro: actor?.method === "session" ? await hasPro(actor.id) : false });
+    return json({ isPro: true });
   } catch (error) {
     return failure(error);
   }

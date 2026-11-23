@@ -544,23 +544,18 @@ function SettingsContent() {
                       Current Plan
                     </div>
                     <div className={`text-lg font-sans font-semibold ${isDay ? "text-stone-900" : "text-white"}`}>
-                      {isPro ? "Studio Pro" : "Free Plan"}
+                      Studio Pro (Unlocked)
                     </div>
                     <div className={`text-xs mt-1 ${isDay ? "text-stone-600" : "text-zinc-400"}`}>
-                      {isPro ? "Unlimited canvases & MCP server access" : "1 active review canvas"}
+                      Unlimited staging canvases, MCP AI agent access & milestone deeds
                     </div>
                   </div>
 
-                  <Link
-                    href="/pro"
-                    className={`px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all duration-150 active:scale-[0.96] cursor-pointer shadow-sm ${
-                      isDay
-                        ? "bg-stone-900 text-white hover:bg-stone-800"
-                        : "bg-white text-black hover:bg-zinc-200"
-                    }`}
+                  <span
+                    className="px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                   >
-                    {isPro ? "Manage Plan" : "Upgrade to Pro"}
-                  </Link>
+                    Free Beta
+                  </span>
                 </div>
               </div>
             )}

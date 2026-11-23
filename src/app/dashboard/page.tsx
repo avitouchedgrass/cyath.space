@@ -376,31 +376,14 @@ export default function DashboardPage() {
                 {totalNotesCount} Open {totalNotesCount === 1 ? "Note" : "Notes"}
               </span>
               <span
-                className={`px-4 py-2 rounded-full border transition-colors ${
+                className={`px-3 py-1.5 rounded-full text-xs font-mono border ${
                   isDay
-                    ? "border-stone-300 bg-stone-200/80 text-stone-900 font-medium"
-                    : "border-white/15 bg-white/[0.06] text-zinc-100"
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 font-semibold"
+                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-semibold"
                 }`}
               >
-                {isUserPro ? "Pro Plan" : `Free Plan (${userProjects.length}/1)`}
+                Pro Unlocked (Free)
               </span>
-
-              {!isUserPro && (
-                <Link
-                  href="/pro"
-                  prefetch={true}
-                  onClick={(e) => handleNavigate(e, "/pro")}
-                  className={`px-4 py-2 rounded-full font-mono font-semibold text-xs transition-all duration-150 cursor-pointer active:scale-[0.96] flex items-center gap-1.5 shadow-md ${
-                    isDay
-                      ? "bg-stone-900 text-white hover:bg-stone-800 shadow-stone-300"
-                      : "bg-white text-black hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.25)]"
-                  }`}
-                  title="Upgrade to Pro"
-                >
-                  <span>Upgrade to Pro</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </Link>
-              )}
             </div>
           </div>
 
@@ -455,11 +438,6 @@ export default function DashboardPage() {
                         onChange={handleFileUpload}
                       />
                     </label>
-                    {!isUserPro && userProjects.length >= 1 && (
-                      <span className={`text-[10px] font-mono ${isDay ? "text-stone-600 font-medium" : "text-zinc-500"}`}>
-                        (Free plan limit reached: 1 active review)
-                      </span>
-                    )}
                   </div>
 
                   <button
@@ -765,115 +743,6 @@ export default function DashboardPage() {
                 );
               })}
 
-              {/* Free Tier Balance Placeholder Card: Subtle ghost slots covering 2/3 spots on the right */}
-              {!isUserPro && userProjects.length === 1 && (
-                <div
-                  onClick={() => setShowUpgradeModal(true)}
-                  className={`md:col-span-1 lg:col-span-2 group rounded-2xl border border-dashed transition-all duration-300 flex flex-col overflow-hidden relative cursor-pointer active:scale-[0.995] hover:-translate-y-1 ${
-                    isDay
-                      ? "border-stone-300 bg-stone-50/70 hover:bg-stone-100/90 text-stone-900 shadow-xs hover:border-stone-400"
-                      : "border-white/15 bg-white/[0.015] hover:bg-white/[0.035] text-white hover:border-white/30 shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
-                  }`}
-                >
-                  {/* Top Window Bar */}
-                  <div
-                    className={`h-8 border-b border-dashed px-3.5 flex items-center justify-between select-none ${
-                      isDay ? "bg-stone-100/60 border-stone-200" : "bg-white/[0.02] border-white/10"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
-                      <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
-                      <span className={`w-2 h-2 rounded-full ${isDay ? "bg-stone-300" : "bg-white/10"}`} />
-                      <span className={`text-[10px] font-mono truncate max-w-[200px] ml-1.5 opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                        slots-02-03.pro-cluster.cyath
-                      </span>
-                    </div>
-
-                    <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full border ${
-                      isDay
-                        ? "border-stone-300 bg-white text-stone-700 font-medium"
-                        : "border-white/15 bg-white/5 text-zinc-400"
-                    }`}>
-                      Studio Pro Slots
-                    </span>
-                  </div>
-
-                  {/* Dual Blueprint Viewport Stages covering the 2 spots */}
-                  <div
-                    className={`relative w-full overflow-hidden border-b border-dashed p-6 transition-colors ${
-                      isDay ? "bg-stone-100/40 border-stone-200" : "bg-black/40 border-white/10"
-                    }`}
-                  >
-                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
-
-                    <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
-                      {/* Slot 02 Ghost Box */}
-                      <div className={`p-4 rounded-xl border border-dashed flex flex-col items-center justify-center text-center transition-all ${
-                        isDay ? "border-stone-200 bg-white/60 hover:bg-white" : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
-                      }`}>
-                        <div className={`w-9 h-9 rounded-xl border flex items-center justify-center mb-2.5 transition-transform duration-300 group-hover:scale-105 ${
-                          isDay ? "border-stone-300 bg-white text-stone-800 shadow-xs" : "border-white/20 bg-white/5 text-white"
-                        }`}>
-                          <Plus className="w-4 h-4 opacity-80" />
-                        </div>
-                        <div className="text-xs font-sans font-semibold tracking-tight mb-0.5">
-                          Add 2nd Canvas
-                        </div>
-                        <p className={`text-[10px] font-sans max-w-[180px] leading-relaxed ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                          Concurrent staging link with live client annotations & device viewports.
-                        </p>
-                      </div>
-
-                      {/* Slot 03 Ghost Box */}
-                      <div className={`p-4 rounded-xl border border-dashed flex flex-col items-center justify-center text-center transition-all ${
-                        isDay ? "border-stone-200 bg-white/60 hover:bg-white" : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
-                      }`}>
-                        <div className={`w-9 h-9 rounded-xl border flex items-center justify-center mb-2.5 transition-transform duration-300 group-hover:scale-105 ${
-                          isDay ? "border-stone-300 bg-white text-stone-800 shadow-xs" : "border-white/20 bg-white/5 text-white"
-                        }`}>
-                          <Plus className="w-4 h-4 opacity-80" />
-                        </div>
-                        <div className="text-xs font-sans font-semibold tracking-tight mb-0.5">
-                          Add 3rd Canvas
-                        </div>
-                        <p className={`text-[10px] font-sans max-w-[180px] leading-relaxed ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                          MCP access and client approval receipts for more projects.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Metadata & Controls */}
-                  <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between flex-1 gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className={`text-xs font-sans font-semibold ${isDay ? "text-stone-800" : "text-zinc-200"}`}>
-                          Unlock Unlimited Review Canvases
-                        </span>
-                      </div>
-                      <div className={`text-[11px] font-mono truncate opacity-60 ${isDay ? "text-stone-500" : "text-zinc-500"}`}>
-                        upgrade to cyath pro for infinite simultaneous client links
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                      <span className={`text-[10px] font-mono uppercase tracking-wider hidden md:inline ${isDay ? "text-stone-500 font-medium" : "text-zinc-500"}`}>
-                        Instant Activation
-                      </span>
-
-                      <span className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all duration-150 flex items-center gap-1.5 shadow-sm active:scale-[0.96] ${
-                        isDay
-                          ? "bg-stone-900 text-white group-hover:bg-stone-800 shadow-stone-300"
-                          : "bg-white text-black group-hover:bg-zinc-200 shadow-[0_0_16px_rgba(255,255,255,0.2)]"
-                      }`}>
-                        <span>Upgrade to Pro</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
